@@ -1,210 +1,365 @@
-/*****************************************************************************\
-|* wquantile: weighted quantiles 					     *|
-|* ------------------------------------------------------------------------- *|
-|* PROJECT  sctbase 							     *|
-|* SUBEJCT  weighted quantile						     *|
-|* AUTHORS  Tobias Schoch (tobias.schoch@fhnw.ch), February 10, 2020	     *|
-|* LICENSE  GPL >= 2							     *|
-|* COMMENT  [none]							     *|
-\*****************************************************************************/
+/******************************************************************************\
+|*         weighted quantile and selection of k-th largest element	      *| 
+|* -------------------------------------------------------------------------- *| 
+|* PROJECT wquantile							      *| 
+|* SUBJECT weighted quantile and selection of k-th largest element using      *| 
+|*	   a weighted variant of quickselect (with Bentley and McIlroy's      *| 
+|*	   (1993) 3-way partitioning scheme); for small arrays, insertion     *| 
+|*	   sort is used							      *| 
+|* AUTHORS Tobias Schoch (tobias.schoch@fhnw.ch), July 29, 2020		      *| 
+|* LICENSE GPL >= 2							      *| 
+|* COMMENT see Bentley, J.L. and D.M. McIlroy (1993). Engineering a Sort      *| 
+|*	   Function, Software - Practice and Experience 23, pp. 1249-1265;    *| 
+|*	   the extension of the method to weighted problems is ours	      *| 
+\******************************************************************************/
+
+# define _medium_array	10 // pivotal element is determined by medium of three 
+# define _large_array	40 // pivotal element determined by ninther
+#define DEBUG_MODE	0  // debug mode (0 = off; 1 = activated)
+
 #include "wquantile.h"
 
-#define DEBUG_MODE 0	// debug mode (0 = off; 1 = activated)
+static inline void swap2(double*, double*, int, int) 
+   __attribute__((always_inline));
+static inline double med3(double*, int, int, int) 
+   __attribute__((always_inline));
+static inline int min(int, int) __attribute__((always_inline));
+static inline int choose_pivot(double*, int, int)
+   __attribute__((always_inline));
+static inline int is_equal(double, double) __attribute__((always_inline));
+static inline void partition_3way(double*, double*, int, int, int*, int*)
+   __attribute__((always_inline));
+static inline double insertionselect(double*, double*, int, int, double) 
+   __attribute__((always_inline));
 
-// declaration of 'local' functions (inline imperative is GCC specific)
-static inline int partition(double*, int, int, int) 
-   __attribute__((always_inline));
-static inline void swap(double*, int, int, int)
-   __attribute__((always_inline));
-static inline void median_of_three(double*, int, int, int)
-   __attribute__((always_inline));
+void wquant0(double*, double*, double, int, int, double, double*);
 
+// debugging tools
 #if DEBUG_MODE 
-// print function in debug mode
-static inline void print(double*, int, int, int, int, int)
-   __attribute__((always_inline));
-static inline void print(double *xw, int n, int left, int right, int i, 
-			 int init)
+#include <stdio.h>
+#include <string.h>	   
+void debug_print_data(double*, double*, int, int, char*);
+void debug_print_state(int, int);
+#endif
+
+/******************************************************************************\
+|* wquantile  : weighted quantile					      *|	
+|*									      *| 
+|* array       array[lo..hi]						      *|	
+|* weights     array[lo..hi]						      *|
+|* n	       dimension						      *|	
+|* prob	       probability defining quantile (0 <= prob <= 1)		      *|	
+|* result      on return: weighted quantile				      *|	
+\******************************************************************************/
+void wquantile(double *array, double *weights, int *n, double *prob, 
+   double *result)
 {
-   if (init){
-      for (int k = 0; k < n; k++){
-	 Rprintf("%d\t", k);
-      }
-      Rprintf("\n");
-   } else{
-      for (int k = 0; k < n; k++){
-	 Rprintf("%.2f\t", xw[k]);
-      }
-      Rprintf("left = %d, right = %d, i = %d\n", left, right, i);
+   if (is_equal(*prob, 0.0)) {			// prob = 0.0
+      wselect0(array, weights, 0, *n - 1, 0);
+      *result = array[0];
+   } else if (is_equal(*prob, 1.0)) {		// prob = 1.0
+      wselect0(array, weights, 0, *n - 1, *n - 1);
+      *result = array[*n - 1];
+   } else {				
+      // make copy 'array' and 'weights' because 'wquant0' is destructive
+      double *array2;
+      // array2 = [array[0..(n-1)], weights[0..(n-1)]], i.e. 'weights' is 
+      // appended to 'array' s.t. we have one contiguous chunk of memory 
+      // => cache optimized
+      array2 = (double*) Calloc(2 * *n, double);
+      Memcpy(array2, array, *n); 
+      Memcpy(array2 + *n, weights, *n); 
+      wquant0(array2, array2 + *n, 0.0, 0, *n - 1, *prob, result);      
+      Free(array2); 
    }
 }
-#endif
 
-/*****************************************************************************\
-|* wquantile: weighted quantiles					     *|
-|*									     *| 
-|* PARAMETERS						    		     *|
-|*    x	       data, array[n]						     *|
-|*    w	       weights, array[n]					     *|
-|*    ptrn     dimension n						     *|
-|*    ptrq     prob q in [0,1]						     *|
-|*    ptresult on return, q-th quantile					     *|
-\*****************************************************************************/
-void wquantile(double *x, double *w, int *ptrn, double *ptrq, 
-	       double *ptrresult)
+/******************************************************************************\
+|* wquant0  : weighted quantile (recursive function; for internal use)	      *|	
+|*									      *| 
+|* array    array[lo..hi]						      *|	
+|* weights  array[lo..hi]						      *|
+|* sum_w    total sum of weights: initialized with 0.0			      *|
+|* lo	    dimension (usually: 0)					      *|	
+|* hi	    dimension (usually: n - 1)					      *|	
+|* prob	    probability defining quantile (0 <= prob <= 1)		      *|	
+|* result   on return: weighted median					      *|	
+|*									      *| 
+|* NOTE:    wquant0 uses a weighted quickselect based on the the 3-way	      *|
+|*	    partitioning of Bentley & McIlroy's (1993)			      *| 
+\******************************************************************************/
+void wquant0(double *array, double *weights, double sum_w, int lo, int hi, 
+   double prob, double *result)
 { 
-   int i, left = 0, right = *ptrn - 1;
-   double sum_w = 0.0, sum_w_lo = 0.0, sum_w_hi = 0.0;
-   double *xw;
-  
-   // weight total 
-   for (int k = 0; k < *ptrn; k++) sum_w += w[k];
+   #if DEBUG_MODE 
+   debug_print_data(array, weights, lo, hi, "init");
+   #endif
 
-   // generate array xw = (x, w)  
-   xw = (double*) Calloc(2 * *ptrn, double); 
-   Memcpy(xw, x, *ptrn); 
-   Memcpy(xw + *ptrn, w, *ptrn); 
+   if (hi <= lo) return;   // case: n = 1
 
-   // normalized weight, s.t. sum(w_i) = 1
-   for (int k = 0; k < *ptrn; k++) xw[k + *ptrn] /= sum_w;
+   if (hi - lo == 1) {	   // case: n = 2
+      double one_minus = 1.0 - prob;
+      if (is_equal(one_minus * weights[lo], prob * weights[hi])){ 
+	 *result = (array[lo] + array[hi]) / 2.0;  	 
+      }
+      else if (one_minus * weights[lo] > prob * weights[hi]) {
+	 *result = array[lo];
+      } else {
+	 *result = array[hi];
+      }
+      return; 
+   }
 
-#if DEBUG_MODE 
-Rprintf("initial\n");
-print(xw, *ptrn, left, right, 0, 1);
-print(xw, *ptrn, left, right, 0, 0);
-Rprintf("---\n");
-#endif
+   if (sum_w < DBL_EPSILON) { // sum_w is only computed at initialization 
+      for (int k = lo; k <= hi; ++k) 
+	 sum_w += weights[k]; 
+   }
 
-   while (right > left){
-      
-      // choosing the pivotal element by the median-of-three method
-      median_of_three(xw, *ptrn, left, right); 
+   // case: n <= _medium_array
+   if (hi - lo + 1 <= _medium_array) {
+      *result = insertionselect(array, weights, lo, hi, prob);
+      return;
+   }
 
-#if DEBUG_MODE 
-Rprintf("median swaps\n");
-print(xw, *ptrn, left, right, i, 0);
-#endif
+   // case: n > _medium_array: weighted quickselect
+   // Bentley-McIlroy's 3-way partitioning (weighted): the positions of the 
+   // sentinels 'i' and 'j' are returned 
+   int i, j; 
+   partition_3way(array, weights, lo, hi, &i, &j);
 
-      i = partition(xw, *ptrn, left, right);
+   // sum of weights of the elements smaller and larger than the pivot 
+   // (determined with the help of the sentinels' positions) 
+   double sum_w_lo = 0.0, sum_w_hi = 0.0; 
+   for (int k = lo; k <= j; ++k) 
+      sum_w_lo += weights[k]; 
+   for (int k = i; k <= hi; ++k) 
+      sum_w_hi += weights[k];
 
-#if DEBUG_MODE 
-Rprintf("partitioning\n");
-print(xw, *ptrn, left, right, i, 0);
-#endif
+   #if DEBUG_MODE 
+   debug_print_data(array, weights, lo, hi, "");
+   debug_print_state(i, j);
+   #endif
 
-      // here, we decide which partition to keep active (i.e., partition that
-      // contains the k-th element); first compute the weights below and above 
-      // of the pivotal element
-      sum_w_lo = 0.0;
-      for (int k = 0; k < i; k++) sum_w_lo += xw[k + *ptrn];
-      sum_w_hi = 0.0;
-      for (int k = i + 1; k < *ptrn; k++) sum_w_hi += xw[k + *ptrn];
-
-//FIXME: compute weights lo and hi only for range [left, right]; in the 
-//	 decision (below), we put the weights of the inactive partition onto 
-//	 the pivot
-
-      if (sum_w_lo >= *ptrq){
-	 right = i - 1;
-      } else if (sum_w_hi <= 1.0 - *ptrq){ 
-	 break;
-      } else{
-	 left = i + 1;
+   // termination criterion: sum of weights on both sides are smaller than 0.5
+   if (sum_w_lo < prob * sum_w && sum_w_hi < (1.0 - prob) * sum_w) {
+      *result = array[j + 1]; 
+   } else {  
+      // tail recursion only on the partitioning with larger sum of weights
+      if ((1 - prob) * sum_w_lo > prob * sum_w_hi) { 
+	 weights[j + 1] = sum_w - sum_w_lo;  // weight of ignored part is dumped 
+	 wquant0(array, weights, sum_w, lo, j + 1, prob, result);
+      }
+      else { 
+	 weights[i - 1] = sum_w - sum_w_hi;  // weight is dumped
+	 wquant0(array, weights, sum_w, i - 1, hi, prob, result);
       }
    }
-
-#if DEBUG_MODE 
-Rprintf("on return\n");
-print(xw, *ptrn, left, right, i, 0);
-#endif
-
-   // modification
-   if (left == right) i = left;
-
-   *ptrresult = xw[i];
-   Free(xw); 
 }
 
-// old implementation of the decision (only median)
-      /* sum_w_lo = 0.0; */
-      /* for (int k = 0; k < i; k++) sum_w_lo += xw[k + *ptrn]; */
-      /* sum_w_hi = 0.0; */
-      /* for (int k = i + 1; k < *ptrn; k++) sum_w_hi += xw[k + *ptrn]; */
-      /*  */
-      /* if (sum_w_lo >= sum_w_hi + xw[i + *ptrn]){ */
-	/*  right = i - 1; */
-      /* } else if (sum_w_lo + xw[i + *ptrn] >= sum_w_hi){  */
-	/*  break; */
-      /* } else{ */
-	/*  left = i + 1; */
-      /* } */
+/******************************************************************************\
+|* wselect0 select the k-th largest elemens (with weights; for internal use)  *|	
+|*									      *| 
+|* array    array[lo..hi]						      *|	
+|* weights  array[lo..hi]						      *|
+|* lo	    dimension (usually: 0)					      *|	
+|* hi	    dimension (usually: n - 1)					      *|	
+|* k	    integer in 0:(n - 1)					      *|	
+|*									      *| 
+|* NOTE	    wselect0 sorts 'array' partially, such that element 'k' is in its  *| 
+|*	    final (sorted) position => array[k] gives the k-th largest element*| 
+\******************************************************************************/
+void wselect0(double *array, double *weights, int lo, int hi, int k)
+{
+   if (hi <= lo) return;   // case: n = 1
 
+   // Bentley-McIlroy's 3-way partitioning (weighted): the positions of the 
+   // sentinels 'i' and 'j' are returned 
+   int i, j; 
+   partition_3way(array, weights, lo, hi, &i, &j);
 
-
-/*****************************************************************************\
-|* A.C.R. Hoare's partitioning scheme (part of algorithm 'FIND'; i.e. quick- *|
-|* select); see also Knuth (1998): The Art of Computer Programming, vol. 3,  *|
-|* 2nd ed., Addison-Wesley, p. 113-123 and Exercise 31 on p. 131	     *|
-\*****************************************************************************/
-static inline int partition(double *a, int n, int left, int right)
-{ 
-   int i = left - 1;
-   int j = right; 
-   double pivot = a[right]; // the pivot's position = rightmost element of a 
-
-   // Hoare's partitioning scheme (i.e. two sentinels or pointers, i and j, 
-   // that scan up (i) and scan down (j) until they cross (i.e., i >= j)
-   for (;;) { 
-      // scan up to find values larger than pivot (note that we start at 
-      // i = left -1; also, the scan is automatically stopped because the 
-      // rightmost element in a is the pivot) 
-      while (a[++i] < pivot);
-      // scan up to find values smaller than pivot (the scan must be stopped
-      // at the leftmost element )
-      while (pivot < a[--j]) if (j == left) break;
-      // when the pointers cross, we terminate
-      if (i >= j) break;
-      // otherwise we swap the elements  (i.e., we found two elements s.t. 
-      // x[i] > pivot and x[j] < pivot; hence, we swap them)
-      swap(a, n, i, j);
+   // tail recursion only on the partitioning where element 'k' lies  
+   if (k <= j) { 
+      wselect0(array, weights, lo, j, k);
    }
-   // insert pivotal element
-   swap(a, n, i, right);
-   return i;
+   else if (k >= i) { 
+      wselect0(array, weights, i, hi, k);
+   }
 }
 
-/*****************************************************************************\
-|* swap two elements of array a = (x, w), which is of size 2 * n; elements   *|
-|* in x and w are swapped in 'parallel'					     *|
-\*****************************************************************************/
-static inline void swap(double *a, int n, int i, int j)
+/******************************************************************************\
+|* partition_3way: Bentley and McIlroy's (1993) 3-way partitioning scheme     *| 
+\******************************************************************************/
+static inline void partition_3way(double *array, double *weights, int lo, 
+   int hi, int *i, int *j)
+{
+   // determine pivot and swap it into position 'lo' (i.e., position 0)  
+   swap2(array, weights, choose_pivot(array, lo, hi), lo);
+   double pivot = array[lo];
+
+   // Bentley-McIlroy's 3-way partitioning weighted with sentinels i and j, 
+   // respectively, scanning up and down until they cross; elements equal to 
+   // the pivot are swapped to the far left and right, 
+
+   int p = lo, q = hi + 1;
+   *i = lo; *j = hi + 1;		  // initialize the sentinels
+
+   for (;;) {
+      while (array[++(*i)] < pivot)
+	 if (*i == hi) break;
+      while (pivot < array[--(*j)])
+	 if (*j == lo) break;
+      if (*i == *j && is_equal(array[*i], pivot))
+	 swap2(array, weights, ++p, *i);
+      if (*i >= *j) break;		  // check if sentinels cross 
+      swap2(array, weights, *i, *j);	       
+
+      // swap equal elements to the far left and right, respectively
+      if (is_equal(array[*i], pivot)) swap2(array, weights, ++p, *i);
+      if (is_equal(array[*j], pivot)) swap2(array, weights, --q, *j);
+   }
+
+   // swap equal elements from the borders back to the center
+   *i = *j + 1;
+   for (int k = lo; k <= p; k++)
+      swap2(array, weights, k, (*j)--);
+   for (int k = hi; k >= q; k--)
+      swap2(array, weights, k, (*i)++);
+}
+
+/******************************************************************************\
+|* choose_pivot: choose pivotal element (methods depend on the array size     *| 
+\******************************************************************************/
+static inline int choose_pivot(double *array, int lo, int hi)
+{
+   int n = hi - lo + 1; 
+   int mid = lo + n / 2;	 // small array: median of three
+   if (n > _large_array) {	 // large array: Tukey's ninther
+      int eps = n / 8;
+      lo = med3(array, lo, lo + eps, lo + eps + eps);
+      mid = med3(array, mid - eps, mid, mid + eps);
+      hi = med3(array, hi - eps - eps, hi - eps, hi); 
+   }
+   return med3(array, lo, mid, hi);
+}
+
+/******************************************************************************\
+|* swap: swap two elements in double array				      *| 
+\******************************************************************************/
+static inline void swap2(double *array, double *weights, int i, int j)
 {  
-   double tmp;
-   // swap data values (first n observations in array a)
-   tmp = a[i]; a[i] = a[j]; a[j] = tmp;
-   // swap weights (second n observations in array a)
-   tmp = a[i + n]; a[i + n] = a[j + n]; a[j + n] = tmp;
+   double tmp = array[i]; array[i] = array[j]; array[j] = tmp;
+   // swap weights
+   tmp = weights[i]; weights[i] = weights[j]; weights[j] = tmp;
 }
 
-/*****************************************************************************\
-|* median_of_three: we sort x s.t. x[left] < x[mid] < x[right] and then we   *|
-|* take x[mid] as pivotal or partitioning element rather than x[right]       *|
-|* See Sedgewick (1983): Algorithms, Addison-Wesley, p. 112-113	  	     *|
-\*****************************************************************************/
-static inline void median_of_three(double *x, int n, int left, int right)
+/******************************************************************************\
+|* min: minimum of two integer values					      *|
+\******************************************************************************/
+static inline int min(int a, int b)
+{ 
+   return a < b ? a : b;
+}
+
+/******************************************************************************\
+|* is_equal: check whether two doubles are equal using Knuth's notion of      *|
+|* essential equality							      *| 
+\******************************************************************************/
+static inline int is_equal(double a, double b)
 {
-   int mid = (left + right) / 2;
-   if (x[right] < x[left]){
-      swap(x, n, left, right);        
-   }
-   if (x[mid] < x[left]){ 
-      swap(x, n, mid, left);
-   }
-   if (x[right] < x[mid]){
-      swap(x, n, right, mid);
-   }
-   // move 'mid' to 'right' (right = pivot's position)
-   swap(x, n, mid, right);
+   return fabs(a - b) <= ( (fabs(a) > fabs(b) ? fabs(b) : 
+      fabs(a)) * DBL_EPSILON);
 }
 
+/******************************************************************************\
+|* med3: median-of-three (but without swaps)		 		      *| 
+\******************************************************************************/
+static inline double med3(double *array, int i, int j, int k)
+{
+   return array[i] < array[j] ? 
+         (array[j] < array[k] ? j : array[i] < array[k] ? k : i) 
+       : (array[j] > array[k] ? j : array[i] > array[k] ? k : i);
+}
 
+/******************************************************************************\
+|* insertionselect (i.e., insertion sort => select with weights)	      *| 
+\******************************************************************************/
+static inline double insertionselect(double *array, double *weights, int lo, 
+   int hi, double prob) 
+{
+   // part: sort
+   int exch = 0;		       
+   for (int i = hi; i > lo; i--) {	  // smallest element as sentinel
+      if (array[i] < array[i - 1]) {
+	 swap2(array, weights, i, i - 1);
+	 exch++;
+      }
+   }
+   if (exch != 0){			  // insertion sort with half-exchanges
+      for (int i = lo + 2; i <= hi; i++) {
+	 double pivot = array[i];
+	 double pivot_weight = weights[i];
+	 int j = i;
+	 while (pivot < array[j - 1]) {
+	    array[j] = array[j - 1];
+	    weights[j] = weights[j - 1];
+	    j--;
+	 }
+	 array[j] = pivot;
+	 weights[j] = pivot_weight;
+      }
+   }
+
+   // part: select 
+   double sum_w = 0.0;
+   for (int k = lo; k <= hi; k++)	  // total sum of weight
+      sum_w += weights[k]; 
+
+   int k;			        
+   double cumsum = 0.0; 
+   for (k = lo; k <= hi; k++) {		  // cumulative sum of weight
+      cumsum += weights[k]; 
+      if (cumsum > prob * sum_w) 
+	 break; 
+   }
+
+   if (k == lo)
+      return array[k];
+   else {
+      cumsum -= weights[k];
+      if (is_equal((1 - prob) * cumsum, prob * (sum_w - cumsum)))
+	 return (array[k - 1] + array[k]) / 2.0;  	 
+      else
+	 return array[k];
+   }
+}
+
+/******************************************************************************\
+|* DEBUGGING TOOLS							      *| 
+\******************************************************************************/
+#if DEBUG_MODE 
+void debug_print_data(double *array, double *weights, int lo, int hi, 
+   char *message)
+{ 
+   if (strlen(message) > 0) {
+      printf("------\n");
+      printf("%s x\t", message);
+   } else {
+      printf("x \t");
+   }
+   for (int i = lo; i <= hi; ++i) printf("%.2f\t", array[i]);
+   printf("\n");
+   //
+   if (strlen(message) > 0) {
+      printf("%s w\t", message);
+   } else {
+      printf("w \t");
+   }
+   for (int i = lo; i <= hi; ++i) printf("%.2f\t", weights[i]);
+   printf("\n");
+}
+
+void debug_print_state(int i, int j)
+{ 
+   printf("final:\ti = %d\tj = %d\n", i, j);
+}
+#endif 

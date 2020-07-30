@@ -8,7 +8,6 @@
 |* COMMENT  [none]							     *|
 \*****************************************************************************/
 #include "robsurvey.h"
-#include "wquantile.h"
 
 /* some macros */
 #define _WGT_HUBER(_x, _k) ((fabs(_x) >= _k) ? _k / fabs(_x) : 1.0)
@@ -130,8 +129,8 @@ static inline void fitwls(double *x, double *y, double *w, double *resid,
 |*  PARAMETERS                                                               *|
 |*    x		  data, array[n]					     *|
 |*    w		  weights, array[n]					     *|
-|*    ptrlo	  lower bound [0,1 ]					     *|
-|*    ptrhi	  upper bound [0,1 ] s.t. ptrlo < ptrhi			     *|
+|*    ptrlo	  lower bound [0, 1]					     *|
+|*    ptrhi	  upper bound [0, 1] s.t. ptrlo < ptrhi			     *|
 |*    ptrmean	  on return: weighted trimmed mean			     *|
 |*    ptrn	  dimension						     *|
 |*                                                                           *|
@@ -169,8 +168,8 @@ void wtrimmedmean(double *x, double *w, double *ptrlo, double *ptrhi,
 |*  PARAMETERS                                                               *|
 |*    x		  data, array[n]					     *|
 |*    w		  weights, array[n]					     *|
-|*    ptrlo	  lower bound [0,1 ]					     *|
-|*    ptrhi	  upper bound [0,1 ] s.t. ptrlo < ptrhi			     *|
+|*    ptrlo	  lower bound [0, 1]					     *|
+|*    ptrhi	  upper bound [0, 1] s.t. ptrlo < ptrhi			     *|
 |*    ptrmean	  on return: weighted trimmed mean			     *|
 |*    ptrn	  dimension						     *|
 |*                                                                           *|
@@ -201,6 +200,47 @@ void wwinsorizedmean(double *x, double *w, double *ptrlo, double *ptrhi,
    }
    
    *ptrmean = sum_x / sum_w;
+}
+
+/*****************************************************************************\
+|*  weighted k one-sided winsorized mean (scalar)			     *| 
+|*                                                                           *|
+|*  PARAMETERS                                                               *|
+|*    x		  data, array[n]					     *|
+|*    w		  weights, array[n]					     *|
+|*    k		  k-th largest element (zero index)			     *|
+|*    ptrmean	  on return: weighted trimmed mean			     *|
+|*    ptrn	  dimension						     *|
+|*    prob	  on return: estimated probability			     *|
+|*                                                                           *|
+|*  DEPENDENCIES							     *|
+|*    wselect0		                                                     *|
+\*****************************************************************************/
+void wkwinsorizedmean(double *x, double *w, int *ptrk, double *ptrmean, 
+   int *ptrn, double *prob)
+{
+   double sum_xw = 0.0, below_sum_w = 0.0, above_sum_w = 0.0;
+
+   // determine k-th largest element (it puts element k into its final 
+   // position in the sorted array) 
+   wselect0(x, w, 0, *ptrn - 1, *ptrk);
+
+   // partial sums of x[0..k] * w[0..k] and w[0..k]  
+   for (int i = 0; i < *ptrk + 1; i++){
+      sum_xw += w[i] * x[i];
+      below_sum_w += w[i];
+   }
+
+   // partial sum of w[(k+1)..(n-1)]
+   for (int i = *ptrk + 1; i < *ptrn; i++){
+      above_sum_w += w[i];
+   }
+
+   sum_xw += above_sum_w * x[*ptrk]; 
+   
+   *ptrmean = sum_xw / (below_sum_w + above_sum_w);   // winsorized mean
+
+   *prob = below_sum_w / (below_sum_w + above_sum_w); // estimate of prob
 }
 
 /*****************************************************************************\
@@ -349,42 +389,45 @@ static inline double kappa_huber(const double k)
 |*    wmad                                                                   *|
 \*****************************************************************************/
 void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt, 
-	    int *ptrn, int *ptrp, double *ptrk, double *beta0, double *ptrscale, 
-	    int *ptrmaxit, double *ptrtol, int *ptrpsi, double *ptrpsi2, 
-	    double *ptrpsiprime)
+	    int *ptrn, int *ptrp, double *ptrk, double *beta0, 
+	    double *ptrscale, int *ptrmaxit, double *ptrtol, int *ptrpsi, 
+	    double *ptrpsi2, double *ptrpsiprime)
 {
    int iterations = 0, converged = 0;
    double scale, tmp;
-   double *beta_new, *modweight;
+   double *beta_new, *ui_weight;
 
    // STEP 1: initialize beta by weighted least squares
    beta_new = (double* ) Calloc(*ptrp, double);
-   modweight = (double *) Calloc(*ptrn, double);
+   ui_weight = (double *) Calloc(*ptrn, double);
 
    // determine optimal size of array 'work' in 'fitwls'
    int lwork = -1;
-   fitwls (x, y, w, resid, beta0, ptrn, ptrp, &lwork);
+   fitwls(x, y, w, resid, beta0, ptrn, ptrp, &lwork);
 
-   //compute wls fit (using the optimal size of 'work')
-   fitwls (x, y, w, resid, beta0, ptrn, ptrp, &lwork);
+   // compute initial wls fit 
+   // first, we compute a modified weight 
+   fitwls(x, y, w, resid, beta0, ptrn, ptrp, &lwork);
 
    // STEP 2: initialize scale estimate by weighted MAD
    scale = wmad(resid, w, *ptrn);
 
    // STEP 3: irls updating
-   while(!converged && ++iterations < *ptrmaxit){
+   while (!converged && ++iterations < *ptrmaxit){
+
       // STEP 3.1: update beta
-      if(*ptrpsi == 0){ // Huber psi
+      if (*ptrpsi == 0){ // Huber psi
 	 for (int i = 0; i < *ptrn; i++){
-	    modweight[i] = w[i] * _WGT_HUBER(resid[i] / scale, *ptrk);
+	    ui_weight[i] = w[i] * _WGT_HUBER(resid[i] / scale, *ptrk);
 	 }
-      }else{ // asymmetric Huber psi
+      } else{ // asymmetric Huber psi
 	 for (int i = 0; i < *ptrn; i++){
-	    modweight[i] = w[i] * _WGT_HUBERasym(resid[i] / scale, *ptrk);
+	    ui_weight[i] = w[i] * _WGT_HUBERasym(resid[i] / scale, *ptrk);
 	 }
       }
-      fitwls(x, y, modweight, resid, beta_new, ptrn, ptrp, &lwork);
-
+      // STEP 3.1: update beta and residuals
+      fitwls(x, y, ui_weight, resid, beta_new, ptrn, ptrp, &lwork);
+ 
       // STEP 3.2: update scale
       scale = wmad(resid, w, *ptrn);
 
@@ -398,14 +441,14 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
    *ptrmaxit = (converged) ? iterations : 0;
 
    // compute robustness weights (using MAD estimate of scale and beta) 
-   if(*ptrpsi == 0){ // Huber psi
+   if (*ptrpsi == 0){ // Huber psi
       for (int i = 0; i < *ptrn; i++){
 	 robwgt[i] = _WGT_HUBER(resid[i] / scale, *ptrk);
 
 //FIXME: psi^2 and psi'
 
       }
-   }else{ // asymmetric Huber psi
+   } else { // asymmetric Huber psi
       for (int i = 0; i < *ptrn; i++){
 	 robwgt[i] = _WGT_HUBERasym(resid[i] / scale, *ptrk);
       }
@@ -424,8 +467,7 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
    // empirical estimate of E(psi')
    *ptrpsiprime = 0.0;
 
-
-   Free(beta_new); Free(modweight);
+   Free(beta_new); Free(ui_weight);
 }
 
 /*****************************************************************************\

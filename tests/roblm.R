@@ -1,5 +1,5 @@
-setwd("C:/My/C/sctbase")
-dyn.load("sctbase.dll")
+setwd("C:/My/code/robsurvey/src")
+dyn.load("robsurvey.dll")
 
 huber_wgt <- function(x, k) pmin.int(1, k / abs(x))
 huber_psi <- function(x, k) pmin.int(k, pmax.int(-k, x))
@@ -97,10 +97,13 @@ colnames(x)[1] <- "(Intercept)"
 w <- rep(1, n)
 lm.wfit(x, y, w)
 
-a <- roblm(x, y, w, k = 2)
+m1 <- roblm(x, y, w, k = 2)
+m2 <- roblm2(x, y, w, k = 2)
 
 # variance of MLE variance estimator (i.e. without accounting for the loss of
 # degrees of freedom 
-sqrt(sum(lm.fit(x, y)$residuals^2) / length(y))
+# sqrt(sum(lm.fit(x, y)$residuals^2) / length(y))
+
+
 
 
