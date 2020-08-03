@@ -2,7 +2,7 @@
 #'
 #' \code{weighted_mad} computes weighted median of the absolute deviations from the weighted median
 #'
-#' The weighted MAD is computed as the (normalized) weighted median of the absolute deviation from the weighted median; see \code{\link{weighted_median}}. The weighted MAD is normalized to be an unbiased estimate of scale at the Gaussian core model. If normalization is not desired, put \code{constant = 1}.
+#' The weighted MAD is computed as the (normalized) weighted median of the absolute deviation from the weighted median; see \code{\link{weighted_median}}. The weighted MAD is normalized to be an unbiased estimate of scale at the Gaussian core model. If normalization is not wanted, put \code{constant = 1}.
 #'
 #' @param x \code{[numeric vector]} observations.
 #' @param w \code{[numeric vector]} weights (same length as vector \code{x}).
