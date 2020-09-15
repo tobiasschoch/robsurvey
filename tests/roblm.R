@@ -77,13 +77,8 @@ roblm2 <- function(x, y, w, k){
    p <- ncol(x)
    maxit = 50
    tol = 1e-4
-   tmp <- .C("rwlslm", x = as.double(x), y = as.double(y), 
-      w = as.double(w), resid = as.double(numeric(n)), 
-      robwgt = as.double(numeric(n)), n = as.integer(n), p = as.integer(p), 
-      k = as.double(k), beta = as.double(numeric(p)), 
-      scale = as.double(numeric(1)), maxit = as.integer(maxit), 
-      tol = as.double(tol), psitype = as.integer(0), 
-      Epsi2 = as.double(numeric(1)), Epsiprime = as.double(numeric(1)))
+
+
    list(beta = tmp$beta, scale = tmp$scale)
 }
 
@@ -96,13 +91,48 @@ x <- as.matrix(cbind(rep(1, n), iris[, 2:3]))
 colnames(x)[1] <- "(Intercept)" 
 w <- rep(1, n)
 lm.wfit(x, y, w)
-
-m1 <- roblm(x, y, w, k = 2)
-m2 <- roblm2(x, y, w, k = 2)
+#m1 <- roblm(x, y, w, k = 2)
+#m2 <- roblm2(x, y, w, k = 2)
 
 # variance of MLE variance estimator (i.e. without accounting for the loss of
 # degrees of freedom 
 # sqrt(sum(lm.fit(x, y)$residuals^2) / length(y))
+
+svyreg_control <- function(tol = 1e-5, maxit = 100, psi = "Huber", k_Inf = 1e5,
+   ...)
+{
+   if(!(psi %in% c("Huber", "asymHuber"))) stop("Function 'psi' must be 
+      either 'Huber' or 'asymHuber'\n")
+   psi0 <- switch(psi, "Huber" = 0L, "asymHuber" = 1L)
+   list(tol= unname(tol), maxit = unname(maxit), psi = unname(psi0), 
+      k_Inf = unname(k_Inf))
+}
+
+
+
+
+x <- cbind(x, x[,3])
+
+   var <- NULL
+   k <- Inf#1.345 #k <- 4.68
+   ctrl <- svyreg_control()
+   if (k <= 0) stop("Argument k must be > 0\n", call. = FALSE)
+   if (k == Inf) k <- ctrl$k_Inf 
+
+   n <- length(y); p <- ifelse(is.null(ncol(x)), 1, ncol(x))
+   # account for heteroscedasticity
+   if (!is.null(var)){
+      x <- x / sqrt(var); y <- y / sqrt(var)
+   }
+   #
+   tmp <- .C("rwlslm", x = as.double(x), y = as.double(y), 
+      w = as.double(w), resid = as.double(numeric(n)), 
+      robwgt = as.double(numeric(n)), n = as.integer(n), p = as.integer(p), 
+      k = as.double(k), beta = as.double(numeric(p)), 
+      scale = as.double(numeric(1)), maxit = as.integer(ctrl$maxit), 
+      tol = as.double(ctrl$tol), psitype = as.integer(0), 
+      Epsi2 = as.double(numeric(1)), Epsiprime = as.double(numeric(1)))
+   tmp$beta
 
 
 
