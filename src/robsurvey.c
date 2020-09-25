@@ -1,8 +1,6 @@
 /*****************************************************************************\
-|* sctbase								     *|
-|* ------------------------------------------------------------------------- *|
-|* PROJECT  sct library							     *|
-|* SUBEJCT  basic statistics functions					     *|
+|* PROJECT  robsurvey							     *|
+|* SUBEJCT  basic functions						     *|
 |* AUTHORS  Tobias Schoch (tobias.schoch@fhnw.ch), January 19, 2020	     *|
 |* LICENSE  GPL >= 2							     *|
 |* COMMENT  [none]							     *|
@@ -23,8 +21,8 @@ static inline double euclidean_norm(const double*, const double*, int)
     __attribute__((always_inline));
 static inline double wmad(double*, double*, int, double)
    __attribute__((always_inline));
-static inline void robweight(double*, double*, double*, double*, int*, 
-   int*) __attribute__((always_inline));
+static inline void robweight(double*, double*, double*, double*, double*, int*, 
+   int*, int*) __attribute__((always_inline));
 
 /*****************************************************************************\
 |*  rwlslm: iteratively reweighted least squares			     *|
@@ -34,6 +32,7 @@ static inline void robweight(double*, double*, double*, double*, int*,
 |*    w		  weights, array[n]					     *|
 |*    resid	  on return: residuals vector, array[n]			     *|
 |*    robwgt	  on return: robustness weights, array[n]		     *|
+|*    xwgt	  weight in design space, GM-estimator, array[n]	     *|
 |*    n		  (array dimensions)					     *|
 |*    p		  (array dimensions)					     *|
 |*    k		  robustness tuning constant				     *|
@@ -42,58 +41,84 @@ static inline void robweight(double*, double*, double*, double*, int*,
 |*    maxit	  max iterations (on input); iterations (on return)	     *|
 |*    tol	  numerical tolerance criterion (stoping rule in rwls	     *|
 |*		  updating rule)					     *|
-|*    psi	  psi-function (0 = Huber, 1 = asymmetric Huber	     	     *|
+|*    psi	  0 = Huber, 1 = asymmetric Huber, 2 = Tukey	     	     *|
+|*    type	  0 = M-est., 1 = Mallows GM-est., 2 = Schweppe GM-est.	     *|
 |*    psi2	  expected value of psi^2, i.e.: sum(w * psi^2)		     *|
 |*    psiprime expected value of psi', i.e..: sum(w * psi')		     *|
-|*                                                                           *|
-|*  DEPENDENCIES                                                             *|
-|*    sctbase: fitwls                                                        *|
-|*    wmad                                                                   *|
 \*****************************************************************************/
 void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt, 
-   int *n, int *p, double *k, double *beta0, double *scale, int *maxit, 
-   double *tol, int *psi, double *psi2, double *psiprime)
+   double *xwgt, int *n, int *p, double *k, double *beta0, double *scale, 
+   int *maxit, double *tol, int *psi, int *type, double *psi2, double *psiprime)
 {
    int info = 0, iterations = 0, converged = 0;
-   double tmp;
+   double mad_const;	 
    double *wx, *wy, *work, *beta_new;
 
-   // STEP 0 allocate memory for the work arrays
-   beta_new = (double*) Calloc(*p, double);
-   wx = (double*) Calloc(*n * *p, double);
-   wy = (double*) Calloc(*n, double);
 
-   // determine optimal size of array 'work' and allocated it 
+   // STEP 0 preparations 
+   beta_new = (double*) Calloc(*p, double);
+   wx = (double*) Calloc(*n * *p, double);	// used in fitwls
+   wy = (double*) Calloc(*n, double);		// used in fitwls
+
+   // determine optimal size of array 'work' and allocat it 
    int lwork = -1; 
    fitwls(x, wx, y, wy, w, resid, beta0, n, p, wx, &lwork, &info);
    work = (double*) Calloc(lwork, double);
 
+   // preparations for GM-estimators
+   if (*type == 1) {	   // Mallows: xwgt combined with sampling weight
+      for (int i = 0; i < *n; i++)
+	 w[i] *= xwgt[i];
+      
+      // Mallows type has special normalization constant (see 'mallows.c')
+      mad_const = mallows_mad_normalization(xwgt, n);
+   }
+   if (*type == 2) {	   // Schweppe: xwgt turned into multiplicative weight 
+      for (int i = 0; i < *n; i++) {
+   	 if (fabs(xwgt[i]) < DBL_EPSILON)
+	    xwgt[i] = 0.0;	
+	 else 
+	    xwgt[i] = 1.0 / xwgt[i];
+      }
+   }
+
    // STEP 1: initialize beta by weighted least squares
    fitwls(x, wx, y, wy, w, resid, beta0, n, p, work, &lwork, &info);
    if (info > 0){
-      Rprintf("Error: design matrix is rank deficient (or nearly so)\n");
+      error("Error: the design matrix is rank deficient (or nearly so)\n");
       *maxit = 0; 
       return;
    }
 
-   // STEP 2: initialize scale estimate by weighted MAD
+   // STEP 2: initialize scale by weighted MAD (ignore that Mallows is special)
    *scale = wmad(resid, w, *n, 1.4826);
+   if (*scale < DBL_EPSILON) {
+      error("Error: the estimate of scale is zero (or nearly so)\n");
+      *maxit = 0;
+      return;
+   }
 
    // STEP 3: irls updating
    while (!converged && ++iterations < *maxit) {
       // compute irwls weights 
       Memcpy(robwgt, w, *n);
-      robweight(resid, robwgt, k, scale, n, psi);
+      robweight(resid, robwgt, xwgt, k, scale, n, psi, type);
 
       // update beta and residuals
       fitwls(x, wx, y, wy, robwgt, resid, beta_new, n, p, work, &lwork, &info);
+
       // update scale
-      *scale = wmad(resid, w, *n, 1.4826); 
+      if (*type == 1) {				      // Mallows
+	 for (int i = 0; i < *n; i++)
+	    resid[i] *= sqrt(xwgt[i]);
+	 *scale = wmad(resid, w, *n, mad_const); 
+      } else					      // otherwise
+	 *scale = wmad(resid, w, *n, 1.4826); 
 
       // check for convergence
       converged = (euclidean_norm(beta0, beta_new, *p) < *tol * *scale) ? 1: 0;
 
-      // prepare the next while 'run'     
+      // prepare the next while run 
       Memcpy(beta0, beta_new, *p); 
    }
    *maxit = (converged) ? iterations : 0;
@@ -101,10 +126,12 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
    // compute robustness weights (using MAD estimate of scale and beta) 
    for (int i = 0; i < *n; i++)
       robwgt[i] = 1.0;
-   robweight(resid, robwgt, k, scale, n, psi);
+   robweight(resid, robwgt, xwgt, k, scale, n, psi, type);
+
+//FIXME
 
    // compute 'Proposal 2' estimate of scale 
-   tmp = 0.0;
+   double tmp = 0.0;
    for (int i = 0; i < *n; i++)  
       tmp += w[i] * _POWER2(robwgt[i] * resid[i]); 
 
@@ -123,9 +150,9 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
 |*  Weighted least squares estimate			                     *|
 |*                                                                           *|
 |*    x           vectorized design matrix, array[n * p]                     *|
-|*    wx          empy copy of array x					     *|
+|*    wx          empty array[n * p]					     *|
 |*    y           response vector, array[n]                                  *|
-|*    wy          empy copy of array y					     *|
+|*    wy          empty array[n]					     *|
 |*    w           weights vector, array[n]                                   *|
 |*    resid       on return: residuals vector, array[n]                      *|
 |*    beta0       on return: coefficient vector, array[p]                    *|
@@ -134,13 +161,6 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
 |*    lwork	  size of array 'work' (if < 0, then 'dgels' determines      *|
 |*                optimal size)                                              *|
 |*    info	  on return: info on fitwls (error if != 0)		     *|
-|*                                                                           *|
-|*  DEPENDENCIES                                                             *|
-|*    dgels      LAPACK                                                      *|
-|*    dgemv      LAPACK                                                      *|
-|*                                                                           *|
-|*   NOTE: if lwork < 0, fitwls determines the optimal size of array 'work'  *|
-|* 	   and returns it (lwork)	                                     *|
 \*****************************************************************************/
 static inline void fitwls(double *x, double *wx, double *y, double *wy, 
    double *w, double *resid, double *beta0, int *n, int *p, double *work, 
@@ -170,23 +190,23 @@ static inline void fitwls(double *x, double *wx, double *y, double *wy,
 
       // compute the (weighted) least squares estimate (LAPACK::dgels),
       // solves minimize |B - A*X| for X (using QR factorization)
-      F77_CALL(dgels)("N",	// TRANS 
-	 n,		// M, dimension
-	 p,		// N, dimension
-	 &int_1,	// NRHS, no. of. columns of array B
-	 wx,		// on entry: A, array[M, N]; on return: QR factor
-	 n,		// LDA, dimension
-	 wy,		// on entry: B, array[LDB, NRHS], on return: least 
-			// squares coefficients (rows 1:N) 
-	 n,		// LDB, dimension
-	 work,		// WORK, array[LWORK]
-	 lwork,		// LWORK, dimension
-	 &info_dgels);	// INFO
+      F77_CALL(dgels)("N", // TRANS 
+	 n,		   // M, dimension
+	 p,		   // N, dimension
+	 &int_1,	   // NRHS, no. of. columns of array B
+	 wx,		   // on entry: A, array[M, N]; on return: QR factor
+	 n,		   // LDA, dimension
+	 wy,		   // on entry: B, array[LDB, NRHS], on return: least 
+			   // squares coefficients (rows 1:N) 
+	 n,		   // LDB, dimension
+	 work,		   // WORK, array[LWORK]
+	 lwork,		   // LWORK, dimension
+	 &info_dgels);	   // INFO
 
       // dgels is not well suited as a rank-revealing procedure; i.e., INFO < 0
       // iff a diagonal element of the R matrix is exactly 0. This is not
       // helpful; hence, we check the diagonal elements of R separately and 
-      // issue and error flag if abs(R_i) < treshold, i \in p. 
+      // issue and error flag if any(abs(diag(R))) is close to zero  
       for (int i = 0; i < *p; i++) {
 	 if (fabs(wx[(*n + 1) * i]) < sqrt(DBL_EPSILON)) {
 	    *info = 1;
@@ -217,30 +237,37 @@ static inline void fitwls(double *x, double *wx, double *y, double *wy,
 /*****************************************************************************\
 |*  psi functions (in fact, wgt-functions)				     *|
 \*****************************************************************************/
-static inline void robweight(double *resid, double *u, double *k, double *scale, 
-   int *n, int *type)
+static inline void robweight(double *resid, double *robwgt, double *xwgt, 
+   double *k, double *scale, int *n, int *psi, int *type)
 {
-   double z;
-   switch (*type) {
-      case 0: // Huber weight
-	 for (int i = 0; i < *n; i++) {
-	    z = fabs(resid[i] / *scale);
-	    u[i] *= (z >= *k ? *k / z : 1.0);
-	 }
-	 break;
-      case 1: // asymmetric Huber weight
-	 for (int i = 0; i < *n; i++) {
-	    z = resid[i] / *scale;
-	    u[i] *= (fabs(z) >= *k ? *k / z : 1.0);
-	 }
-	 break;
-      case 2: // Tukey biweight
-      for (int i = 0; i < *n; i++) {
-	 z = resid[i] / *scale;
-	 u[i] *= (fabs(z) >= *k ? 0.0 : _POWER2( 1.0 - _POWER2(z / *k)));
-      }
-      break;
+   // pre-treatment for Schweppe type GM
+   if (*type == 2) {   
+      for (int i = 0; i < *n; i++) 
+	 resid[i] *= xwgt[i];	       // note: xwgt = 1 / xwgt (in rwlslm)
    }
+
+   // M- and GM-estimators
+   double z; 
+   switch (*psi) { 
+      case 0: // Huber weight 
+	 for (int i = 0; i < *n; i++) { 
+	    z = fabs(resid[i] / *scale); 
+	    robwgt[i] *= z >= *k ? *k / z : 1.0; 
+	 } 
+	 break; 
+      case 1: // asymmetric Huber weight 
+	 for (int i = 0; i < *n; i++) { 
+	    z = resid[i] / *scale; 
+	    robwgt[i] *= fabs(z) >= *k ? *k / z : 1.0; 
+	 } 
+	 break; 
+      case 2: // Tukey biweight 
+	 for (int i = 0; i < *n; i++) {
+	    z = resid[i] / *scale; 
+	    robwgt[i] *= fabs(z) >= *k ? 0.0 : _POWER2( 1.0 - _POWER2(z / *k)); 
+	 } 
+	 break; 
+   } 
 }
 
 /*****************************************************************************\
@@ -252,9 +279,6 @@ static inline void robweight(double *resid, double *u, double *k, double *scale,
 |*    hi	  upper bound [0, 1] s.t. lo < hi			     *|
 |*    mean	  on return: weighted trimmed mean			     *|
 |*    n		  dimension						     *|
-|*                                                                           *|
-|*  DEPENDENCIES							     *|
-|*    wquantile		                                                     *|
 \*****************************************************************************/
 void wtrimmedmean(double *x, double *w, double *lo, double *hi, double *mean, 
    int *n)
@@ -273,11 +297,11 @@ void wtrimmedmean(double *x, double *w, double *lo, double *hi, double *mean,
       }
    }
 
-   if (sum_w > 0.0) 
+   if (sum_w > DBL_EPSILON) 
       *mean = sum_x / sum_w; 
    else {
       *mean = 0.0;
-      Rprintf("Trimmed mean: Division by zero\n");
+      error("Error: trimmed mean: division by zero\n");
    }
 }
 
@@ -290,9 +314,6 @@ void wtrimmedmean(double *x, double *w, double *lo, double *hi, double *mean,
 |*    hi	  upper bound [0, 1] s.t. lo < hi			     *|
 |*    mean	  on return: weighted trimmed mean			     *|
 |*    n		  dimension						     *|
-|*                                                                           *|
-|*  DEPENDENCIES							     *|
-|*    wquantile		                                                     *|
 \*****************************************************************************/
 void wwinsorizedmean(double *x, double *w, double *lo, double *hi, 
    double *mean, int *n)
@@ -328,9 +349,6 @@ void wwinsorizedmean(double *x, double *w, double *lo, double *hi,
 |*    mean	  on return: weighted trimmed mean			     *|
 |*    n		  dimension						     *|
 |*    prob	  on return: estimated probability			     *|
-|*                                                                           *|
-|*  DEPENDENCIES							     *|
-|*    wselect0		                                                     *|
 \*****************************************************************************/
 void wkwinsorizedmean(double *x, double *w, int *k, double *mean, 
    int *n, double *prob)
@@ -375,9 +393,6 @@ void wkwinsorizedmean(double *x, double *w, int *k, double *mean,
 |*	       effective number of iterations				     *|
 |*    tol      numerical convergence tolerance for iterative refinement	     *|
 |*	       iterations						     *|
-|*									     *|
-|* DEPENDENCIES								     *|
-|*    wquantile	  							     *|
 \*****************************************************************************/
 void huberm(double *x, double *w, double *robwgt, double *k, double *loc, 
    double *scale, int *n, int *maxit, const double *tol)
@@ -406,8 +421,8 @@ void huberm(double *x, double *w, double *robwgt, double *k, double *loc,
       wquantile(x, w, n, &p75, &x75); 
       scale0 = (x75 - x25) / 1.349;
  
-      // stop if IQR is zero or negative
-      if (scale0 <= 0.0) 
+      // stop if IQR is zero 
+      if (scale0 < DBL_EPSILON) 
 	 *loc = x[1];
       else {
 	 // compute the weight total
@@ -439,7 +454,7 @@ void huberm(double *x, double *w, double *robwgt, double *k, double *loc,
 
 	    // termination rule
 	    if (fabs(*loc - loc0) < *tol * scale0 &&	
-	       fabs(*scale / scale0 - 1) < *tol) {
+	       fabs(*scale / scale0 - 1.0) < *tol) {
 	       break;
 	    } else {
 	       loc0 = *loc;
@@ -467,7 +482,8 @@ static inline double kappa_huber(const double k)
    double pdf_k, cdf_k; 
    if (k < 10.0) {
       pdf_k = exp(-_POWER2(k) / 2.0) / 2.5066282746;
-      /*lower tail of cdf; i.e., 1 - Phi(.)*/
+
+      // lower tail of cdf; i.e., 1 - Phi(.)
       cdf_k = 0.5 - 0.5 * erf(k / 1.4142135623);
       return 1.0 - 2.0 * (k * pdf_k + (1.0 - k * k) * cdf_k);
    } else 
@@ -478,13 +494,13 @@ static inline double kappa_huber(const double k)
 |*  euclidean norm							     *|
 \*****************************************************************************/
 static inline double euclidean_norm(const double *x, const double *y,
-   const int n)
+   const int p)
 {
    double s = 0.0;
-   for (int i = 0; i < n; i++) 
+   for (int i = 0; i < p; i++) 
       s += _POWER2(x[i] - y[i]);
 
-   return(sqrt(s));
+   return sqrt(s);
 }
 
 /*****************************************************************************\
@@ -507,9 +523,8 @@ static inline double wmad(double *x, double *w, int n, double constant)
    wquantile(absdev, w, &n, &prob, &mad); 
 
    Free(absdev);
-   return(constant * mad);
+   return constant * mad;
 }
-
 
 #undef _WGT_HUBER
 #undef _POWER2

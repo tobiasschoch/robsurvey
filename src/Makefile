@@ -7,8 +7,9 @@ LAPACK_LIBS	= C:/"Program Files"/R/R-3.5.1/bin/x64/Rlapack.dll
 DLL_R		= C:/"Program Files"/R/R-3.5.1/bin/x64/R.dll
 
 # link
-robsurvey: robsurvey.o wquantile.o 
-	$(CC) -shared -o $@.dll $@.o $(BLAS_LIBS) $(LAPACK_LIBS) $(DLL_R) wquantile.o
+robsurvey: robsurvey.o wquantile.o mallows.o zeroin.o 
+	$(CC) -shared -o $@.dll $@.o $(BLAS_LIBS) $(LAPACK_LIBS) $(DLL_R) \
+ wquantile.o mallows.o zeroin.o
 
 # compile
 robsurvey.o: robsurvey.c 
@@ -18,11 +19,15 @@ robsurvey.o: robsurvey.c
 wquantile.o: wquantile.c 
 	$(CC) -Wall -I $(R_C_HEADER) -c $*.c $(CFLAGS) 
 
+# compile
+mallows.o: mallows.c 
+	$(CC) -Wall -I $(R_C_HEADER) -c $*.c $(CFLAGS) 
+
+# compile
+zeroin.o: zeroin.c 
+	$(CC) -Wall -I $(R_C_HEADER) -c $*.c $(CFLAGS) 
+
 # housekeeping (using make clean)
 .PHONY: clean
 clean: 
-	rm robsurvey.o wquantile.o
-
-
-
-
+	rm robsurvey.o wquantile.o zeroin.o 

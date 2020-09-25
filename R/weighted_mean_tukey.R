@@ -1,6 +1,6 @@
-#' Weighted Huber mean and total (bare-bone functions)  
+#' Weighted Tukey biweight mean and total (bare-bone functions)  
 #'
-#' Weighted Huber mean and total (bare-bone functions with limited functionality; see \code{\link{svymean_huber}} and \code{\link{svytotal_huber}} for more capable methods)
+#' Weighted Tukey biweight mean and total (bare-bone functions with limited functionality; see \code{\link{svymean_tukey}} and \code{\link{svytotal_tukey}} for more capable methods)
 #'
 #' \describe{
 #'    \item{Characteristic.}{Population mean or total. Let \eqn{\mu} denote the estimated population mean; then, the estimated total is given by \eqn{N \mu} with \eqn{N =\sum w_i}, where summation is over all observations in the sample.}
@@ -14,11 +14,11 @@
 #'    }
 #'    \item{Variance estimation.}{See the related but more capable functions: 
 #'    \itemize{
-#'	 \item \code{\link{svymean_huber}}, 
-#'	 \item \code{\link{svytotal_huber}}.
+#'	 \item \code{\link{svymean_tukey}}, 
+#'	 \item \code{\link{svytotal_tukey}}.
 #'	 } 
 #'    }
-#'    \item{Psi-function.}{By default, the \code{Huber} psi-function is used in the specification of the M-estimator. An asymmetric version of the Huber psi-function can be used by calling the functions with the additional argument \code{psi = "asymHuber"}.}
+#'    \item{Psi-function.}{Tukey biweight psi-function with tuning parameter \code{k}}
 #' }
 #'
 #' @section Failure of convergence: 
@@ -50,24 +50,24 @@
 #' data(workplace) 
 #'
 #' # Robust Horvitz-Thompson M-estimator of the population total 
-#' weighted_total_huber(workplace$employment, workplace$weight, k = 9, 
+#' weighted_total_tukey(workplace$employment, workplace$weight, k = 9, 
 #'                      type = "rht")
 #' 
 #' # Robust weighted M-estimator of the population mean 
-#' weighted_mean_huber(workplace$employment, workplace$weight, k = 12, 
+#' weighted_mean_tukey(workplace$employment, workplace$weight, k = 12, 
 #'                     type = "rwm")
-#' @seealso \code{\link{weighted_mean_tukey}} and \code{\link{weighted_total_tukey}}
+#' @seealso \code{\link{weighted_mean_huber}} and \code{\link{weighted_total_huber}}
 #' @references Hulliger, B. (1995). Outlier Robust Horvitz-Thompson Estimators, \emph{Surv. Methodol.} 21, pp. 79-87.
 #' @export 
-weighted_mean_huber <- function(x, w, k = 1.5, type = "rwm", info = FALSE,
+weighted_mean_tukey <- function(x, w, k = 1.5, type = "rwm", info = FALSE,
    na.rm = FALSE, ...)
 {
    dat <- .check(x, w, na.rm); if (is.null(dat)) return(NA)
    if (type == "rwm"){
-      res <- robsvyreg(rep(1, dat$n), dat$x, dat$w, k, 0, 0, 0, NULL, NULL, 
+      res <- robsvyreg(rep(1, dat$n), dat$x, dat$w, k, 2, 0, 0, NULL, NULL, 
 	 na.rm)
    }else if (type == "rht"){
-      res <- robsvyreg(mean(dat$w) / dat$w, dat$x, dat$w, k, 0, 0, 0, NULL, x, 
+      res <- robsvyreg(mean(dat$w) / dat$w, dat$x, dat$w, k, 2, 0, 0, NULL, x, 
 	 na.rm)
    }else{
       stop(paste0("Method '", type, "' does not exist\n"), call. = FALSE)
@@ -77,7 +77,7 @@ weighted_mean_huber <- function(x, w, k = 1.5, type = "rwm", info = FALSE,
       res$model[c("n", "p", "yname", "intercept")] <- NULL 
       if (type == "rwm") res$model$x <- NULL
       res$characteristic <- "mean"
-      res$estimator = paste0("Huber M-estimator (type = ", type, ")")
+      res$estimator = paste0("Tukey biweight M-estimator (type = ", type, ")")
       res$robust[c("Epsi2", "Epsiprime")] <- NULL
       res$call <- match.call()
       return(res)
@@ -86,12 +86,12 @@ weighted_mean_huber <- function(x, w, k = 1.5, type = "rwm", info = FALSE,
    }
 }
 
-#' @rdname weighted_mean_huber
+#' @rdname weighted_mean_tukey
 #' @export 
-weighted_total_huber <- function(x, w, k = 1.5, type = "rwm", info = FALSE,
+weighted_total_tukey <- function(x, w, k = 1.5, type = "rwm", info = FALSE,
    na.rm = FALSE, ...)
 {
-   res <- weighted_mean_huber(x, w, k, type, info, na.rm, ...)
+   res <- weighted_mean_tukey(x, w, k, type, info, na.rm, ...)
    if (length(res) == 1){
       res <- res * sum(w)
    }else{

@@ -1,6 +1,10 @@
 setwd("C:/My/code/robsurvey/src")
 dyn.load("robsurvey.dll")
 
+x <- rep(1, 10)
+tmp <- .C("test", x = as.double(x), y = as.integer(length(x))) 
+
+
 huber_wgt <- function(x, k) pmin.int(1, k / abs(x))
 huber_psi <- function(x, k) pmin.int(k, pmax.int(-k, x))
 huber_psi_prime <- function(x, k) abs(x) <= k

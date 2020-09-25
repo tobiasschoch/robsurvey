@@ -347,6 +347,32 @@ We define the robustness weights ($i=1, \ldots, n$)
 \noindent and $\kappa$ is a correction term which ensures that $\widehat{\sigma}$ is a Fisher consistent estimator of $\sigma$ at the Gaussian core model; i.e., $\kappa = \mathbbm{E}\big[\psi_k^2(U)\big]$ where $U \sim N(0,1)$. Note that we define the robustness weights in (\ref{eq:regressionscale1}) in terms of the (weighted) MAD-based estimate of scale, $\widehat{s}$, and the estimated residuals. The estimate of scale $\widehat{\sigma}$ then derives from this. The estimate defined in (\ref{eq:regressionscale2}) does not account for the incurred loss of degrees of freedom; this will be treated later. 
 
 
+%------------------------------------------------------------------------------
+\chapter{GM estimators}
+Let $r_i(\bm \theta) = y_i - \bm x_i^T \bm \theta$; $w_i$ is the sampling weight; $h_i$ is the weight in the design space. The class of regression $GM$-estimators of $\bm \theta$ is \citep[Chap. 6.3a][]{hampeletal1996}
+\begin{equation}
+   \sum_{i \in s} w_i \eta \left(\frac{r_i(\bm \theta)}{\sigma \sqrt{v_i}}, \bm x_i\right)  \frac{\bm x_i}{\sqrt{v_i}} = \bm 0
+\end{equation}
+\noindent where 
+\begin{equation*}
+   \eta^{M}(a,\bm b) = \psi(a) \cdot h(\bm b) \qquad \text{or} \qquad \eta^{S}(a,\bm b) =   \psi\left(\frac{a}{h(\bm b)}\right), 
+\end{equation*}
+\noindent and $h:\R^p \rightarrow \R_+$ is a weight function.
+
+
+
+Let $\bm \theta^{t}$ (and $\sigma^{t}$) denote the trial value at the $t$-th iteration; and updated value, $\bm \theta^{t+1}$, is the root of the weighted LS estimating equation, 
+\begin{equation}
+   \sum_{i \in s} \overline{\omega}_i \big( \bm \theta^t\big) r_i\big(\bm \theta^{t+1}\big) \bm x_i = \bm 0, 
+\end{equation}
+\noindent where $\overline{\omega}_i$ is a placeholder for the Mallows and Schweppe weights, respectively, $\overline{\omega}_i^M$ and $\overline{\omega}_i^S$ being defined as  
+\begin{equation}
+   \overline{\omega}_i^M = \frac{w_i h_i u_i^M}{v_i} \qquad \text{and} \qquad  \overline{\omega}_i^S = \frac{w_i u_i^S}{v_i} 
+\end{equation}
+\noindent where (supressing the dependency of $u_i^M$, $u_i^S$, and $z_i$ on $\bm \theta$ and $\sigma$) 
+\begin{equation}
+   u_i^M = \frac{\psi(z_i)}{z_i}, \qquad  u_i^S = \frac{\psi(z_i/h_i)}{z_i/h_i}, \quad \text{and} \quad z_i = \frac{r_i(\bm \theta)}{\sigma \sqrt{v_i}}.
+\end{equation}
 
 
 %------------------------------------------------------------------------------
