@@ -1,15 +1,17 @@
 # some sanity checks
 .check <- function(x, w, na.rm)
 {
-   if (is.factor(x) || is.factor(w) || is.data.frame(x)){
+   if (is.factor(x) || is.factor(w) || is.data.frame(x))
       stop("Arguments data and weights must be numeric vectors\n")
-   }
+
    n <- length(x); nw <- length(w)
-   if (nw != n) stop("Data vector and weights are not of the same dimension\n", 
-      call. = FALSE)
+   if (nw != n) 
+      stop("Data vector and weights are not of the same dimension\n", 
+	 call. = FALSE)
    if (n == 0){
       return(NA)
    }
+
    # check for missing values
    cc <- stats::complete.cases(x, w)
    if (sum(cc) != n) {
@@ -20,39 +22,107 @@
       }
    }
    n <- length(x) 
+
    # check if data vector and weights are finite
    if (sum(is.finite(c(x, w))) != 2 * n) {
       warning("Some observations are not finite\n", call. = FALSE, 
 	 immediate. = TRUE)
       return(NULL)      
    }
+
    list(x = x, w = w, n = n)
 }
 
-.checkformula <- function(x, design)
+# check and extract data from survey.design object
+.checkreg <- function(formula, design, var = NULL, na.rm = FALSE)
 {
-   if (class(x) == "formula"){
-      mf <- stats::model.frame(x, design$variables, na.action = stats::na.pass)
-      n <- nrow(mf)
-      if (ncol(mf) > 1){
-	 stop("Argument 'y' must be a formula of one single variable", 
+   if (!inherits(formula, "formula"))
+      stop("Argument '", formula, "' must be a formula\n", call. = FALSE)
+  
+   # heteroscedasticity ('var' is added to the formula, and dropped later) 
+   if (!is.null(var)){
+      if (inherits(var, "formula")) {
+	 var_variables <- all.vars(var)
+	 if (length(var_variables) > 1)
+	    stop("Argument 'var' must contain only one variable\n", 
+	       call. = FALSE)
+	 var <- var_variables[1]      
+      } else if (!is.character(var))
+	 stop("Argument 'var' is not properly specified\n")	 
+      f0 <- all.vars(formula)
+      formula <- stats::reformulate(c(f0[2:length(f0)], var), f0[1])
+   } 
+
+   # extract the variables 
+   mf <- stats::model.frame(formula, design$variables, na.action = 
+      stats::na.pass)
+   mt <- stats::terms(mf)
+   response <- attr(mt, "response")
+   if (response == 0) 
+      stop("The LHS of formula is not defined\n", call. = FALSE)
+   yname <- names(mf)[response]
+   y <- stats::model.response(mf) 
+   x <- stats::model.matrix(mt, mf)
+   w <- as.numeric(1 / design$prob)
+
+   # NA treatment
+   cc <- stats::complete.cases(y, x, w) 
+   if (sum(cc) != length(y)) {
+      if (na.rm) { 
+	 x <- x[cc, ]
+	 y <- y[cc]
+	 w <- w[cc] 
+      } else 
+	 stop("Data must not contain missing values; see argument 'na.rm'\n", 
 	    call. = FALSE)
-      }
-      xname <- names(mf)
-      xdat <- mf[[1]]
-   }else{
-      if (is.character(x)){
-	 xname <- x
-	 xdat <- design$variables[, x]
-	 n <- length(xdat)
-	 if (any(is.na(xdat))) stop(paste0("Variable '", xname, 
-	    "' must not contain NA's\n"), call. = FALSE)
-      }else{
-	 stop("svymean_winsorized is not defined for object of class: ", 
-	    class(x), "\n", call. = FALSE)
-      }
+   } 
+   n <- nrow(x); p <- ncol(x)
+
+   # check if any element is not finite
+   if (sum(is.finite(c(x, y, w))) != (2 + p) * n) 
+      stop("Some observations are not finite\n", call. = FALSE)
+
+   # extract 'var' from the design matrix 
+   if (!is.null(var)) {
+      v <- as.numeric(x[, p]) 
+      x <- x[, 1:(p - 1)] 
+ 
+      if (any(v <= 0))
+	 stop("Some of the variances (see argument 'var') are <= 0\n", 
+	    call. = FALSE)
+   } else 
+      v <- NULL
+
+   list(x = x, y = as.numeric(y), yname = yname, var = v, w = w, intercept = 
+      attr(mt, "intercept"))   
+}
+
+# check and extract data from survey.design object
+.checkformula <- function(f, design)
+{
+   if (inherits(f, "formula")) {
+      mf <- stats::model.frame(f, design$variables, na.action = stats::na.pass)
+      mt <- stats::terms(mf)
+      if (attr(mt, "response") != 0)
+	 stop("The LHS of the formula must not be defined\n", call. = FALSE) 
+      yname <- names(mf)[1] 
+      if (ncol(mf) > 1) 
+	 warning("No. of variables > 1; hence, only variable '", yname, 
+	    "' is considered\n", call. = FALSE)
+      y <- mf[[1]] 
+      x <- NULL
+   } else {				     
+      if (is.character(f[1]) && length(f) == 1){ 
+	 if (f %in% names(design$variables)) {
+	    y <- design$variables[, f]
+	    x <- NULL
+	    yname <- f
+	 } else 
+	    stop("Variable '", f,"' does not exist\n", call. = FALSE)
+      } else
+	 stop("Type of argument '", f, "' is not supported\n", call. = FALSE)
    }
-   list(xname = xname, x = xdat, w = as.numeric(1 / design$prob))   
+   list(yname = yname, y = as.numeric(y), w = as.numeric(1 / design$prob))   
 }
 
 # influence function winsorized mean

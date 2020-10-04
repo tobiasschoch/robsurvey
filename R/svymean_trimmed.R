@@ -6,7 +6,7 @@
 #'    \item{Characteristic.}{Population mean or total. Let \eqn{\mu} denote the estimated trimmed population mean; then, the estimated trimmed total is given by \eqn{N \mu} with \eqn{N =\sum w_i}, where summation is over all observations in the sample.}
 #'    \item{Trimming.}{The methods trims the \code{LB}\eqn{~\cdot 100\%} percentage of the smallest observations and the (1 - \code{UB})\eqn{~\cdot 100\%} percentage of the largest observations from the data.} 
 #'    \item{Variance estimation.}{Taylor linearization.}
-#'    \item{Utility functions.}{\code{\link[=svystat.rob]{summary}}, \code{\link[=svystat.rob]{coef}}, \code{\link[=svystat.rob]{SE}}, \code{\link[=svystat.rob]{vcov}}, \code{\link[=svystat.rob]{residuals}}, \code{\link[=svystat.rob]{fitted}}, and \code{\link[=svystat.rob]{robweights}}.}
+#'    \item{Utility functions.}{\code{\link[=svystat_rob]{summary}}, \code{\link[=svystat_rob]{coef}}, \code{\link[=svystat_rob]{SE}}, \code{\link[=svystat_rob]{vcov}}, \code{\link[=svystat_rob]{residuals}}, \code{\link[=svystat_rob]{fitted}}, and \code{\link[=svystat_rob]{robweights}}.}
 #'    \item{Bare-bone functions.}{See \code{\link{weighted_mean_trimmed}} and \code{\link{weighted_total_trimmed}}.}
 #' } 
 #'
@@ -15,7 +15,7 @@
 #' @param LB \code{[double]} lower bound of trimming, such that \eqn{0 \leq} \code{LB} \eqn{<} \code{UB} \eqn{\leq 1}.
 #' @param UB \code{[double]} upper bound of trimming, such that \eqn{0 \leq} \code{LB} \eqn{<} \code{UB} \eqn{\leq 1}.
 #' @param na.rm \code{[logical]} indicating whether \code{NA} values should be removed before the computation proceeds (default: \code{FALSE}). 
-#' @return object of class \code{\link{svystat.rob}} 
+#' @return object of class \code{\link{svystat_rob}} 
 #'
 #' @examples
 #' data(workplace) 
@@ -35,17 +35,17 @@
 svymean_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE)
 {
    dat <- .checkformula(x, design)
-   res <- weighted_mean_trimmed(dat$x, dat$w, LB, UB, info = TRUE, na.rm)
+   res <- weighted_mean_trimmed(dat$y, dat$w, LB, UB, info = TRUE, na.rm)
    # influence function 
-   infl <- .infl_trimmed(dat$x, dat$w, LB, UB, res$estimate)
+   infl <- .infl_trimmed(dat$y, dat$w, LB, UB, res$estimate)
    # variance 
    infl <- infl * dat$w / sum(dat$w) 
    res$variance <- survey::svyrecvar(infl, design$cluster, design$strata, 
         design$fpc, postStrata = design$postStrata)
-   names(res$estimate) <- dat$xname
+   names(res$estimate) <- dat$yname
    res$call <- match.call()
    res$design <- design
-   class(res) <- "svystat.rob"
+   class(res) <- "svystat_rob"
    res
 }
 

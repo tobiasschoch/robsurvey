@@ -6,7 +6,7 @@
 #'    \item{Overview.}{}
 #'    \item{Methods.}{\code{type = "rht"} anad \code{type = "rwm"}}
 #'    \item{Variance estimation.}{Taylor linearization (residual variance estimator).}
-#'    \item{Utility functions.}{\code{\link[=svystat.rob]{summary}}, \code{\link[=svystat.rob]{coef}}, \code{\link[=svystat.rob]{SE}}, \code{\link[=svystat.rob]{vcov}}, \code{\link[=svystat.rob]{residuals}}, \code{\link[=svystat.rob]{fitted}}, and \code{\link[=svystat.rob]{robweights}}.}
+#'    \item{Utility functions.}{\code{\link[=svystat_rob]{summary}}, \code{\link[=svystat_rob]{coef}}, \code{\link[=svystat_rob]{SE}}, \code{\link[=svystat_rob]{vcov}}, \code{\link[=svystat_rob]{residuals}}, \code{\link[=svystat_rob]{fitted}}, and \code{\link[=svystat_rob]{robweights}}.}
 #'    \item{Bare-bone functions.}{See \code{\link{weighted_mean_tukey}} and \code{\link{weighted_total_tukey}}.}
 #' } 
 #'
@@ -19,7 +19,7 @@
 #' @param type \code{[character]} type of method: \code{"rwm"} or \code{"rht"}. 
 #' @param na.rm \code{[logical]} indicating whether \code{NA} values should be removed before the computation proceeds (default: \code{FALSE}). 
 #' @param ... additional arguments passed to the method (e.g., \code{maxit}: maxit number of iterations, etc.). 
-#' @return object of class \code{\link{svystat.rob}} 
+#' @return object of class \code{\link{svystat_rob}} 
 #' @seealso \code{\link{svymean_huber}} and \code{\link{svytotal_huber}}
 #' @references Hulliger, B. (1995). Outlier Robust Horvitz-Thompson Estimators, \emph{Surv. Methodol.} 21, pp. 79-87.
 #' @examples
@@ -39,7 +39,7 @@
 svymean_tukey <- function(x, design, k = 1.5, type = "rwm", na.rm = FALSE, ...)
 {
    dat <- .checkformula(x, design)
-   res <- weighted_mean_tukey(dat$x, dat$w, k, type, info = TRUE, na.rm, ...)
+   res <- weighted_mean_tukey(dat$y, dat$w, k, type, info = TRUE, na.rm, ...)
    # modify residuals for type 'rht' (only for variance estimation)
    if (type == "rht"){
       r <- sqrt(res$model$var) * res$model$y - res$estimate 
@@ -52,10 +52,10 @@ svymean_tukey <- function(x, design, k = 1.5, type = "rwm", na.rm = FALSE, ...)
    infl <- res$robust$robweights * r * dat$w / sum(dat$w) 
    res$variance <- survey::svyrecvar(infl, design$cluster, design$strata, 
         design$fpc, postStrata = design$postStrata)
-   names(res$estimate) <- dat$xname
+   names(res$estimate) <- dat$yname
    res$call <- match.call()
    res$design <- design
-   class(res) <- "svystat.rob"
+   class(res) <- "svystat_rob"
    res
 }
 

@@ -85,7 +85,7 @@ src_files_c <- list.files(paste0(PKG_SOURCE, "/src"), pattern = "\\.c$",
 src_files_h <- list.files(paste0(PKG_SOURCE, "/src"), pattern = "\\.h$", 
    full.names = TRUE)
 # remove C files that are not needed
-src_files_c <- src_files_c[-grep("sctutils.c", src_files_c)]
+# src_files_c <- src_files_c[-grep("sctutils.c", src_files_c)]
 file.copy(c(src_files_c, src_files_h), src_folder, overwrite = TRUE)
 # copy file 'Makevars'
 file.copy(paste0(PKG_SOURCE, "/src/Makevars"), src_folder, overwrite = TRUE)
@@ -125,7 +125,7 @@ file.remove(dll_files)
 
 #-------------------------------------------------------------------------------
 # install and build
-# system("R CMD INSTALL --build robsurvey")
+system("R CMD INSTALL --build robsurvey")
 
 #-------------------------------------------------------------------------------
 # only build 

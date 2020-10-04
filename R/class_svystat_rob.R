@@ -1,6 +1,6 @@
 #' Utility functions 
 #'
-#' Methods and utility functions for objects of class \code{svystat.rob} 
+#' Methods and utility functions for objects of class \code{svystat_rob} 
 #'
 #' Utility functions:
 #' \itemize{
@@ -13,18 +13,18 @@
 #'    \item \code{fitted} extracts the fitted values
 #' }
 #'
-#' @param object object of class \code{svystat.rob}.
-#' @param x object of class \code{svystat.rob}.
+#' @param object object of class \code{svystat_rob}.
+#' @param x object of class \code{svystat_rob}.
 #' @param digits \code{[integer]} minimal number of significant digits.
 #' @param ... additional arguments passed to the method. 
-#' @name class_svystat.rob 
-#' @aliases svystat.rob 
+#' @name class_svystat_rob 
+#' @aliases svystat_rob 
 
 NULL
 
-#' @rdname class_svystat.rob 
-#' @export 
-summary.svystat.rob <- function(object, digits = max(3L, getOption("digits") - 
+#' @rdname class_svystat_rob 
+#' @method summary svystat_rob
+summary.svystat_rob <- function(object, digits = max(3L, getOption("digits") - 
    3L), ...)
 {
    cat(paste0(object$estimator, " of the sample ",
@@ -58,23 +58,23 @@ summary.svystat.rob <- function(object, digits = max(3L, getOption("digits") -
    #print(object$design)
 }
 
-#' @rdname class_svystat.rob 
-#' @export 
-coef.svystat.rob <- function(object, ...)
+#' @rdname class_svystat_rob 
+#' @method coef svystat_rob
+coef.svystat_rob <- function(object, ...)
 {
    object$estimate
 }
 
-#' @rdname class_svystat.rob 
-#' @export 
-SE.svystat.rob <- function(object, ...)
+#' @rdname class_svystat_rob 
+#' @method SE svystat_rob
+SE.svystat_rob <- function(object, ...)
 {
    sqrt(object$variance)
 }
 
-#' @rdname class_svystat.rob 
-#' @export 
-vcov.svystat.rob <- function(object, ...)
+#' @rdname class_svystat_rob 
+#' @method vcov svystat_rob
+vcov.svystat_rob <- function(object, ...)
 {
    v <- as.matrix(object$variance)
    rownames(v) <- names(object$estimate)
@@ -82,30 +82,30 @@ vcov.svystat.rob <- function(object, ...)
    v
 }
 
-#' @rdname class_svystat.rob 
-#' @export 
-residuals.svystat.rob <- function(object, ...)
+#' @rdname class_svystat_rob 
+#' @method residual svystat_rob
+residuals.svystat_rob <- function(object, ...)
 {
    object$residuals
 }
 
-#' @rdname class_svystat.rob 
-#' @export 
-fitted.svystat.rob <- function(object, ...)
+#' @rdname class_svystat_rob 
+#' @method fitted svystat_rob
+fitted.svystat_rob <- function(object, ...)
 {
    object$model$y - object$residuals
 }
 
-#' @rdname class_svystat.rob 
+#' @rdname class_svystat_rob 
 #' @export 
 robweights <- function(object)
 {
    UseMethod("robweights", object)
 }
 
-#' @rdname class_svystat.rob 
-#' @export 
-robweights.svystat.rob <- function(object)
+#' @rdname class_svystat_rob 
+#' @method robweights svystat_rob
+robweights.svystat_rob <- function(object)
 {
    tmp <- object$robust$robweights
    if (is.null(tmp)){ 
@@ -115,9 +115,9 @@ robweights.svystat.rob <- function(object)
    }
 }
 
-#' @rdname class_svystat.rob 
-#' @export 
-print.svystat.rob <- function(x, digits = max(3L, getOption("digits") - 3L), 
+#' @rdname class_svystat_rob 
+#' @method print svystat_rob
+print.svystat_rob <- function(x, digits = max(3L, getOption("digits") - 3L), 
    ...)
 {
    conv <- TRUE

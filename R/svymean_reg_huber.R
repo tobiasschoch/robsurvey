@@ -14,10 +14,8 @@
 #' @export 
 svymean_reg_huber <- function(object, mean_auxiliary, k)
 {
-# FIXME: Do we need the S3 formalism?
    stopifnot(k > 0)
    call <- match.call()
-   call[[1]] <- substitute(svymean_reg_huber)
    # check dimensions
    if (length(mean_auxiliary) != object$model$p){
       stop("Dimension of argument 'mean_auxiliary' is not correct\n")
@@ -39,5 +37,4 @@ svymean_reg_huber <- function(object, mean_auxiliary, k)
 }
 
 
-#FIXME: total
- 
+

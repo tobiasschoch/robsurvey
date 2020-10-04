@@ -16,7 +16,7 @@ svymean_reg <- function(object, ...)
 
 #' @rdname svymean_reg 
 #' @export 
-svymean_reg.svyreg <- function(object, mean_auxiliary,...)
+svymean_reg.svyreg_rob <- function(object, mean_auxiliary, ...)
 {
    call <- match.call()
    call[[1]] <- substitute(svymean.reg)

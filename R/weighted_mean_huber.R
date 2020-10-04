@@ -27,7 +27,8 @@
 #' @param x \code{[numeric vector]} observations.
 #' @param w \code{[numeric vector]} weights (same length as vector \code{x}).
 #' @param k \code{[double]} robustness tuning constant (\eqn{0 < k \leq \infty}{0 < k <= Inf}; default: \code{k = 1.5}).
-#' @param type \code{[character]} type of method: \code{"rwm"} or \code{"rht"}; see below (default: \code{"rwm"}). 
+#' @param type \code{[character]} type of method: \code{"rwm"} or \code{"rht"}; see below (default: \code{"rwm"}).
+#' @param asym \code{[logical]} toggle for asymmetric Huber psi-function (default: \code{FALSE}). 
 #' @param info \code{[logical]} indicating whether additional information should be returned (default: \code{FALSE}). 
 #' @param na.rm \code{[logical]} indicating whether \code{NA} values should be removed before the computation proceeds (default: \code{FALSE}). 
 #' @param ... additional arguments passed to the method (e.g., \code{maxit}: maxit number of iterations, etc.). 
@@ -59,25 +60,26 @@
 #' @seealso \code{\link{weighted_mean_tukey}} and \code{\link{weighted_total_tukey}}
 #' @references Hulliger, B. (1995). Outlier Robust Horvitz-Thompson Estimators, \emph{Surv. Methodol.} 21, pp. 79-87.
 #' @export 
-weighted_mean_huber <- function(x, w, k = 1.5, type = "rwm", info = FALSE,
-   na.rm = FALSE, ...)
+weighted_mean_huber <- function(x, w, k = 1.5, type = "rwm", asym = FALSE, 
+   info = FALSE, na.rm = FALSE, ...)
 {
    dat <- .check(x, w, na.rm); if (is.null(dat)) return(NA)
+   psi <- ifelse(asym, 1, 0)
    if (type == "rwm"){
-      res <- robsvyreg(rep(1, dat$n), dat$x, dat$w, k, 0, 0, 0, NULL, NULL, 
-	 na.rm)
+      res <- robsvyreg(rep(1, dat$n), dat$x, dat$w, k, psi, 0, NULL, NULL, ...)
    }else if (type == "rht"){
-      res <- robsvyreg(mean(dat$w) / dat$w, dat$x, dat$w, k, 0, 0, 0, NULL, x, 
-	 na.rm)
+      res <- robsvyreg(mean(dat$w) / dat$w, dat$x, dat$w, k, psi, 0, NULL, x, 
+	 ...)
    }else{
       stop(paste0("Method '", type, "' does not exist\n"), call. = FALSE)
    }
    if (length(res) == 1) return(NA)
    if (info){
-      res$model[c("n", "p", "yname", "intercept")] <- NULL 
+      res$model[c("n", "p")] <- NULL 
       if (type == "rwm") res$model$x <- NULL
       res$characteristic <- "mean"
-      res$estimator = paste0("Huber M-estimator (type = ", type, ")")
+      res$estimator = paste0("Huber M-estimator (type = ", type, ifelse(asym, 
+	 "; asym. psi", ""), ")")
       res$robust[c("Epsi2", "Epsiprime")] <- NULL
       res$call <- match.call()
       return(res)
@@ -88,10 +90,10 @@ weighted_mean_huber <- function(x, w, k = 1.5, type = "rwm", info = FALSE,
 
 #' @rdname weighted_mean_huber
 #' @export 
-weighted_total_huber <- function(x, w, k = 1.5, type = "rwm", info = FALSE,
-   na.rm = FALSE, ...)
+weighted_total_huber <- function(x, w, k = 1.5, type = "rwm", asym = FALSE, 
+   info = FALSE, na.rm = FALSE, ...)
 {
-   res <- weighted_mean_huber(x, w, k, type, info, na.rm, ...)
+   res <- weighted_mean_huber(x, w, k, type, asym, info, na.rm, ...)
    if (length(res) == 1){
       res <- res * sum(w)
    }else{

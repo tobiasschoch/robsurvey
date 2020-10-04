@@ -1,6 +1,6 @@
-#' Tukey biweight robust survey regression M- and GM-estimator 
+#' Huber robust survey regression M- and GM-estimator 
 #' 
-#' Tukey biweight robust survey regression M- and GM-estimator (Mallows and Schweppe type) 
+#' Huber robust survey regression M- and GM-estimator (Mallows and Schweppe type) 
 #' 
 #' Details
 #' 
@@ -14,16 +14,14 @@
 #' @param xwgt \code{[numerical vector]} of weights in the design space (default: \code{NULL}); \code{xwgt} is only relevant if \code{type = "Mallows"} or \code{type = "Schweppe"}. 
 #' @param var \code{[numeric vector]} heteroscedastic variance (default: \code{NULL}, i.e., homoscedastic variance).
 #' @param na.rm \code{[logical]} indicating whether \code{NA} values should be removed before the computation proceeds (default: \code{FALSE}). 
-#' @param asym \code{[logical]} toggle for asymmetric Huber psi-function (default: \code{FALSE}). 
 #' @param ... additional arguments passed to the method (e.g., \code{maxit}: maxit number of iterations, etc.). 
 #' @return object of class \code{svyreg.rob} 
 #' @export 
-svyreg_huber <- function(formula, design, k, var = NULL, na.rm = FALSE, 
-   asym = FALSE, ...)
+svyreg_tukey <- function(formula, design, k, var = NULL, na.rm = FALSE, 
+   ...)
 {
    dat <- .checkreg(formula, design, var, na.rm)
-   res <- robsvyreg(dat$x, dat$y, dat$w, k, ifelse(asym, 1, 0), 0, NULL, 
-      dat$var, ...)
+   res <- robsvyreg(dat$x, dat$y, dat$w, k, 2, 0, NULL, dat$var, ...)
    res$design <- design
    res$call <- match.call()
    res$model$intercept <- dat$intercept
@@ -32,10 +30,10 @@ svyreg_huber <- function(formula, design, k, var = NULL, na.rm = FALSE,
    res
 }
 
-#' @rdname svyreg_huber 
+#' @rdname svyreg_tukey
 #' @export 
-svyreg_huberGM <- function(formula, design, k, type, xwgt, var = NULL, 
-   na.rm = FALSE, asym = FALSE, ...)
+svyreg_tukeyGM <- function(formula, design, k, type, xwgt, var = NULL, 
+   na.rm = FALSE, ...)
 {
    type_int <- switch(toupper(type), "MALLOWS" = 1, "SCHWEPPE" = 2)
    if (is.null(type_int))
@@ -50,8 +48,7 @@ svyreg_huberGM <- function(formula, design, k, type, xwgt, var = NULL,
    if (length(xwgt) != length(dat$y))
       stop("Argument 'xwgt' is not of length n\n")
 
-   res <- robsvyreg(dat$x, dat$y, dat$w, k, ifelse(asym, 1, 0), type_int, 
-      xwgt, dat$var, ...)
+   res <- robsvyreg(dat$x, dat$y, dat$w, k, 2, type_int, xwgt, dat$var, ...)
    res$design <- design
    res$call <- match.call()
    res$model$intercept <- dat$intercept

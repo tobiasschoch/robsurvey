@@ -16,7 +16,7 @@
 #'	    \item{\code{simple_var = TRUE}:}{Variance is approximated using the variance estimator of the trimmed mean/ total.}
 #'	 }
 #'    }
-#'    \item{Utility functions.}{\code{\link[=svystat.rob]{summary}}, \code{\link[=svystat.rob]{coef}}, \code{\link[=svystat.rob]{SE}}, \code{\link[=svystat.rob]{vcov}}, \code{\link[=svystat.rob]{residuals}}, \code{\link[=svystat.rob]{fitted}}, and \code{\link[=svystat.rob]{robweights}}.}
+#'    \item{Utility functions.}{\code{\link[=svystat_rob]{summary}}, \code{\link[=svystat_rob]{coef}}, \code{\link[=svystat_rob]{SE}}, \code{\link[=svystat_rob]{vcov}}, \code{\link[=svystat_rob]{residuals}}, \code{\link[=svystat_rob]{fitted}}, and \code{\link[=svystat_rob]{robweights}}.}
 #'    \item{Bare-bone functions.}{See: 
 #'	 \itemize{
 #'	    \item \code{\link{weighted_mean_winsorized}}, 
@@ -34,7 +34,7 @@
 #' @param na.rm \code{[logical]} indicating whether \code{NA} values should be removed before the computation proceeds (default: \code{FALSE}). 
 #' @param simple_var \code{[logical]} indicating whether a simplified variance estimator should be used (default: \code{FALSE}).
 #' @param k \code{[integer]} number of observations to be winsorized at the top of the distribution. 
-#' @return object of class \code{\link{svystat.rob}} 
+#' @return object of class \code{\link{svystat_rob}} 
 #' @examples
 #' data(workplace) 
 #'
@@ -55,21 +55,21 @@ svymean_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE,
    simple_var = FALSE)
 {
    dat <- .checkformula(x, design)
-   res <- weighted_mean_winsorized(dat$x, dat$w, LB, UB, info = TRUE, na.rm)
+   res <- weighted_mean_winsorized(dat$y, dat$w, LB, UB, info = TRUE, na.rm)
    # influence function 
    if (simple_var){
-      infl <- .infl_trimmed(dat$x, dat$w, LB, UB, res$estimate)
+      infl <- .infl_trimmed(dat$y, dat$w, LB, UB, res$estimate)
    }else{
-      infl <- .infl_winsorized(dat$x, dat$w, LB, UB, res$estimate)
+      infl <- .infl_winsorized(dat$y, dat$w, LB, UB, res$estimate)
    }
    # variance 
    infl <- infl * dat$w / sum(dat$w) 
    res$variance <- survey::svyrecvar(infl, design$cluster, design$strata, 
         design$fpc, postStrata = design$postStrata)
-   names(res$estimate) <- dat$xname
+   names(res$estimate) <- dat$yname
    res$call <- match.call()
    res$design <- design
-   class(res) <- "svystat.rob"
+   class(res) <- "svystat_rob"
    res
 }
 
@@ -79,22 +79,22 @@ svymean_k_winsorized <- function(x, design, k, na.rm = FALSE,
    simple_var = FALSE)
 {
    dat <- .checkformula(x, design)
-   res <- weighted_mean_k_winsorized(dat$x, dat$w, k, info = TRUE, na.rm)
+   res <- weighted_mean_k_winsorized(dat$y, dat$w, k, info = TRUE, na.rm)
    w <- res$model$w; x <- res$model$y
    # influence function 
    if (simple_var){
-      infl <- .infl_trimmed(dat$x, dat$w, 0, res$robust$UB, res$estimate)
+      infl <- .infl_trimmed(dat$y, dat$w, 0, res$robust$UB, res$estimate)
    }else{
-      infl <- .infl_winsorized(dat$x, dat$w, 0, res$robust$UB, res$estimate)
+      infl <- .infl_winsorized(dat$y, dat$w, 0, res$robust$UB, res$estimate)
    }
    # variance 
    infl <- infl * w / sum(w) 
    res$variance <- survey::svyrecvar(infl, design$cluster, design$strata, 
         design$fpc, postStrata = design$postStrata)
-   names(res$estimate) <- dat$xname
+   names(res$estimate) <- dat$yname
    res$call <- match.call()
    res$design <- design
-   class(res) <- "svystat.rob"
+   class(res) <- "svystat_rob"
    res
 }
 

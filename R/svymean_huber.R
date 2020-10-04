@@ -6,7 +6,7 @@
 #'    \item{Overview.}{}
 #'    \item{Methods.}{\code{type = "rht"} anad \code{type = "rwm"}}
 #'    \item{Variance estimation.}{Taylor linearization (residual variance estimator).}
-#'    \item{Utility functions.}{\code{\link[=svystat.rob]{summary}}, \code{\link[=svystat.rob]{coef}}, \code{\link[=svystat.rob]{SE}}, \code{\link[=svystat.rob]{vcov}}, \code{\link[=svystat.rob]{residuals}}, \code{\link[=svystat.rob]{fitted}}, and \code{\link[=svystat.rob]{robweights}}.}
+#'    \item{Utility functions.}{\code{\link[=svystat_rob]{summary}}, \code{\link[=svystat_rob]{coef}}, \code{\link[=svystat_rob]{SE}}, \code{\link[=svystat_rob]{vcov}}, \code{\link[=svystat_rob]{residuals}}, \code{\link[=svystat_rob]{fitted}}, and \code{\link[=svystat_rob]{robweights}}.}
 #'    \item{Bare-bone functions.}{See \code{\link{weighted_mean_huber}} and \code{\link{weighted_total_huber}}.}
 #' } 
 #'
@@ -17,9 +17,10 @@
 #' @param design an object of class \code{survey.design} or \code{survey.design2}.
 #' @param k \code{[double]} robustness tuning constant (\eqn{0 < k \leq \infty}{0 < k <= Inf}; default: \code{k = 1.5}). 
 #' @param type \code{[character]} type of method: \code{"rwm"} or \code{"rht"}. 
+#' @param asym \code{[logical]} toogle for asymmetric Huber psi-function (default: \code{FALSE}). 
 #' @param na.rm \code{[logical]} indicating whether \code{NA} values should be removed before the computation proceeds (default: \code{FALSE}). 
 #' @param ... additional arguments passed to the method (e.g., \code{maxit}: maxit number of iterations, etc.). 
-#' @return object of class \code{\link{svystat.rob}} 
+#' @return object of class \code{\link{svystat_rob}} 
 #' @seealso \code{\link{svymean_tukey}} and \code{\link{svytotal_tukey}}
 #' @references Hulliger, B. (1995). Outlier Robust Horvitz-Thompson Estimators, \emph{Surv. Methodol.} 21, pp. 79-87.
 #' @examples
@@ -36,10 +37,12 @@
 #' # Robust weighted M-estimator of the population mean 
 #' svymean_huber(~employment, dn, k = 12, type = "rwm")
 #' @export
-svymean_huber <- function(x, design, k = 1.5, type = "rwm", na.rm = FALSE, ...)
+svymean_huber <- function(x, design, k = 1.5, type = "rwm", asym = FALSE, 
+   na.rm = FALSE, ...)
 {
    dat <- .checkformula(x, design)
-   res <- weighted_mean_huber(dat$x, dat$w, k, type, info = TRUE, na.rm, ...)
+   res <- weighted_mean_huber(dat$y, dat$w, k, type, asym, info = TRUE, na.rm, 
+      ...)
    # modify residuals for type 'rht' (only for variance estimation)
    if (type == "rht"){
       r <- sqrt(res$model$var) * res$model$y - res$estimate 
@@ -52,18 +55,19 @@ svymean_huber <- function(x, design, k = 1.5, type = "rwm", na.rm = FALSE, ...)
    infl <- res$robust$robweights * r * dat$w / sum(dat$w) 
    res$variance <- survey::svyrecvar(infl, design$cluster, design$strata, 
         design$fpc, postStrata = design$postStrata)
-   names(res$estimate) <- dat$xname
+   names(res$estimate) <- dat$yname
    res$call <- match.call()
    res$design <- design
-   class(res) <- "svystat.rob"
+   class(res) <- "svystat_rob"
    res
 }
 
 #' @rdname svymean_huber 
 #' @export 
-svytotal_huber <- function(x, design, k = 1.5, type = "rwm", na.rm = FALSE, ...)
+svytotal_huber <- function(x, design, k = 1.5, type = "rwm", asym = FALSE, 
+   na.rm = FALSE, ...)
 {
-   res <- svymean_huber(x, design, k, type, na.rm, ...)  
+   res <- svymean_huber(x, design, k, type, asym, na.rm, ...)  
    sum_w <- sum(res$model$w) 
    res$estimate <- res$estimate * sum_w 
    res$variance <- res$variance * sum_w^2 
@@ -75,7 +79,7 @@ svytotal_huber <- function(x, design, k = 1.5, type = "rwm", na.rm = FALSE, ...)
 # #' @describeIn svymean_huber 
 # #' @export
 # fixed_downweighting <- function(object, at = 0.95){
-#    if (class(object) != "svystat.rob") stop("method not supported for class: ", 
+#    if (class(object) != "svystat_rob") stop("method not supported for class: ", 
 #       class(object), "\n") 
 #    if (object$call[[1]] == "svymean_huber" && 
 #       object$call[[1]] == "svytotal_huber"){

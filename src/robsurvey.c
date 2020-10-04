@@ -51,7 +51,7 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
    int *maxit, double *tol, int *psi, int *type, double *psi2, double *psiprime)
 {
    int info = 0, iterations = 0, converged = 0;
-   double mad_const;	 
+   double mad_const = 1.4826;	 
    double *wx, *wy, *work, *beta_new;
 
 
@@ -91,7 +91,7 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
    }
 
    // STEP 2: initialize scale by weighted MAD (ignore that Mallows is special)
-   *scale = wmad(resid, w, *n, 1.4826);
+   *scale = wmad(resid, w, *n, mad_const);
    if (*scale < DBL_EPSILON) {
       error("Error: the estimate of scale is zero (or nearly so)\n");
       *maxit = 0;
@@ -113,7 +113,7 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
 	    resid[i] *= sqrt(xwgt[i]);
 	 *scale = wmad(resid, w, *n, mad_const); 
       } else					      // otherwise
-	 *scale = wmad(resid, w, *n, 1.4826); 
+	 *scale = wmad(resid, w, *n, mad_const); 
 
       // check for convergence
       converged = (euclidean_norm(beta0, beta_new, *p) < *tol * *scale) ? 1: 0;

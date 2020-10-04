@@ -64,17 +64,16 @@ weighted_mean_tukey <- function(x, w, k = 1.5, type = "rwm", info = FALSE,
 {
    dat <- .check(x, w, na.rm); if (is.null(dat)) return(NA)
    if (type == "rwm"){
-      res <- robsvyreg(rep(1, dat$n), dat$x, dat$w, k, 2, 0, 0, NULL, NULL, 
-	 na.rm)
+      res <- robsvyreg(rep(1, dat$n), dat$x, dat$w, k, 2, 0, NULL, NULL, ...)
    }else if (type == "rht"){
-      res <- robsvyreg(mean(dat$w) / dat$w, dat$x, dat$w, k, 2, 0, 0, NULL, x, 
-	 na.rm)
+      res <- robsvyreg(mean(dat$w) / dat$w, dat$x, dat$w, k, 2, 0, NULL, x, 
+	 ...)
    }else{
       stop(paste0("Method '", type, "' does not exist\n"), call. = FALSE)
    }
    if (length(res) == 1) return(NA)
    if (info){
-      res$model[c("n", "p", "yname", "intercept")] <- NULL 
+      res$model[c("n", "p")] <- NULL 
       if (type == "rwm") res$model$x <- NULL
       res$characteristic <- "mean"
       res$estimator = paste0("Tukey biweight M-estimator (type = ", type, ")")
