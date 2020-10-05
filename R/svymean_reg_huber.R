@@ -1,17 +1,3 @@
-#' Robust regression predictor of the mean 
-#' 
-#' regression estimator of the mean
-#'
-#' Details
-#'  
-#' @section Failure of convergence: 
-#' By default, the method assumes a maximum number of \code{maxit = 100} iterations and a numerical tolerance criterion to stop the iterations of \code{tol = 1e-05}. You can run the code with specifications other than the default values by specifying the arguments \code{maxit} and/or \code{tol} in the function call; see also \code{\link{svyreg_control}}. 
-#'
-#' @param object fitted regression model (object of class \code{svyreg}). 
-#' @param mean_auxiliary \code{[numeric vector]} population means of the auxiliary variables. 
-#' @return object of class \code{svystat.rob} 
-#' @param k \code{[double]} robustness tuning constant (\eqn{0 < k \leq \infty}{0 < k <= Inf}). 
-#' @export 
 svymean_reg_huber <- function(object, mean_auxiliary, k)
 {
    stopifnot(k > 0)
@@ -34,7 +20,4 @@ svymean_reg_huber <- function(object, mean_auxiliary, k)
       estimate = est, variance = v, design = design, call = call)
    class(res) <- "svystat.rob"
    res
-}
-
-
-
+} 

@@ -1,4 +1,4 @@
-# some sanity checks
+# some sanity checks (univariate)
 .check <- function(x, w, na.rm)
 {
    if (is.factor(x) || is.factor(w) || is.data.frame(x))
@@ -33,25 +33,15 @@
    list(x = x, w = w, n = n)
 }
 
-# check and extract data from survey.design object
+# check and extract data from survey.design object (for regression)
 .checkreg <- function(formula, design, var = NULL, na.rm = FALSE)
 {
    if (!inherits(formula, "formula"))
       stop("Argument '", formula, "' must be a formula\n", call. = FALSE)
-  
-   # heteroscedasticity ('var' is added to the formula, and dropped later) 
-   if (!is.null(var)){
-      if (inherits(var, "formula")) {
-	 var_variables <- all.vars(var)
-	 if (length(var_variables) > 1)
-	    stop("Argument 'var' must contain only one variable\n", 
-	       call. = FALSE)
-	 var <- var_variables[1]      
-      } else if (!is.character(var))
-	 stop("Argument 'var' is not properly specified\n")	 
-      f0 <- all.vars(formula)
-      formula <- stats::reformulate(c(f0[2:length(f0)], var), f0[1])
-   } 
+
+   # heteroscedasticity 
+   if (!is.null(var))
+      var <- .checkformula(var, design)$y
 
    # extract the variables 
    mf <- stats::model.frame(formula, design$variables, na.action = 
@@ -66,34 +56,32 @@
    w <- as.numeric(1 / design$prob)
 
    # NA treatment
-   cc <- stats::complete.cases(y, x, w) 
+   cc <- stats::complete.cases(y, x, w, var) 
    if (sum(cc) != length(y)) {
       if (na.rm) { 
 	 x <- x[cc, ]
 	 y <- y[cc]
 	 w <- w[cc] 
+	 if (!is.null(var))
+	    var <- var[cc]
       } else 
 	 stop("Data must not contain missing values; see argument 'na.rm'\n", 
 	    call. = FALSE)
    } 
    n <- nrow(x); p <- ncol(x)
 
-   # check if any element is not finite
-   if (sum(is.finite(c(x, y, w))) != (2 + p) * n) 
+   # check if any element is not finite 
+   if (!is.null(var)) {
+      chk <- sum(is.finite(c(x, y, w, var))) != (3 + p) * n
+      if (any(var <= 0))
+	 stop("Some of the variances are <= 0\n", call. = FALSE)
+   } else 
+      chk <- sum(is.finite(c(x, y, w))) != (2 + p) * n 
+
+   if (chk) 
       stop("Some observations are not finite\n", call. = FALSE)
 
-   # extract 'var' from the design matrix 
-   if (!is.null(var)) {
-      v <- as.numeric(x[, p]) 
-      x <- x[, 1:(p - 1)] 
- 
-      if (any(v <= 0))
-	 stop("Some of the variances (see argument 'var') are <= 0\n", 
-	    call. = FALSE)
-   } else 
-      v <- NULL
-
-   list(x = x, y = as.numeric(y), yname = yname, var = v, w = w, intercept = 
+   list(x = x, y = as.numeric(y), yname = yname, var = var, w = w, intercept = 
       attr(mt, "intercept"))   
 }
 

@@ -1,21 +1,8 @@
-#' Regression predictor of the mean (generalized regression estimator) 
-#' 
-#' Regression predictor of the mean 
-#'
-#' Details
-#'  
-#' @param object fitted regression model (object of class \code{svyreg}). 
-#' @param mean_auxiliary \code{[numeric vector]} population means of the auxiliary variables. 
-#' @param ... additional arguments passed to the method. 
-#' @return object of class \code{svystat.rob} 
-#' @export 
 svymean_reg <- function(object, ...)
 {
    UseMethod("svymean_reg", object)
 }
 
-#' @rdname svymean_reg 
-#' @export 
 svymean_reg.svyreg_rob <- function(object, mean_auxiliary, ...)
 {
    call <- match.call()

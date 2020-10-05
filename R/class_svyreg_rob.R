@@ -1,30 +1,3 @@
-#' Utility functions 
-#'
-#' Methods and utility functions for objects of classs code{svyreg_rob} 
-#'
-#' Utility functions
-#' \itemize{
-#'    \item \code{summary} gives a summary of the estimation properties
-#'    \item \code{robweights} extracts the robustness weights
-#'    \item \code{coef} extracts the estimates 
-#'    \item \code{SE} extracts the (estimated) standard error
-#'    \item \code{vcov} extracts the (estimated) covariance matrix
-#'    \item \code{residuals} extracts the residuals
-#'    \item \code{fitted} extracts the fitted values
-#' }
-#'
-#' @param object, x object of class \code{svyreg_rob}.
-#' @param x object of class \code{svyreg_rob}.
-#' @param digits \code{[integer]} minimal number of significant digits.
-#' @param which indicating which plots to be drawn; if a subset of the plots is required, you can specify a subset of the numbers \code{1:5}. 
-#' @param ... additional arguments passed to the method. 
-#' @name class_svyreg_rob
-#' @aliases svyreg_rob 
-
-NULL
-
-#' @rdname class_svyreg_rob
-#' @method print svyreg_rob 
 print.svyreg_rob <- function(x, digits = max(3L, getOption("digits") - 3L), ...)
 {
    converged <- x$optim$converged 
@@ -45,8 +18,6 @@ print.svyreg_rob <- function(x, digits = max(3L, getOption("digits") - 3L), ...)
    invisible(x)
 } 
 
-#' @rdname class_svyreg_rob
-#' @method summary svyreg_rob 
 summary.svyreg_rob <- function(object, digits = max(3L, getOption("digits") 
    - 3L), ...)
 {
@@ -106,15 +77,11 @@ summary.svyreg_rob <- function(object, digits = max(3L, getOption("digits")
    cat("\n")
 }
 
-#' @rdname class_svyreg_rob 
-#' @method coef svyreg_rob
 coef.svyreg_rob <- function(object, ...)
 {
    object$estimate
 }
 
-#' @rdname class_svyreg_rob
-#' @method vcov svyreg_rob
 vcov.svyreg_rob <- function(object, ...)
 {
 #FIXME:
@@ -124,22 +91,16 @@ vcov.svyreg_rob <- function(object, ...)
    v
 }
 
-#' @rdname class_svyreg_rob
-#' @method residual svyreg_rob
 residuals.svyreg_rob <- function(object, ...)
 {
    object$residuals
 }
 
-#' @rdname class_svyreg_rob
-#' @method fitted svyreg_rob
 fitted.svyreg_rob <- function(object, ...)
 {
    object$model$y - object$residuals
 }
 
-#' @rdname class_svyreg_rob
-#' @method robweights svyreg_rob 
 robweights.svyreg_rob <- function(object)
 {
    tmp <- object$robust$robweights
@@ -151,9 +112,6 @@ robweights.svyreg_rob <- function(object)
    }
 }
 
-#' @rdname class_svyreg_rob
-#' @method plot svyreg_rob 
-#' @importFrom graphics plot 
 plot.svyreg_rob <- function (x, which = 1:5, ...) 
 {
 }

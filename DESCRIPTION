@@ -1,0 +1,40 @@
+Package: robsurvey
+Type: Package
+Title: Robust Survey Statistics Estimation
+Version: 0.2
+Authors@R: 
+   c(person(
+      given = "Beat", 
+      family = "Hulliger", 
+      email = "beat.hulliger@fhnw.ch", 
+      role = c("aut", "cph")),
+    person(
+      given ="Tobias", 
+      family = "Schoch", 
+      email = "tobias.schoch@fhnw.ch", 
+      role = c("aut","cre", "cph")),
+    person(
+      given = "Martin", 
+      family = "Sterchi", 
+      email = "martin.sterchi@fhnw.ch", 
+      role = c("aut")))
+Author: Beat Hulliger [aut, cph],
+  Tobias Schoch [aut, cre, cph],
+  Martin Sterchi [aut]
+Maintainer: Tobias Schoch <tobias.schoch@fhnw.ch>
+Description: Functions to compute robust (outlier-resistant) estimates of finite 
+    population characteristics. The package supports the computations of robust 
+    means, totals, ratios, etc. Available methods are Huber M-estimators, 
+    trimming, and winsorization. The package robsurvey complements the survey.
+License: MIT + file LICENSE
+URL: https://github.com/tobiasschoch/robsurvey
+BugReports: https://github.com/tobiasschoch/robsurvey/issues
+Encoding: UTF-8
+LazyData: true
+Depends: 
+    R (>= 3.5.0)
+Imports:
+    grDevices,
+    stats,
+    survey (>= 3.35-1),
+    KernSmooth 

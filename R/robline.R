@@ -1,21 +1,3 @@
-#' Weighted robust line fitting
-#'
-#' \code{weighted_line} fits a robust line and allows weights.
-#'
-#' \code{weighted_line} uses different quantiles for splitting the sample than \code{stats::line()}.
-#'
-#' @param x \code{[numeric vector]} explanatory variable.
-#' @param y \code{[numeric vector]} response variable (default: \code{NULL}).
-#' @param w \code{[numeric vector]} weights (same length as vector \code{x}).
-#' @param iter \code{[integer]} number of iterations to use (default: \code{1}). 
-#' @param na.rm \code{[logical]} indicating whether \code{NA} values should be removed before the computation proceeds (default: \code{FALSE}). 
-#' @return intercept and slope of the fitted line
-#' @examples
-#' data(cars)
-#' weighted_line(cars$speed, cars$dist, w = rep(1, length(cars$speed)))
-#' weighted_line(cars$speed, cars$dist, w = rep(1:10, each = 5))
-#' @seealso \code{\link[stats]{line}}
-#' @export weighted_line
 weighted_line <- function(x, y = NULL, w, na.rm = FALSE, iter = 1)
 {
    if(missing(w)) stop("Argument 'w' (weights) is missing, with no default.\n")
@@ -84,60 +66,6 @@ weighted_line <- function(x, y = NULL, w, na.rm = FALSE, iter = 1)
       residuals = y - yhat, fitted.values = yhat), class = "tukeyline")
 }
 
-#' Robust simple linear regression based on medians
-#'
-#' Robust simple linear regression based on medians: two methods are available. 
-#'
-#' \describe{
-#'    \item{Overview.}{Robust simple linear regression based on medians}
-#'    \item{Type.}{Two methods/ types are available (let \eqn{m(x,w)} denote the weighted median of variable \code{x} with weights \code{w}):
-#'	 \describe{
-#'	    \item{\code{type = "slopes"}:}{The slope is computed as
-#'	       \deqn{b1 = m\left( \frac{y - m(y,w)}{x - m(x,w)}, w\right).}{m[(y - m[y, w]) / (x - m[x, w]), w].}
-#'	    }
-#'	    \item{\code{type = "products"}:}{The slope is computed as
-#'	       \deqn{b1 = \frac{m\big([y - m(y,w)][x - m(x,w)], w\big)}{m\big([x - m(x,w)]^2, w\big)}.}{m([y - m(y, w)][x - m(x, w)], w) / m([x - m(x, w)]^2, w).} 
-#'	    }
-#'	 }
-#'    }
-#' }
-#'
-#' @param x \code{[numeric vector]} explanatory variable.
-#' @param y \code{[numeric vector]} response variable (default: \code{NULL}).
-#' @param w \code{[numeric vector]} weights (same length as vector \code{x}).
-#' @param type \code{[character]} either \code{slopes} or \code{products} (default: \code{slopes}). 
-#' @param na.rm \code{[logical]} indicating whether \code{NA} values should be removed before the computation proceeds (default: \code{FALSE}). 
-#' @return a vector with two components: intercept and slope
-#'
-#' @examples
-#' x <- c(1, 2, 4, 5)
-#' y <- c(3, 2, 7, 4)
-#' weighted_line(y~x, w=rep(1, length(x)))
-#' weighted_median_line(y~x, w = rep(1, length(x)))
-#' weighted_median_line(y~x, w = rep(1, length(x)), type = "prod")
-#'
-#' data(cars)
-#' with(cars, weighted_median_line(dist ~ speed, w = rep(1, length(dist))))
-#' with(cars, weighted_median_line(dist ~ speed, w = rep(1, length(dist)), 
-#' type = "prod"))
-#'
-#' # weighted
-#' w <- c(rep(1,20), rep(2,20), rep(5, 10))
-#' with(cars, weighted_median_line(dist ~ speed, w = w))
-#' with(cars, weighted_median_line(dist ~ speed, w = w, type = "prod"))
-#'
-#' # outlier in y
-#' cars$dist[49] <- 360
-#' with(cars, weighted_median_line(dist ~ speed, w = w))
-#' with(cars, weighted_median_line(dist ~ speed, w = w, type = "prod"))
-#'
-#' # outlier in x
-#' data(cars)
-#' cars$speed[49] <- 72
-#' with(cars, weighted_median_line(dist ~ speed, w = w))
-#' with(cars, weighted_median_line(dist ~ speed, w = w, type = "prod"))
-#' @seealso \code{\link[stats]{line}}, \code{\link{weighted_line}}, \code{\link{weighted_median_ratio}}
-#' @export weighted_median_line
 weighted_median_line <- function(x, y = NULL, w, type = "slopes", 
    na.rm = FALSE)
 {
@@ -187,21 +115,6 @@ weighted_median_line <- function(x, y = NULL, w, type = "slopes",
 	      residuals = y - yhat, fitted.values = yhat), class = "medline")
 }
 
-#' Weighted robust ratio based on median
-#'
-#' A weighted median of the ratios y/x determines the slope of a regression through the origin.
-#'
-#' @param x \code{[numeric vector]} explanatory variable.
-#' @param y \code{[numeric vector]} response variable (default: \code{NULL}).
-#' @param w \code{[numeric vector]} weights (same length as vector \code{x}).
-#' @param na.rm \code{[logical]} indicating whether \code{NA} values should be removed before the computation proceeds (default: \code{FALSE}). 
-#' @return a vector with two components: intercept and slope
-#' @examples
-#' x <- c(1,2,4,5)
-#' y <- c(1,0,5,2)
-#' weighted_median_ratio(y~x, w = rep(1, length(y)))
-#' @seealso \code{\link[stats]{line}}, \code{\link{weighted_line}}, \code{\link{weighted_median_line}}
-#' @export weighted_median_ratio
 weighted_median_ratio <- function(x, y = NULL, w, na.rm = FALSE)
 {
    if(missing(w)) stop("Argument 'w' (weights) is missing, with no default.\n")

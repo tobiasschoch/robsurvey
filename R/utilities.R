@@ -1,16 +1,3 @@
-#' Weighted five-number summary of a variable 
-#'
-#' Weighted five-number summary of a variable (similar to \code{base::summary} for \code{[numeric vectors]})
-#'
-#' A weighted five-number summary (numeric variable) or a frequency table (factor variable).  
-#'
-#' @param object \code{[character]} name of the variable for which a summary is desired. 
-#' @param design an object of class \code{survey.design} or \code{survey.design2}.
-#' @param na.rm \code{[logical]} indicating whether \code{NA} values should be removed before the computation proceeds (default: \code{FALSE}). 
-#' @param ... additional arguments. 
-#' @return A numerical summary 
-#' @method summary formula
-#' @export
 summary.formula <- function(object, design, na.rm = FALSE, ...)
 {
    mf <- stats::model.frame(object, design$variables, na.action = 
