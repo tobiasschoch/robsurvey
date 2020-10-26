@@ -1,4 +1,5 @@
 \documentclass[a4paper,11pt]{scrreprt}
+\setlength{\textheight}{1.1\textheight}
 
 \usepackage{amssymb,amsmath,amsthm,mathrsfs}
 \usepackage{bbm}
@@ -18,6 +19,12 @@
 \setlength\parindent{24pt}
 
 \include{sctmath}
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+\newcommand{\code}[1]{{\texttt{#1}}}
+
 
 %%%%%%%%%%%%%%%%
 \begin{document}
@@ -349,13 +356,13 @@ We define the robustness weights ($i=1, \ldots, n$)
 
 %------------------------------------------------------------------------------
 \chapter{GM estimators}
-Let $r_i(\bm \theta) = y_i - \bm x_i^T \bm \theta$; $w_i$ is the sampling weight; $h_i$ is the weight in the design space. The class of regression $GM$-estimators of $\bm \theta$ is \citep[Chap. 6.3a][]{hampeletal1996}
+Let $r_i(\bm \theta) = y_i - \bm x_i^T \bm \theta$; $w_i$ is the sampling weight; $h_i$ is the weight in the design space. The class of regression $GM$-estimators of $\bm \theta$ is \citep[Chap. 6.3a][]{hampeletal1986}
 \begin{equation}
-   \sum_{i \in s} w_i \eta \left(\frac{r_i(\bm \theta)}{\sigma \sqrt{v_i}}, \bm x_i\right)  \frac{\bm x_i}{\sqrt{v_i}} = \bm 0
+   \sum_{i \in s} w_i \eta \left(\frac{r_i(\bm \theta)}{\sigma \sqrt{v_i}}, \bm x_i\right)  \frac{\bm x_i}{\sigma \sqrt{v_i}} = \bm 0
 \end{equation}
 \noindent where 
 \begin{equation*}
-   \eta^{M}(a,\bm b) = \psi(a) \cdot h(\bm b) \qquad \text{or} \qquad \eta^{S}(a,\bm b) =   \psi\left(\frac{a}{h(\bm b)}\right), 
+   \eta^{M}(a,\bm b) = \psi(a) \cdot h(\bm b) \qquad \text{or} \qquad \eta^{S}(a,\bm b) = \psi\left(\frac{a}{h(\bm b)}\right) h(\bm b), 
 \end{equation*}
 \noindent and $h:\R^p \rightarrow \R_+$ is a weight function.
 
@@ -373,6 +380,117 @@ Let $\bm \theta^{t}$ (and $\sigma^{t}$) denote the trial value at the $t$-th ite
 \begin{equation}
    u_i^M = \frac{\psi(z_i)}{z_i}, \qquad  u_i^S = \frac{\psi(z_i/h_i)}{z_i/h_i}, \quad \text{and} \quad z_i = \frac{r_i(\bm \theta)}{\sigma \sqrt{v_i}}.
 \end{equation}
+
+
+%------------------------------------------------------------------------------
+\section{Covariance matrix}
+The asymptotic covariance matrix of the population regression $GM$-estimator $\bm \theta_{GM}$ of $\bm \theta$ (which includes the $M$-estimator as a special case) is 
+\begin{equation}\label{eq:cov_pop}
+   \mathrm{cov}(\bm \theta_{GM}) = \frac{\sigma^2}{N} \cdot \bm M_{GM}^{-1} \bm Q_{GM} \bm M_{GM}^{-1},
+\end{equation}
+\noindent where 
+\begin{equation*}
+   \bm M_{GM} = -\sum_{i=1}^N \mathbbm{E} \left\{\eta' \left( \frac{r_i}{\sigma \sqrt{v_i}}, \bm x_i \right) \right\} \frac{\bm x_i \bm x_i^T}{v_i}, \quad \bm Q_{GM} = \sum_{i = 1}^N \mathbbm{E} \left\{\eta^2 \left( \frac{r_i}{\sigma \sqrt{v_i}}, \bm x_i \right) \right\} \frac{\bm x_i \bm x_i^T}{v_i}.  
+\end{equation*}
+
+Next, we consider sample-based estimators of the covariance matrix. Let $\widehat{\bm \theta}_{*}$ denote a placeholder for the estimators $\widehat{\bm \theta}_M$, $\widehat{\bm \theta}_{GM}^{m}$ (Mallows), $\widehat{\bm \theta}_{GM}^{s}$ (Schweppe). The template for the sample estimator of the covariance matrix of $\widehat{\bm \theta}_{*}$ is 
+\begin{equation}\label{eq:cov_est}
+   \widehat{\mathrm{cov}}(\widehat{\bm \theta}_{*}) = \frac{\widehat{\sigma}^2}{\widehat{N}} \cdot \widehat{\bm M}_{*}^{-1} \widehat{\bm Q}_{*} \widehat{\bm M}_{*}^{-1},
+\end{equation}
+\noindent where $\widehat{\sigma}$ denotes the (normalized) weighted MAD. Put $\bm W = \mathrm{diag}_{i=1,\ldots,n}\{w_i\}$ for the sampling weights $w_i$, $\bm H = \mathrm{diag}_{i=1,\ldots,n}\{h(\bm x_i)\}$ for the weights in the design space, and define
+\begin{equation*}
+   \overline{\psi'} = \frac{1}{\widehat{N}}\sum_{i \in s} w_i \psi' \left( \frac{r_i}{\widehat{\sigma} \sqrt{v_i}} \right), \qquad \overline{\psi^2} = \frac{1}{\widehat{N}}\sum_{i \in s} w_i \psi^2 \left( \frac{r_i}{\widehat{\sigma} \sqrt{v_i}} \right).
+\end{equation*}
+\noindent The covariance matrices of the different estimators of $\bm \theta$ are defined (with the help of the template in Eq. \ref{eq:cov_est}) as follows: 
+\begin{enumerate}
+   \item{$M$-estimator:}
+   \begin{equation*}
+      \widehat{\bm M}_M = - \overline{\psi'} \cdot \bm X^T \bm W \bm X, \qquad \widehat{\bm Q}_M = \overline{\psi^2} \cdot \bm X^T \bm W \bm X;
+   \end{equation*}
+   %
+   \item{Mallows $GM$-estimator:} 
+   \begin{equation*}
+      \widehat{\bm M}_{GM}^{m} = - \overline{\psi'} \cdot \bm X^T \bm W \bm H \bm X, \qquad \widehat{\bm Q}_{GM}^{m} = \overline{\psi^2} \cdot \bm X^T \bm W \bm H^2 \bm X;
+   \end{equation*}
+   %
+   \item{Schweppe $GM$-estimator:} 
+   \begin{equation*}
+      \widehat{\bm M}_{GM}^{s} = - \bm X^T \bm W \bm S_1 \bm X, \qquad \widehat{\bm Q}_{GM}^{s} = \bm X^T \bm W \bm S_2 \bm X,
+   \end{equation*}
+   where 
+   \begin{equation*}
+      S_1 = \mathrm{diag}_{i=1,\ldots,n} \big\{ s_1^i \big\}, \qquad \text{with} \quad s_1^i = \frac{1}{\widehat{N}}\sum_{j \in s} w_j \psi'\left(\frac{r_j}{h(\bm x_i)\widehat{\sigma} \sqrt{v_j}}\right) 
+   \end{equation*}
+   and 
+   \begin{equation*}
+      S_2 = \mathrm{diag}_{i=1,\ldots,n} \big\{ s_2^i \big\}, \qquad \text{with} \quad s_2^i = \frac{1}{\widehat{N}}\sum_{j \in s} w_j \psi^2\left(\frac{r_j}{h(\bm x_i)\widehat{\sigma} \sqrt{v_j}}\right).
+   \end{equation*}
+   Note: The $i$-th diagonal element of $\bm S_1$ and $\bm S_2$ depends on $h(\bm x_i)$, but the summation is over $j \in s$; see also \citet[][Chap. 6]{marazzi1987_2}.
+\end{enumerate}
+
+\noindent Huber. Let $z_i = \vert r_j \vert / (k \widehat{\sigma} \sqrt{v_j})$ 
+\begin{equation*}
+   \bm S_1 = \mathrm{diag}_{i=1,\ldots,n} \big\{ s_1^i \big\}, \quad s_1^i = \sum_{j \in s} w_j \indicator \big\{ h(\bm x_j) \geq z_i \big\}
+\end{equation*}
+
+
+
+
+%------------------------------------------------------------------------------
+\subsection{Implementation}
+To fix notation, put $\bm w =\mathrm{diag}(\bm W)$, $\bm h = \mathrm{diag}(\bm H)$, denote the Hadamard product of the matrices $\bm A$ and $\bm B$ by $\bm A\circ \bm B$ and suppose that $\sqrt{\cdot}$ is applied element by element.
+
+For $M$-estimators, the covariance matrix is (up to a scalar) equal to
+\begin{equation}\label{eq:cov_m}
+   (\bm X^T \bm W \bm X)^{-1}
+\end{equation}
+\noindent and is computed by the following method:
+\begin{enumerate}[i)]
+   \item Compute the factorization $\sqrt{\bm w} \circ \bm X := \bm Q \bm R$ (LAPACK: \code{dgeqrf}).
+   %
+   \item Invert the upper triangular matrix $\bm R$ by backward substitution to get $\bm R^{-1}$ (LAPACK: \code{dtrtri}).
+   %
+   \item Compute $\bm R^{-1} \bm R^{-T}$, which is equal to (\ref{eq:cov_m}); taking advantage of the triangular shape of $\bm R^{-1}$ and $\bm R^{-T}$ (LAPACK: \code{dtrmm}). 
+\end{enumerate}
+
+\noindent For the Mallows type $GM$-estimator, the covariance matrix is (up to a scalar) equal to
+\begin{equation}\label{eq:cov_mallows}
+   (\bm X^T \bm W \bm H \bm X)^{-1} \bm X^T \bm W \bm H^2 \bm X (\bm X^T \bm W \bm H \bm X)^{-1}
+\end{equation}
+\noindent and is computed by the following method:
+\begin{enumerate}[i)]
+   \item Compute the QR factorization: $\sqrt{\bm w \cdot \bm h} \circ \bm X := \bm Q \bm R$ (LAPACK: \code{dgeqrf}).   
+   %
+   \item Invert the upper triangular matrix $\bm R$ by backward substitution to get $\bm R^{-1}$ (LAPACK: \code{dtrtri}).
+   %
+   \item Define a new matrix: $\bm A \leftarrow \sqrt{\bm h} \circ \bm Q$ (extraction of $\bm Q$ matrix with LAPACK: \code{dorgqr}).
+   %
+   \item Update the matrix: $\bm A \leftarrow \bm A \bm R^{-T}$ (taking advantage of the triangular shape of $\bm R^{-1}$; LAPACK: \code{dtrmm}). 
+   %
+   \item Compute $\bm A \bm A^T$, which corresponds to the expression in (\ref{eq:cov_mallows}); (LAPACK: \code{dgemm}).  
+\end{enumerate}
+
+\noindent For the Schweppe type $GM$-estimator, the covariance matrix is (up to a scalar) equal to
+\begin{equation}\label{eq:cov_schweppe}
+   (\bm X^T \bm W \bm S_1 \bm X)^{-1} \bm X^T \bm W \bm S_2 \bm X (\bm X^T \bm W \bm S_1 \bm X)^{-1}.
+\end{equation}
+\noindent Put $\bm s_1 = \mathrm{diag}(\bm S_1)$, $\bm s_2 = \mathrm{diag}(\bm S_2)$, and let $\cdot / \cdot $ denote elemental division (i.e., the inverse of the Hadamard product). We use the following approach:  
+\begin{enumerate}[i)]
+   \item Compute the factorization $\sqrt{\bm w \circ \bm s_1} \circ \bm X := \bm Q \bm R$ (LAPACK: \code{dgeqrf}).
+   %
+   \item Invert the upper triangular matrix $\bm R$ by backward substitution to get $\bm R^{-1}$ (LAPACK: \code{dtrtri}).
+   %
+   \item Define a new matrix: $\bm A \leftarrow \sqrt{\bm s_2 / \bm s_1 } \circ \bm Q$ (extraction of $\bm Q$ matrix with LAPACK: \code{dorgqr}).
+   %
+   \item Update the matrix: $\bm A \leftarrow \bm A \bm R^{-T}$ (taking advantage of the triangular shape of $\bm R^{-1}$; LAPACK: \code{dtrmm}). 
+   %
+   \item Compute $\bm A \bm A^T$, which corresponds to the expression in (\ref{eq:cov_schweppe}); (LAPACK: \code{dgemm}).  
+\end{enumerate}
+
+
+\begin{remark}
+\citet{marazzi1987_2} uses the Cholesky factorization (see subroutines \code{RTASKV} and \code{RTASKW}) which is computationally a bit cheaper than our QR factorization. 
+\end{remark}
 
 
 %------------------------------------------------------------------------------

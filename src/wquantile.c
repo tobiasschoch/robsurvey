@@ -1,21 +1,33 @@
-/******************************************************************************\
-|*         weighted quantile and selection of k-th largest element	      *| 
-|* -------------------------------------------------------------------------- *| 
-|* PROJECT wquantile							      *| 
-|* SUBJECT weighted quantile and selection of k-th largest element using      *| 
-|*	   a weighted variant of quickselect (with Bentley and McIlroy's      *| 
-|*	   (1993) 3-way partitioning scheme); for small arrays, insertion     *| 
-|*	   sort is used							      *| 
-|* AUTHORS Tobias Schoch (tobias.schoch@fhnw.ch), July 29, 2020		      *| 
-|* LICENSE GPL >= 2							      *| 
-|* COMMENT see Bentley, J.L. and D.M. McIlroy (1993). Engineering a Sort      *| 
-|*	   Function, Software - Practice and Experience 23, pp. 1249-1265;    *| 
-|*	   the extension of the method to weighted problems is ours	      *| 
-\******************************************************************************/
+/* weighted quantile and selection of k-th largest element 
 
-# define _medium_array	10 // pivotal element is determined by medium of three 
-# define _large_array	40 // pivotal element determined by ninther
-#define DEBUG_MODE	0  // debug mode (0 = off; 1 = activated)
+   Copyright (C) 2020 Tobias Schoch (e-mail: tobias.schoch@gmail.com) 
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public
+   License along with this library; if not, a copy is available at
+   https://www.gnu.org/licenses/
+
+   Reference:  Bentley, J.L. and D.M. McIlroy (1993). Engineering a 
+	       Sort Function, Software - Practice and Experience 23, 
+	       pp. 1249-1265    
+   Note:       The extension of the method to weighted problems is ours.	
+*/
+
+# define _medium_array	40 // switch from insertion sort to quickselect; 
+			   // using https://github.com/google/benchmark on
+			   // Intel i7-8550U (mobile processor, 2017)
+
+# define _large_array	50 // pivotal element determined by ninther
+# define DEBUG_MODE	0  // debug mode (0 = off; 1 = activated)
 
 #include "wquantile.h"
 
@@ -99,14 +111,13 @@ void wquant0(double *array, double *weights, double sum_w, int lo, int hi,
 
    if (hi - lo == 1) {	   // case: n = 2
       double one_minus = 1.0 - prob;
-      if (is_equal(one_minus * weights[lo], prob * weights[hi])){ 
+      if (is_equal(one_minus * weights[lo], prob * weights[hi])) 
 	 *result = (array[lo] + array[hi]) / 2.0;  	 
-      }
-      else if (one_minus * weights[lo] > prob * weights[hi]) {
+      else if (one_minus * weights[lo] > prob * weights[hi]) 
 	 *result = array[lo];
-      } else {
+      else 
 	 *result = array[hi];
-      }
+
       return; 
    }
 
@@ -206,10 +217,13 @@ static inline void partition_3way(double *array, double *weights, int lo,
    for (;;) {
       while (array[++(*i)] < pivot)
 	 if (*i == hi) break;
+
       while (pivot < array[--(*j)])
 	 if (*j == lo) break;
+
       if (*i == *j && is_equal(array[*i], pivot))
 	 swap2(array, weights, ++p, *i);
+
       if (*i >= *j) break;		  // check if sentinels cross 
       swap2(array, weights, *i, *j);	       
 
@@ -222,6 +236,7 @@ static inline void partition_3way(double *array, double *weights, int lo,
    *i = *j + 1;
    for (int k = lo; k <= p; k++)
       swap2(array, weights, k, (*j)--);
+
    for (int k = hi; k >= q; k--)
       swap2(array, weights, k, (*i)++);
 }
@@ -343,18 +358,22 @@ void debug_print_data(double *array, double *weights, int lo, int hi,
    if (strlen(message) > 0) {
       printf("------\n");
       printf("%s x\t", message);
-   } else {
+   } else 
       printf("x \t");
-   }
-   for (int i = lo; i <= hi; ++i) printf("%.2f\t", array[i]);
+
+   for (int i = lo; i <= hi; ++i) 
+      printf("%.2f\t", array[i]);
+
    printf("\n");
    //
-   if (strlen(message) > 0) {
+   if (strlen(message) > 0) 
       printf("%s w\t", message);
-   } else {
+   else 
       printf("w \t");
-   }
-   for (int i = lo; i <= hi; ++i) printf("%.2f\t", weights[i]);
+
+   for (int i = lo; i <= hi; ++i) 
+      printf("%.2f\t", weights[i]);
+
    printf("\n");
 }
 

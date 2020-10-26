@@ -17,10 +17,9 @@ robsvyreg <- function(x, y, w, k, psi, type, xwgt = NULL, var = NULL, ...)
       resid = as.double(numeric(n)), robwgt = as.double(numeric(n)), 
       xwgt = as.double(xwgt), n = as.integer(n), p = as.integer(p), 
       k = as.double(k), beta = as.double(numeric(p)), 
-      scale = as.double(numeric(1)), maxit = as.integer(ctrl$maxit), 
-      tol = as.double(ctrl$tol), psi = as.integer(psi), 
-      type = as.integer(type), Epsi2 = as.double(numeric(1)), 
-      Epsiprime = as.double(numeric(1)), PACKAGE = "robsurvey")
+      scale = as.double(numeric(1)), scale2 = as.double(numeric(1)), 
+      tol = as.double(ctrl$tol), maxit = as.integer(ctrl$maxit), 
+      psi = as.integer(psi), type = as.integer(type), PACKAGE = "robsurvey")
 
    psi_fun <- switch(psi + 1, "Huber", "asymHuber", "Tukey")
    names(tmp$beta) <- colnames(x) 
@@ -30,10 +29,11 @@ robsvyreg <- function(x, y, w, k, psi, type, xwgt = NULL, var = NULL, ...)
 	 "Mallows G", "Schweppe G") ,"M-estimator (", psi_fun," psi, k = ", 
 	 k, ")"),
       estimate = tmp$beta, 
-      variance = NA,
+      variance = list(covmat = matrix(tmp$x[1:(p * p)], ncol = p), 
+	 scale = tmp$scale2),
       robust = list(psifunction = psi_fun, 
 	 k = k, robweights = tmp$robwgt, outliers = 1 * (tmp$robwgt < 1), 
-	 Epsi2 = tmp$Epsi2, Epsiprime = tmp$Epsiprime, scale = scale), 
+	 Epsi2 = tmp$Epsi2, Epsiprime = tmp$Epsiprime, scale = tmp$scale), 
       optim = list(converged = (tmp$maxit != 0), niter = ifelse(tmp$maxit == 0, 
 	 ctrl$maxit, tmp$maxit), tol = ctrl$tol), 
       residuals = tmp$resid, 

@@ -1,32 +1,88 @@
-svymean_reg <- function(object, ...)
+svymean_reg <- function(object, auxiliary, k = NULL, check.names = TRUE)
 {
-   UseMethod("svymean_reg", object)
-}
+   if (!inherits(object, "svyreg_rob"))
+      stop("svymean_reg is not defined for this object\n", call. = FALSE)
+ 
+   beta <- object$estimate
+   p <- object$model$p 
 
-svymean_reg.svyreg_rob <- function(object, mean_auxiliary, ...)
-{
-   call <- match.call()
-   call[[1]] <- substitute(svymean.reg)
-   # check dimensions
-   if (length(mean_auxiliary) != object$model$p){
-      stop("Dimension of argument 'mean_auxiliary' is not correct\n")
+   if (is.data.frame(auxiliary))
+      auxiliary <- as.matrix(auxiliary)
+
+   if (is.matrix(auxiliary)) {
+      if (NCOL(auxiliary) < NROW(auxiliary))
+	 auxiliary <- t(auxiliary)
+
+      if (NROW(auxiliary) > 1) 
+	 stop("Dimension of argument 'auxiliary' is wrong\n", call. = FALSE)
+      
+      cnames <- colnames(auxiliary)      
+      auxiliary <- c(auxiliary)
+      names(auxiliary) <- cnames
    }
-   # greg estimate
-   w <- object$model$w; sum_w <- sum(w)
-   est <- sum(mean_auxiliary * object$estimate) 
-   if (object$model$intercept == 0){
-      est <- est + sum(w * object$residuals) / sum_w
+
+   if (length(auxiliary) != p)
+      stop("Dim. of 'auxiliary' is wrong; it should be of dim. ", p, " not ", 
+	 length(auxiliary), "\n", call. = FALSE)
+
+   cnames <- names(auxiliary)
+   intercept <- object$model$intercept
+   if (check.names && !is.null(cnames)) {
+      at <- ifelse(intercept, 2, 1)
+      m <- match(cnames[at:p], names(beta)[at:p])  
+
+      if (is.na(any(m)))
+	 warning("Names of 'auxiliary' do not match (check.names = TRUE)\n", 
+	    immediate. = TRUE, call. = FALSE)
+      else 
+	 if (at == 1)
+	    auxiliary <- auxiliary[m]
+	 else
+	    auxiliary <- auxiliary[c(1, m + 1)]
    }
+
+   # estimate
+   est <- sum(auxiliary * beta)
    names(est) <- object$model$yname
 
-   # variance estimate
+   # GREG correction
+   w <- object$model$w; sum_w <- sum(w)
+   if (intercept == 0) 
+      if (is.null(k))
+	 est <- est +  sum(w * object$residuals) / sum_w
+      else
+	 est <- est	#FIXME:
+
+   # variance estimate  # NOTE:: check
    design <- object$design 
    v <- survey::svyrecvar(object$residuals * w / sum_w , design$cluster, 
       design$strata, design$fpc, postStrata = design$postStrata)
-   res <- list(characteristic = "mean", estimator = "GREG", estimate = est, 
-      variance = v, design = design, call = call)
-   class(res) <- "svystat.rob"
-   res
+
+   object$characteristic <- "mean" 
+   object$estimate <- est
+   object$variance <- v 
+   object$call <- match.call()
+   class(object) <- "svystat_rob"
+   object
 }
 
-# FIXME: total 
+
+# auxiliary <- c(100, 200)
+#
+# auxiliary <- matrix(c(100, 200), nrow = 2)
+# rownames(auxiliary) <- c("(Intercept)", "employment")
+#
+#
+#
+# auxiliary <- matrix(c(100, 200), ncol = 2)
+# colnames(auxiliary) <- c("", "employment")
+#
+# svymean_reg(object, auxiliary)
+#
+#setwd("C:/My/code/robsurvey/R")
+#source("svymean_reg.R")
+
+#FIXME: add function to NAMESPACE
+#FIXME: write Rd-file 
+
+

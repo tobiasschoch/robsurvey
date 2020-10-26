@@ -1,0 +1,591 @@
+\documentclass[a4paper]{scrartcl}
+\setlength{\textheight}{1.1\textheight}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usepackage{framed}
+
+\usepackage{Sweave}
+
+\usepackage{setspace}
+
+\begin{document}
+
+\title{Comparison of the methods \texttt{svyreg\_huber} and \texttt{svyreg\_huberGM} in package \texttt{robsurvey} with other implementations of regression $M$- and $GM$-estimators\footnote{Version 0.2 of \texttt{robsurvey}.}} 
+
+\author{Beat Hulliger and Tobias Schoch\footnote{Corresponding author; e-mail: tobias.schoch \texttt{[at]} fhnw.ch.}\\
+  \multicolumn{1}{p{.7\textwidth}}{\centering\emph{\small University of Applied Sciences Northwestern Switzerland, School of Business, Riggenbachstrasse 16, CH-4600 Olten, Switzerland}}}
+
+\date{\small\today}
+\maketitle
+
+\setstretch{1.15}
+
+<<echo=false>>=
+library(robsurvey, quietly = TRUE)
+library(survey)
+library(MASS)
+library(robustbase)
+library(robeth)
+
+# wrapper function for the coefficients of the Huber regression M-estimator 
+robeth_reg <- function(formula, data, W = TRUE) 
+{
+   # NOTE: robustness tuning constant is fixed at k = 1.345 (default)
+   mf <- model.frame(formula, data)
+   y <- as.numeric(model.response(mf))
+   x <- model.matrix(terms(formula), mf)
+   n <- length(y); p <- ncol(x) 
+   
+   dfvals()			       # set default paramters  
+   dfrpar(cbind(x, y), "huber")	       # set parameters for 'huber' M-est.
+
+   wgt <- vector("numeric", n)
+   ribet0(wgt)			       # consistency correction: MAD 
+
+   # initial estimate of regression: LS
+   tmp <- riclls(x, y)	
+
+   s <- liepsh()
+   epsi2 <- s$epsi2; epsip <- s$epsip
+
+   if (W) {
+      # initial estimate of covariance 
+      cv <- ktaskv(x, f = epsi2 / epsip^2)
+      # Huber regression M-estimator (using W-algorithm)
+      rob <- rywalg(x, y, tmp$theta, wgt, 
+	 cov = cv$cov,		 # initival cov [computed above]
+	 psp0 = 1,			 # value of \psi'(0) 
+	 expsi = psi,		 # [default] 
+	 exchi = chi,		 # [default]
+	 exrho = rho,		 # [default]
+	 sigmai = tmp$sigma,	 # initial sigma [computed above] 
+	 tol = 0.0001,		 # relative precision of convergence crit.
+	 gam = 1,			 # relaxation factor 
+	 tau = 1e-5,		 # tolerance for determinaton of pseudo rank 
+	 itype = 1,		 # 1: Huber, 2: Mallows, 3: Schweppe
+	 isigma = 2,		 # estimator of sigma (see RYSIGM)
+	 icnv = 1,			 # convergence criterion 
+	 maxit = 50,		 # max. iterations of IRWLS steps 
+	 maxis = 1,		 # max. iterations for scale step 
+	 nitmon = 0)		 # toggle convergence monitoring (nitmon > 0) 
+   } else {
+      # initial estimate of covariance 
+      cv <- kiascv(tmp$xt, fu = epsi2 / epsip^2, fb = 0)
+      # Huber regression M-estimator (using H-algorithm)
+      rob <- ryhalg(x, y, tmp$theta, wgt, 
+	 cov = cv$cov,
+	 isigma = 2,		 # MAD
+	 sigmai = tmp$sigma,
+	 ic = 0)
+   }
+   # extract coefficients
+   c(rob$theta[1:p], rob$sigmaf)
+}
+
+#-------------------------------------------------------------------------------
+# modification of MASS::rlm
+rlm2 <- MASS:::rlm.default
+# we replace the normalized MAD about zero with the normalized MAD about the 
+# the median 
+body(rlm2)[[22]][[4]][[3]][[3]][[2]][[3]][[3]][[3]] <- substitute(mad(resid))
+
+#-------------------------------------------------------------------------------
+compare <- function(formula, data)
+{
+   design <- svydesign(id = ~1, weights = rep(1, nrow(data)), 
+      data = data)
+   robsurvey <- svyreg_huber(formula, design, k = 1.345)
+   mass <- rlm(formula, data, k = 1.345, method = "M", y.ret = TRUE, 
+      scale.est = "MAD", acc = 1e-5, test.vec = "coef")
+   mass2 <- rlm2(mass$x, mass$y, mass$weights, k2 = 1.345, method = "M", 
+      scale.est = "MAD", acc = 1e-5, test.vec = "coef")
+   robeth_w <- robeth_reg(formula, data) 
+
+   coeff <- rbind(
+      c(coef(robsurvey), robsurvey$robust$scale), 
+      robeth_w, 
+      c(coef(mass), mass$s),
+      c(coef(mass2), mass2$s))
+
+   colnames(coeff)[NCOL(coeff)] <- "scale"
+   rownames(coeff) <- c("svyreg_huber", "rywalg (ROBETH)", "rlm (MASS)", 
+      "rlm2 (modified rlm)")
+   print(round(coeff, 4))
+}
+@
+
+%-------------------------------------------------------------------------------
+\section{Introduction}\label{sec:intro}
+In this short report, we compare the behavior of the regression $M$- and $GM$-estimators in package \texttt{robsurvey} with the methods from other implementations. To this end, we study the estimated parameters for 4 well-known datasets/ cases studies. With regard to competing implementations, we consider the methods from the following \texttt{R} packages: 
+<<echo=false>>=
+pkg <- c("MASS", "robeth", "robustbase")
+for (i in 1:length(pkg)) 
+   cat(paste0(pkg[i], ", version: ", packageVersion(pkg[i]),"\n"))
+@
+\noindent These packages are documented in, respectively, \cite{mass}, \cite{robeth}, and \cite{robustbase}. 
+
+The estimators in \texttt{robsurvey} stand out from the methods in the above listed packages in that they explicitly compute weighted estimates of finite population quantities.   
+
+In all comparisons, we 
+\begin{itemize}
+   \item study $M$- or $GM$-estimators with the MAD (normalized median absolute deviation) as estimator of scale;
+   \item use the robustness tuning constant \texttt{k = 1.345} of the Huber $\psi$-function;
+   \item focus on sample data that do not contain sampling weights. 
+\end{itemize}
+\noindent All studied methods compute the regression estimates by iteratively reweighted least squares (IRWLS) and the estimate of scale (more precisely, the trial value for the scale estimate) is updated at each iteration. 
+
+\begin{leftbar}
+\textbf{Limitations:} Our comparisons provide only anecdotal evidence on the performance of the methods. An in-depth simulation study would be necessary to conclude that our implementations behave properly. Nonetheless, we believe that the comparisons shed some light on the behavior of our implementations. 
+\end{leftbar}
+
+The remainder of the paper is organized as follows. In Section \ref{sec:mest}, we compare several implementations of the Huber $M$-estimator of regression. Section \ref{sec:gmest} studies  implementations of the Huber $GM$-estimator of regression. In Section \ref{sec:summary}, we summarize the findings. 
+
+%-------------------------------------------------------------------------------
+\section{Huber $M$-estimators of regression}\label{sec:mest}
+In this section, we study the Huber $M$-estimator of regression. The parametrizations of the algorithms have been chosen to make them comparable; we use: 
+\begin{itemize}
+   \item \texttt{MASS::rlm}: \texttt{method = "M"}, \texttt{scale.est = "MAD"}, \texttt{acc = 1e-5}, \texttt{test.vec = "coef"}
+   \item \texttt{robeth::rywalg}: \texttt{tol = 0.0001}, \texttt{itype = 1}, \texttt{isigma = 2}, \texttt{icnv = 1}, \texttt{maxis = 1}; see \cite{marazzi1993} for more details.	
+   \item \texttt{robsurvey::svyreg\_huber}: \texttt{acc = 1e-5}, 
+\end{itemize}
+
+\subsection{Case 1: \texttt{education} data}\label{sec:education}
+The \texttt{education} data are on public education expenditures (at the level of US states), and are from \cite{chatterjeeprice} (see \cite{chatterjeehadi} for a newer edition); see also \cite{rousseeuwleroy}. The data set contains four variables: the response variable (\texttt{Y}: per capita expenditure on public education in a state, projected for 1975) and the three explanatory variables
+\begin{itemize}
+   \item \texttt{X1}: Number of residents per thousand residing in urban areas in 1970,
+   \item \texttt{X2}: Per capita personal income in 1973,
+   \item \texttt{X3}: Number of residents per thousand under 18 years of age in 1974.
+\end{itemize}
+
+\noindent There are 50 observations on the four variables. The first 6 rows are shown below. 
+<<>>==
+data(education, package = "robustbase")
+head(education)
+@
+
+\noindent The following tabular output shows the estimated coefficients (and the estimated scale; last column) under the model \texttt{Y $\sim$ X1 + X2 + X3} for four different implementations/ methods. 
+<<echo=FALSE>>=
+compare(Y ~ X1 + X2 + X3, education)
+@
+
+\noindent The estimates of the four methods differ only slightly. The main reason for the differences can be traced back to the type of scale estimator that is used. Method \texttt{svyreg\_huber} uses the (normalized, weighted) median of the absolute deviations of the residuals from the (weighted) median of the residuals, whereas the methods \texttt{rywalg} and \texttt{rlm} use the (normalized) median of the absolute residuals. To substantiate this claim, we also studied a slight modification of method \texttt{rlm} (see \texttt{rlm2}). The method \texttt{rlm2} is identical to \texttt{rlm}, except that the scale is estimated by the MAD, \texttt{stats::mad(x = resid, center = median(x))}, instead of \texttt{median(abs(resid))/0.6745}, where \texttt{resid} denotes the residuals. We observe from the above tabulated data that the results of \texttt{svyreg\_huber} and \texttt{rlm2} are virtually identical.
+
+
+%-------------------------------------------------------------------------------
+\subsection{Case 2: \texttt{stackloss} data}
+The \texttt{stackloss} data consist of 21 measurements on the oxidation of ammonia to nitric acid for an industrial process; see \cite{brownlee}. The variables are: 
+\begin{itemize}
+   \item \texttt{Air Flow}: flow of cooling air,
+   \item \texttt{Water Temp}: cooling water inlet temperature,
+   \item \texttt{Acid Conc.}: concentration of acid [per 1000, minus 500],
+   \item \texttt{stack.loss}: stack loss.
+\end{itemize}
+
+\noindent The first 6 observations are shown below.
+
+<<>>==
+data(stackloss, package = "datasets")
+head(stackloss)
+@
+
+\noindent The variable \texttt{stack.loss} (stack loss of amonia) is regressed on the explanatory variables air flow, water temperature and the concentration of acid. The regression coefficients and the estimate of scale are tabulated for the four implementations/ methods under study. 
+
+<<echo=FALSE>>=
+compare(stack.loss ~ Air.Flow + Water.Temp + Acid.Conc., stackloss)
+@
+
+\noindent The estimates of the four methods differ only slightly. The discrepancies can be explained (for the most part) by the choice of MAD that is used to compute the regression scale; viz. Section \ref{sec:education}. 
+
+
+%-------------------------------------------------------------------------------
+\section{Huber $GM$-estimators of regression}\label{sec:gmest}
+In this section, we consider regression $GM$-estimators with Huber $\psi$-function (tuning constant fixed at $k=1.345$). The scale is estimated by MAD. With regard to the MAD, we distinguish two cases: 
+\begin{itemize}
+   \item \texttt{MAD0}: (normalized) MAD about zero, i.e., \texttt{mad(x, center = 0)},
+   \item \texttt{MAD}: (normalized) MAD about the median, i.e. \texttt{mad(x, center = median(x))}.
+\end{itemize}
+
+\noindent For the purpose of comparison, we introduce the function \texttt{GM} (see Appendix). This function computes Mallows and Schweppe type regression $GM$-estimators (only Huber $\psi$-function). For instance, the label \texttt{GM (Mallows, MAD0)} refers to the Mallows type $GM$-estimator with scale estimated by \texttt{MAD0}. 
+
+We computed the weights to downweight leverage observations (\texttt{xwgt}) with the help of the methods in package \texttt{robeth}. The so computed weights were then stored to be utilized in all implementations of $GM$-estimators of regression. This approach ensures that the implementations do not differ in terms of the \texttt{xgwt}'s. 
+
+%-------------------------------------------------------------------------------
+\subsection{Case 3: \texttt{delivery} data}
+The \texttt{delivery} data consist of observations on servicing 25 soft drink vending machines. The data are from \cite{montgomerypeck}; see also \cite{rousseeuwleroy}. The variables are:
+
+\begin{itemize}
+   \item \texttt{n.prod}: number of products stocked in the vending machine,
+   \item \texttt{distance}: distance walked by the route driver (ft), 
+   \item \texttt{delTime}: delivery time (minutes).
+\end{itemize}
+
+\noindent The goal is to model/ predict the amount of time required by the route driver to service the vending machines. The first six observations are shown below.
+
+<<>>==
+data(delivery, package = "robustbase")
+head(delivery)
+@
+
+\noindent The variable \texttt{delTime} is regressed on the variables \texttt{n.prod} and \texttt{distance}.
+<<echo=FALSE>>==
+# ROBETH: this function is used to compute initial estimates
+rbmost <- function(x, y, cc, usext = userfd) {
+   n      <- nrow(x); np <- ncol(x); dfcomn(xk=np)
+   .dFvPut(1,"itw")
+   z      <- wimedv(x)
+   z      <- wyfalg(x, z$a, y, exu = usext); nitw <- z$nit
+   wgt    <- 1 / z$dist; wgt[wgt>1.e6] <- 1.e6
+   z      <- comval()
+   bto    <- z$bt0;    ipso   <- z$ipsi; co <- z$c
+   z      <- ribet0(wgt, itype = 2, isqw = 0)
+   xt     <- x * wgt;    yt     <- y * wgt
+   z      <- rilars(xt, yt)
+   theta0 <- z$theta;  sigma0 <- z$sigma
+   rs     <- z$rs / wgt; r1     <- rs/sigma0 
+   dfcomn(ipsi = 1,c = cc)
+   z      <- liepsh(cc)
+   den    <- z$epsip
+   g      <- Psp(r1) / den # (see Psi in Chpt. 14)
+   dfcomn(ipsi = ipso, c = co, bet0 = bto)
+   list(theta = theta0, sigma = sigma0, rs = rs, g = g, nitw = nitw)
+}
+
+# ROBETH: Mallows-standard estimate (with wyfalg and rywalg)
+robeth_mallows <- function(formula, data){
+   mf <- model.frame(formula, data)
+   y <- as.numeric(model.response(mf))
+   x <- model.matrix(terms(formula), mf)  
+   n <- length(y); np <- ncol(x)
+   b2 <- -1; cc <- -1 
+
+   isigma <- 2 # scale estimated by MAD
+   dfrpar(x, "Mal-Std", b2, cc) 
+   # Weights 
+   z      <- wimedv(x)	  
+   z      <- wyfalg(x, z$a, y); nitw <- z$nit
+   wgt    <- Www(z$dist)   # See Www in Chpt. 14
+   # Initial cov. matrix of coefficient estimates
+   z      <- kiedch(wgt)
+   cov    <- ktaskw(x, z$d, z$e, f = 1 / n)
+   # Initial theta and sigma
+   z      <- rbmost(x, y, 1.5, userfd)
+   theta0 <- z$theta; sigma0 <- z$sigma; nitw0 <- z$nitw
+   # Final theta and sigma
+   ribet0(wgt)
+   z <- rywalg(x, y, theta0, wgt, cov$cov, sigmai = sigma0)
+   theta1 <- z$theta[1:np]; sigma1 <- z$sigmaf; nit1 <- z$nit
+
+   list(coef = theta1, scale = sigma1, wgt = wgt)
+}
+
+robeth_schweppe <- function(formula, data){
+   mf <- model.frame(formula, data)
+   y <- as.numeric(model.response(mf))
+   x <- model.matrix(terms(formula), mf)  
+   n <- length(y); np <- ncol(x)
+   b2 <- -1; cc <- -1 
+   isigma <- 2 # scale estimated by MAD
+   dfrpar(x, "Kra-Wel", b2, cc)
+#   .dFvPut(2, "itw")
+   # Weights 
+   z      <- wimedv(x)	  
+   z      <- wyfalg(x, z$a, y); nitw <- z$nit			     
+   wgt    <- Www(z$dist)   # See Www in Chpt. 14
+   # Initial cov. matrix of coefficient estimates
+   z      <- kiedch(wgt)
+   cov    <- ktaskw(x, z$d, z$e, f = 1 / n)
+   # Initial theta and sigma
+   z      <- rbmost(x, y, 1.5, userfd)
+   theta0 <- z$theta; sigma0 <- z$sigma; nitw0 <- z$nitw
+   # Final theta and sigma
+   ribet0(wgt) 
+   z <- rywalg(x, y, theta0, wgt, cov$cov, sigmai = sigma0, tol = 0.00001)	
+   theta1 <- z$theta[1:np]; sigma1 <- z$sigmaf; nit1 <- z$nit
+
+   list(coef = theta1, scale = sigma1, wgt = wgt)
+}
+
+# "our" reference function
+GM <- function(formula, data, xwgt, zero = FALSE, Mallows = TRUE, tol = 1e-5, 
+   low = FALSE, high = FALSE) 
+{
+   mf <- model.frame(formula, data)
+   y <- as.numeric(model.response(mf))
+   x <- model.matrix(terms(formula), mf)  
+
+   tmp <- lm.fit(x, y)
+   beta0 <- tmp$coefficients 
+   resid <- tmp$resid 
+   scale0 <- mad(resid)   
+ 
+   if (Mallows) { # determine consistency correction for Mallows type estimator
+      foo <- function(x, wgt) sum(pnorm(x, 0, sqrt(wgt))) / length(wgt) - 0.75 
+      const <- uniroot(foo, c(0.1, 5), xwgt)$root
+   } else
+      const <- 0.6744898
+
+   while (1) {
+      tmp <- if (Mallows)
+	    lm.wfit(x, y, xwgt * huberWgt(resid / scale0))
+	 else
+	    lm.wfit(x, y, huberWgt(resid / (xwgt * scale0)))
+      
+      beta <- tmp$coefficients 
+      resid <- tmp$residuals
+
+      r <- if (Mallows) 
+	 resid * sqrt(xwgt)
+      else 
+	 resid
+
+      scale <- if (zero)
+	 mad(r, center = 0, constant = 1 / const, high = TRUE)
+      else
+	 mad(r, constant = 1 / const)
+
+      if (norm(as.matrix(beta - beta0)) < tol * scale) 
+	 break
+      else {
+	 beta0 <- beta; scale0 <- scale
+      }
+   }
+   list(coef = beta, scale = scale)
+}
+@
+
+<<echo=FALSE>>==
+data(delivery, package = "robustbase")
+design <- svydesign(id = ~1, weights = rep(1, nrow(delivery)), data = delivery)
+f <- delTime ~ n.prod + distance
+@
+
+\subsubsection{Mallows $GM$-estimator}\label{sec:delivery_mallows}
+\noindent The regression coefficients and the estimate of scale are tabulated for the four implementations/ methods under study.
+ 
+<<echo=FALSE>>==
+robeth <- robeth_mallows(f, delivery)
+wgt_delivery_mallow <- robeth$wgt
+gm0 <- GM(f, delivery, wgt_delivery_mallow, zero = TRUE)
+gm <- GM(f, delivery, wgt_delivery_mallow, zero = FALSE)
+robsurvey <- svyreg_huberGM(f, design, k = 1.345, xwgt = wgt_delivery_mallow, 
+   type = "Mallows")
+
+coeff <- rbind(
+   c(robeth$coef, robeth$scale),
+   c(gm0$coef, gm0$scale),
+   c(gm$coef, gm$scale),
+   c(coef(robsurvey), robsurvey$robust$scale))
+
+colnames(coeff)[4] <- "scale"
+rownames(coeff) <- c(
+   "rywalg (ROBETH, Mallows)", 
+   "GM (Mallows, MADzero)",
+   "GM (Mallows, MAD)",
+   "svyreg_huberGM (Mallows)") 
+
+print(round(coeff, 3))   
+@
+
+\noindent In view of the tabulated results, we formulate the following two equivalence statements: 
+\begin{align*}
+   \mathtt{rywalg \;(ROBETH, \;Mallows)} &\equiv \mathtt{GM \;(Mallows, \;MADzero)} \\
+   %
+   \mathtt{GM \;(Mallows, \;MAD)} &\equiv \mathtt{svyreg\_huberGM \;(Mallows)} 
+\end{align*}
+\noindent Since the implementations \texttt{GM (Mallows, MADzero)} and \texttt{GM (Mallows, MAD)} differ only in terms of the MAD, we argue that the results of \texttt{svyreg\_huberGM (Mallows)} are comparable to the ones of \texttt{rywalg (ROBETH, Mallows)}.
+
+\subsubsection{Schweppe $GM$-estimator}\label{sec:delivery_schweppe}
+In view of the tabulated results (see below), we can formulate the following equivalence relation  
+\begin{equation*}
+   \mathtt{GM \;(Schweppe, \;MAD)} \equiv \mathtt{svyreg\_huberGM \;(Schweppe)}. 
+\end{equation*}
+\noindent The second equivalence relation that we established in the last paragraph for the Mallows type estimator does not hold here; see \texttt{rywalg (ROBETH, Schweppe)} differs from \texttt{GM (Schweppe, MADzero)}. We do not know the cause. Fortunately, the discrepancies are not great. 
+
+<<echo=FALSE>>==
+robeth <- robeth_schweppe(f, delivery)
+wgt_delivery_schweppe <- robeth$wgt
+gm0 <- GM(f, delivery, wgt_delivery_schweppe, zero = TRUE, Mallows = FALSE)
+gm <- GM(f, delivery, wgt_delivery_schweppe, zero = FALSE, Mallows = FALSE)
+robsurvey <- svyreg_huberGM(f, design, k = 1.345, xwgt = wgt_delivery_schweppe, 
+   type = "Schweppe")
+
+coeff <- rbind(
+   c(robeth$coef, robeth$scale),
+   c(gm0$coef, gm0$scale),
+   c(gm$coef, gm$scale),
+   c(coef(robsurvey), robsurvey$robust$scale))
+
+colnames(coeff)[4] <- "scale"
+rownames(coeff) <- c(
+   "rywalg (ROBETH, Schweppe)", 
+   "GM (Schweppe, MADzero)",
+   "GM (Schweppe, MAD)",
+   "svyreg_huberGM (Schweppe)") 
+
+print(round(coeff, 3))   
+@
+
+
+%-------------------------------------------------------------------------------
+\subsection{Case 4: \texttt{salinity} data}
+The \texttt{salinity} data are a set of measurements of water salinity and river discharge taken in North Carolina's Pamlico Sound; \cite{ruppertcarroll}; see also \cite{rousseeuwleroy}. The variables are
+
+\begin{itemize}
+   \item \texttt{Y}: salinity, 
+   \item \texttt{X1}: salinity lagged two weeks,
+   \item \texttt{X2}: linear time trend, 
+   \item \texttt{X3}: river discharge.
+\end{itemize}
+
+\noindent There a 28 observations. The first six observations are shown below.
+
+<<>>==
+data(salinity, package = "robustbase")
+head(salinity)
+@
+
+\noindent We consider fitting the model \texttt{Y $\sim$ X1 + X2 + X3} by several implementations of the regression $GM$-estimators. 
+
+<<echo=FALSE>>==
+design <- svydesign(id = ~1, weights = rep(1, nrow(salinity)), data = salinity)
+f <- Y ~ X1 + X2 + X3 
+@
+
+
+\subsubsection{Mallows $GM$-estimator}
+The findings (see tabulated results, below) are analogous to the results discussed in Section \ref{sec:delivery_mallows}. We therefore conclude that the implementation \texttt{svyreg\_huberGM} for the Mallows $GM$-estimator is comparable to the other implementations.
+
+<<echo=FALSE>>==
+robeth <- robeth_mallows(f, salinity)
+wgt_salinity_mallows <- robeth$wgt
+gm0 <- GM(f, salinity, wgt_salinity_mallows, zero = TRUE)
+gm <- GM(f, salinity, wgt_salinity_mallows, zero = FALSE)
+robsurvey <- svyreg_huberGM(f, design, k = 1.345, xwgt = wgt_salinity_mallows, 
+   type = "Mallows")
+
+coeff <- rbind(
+   c(robeth$coef, robeth$scale),
+   c(gm0$coef, gm0$scale),
+   c(gm$coef, gm$scale),
+   c(coef(robsurvey), robsurvey$robust$scale))
+
+colnames(coeff)[5] <- "scale"
+rownames(coeff) <- c(
+   "rywalg (ROBETH, Mallows)", 
+   "GM (Mallows, MADzero)",
+   "GM (Mallows, MAD)",
+   "svyreg_huberGM (Mallows)") 
+
+print(round(coeff, 3))   
+@
+
+\subsubsection{Schweppe $GM$-estimator}
+The application of Schweppe type $GM$-estimator to the \texttt{salinity} data confirms the findings that we have encountered in our discussion of the  \texttt{delivery} data; see Section \ref{sec:delivery_schweppe}. Notably, with our estimator \texttt{GM (Mallows, MAD)} we cannot replicate the results of \texttt{rywalg (ROBETH, Schweppe)}. Fortunately, the results of the two implementations differ only slightly and are thus no cause for severe concerns. 
+
+
+<<echo=FALSE>>==
+robeth <- robeth_schweppe(f, salinity)
+wgt_salinity_schweppe <- robeth$wgt
+gm0 <- GM(f, salinity, wgt_salinity_schweppe, zero = TRUE, Mallows = FALSE)
+gm <- GM(f, salinity, wgt_salinity_schweppe, zero = FALSE, Mallows = FALSE)
+robsurvey <- svyreg_huberGM(f, design, k = 1.345, xwgt = wgt_salinity_schweppe, 
+   type = "Schweppe")
+
+coeff <- rbind(
+   c(robeth$coef, robeth$scale),
+   c(gm0$coef, gm0$scale),
+   c(gm$coef, gm$scale),
+   c(coef(robsurvey), robsurvey$robust$scale))
+
+colnames(coeff)[5] <- "scale"
+rownames(coeff) <- c(
+   "rywalg (ROBETH, Schweppe)", 
+   "GM (Schweppe, MADzero)",
+   "GM (Schweppe, MAD)",
+   "svyreg_huberGM (Schweppe)") 
+
+print(round(coeff, 3))   
+@
+
+
+%-------------------------------------------------------------------------------
+\section{Summary and conclusions}\label{sec:summary}
+In this paper, we studied the behavior of the methods \texttt{svyreg\_huber}  and \texttt{svyreg\_huberGM} in package \texttt{robsurvey} with other implementations. We restricted attention to studying the methods for four well-known datasets. For all datasets under study, our implementations replicate (or are at least very close to) the results of the competing implementations. Although our comparisons provide only anecdotal evidence on the performance of the methods, we believe that the comparisons shed some light on the behavior of our implementations. We are fairly confident that the methods \texttt{svyreg\_huber}  and \texttt{svyreg\_huberGM} behave the way they are supposed to. 
+
+
+%-------------------------------------------------------------------------------
+\begin{thebibliography}{9}
+
+\bibitem{brownlee}
+Brownlee, K. A. (1965). Statistical Theory and Methodology in Science and 
+   Engineering, 2nd ed., John Wiley and Sons, New York.
+
+\bibitem{chatterjeeprice} 
+Chatterjee, S. and B. Price (1977). Regression Analysis by Example, John Wiley
+   and Sons, New York. 
+
+\bibitem{chatterjeehadi} 
+Chatterjee, S. and A. S. Hadi (2012). Regression Analysis by Example, 5th ed., 
+   John Wiley and Sons, Hoboken (NJ). 
+
+\bibitem{robustbase} 
+M{\"a}chler, M., P. Rousseeuw, C. Croux, V. Todorov, A. Ruckstuhl, M. 
+   Salibian-Barrera, T. Verbeke, M. Koller, E. L. T. Conceicao, and 
+   M. A. di Palma (2019). robustbase: Basic 
+   Robust Statistics R package version 0.93-4. 
+   URL http://CRAN.R-project.org/package=robustbase
+
+\bibitem{robeth} 
+Marazzi, A. (2020). robeth: R Functions for Robust Statistics. 
+   R package version 2.7-6. 
+   URL https://CRAN.R-project.org/package=robeth
+
+\bibitem{marazzi1993}
+Marazzi, A. (1993). Algorithms, Routines, and S-Functions for Robust Statistics: 
+   The Fortran Library ROBETH with an interface to S-PLUS, 
+   Chapman and Hall/ CRC, New York. (with the collab. of Johann Joss, Alex 
+   Randriamiharisoan)
+
+\bibitem{montgomerypeck}
+Montgomery, D. C. and E. A. Peck (2006). Introduction to Linear Regression
+   Analysis, 4th ed., John Wiley and Sons, Hoboken (NJ).
+
+\bibitem{rousseeuwleroy}
+Rousseeuw, P. J. and A. M. Leroy (1987). Robust Regression and Outlier 
+   Detection, John Wiley and Sons, Hoboken (NJ). 
+
+\bibitem{ruppertcarroll}
+Ruppert, D. and R. J. Carroll (1980). Trimmed Least Squares Estimation in the 
+   Linear Model. Journal of the American Statistical Association 75 (372), 
+   pp. 828--838.
+
+\bibitem{mass} 
+Venables, W. N. and B.D. Ripley (2002). Modern Applied Statistics with S, 
+   4th ed., Springer, New York. 
+\end{thebibliography}
+
+%-------------------------------------------------------------------------------
+\appendix
+
+\section{Listing of the function \texttt{GM}}
+The following function is used as a reference. It computes Mallows and Schweppe type regression $GM$-estimates (with Huber $\psi$-function and the tuning constant fixed at $k=1.345$). The function is in no way ``waterproof'' and should not be used in practice. 
+
+\setstretch{1}
+
+<<echo=FALSE>>=
+GM
+@
+
+\setstretch{1.15}
+
+\section{R session information}
+<<echo=false,results=tex>>=
+toLatex(sessionInfo(), locale = FALSE)
+@
+
+\end{document} 

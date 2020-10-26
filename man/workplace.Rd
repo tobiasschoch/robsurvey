@@ -39,5 +39,10 @@ Patak, Z., M. Hidiroglou, and P. Lavallée (1998). The methodology of the Workpl
 
 \examples{
 data(workplace)
+\dontrun{
+# load package survey and defined the survey.design2 object dn
+librar(survey) 
+dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight, data = workplace)
+}
 }
 \keyword{datasets}

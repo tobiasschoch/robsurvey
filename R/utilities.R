@@ -28,4 +28,16 @@ summary.formula <- function(object, design, na.rm = FALSE, ...)
       rownames(res) <- c("weighted", "classical")
    }
    res
+}
+
+# weight associated with the Huber psi-function
+huberWgt <- function(x, k = 1.345)
+{
+   pmin.int(1, k / abs(x))
+} 
+
+# weight associated with the Tukey biweight psi-function
+tukeyWgt <- function(x, k = 4.685)
+{
+   (1 - (x / k)^2)^2 * (abs(x) <= k)
 } 
