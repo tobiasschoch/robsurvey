@@ -1,3 +1,6 @@
+#FIXME: remove the paste0 in cat
+
+
 summary.svystat_rob <- function(object, digits = max(3L, getOption("digits") - 
    3L), ...)
 {
@@ -8,7 +11,7 @@ summary.svystat_rob <- function(object, digits = max(3L, getOption("digits") -
    colnames(est) <- c(object$characteristic, "SE")
    print(est, digits)
    cat("\n")
-   if(!is.null(object$optim)){
+   if (!is.null(object$optim)) {
       cat("Robustness:\n")
       cat(paste0("  Psi-function: ", object$robust$psifunction, " with k = ",
 	 object$robust$k, "\n"))
@@ -16,11 +19,11 @@ summary.svystat_rob <- function(object, digits = max(3L, getOption("digits") -
 	 round(mean(object$robust$robweights), digits), "\n"))
       cat("\n")
       cat("Algorithm performance:\n")
-      if (object$optim$converged){
+      if (object$optim$converged) {
 	 cat(paste0("  converged in ", object$optim$niter, " iterations \n"))
 	 cat(paste0("  with residual scale (weighted MAD): ", 
 	    format(object$robust$scale, digits = digits), "\n"))
-      }else{
+      } else {
 	 cat(paste0("  FAILURE of convergence in ", object$optim$niter, 
 	    " iterations \n"))
 	 cat(paste0("  with residual scale (weighted MAD): ", 
@@ -68,24 +71,24 @@ robweights <- function(object)
 robweights.svystat_rob <- function(object)
 {
    tmp <- object$robust$robweights
-   if (is.null(tmp)){ 
+   if (is.null(tmp))
       stop("Robustness weights are not available\n")
-   } else {
+   else 
       tmp
-   }
 }
 
-print.svystat_rob <- function(x, digits = max(3L, getOption("digits") - 3L), ...)
+print.svystat_rob <- function(x, digits = max(3L, getOption("digits") - 3L), 
+   ...)
 {
    conv <- TRUE
-   if(!is.null(x$optim)){
+   if (!is.null(x$optim))
       conv <- x$optim$converged
-   }
-   if(conv){
+
+   if (conv) {
       m <- cbind(x$estimate, sqrt(x$variance))
       colnames(m) <- c(x$characteristic, "SE")
       print(m, digits)
-   }else{
+   } else {
       cat(paste0(x$call[[1]], ": failure of convergence in ", x$optim$niter,
 	 " steps\n"))
       cat("(you may use the 'summary' method to see more details)\n")

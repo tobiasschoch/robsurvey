@@ -46,9 +46,6 @@ double tukey_psi(double, double);
 double tukey_psi_prime(double, double);
 static inline double tukey_wgt(double, double) __attribute__((always_inline));
 
-static inline void cov_rwlslm(double*, double*, double*, double*, double*, 
-   double*, double*, double*, double*, double*, double*, int*, int*, int*, int*, 
-   int*) __attribute__((always_inline));
 static inline void inverse_qr(double*, double*, double*, int*, int*, int*, int)
    __attribute__((always_inline));
 
@@ -57,7 +54,7 @@ static inline void inverse_qr(double*, double*, double*, int*, int*, int*, int)
 |*                                                                           *|
 |*    x		  vectorized design matrix, array[n * p]		     *|
 |*    y		  response vector, array[n]	   			     *| 
-|*    w		  weights, array[n]					     *|
+|*    w		  weights, array[n] (on return: a vector of ones)	     *|
 |*    resid	  on return: residuals vector, array[n]			     *|
 |*    robwgt	  on return: robustness weights, array[n]		     *|
 |*    xwgt	  weight in design space, GM-estimator, array[n]	     *|
@@ -66,7 +63,6 @@ static inline void inverse_qr(double*, double*, double*, int*, int*, int*, int)
 |*    k		  robustness tuning constant				     *|
 |*    beta0	  on return: coefficient vector, array[p]		     *|
 |*    scale	  on return: normalized MAD				     *|
-|*    scale2	  on return: scale estimate (Proposal 2)		     *|
 |*    tol	  numerical tolerance criterion (stoping rule in rwls	     *|
 |*		  updating rule)					     *|
 |*    maxit	  max iterations (on input); iterations (on return)	     *|
@@ -75,7 +71,7 @@ static inline void inverse_qr(double*, double*, double*, int*, int*, int*, int)
 \*****************************************************************************/
 void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt, 
    double *xwgt, int *n, int *p, double *k, double *beta0, double *scale, 
-   double *scale2, double *tol, int *maxit, int *psi, int *type)
+   double *tol, int *maxit, int *psi, int *type)
 {
    int info = 0, iterations = 0, converged = 0;
    double mad_const = 1.482602;	 
@@ -87,7 +83,7 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
    work_y = (double*) Calloc(*n, double);	// work array 
    w_mallows = (double*) Calloc(*n, double);	// only used for Mallows GM 
 
-   // determine optimal size of array 'work' and allocat it 
+   // determine optimal size of array 'work' and allocate it 
    int lwork = -1; 
    fitwls(x, work_x, y, work_y, w, resid, beta0, n, p, work_x, &lwork, &info);
    work = (double*) Calloc(lwork, double);
@@ -128,7 +124,7 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
 
    // STEP 3: irls updating
    while (!converged && ++iterations < *maxit) {
-      // compute robwgt 
+      // compute robwgt (i.e. total wgt = sampling wgt * xwgt * robwgt)
       robweight(resid, robwgt, xwgt, w, work_y, k, scale, n, psi, type);
 
       // update beta and residuals
@@ -156,9 +152,9 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
    }
    *maxit = (converged) ? iterations : 0;
 
-   // covariance matrix
-   cov_rwlslm(resid, x, work_x, work_y, xwgt, robwgt, work, w, k, scale, scale2, 
-      n, p, psi, type, &lwork);
+   // compute robwgt (without sampling weights) 
+   for (int i = 0; i < *n; i++) 
+      robwgt[i] /= w[i];
 
    Free(beta_new); Free(work_x); Free(work_y); Free(work); Free(w_mallows);
 }
@@ -169,25 +165,31 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
 |*    resid	     residuals, array[n]				     *|
 |*    x		     design matrix, array[n * p]; on return: the p * p cov   *|
 |*		     matrix is stored in x[1..(p * p)]			     *|
-|*    work_x	     work array[n * p]					     *|
-|*    work_y	     work array[n]					     *|
 |*    xwgt	     weights in design space, array[n]			     *|
 |*    robwgt	     robustness weight, array[n]			     *|
-|*    work	     work array of size lwork, handed over to LAPACK fct.    *|
 |*    w		     sampling weight, array[n]				     *|
 |*    k		     robustness tuning constant				     *|
 |*    scale	     estimate of scale					     *|
 |*    scale2	     on return: estimate of scale (proposal 2)		     *|
-|*    n, p, lwork    dimensions						     *|
+|*    n, p	     dimensions						     *|
 |*    psi	     0 = Huber, 1 = asymmetric Huber, 2 = Tukey biweight     *|
 |*    type	     0 = M-est., 1 = Mallows GM-est., 2 = Schweppe GM-est.   *|
 \*****************************************************************************/
-static inline void cov_rwlslm(double *resid, double *x, double *work_x, 
-   double *work_y, double *xwgt, double *robwgt, double *work, double *w, 
-   double *k, double *scale, double *scale2, int *n, int *p, int *psi, 
-   int *type, int *lwork)
+void cov_rwlslm(double *resid, double *x, double *xwgt, double *robwgt, 
+   double *w, double *k, double *scale, double *scale2, int *n, int *p, 
+   int *psi, int *type)
 {
    double tmp, sum_w = 0.0;
+   double *work, *work_x, *work_y;
+  
+   work_x = (double*) Calloc(*n * *p, double);
+   work_y = (double*) Calloc(*n, double);
+
+   // determine lwork and allocate work: dgeqrf (used in inverse_qr)
+   int lwork = -1, info;
+   F77_CALL(dgeqrf)(n, p, x, n, work_x, work_y, &lwork, &info); 	
+   lwork = (int) work_y[0]; 
+   work = (double*) Calloc(lwork, double);
 
    // function ptrs (initialized, otherwise we get an "uninitialized" warning)
    double (*f_psi)(double, double) = huber_psi;		    
@@ -247,7 +249,7 @@ static inline void cov_rwlslm(double *resid, double *x, double *work_x,
       Memcpy(work_y, work_x, *n);		// temporarily store s_2 / s_1
 
       // QR factorization: Q -> x; R^{-1} -> work_x[1..(p * p)]
-      inverse_qr(x, work_x, work, n, p, lwork, 1);	
+      inverse_qr(x, work_x, work, n, p, &lwork, 1);	
 
       // pre-multiply Q by sqrt(s2 / s1) 
       for (int i = 0; i < *n; i++) {	  
@@ -290,19 +292,19 @@ static inline void cov_rwlslm(double *resid, double *x, double *work_x,
       // M-est. -----------------------------------------------------
       if (*type == 0) {	
 
-	 for (int i = 0; i < *n; i++) {    
-	    tmp = sqrt(w[i]); // pre-multiply x by sampling weight  		  
-	    for (int j = 0; j < *p; j++) 
-	       x[*n * j + i] *= tmp;      
-	 }
-
 	 // correction factor (see Huber, 1981, p. 172-174) 
 	 double kappa = 1.0 + (double)*p / sum_w * (Epsi_prime2 / 
 	    _POWER2(Epsi_prime) - 1.0) * (double)*n / (double)(*n - 1);
 	 *scale2 *= _POWER2(kappa);
 
 	 // QR factorization of x (goal: R^{-1} * R^{-T} =: inverse of x^T * x)
-	 inverse_qr(x, work_x, work, n, p, lwork, 0);	
+	 for (int i = 0; i < *n; i++) {    
+	    tmp = sqrt(w[i]); // pre-multiply x by sampling weight  		  
+	    for (int j = 0; j < *p; j++) 
+	       x[*n * j + i] *= tmp;      
+	 }
+
+	 inverse_qr(x, work_x, work, n, p, &lwork, 0);	
 
 	 F77_CALL(dtrmm)("R", "U", "T", "N", p, p, scale2, work_x, p, work_x, p);
 
@@ -316,7 +318,7 @@ static inline void cov_rwlslm(double *resid, double *x, double *work_x,
 	 }
 
 	 // QR factorization: Q -> x; R^{-1} -> work_x[1..(p * p)]
-	 inverse_qr(x, work_x, work, n, p, lwork, 1);	
+	 inverse_qr(x, work_x, work, n, p, &lwork, 1);	
 
 	 // pre-multiply Q by with sqrt(xwgt) 
 	 for (int i = 0; i < *n; i++) {	  
@@ -334,6 +336,7 @@ static inline void cov_rwlslm(double *resid, double *x, double *work_x,
       }
    }
    Memcpy(x, work_x, *p * *p);	       // put result in x[1..(p * p)]
+   Free(work); Free(work_x); Free(work_y);
 }
 
 /*****************************************************************************\
@@ -444,7 +447,7 @@ static inline void fitwls(double *x, double *work_x, double *y, double *work_y,
 } 
 
 /*****************************************************************************\
-|* Huber psi-prime- and wgt-functions					     *|
+|* Huber psi-, psi-prime- and wgt-functions				     *|
 \*****************************************************************************/
 double huber_psi(double x, double k)
 {
@@ -466,7 +469,7 @@ static inline double huber_wgt(double x, double k)
 }
 
 /*****************************************************************************\
-|* Huber asymmetric psi-prime- and wgt-functions			     *|
+|* Huber asymmetric psi-, psi-prime- and wgt-functions			     *|
 \*****************************************************************************/
 double huber_psi_asym(double x, double k)
 {
@@ -488,7 +491,7 @@ static inline double huber_wgt_asym(double x, double k)
 }
 
 /*****************************************************************************\
-|* Tukey biweigt psi-prime- and wgt-functions				     *|
+|* Tukey biweigt psi-, psi-prime- and wgt-functions			     *|
 \*****************************************************************************/
 double tukey_psi(double x, double k)
 {
@@ -552,136 +555,27 @@ static inline void robweight(double *resid, double *robwgt, double *xwgt,
       ptr = resid;
       resid = work_y;		       // resid -> work_y
    } 
-
-   Memcpy(robwgt, w, *n);	       // include sampling weight 
  
    switch (*psi) {		       // M- and GM-estimators
       case 0: // Huber weight 
 	 for (int i = 0; i < *n; i++) 
-	    robwgt[i] *= huber_wgt(resid[i] / *scale, *k);
+	    robwgt[i] = w[i] * huber_wgt(resid[i] / *scale, *k);
 	 break; 
 
       case 1: // asymmetric Huber weight
 	 for (int i = 0; i < *n; i++) 
-	    robwgt[i] *= huber_wgt_asym(resid[i] / *scale, *k);
+	    robwgt[i] = w[i] * huber_wgt_asym(resid[i] / *scale, *k);
 	 break; 
 
       case 2: // Tukey biweight weight 
 	 for (int i = 0; i < *n; i++) 
-	    robwgt[i] *= tukey_wgt(resid[i] / *scale, *k);
+	    robwgt[i] = w[i] * tukey_wgt(resid[i] / *scale, *k);
 	 break; 
    }
    
    if (*type == 2)		       // undo resid -> work_w
       resid = ptr;      
 }
-
-/*****************************************************************************\
-|*  weighted trimmed mean (scalar)					     *| 
-|*                                                                           *|
-|*    x		  data, array[n]					     *|
-|*    w		  weights, array[n]					     *|
-|*    lo	  lower bound [0, 1]					     *|
-|*    hi	  upper bound [0, 1] s.t. lo < hi			     *|
-|*    mean	  on return: weighted trimmed mean			     *|
-|*    n		  dimension						     *|
-\*****************************************************************************/
-void wtrimmedmean(double *x, double *w, double *lo, double *hi, double *mean, 
-   int *n)
-{
-   double quantile_lo, quantile_hi, sum_w = 0.0, sum_x = 0.0;   
-
-   // quantiles   
-   wquantile(x, w, n, lo, &quantile_lo); 
-   wquantile(x, w, n, hi, &quantile_hi); 
-
-   // trimmed mean 
-   for (int i = 0; i < *n; i++) {
-      if (quantile_lo <= x[i] && x[i] <= quantile_hi) {
-	 sum_x += x[i] * w[i];
-	 sum_w += w[i];
-      }
-   }
-
-   if (sum_w > DBL_EPSILON) 
-      *mean = sum_x / sum_w; 
-   else {
-      *mean = 0.0;
-      error("Error: trimmed mean: division by zero\n");
-   }
-}
-
-/*****************************************************************************\
-|*  weighted winsorized mean (scalar)					     *| 
-|*                                                                           *|
-|*    x		  data, array[n]					     *|
-|*    w		  weights, array[n]					     *|
-|*    lo	  lower bound [0, 1]					     *|
-|*    hi	  upper bound [0, 1] s.t. lo < hi			     *|
-|*    mean	  on return: weighted trimmed mean			     *|
-|*    n		  dimension						     *|
-\*****************************************************************************/
-void wwinsorizedmean(double *x, double *w, double *lo, double *hi, 
-   double *mean, int *n)
-{
-   double quantile_lo, quantile_hi, sum_w = 0.0, sum_x = 0.0;   
-
-   // quantiles   
-   wquantile(x, w, n, lo, &quantile_lo); 
-   wquantile(x, w, n, hi, &quantile_hi); 
-
-   // winsorized mean 
-   for (int i = 0; i < *n; i++) {
-      if (x[i] < quantile_lo) 
-	 sum_x += quantile_lo * w[i];
-      else {
-	 if (x[i] < quantile_hi)
-	    sum_x += x[i] * w[i];
-	 else
-	    sum_x += quantile_hi * w[i];
-      } 
-      sum_w += w[i];
-   }
-   
-   *mean = sum_x / sum_w;
-}
-
-/*****************************************************************************\
-|*  weighted k one-sided winsorized mean (scalar)			     *| 
-|*                                                                           *|
-|*    x		  data, array[n]					     *|
-|*    w		  weights, array[n]					     *|
-|*    k		  k-th largest element (zero index)			     *|
-|*    mean	  on return: weighted trimmed mean			     *|
-|*    n		  dimension						     *|
-|*    prob	  on return: estimated probability			     *|
-\*****************************************************************************/
-void wkwinsorizedmean(double *x, double *w, int *k, double *mean, 
-   int *n, double *prob)
-{
-   double sum_xw = 0.0, below_sum_w = 0.0, above_sum_w = 0.0;
-
-   // determine k-th largest element (it puts element k into its final 
-   // position in the sorted array) 
-   wselect0(x, w, 0, *n - 1, *k);
-
-   // partial sums of x[0..k] * w[0..k] and w[0..k]  
-   for (int i = 0; i < *k + 1; i++) {
-      sum_xw += w[i] * x[i];
-      below_sum_w += w[i];
-   }
-
-   // partial sum of w[(k+1)..(n-1)]
-   for (int i = *k + 1; i < *n; i++)
-      above_sum_w += w[i];
-
-   sum_xw += above_sum_w * x[*k]; 
-   
-   *mean = sum_xw / (below_sum_w + above_sum_w);   // winsorized mean
-
-   *prob = below_sum_w / (below_sum_w + above_sum_w); // estimate of prob
-}
-
 
 /*****************************************************************************\
 |*  weighted median of the absolute deviations from the weighted median; the *|
@@ -702,7 +596,7 @@ static inline double wmad(double *x, double *w, double *work, int n,
    wquantile(x, w, &n, &prob, &med); 
 
    // compute absolute deviation from the weighted median
-   for(int i = 0; i < n; i++)
+   for (int i = 0; i < n; i++)
       work[i] = fabs(x[i] - med);
 
    wquantile(work, w, &n, &prob, &mad); 

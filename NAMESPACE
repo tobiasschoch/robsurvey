@@ -78,6 +78,10 @@ export(weighted_total_trimmed)
 export(weighted_total_tukey)
 export(weighted_total_winsorized)
 
+export(wBACON)
+export(distance)
+S3method(print,robmv)
+
 importFrom(graphics,plot)
 
 useDynLib(robsurvey)

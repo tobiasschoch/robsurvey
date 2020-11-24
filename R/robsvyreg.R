@@ -17,27 +17,24 @@ robsvyreg <- function(x, y, w, k, psi, type, xwgt = NULL, var = NULL, ...)
       resid = as.double(numeric(n)), robwgt = as.double(numeric(n)), 
       xwgt = as.double(xwgt), n = as.integer(n), p = as.integer(p), 
       k = as.double(k), beta = as.double(numeric(p)), 
-      scale = as.double(numeric(1)), scale2 = as.double(numeric(1)), 
-      tol = as.double(ctrl$tol), maxit = as.integer(ctrl$maxit), 
-      psi = as.integer(psi), type = as.integer(type), PACKAGE = "robsurvey")
+      scale = as.double(numeric(1)), tol = as.double(ctrl$tol), 
+      maxit = as.integer(ctrl$maxit), psi = as.integer(psi), 
+      type = as.integer(type), PACKAGE = "robsurvey")
 
    psi_fun <- switch(psi + 1, "Huber", "asymHuber", "Tukey")
    names(tmp$beta) <- colnames(x) 
    list(
       characteristic = "regression", 
-      estimator = paste0("Survey regression ", switch(type + 1, "", 
-	 "Mallows G", "Schweppe G") ,"M-estimator (", psi_fun," psi, k = ", 
-	 k, ")"),
+      estimator = list(string = paste0("Survey regression ", switch(type + 1, 
+	 "", "Mallows G", "Schweppe G") ,"M-estimator (", psi_fun," psi, k = ", 
+	 k, ")"), type = type, psi = psi, psi_fun = psi_fun, k = k),
       estimate = tmp$beta, 
-      variance = list(covmat = matrix(tmp$x[1:(p * p)], ncol = p), 
-	 scale = tmp$scale2),
-      robust = list(psifunction = psi_fun, 
-	 k = k, robweights = tmp$robwgt, outliers = 1 * (tmp$robwgt < 1), 
-	 Epsi2 = tmp$Epsi2, Epsiprime = tmp$Epsiprime, scale = tmp$scale), 
+      scale = tmp$scale, 
+      robust = list(robweights = tmp$robwgt, outliers = 1 * (tmp$robwgt < 1)), 
       optim = list(converged = (tmp$maxit != 0), niter = ifelse(tmp$maxit == 0, 
 	 ctrl$maxit, tmp$maxit), tol = ctrl$tol), 
       residuals = tmp$resid, 
-      model = list(x = x, y = y, w = w, var = var, n = n, p = p), 
+      model = list(x = x, y = y, w = w, var = var, xwgt = xwgt, n = n, p = p), 
       design = NA, 
       call = NA)
 }

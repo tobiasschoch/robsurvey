@@ -31,9 +31,9 @@
 In this short report, we compare the behavior of the regression $M$- and $GM$-estimators in package \texttt{robsurvey} with the methods from other implementations. To this end, we study the estimated parameters for 4 well-known datasets/ cases studies. With regard to competing implementations, we consider the methods from the following \texttt{R} packages: 
 \begin{Schunk}
 \begin{Soutput}
-MASS, version: 7.3.51.1
+MASS, version: 7.3.51.6
 robeth, version: 2.7.6
-robustbase, version: 0.93.4
+robustbase, version: 0.93.6
 \end{Soutput}
 \end{Schunk}
 \noindent These packages are documented in, respectively, \cite{mass}, \cite{robeth}, and \cite{robustbase}. 
@@ -399,7 +399,7 @@ function(formula, data, xwgt, zero = FALSE, Mallows = TRUE, tol = 1e-5,
    }
    list(coef = beta, scale = scale)
 }
-<bytecode: 0x000000001eeba648>
+<bytecode: 0x0000000023874948>
 \end{Soutput}
 \end{Schunk}
 
@@ -407,14 +407,15 @@ function(formula, data, xwgt, zero = FALSE, Mallows = TRUE, tol = 1e-5,
 
 \section{R session information}
 \begin{itemize}\raggedright
-  \item R version 3.5.3 (2019-03-11), \verb|x86_64-w64-mingw32|
+  \item R version 4.0.2 (2020-06-22), \verb|x86_64-w64-mingw32|
   \item Running under: \verb|Windows 10 x64 (build 18363)|
   \item Matrix products: default
   \item Base packages: base, datasets, graphics, grDevices, grid,
     methods, stats, utils
-  \item Other packages: MASS~7.3-51.1, Matrix~1.2-15, robeth~2.7-6,
-    robsurvey~0.2, robustbase~0.93-4, survey~3.35-1, survival~2.43-3
-  \item Loaded via a namespace (and not attached): compiler~3.5.3,
-    DEoptimR~1.0-8, lattice~0.20-38, splines~3.5.3, tools~3.5.3
+  \item Other packages: MASS~7.3-51.6, Matrix~1.2-18, robeth~2.7-6,
+    robsurvey~0.2, robustbase~0.93-6, survey~4.0, survival~3.2-3
+  \item Loaded via a namespace (and not attached): compiler~4.0.2,
+    DBI~1.1.0, DEoptimR~1.0-8, lattice~0.20-41, mitools~2.4,
+    splines~4.0.2, tools~4.0.2
 \end{itemize}
 \end{document} 

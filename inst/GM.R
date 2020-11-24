@@ -1,11 +1,12 @@
 GM <- function(formula, data, xwgt, zero = FALSE, Mallows = TRUE, tol = 1e-5, 
-   low = FALSE, high = FALSE) 
+   low = FALSE, high = FALSE, k = 1.345) 
 {
    mf <- model.frame(formula, data)
    y <- as.numeric(model.response(mf))
    x <- model.matrix(terms(formula), mf)  
    n <- NROW(y); p <- NCOL(x)
 
+   w <- rep(1, n); sum_w <- sum(w)
    tmp <- lm.fit(x, y)
    beta0 <- tmp$coefficients 
    resid <- tmp$resid 
@@ -18,11 +19,12 @@ GM <- function(formula, data, xwgt, zero = FALSE, Mallows = TRUE, tol = 1e-5,
       const <- 0.6744898
 
    while (1) {
-      tmp <- if (Mallows)
-	    lm.wfit(x, y, xwgt * huberWgt(resid / scale0))
+      robwgt <- if (Mallows)
+	    huberWgt(resid / scale0, k)
 	 else
-	    lm.wfit(x, y, huberWgt(resid / (xwgt * scale0)))
-      
+	    huberWgt(resid / (xwgt * scale0), k)
+
+      tmp <- lm.wfit(x, y, robwgt)
       beta <- tmp$coefficients 
       resid <- tmp$residuals
 
@@ -43,8 +45,22 @@ GM <- function(formula, data, xwgt, zero = FALSE, Mallows = TRUE, tol = 1e-5,
       }
    }
 
-   list(coef = beta, scale = scale)
-
+   # covariance
+   if (Mallows) {
+      psiprime <- huberPsi@Dpsi(resid / scale, k)
+      Epsi <- sum(w * psiprime) / sum_w
+      Epsi2 <- sum(w * psiprime^2) / sum_w
+      S <- sum(w * (resid * robwgt)^2) / (sum_w - p) / Epsi^2 
+      qr <- qr(sqrt(w * xwgt) * x)
+      R <- qr.R(qr)
+      Qw <- sqrt(xwgt) * qr.Q(qr)
+      Rinv <- backsolve(R, diag(p))
+      Sigma <- crossprod(Qw %*% t(Rinv))
+   } else { 
+      s1 <- 
+      s2 <-   
+   }
+   list(coef = beta, scale = scale, sigma = Sigma * S)
 }
 
 
@@ -87,15 +103,12 @@ H <- function(formula, data, zero = FALSE, tol = 1e-5, low = FALSE,
    Rinv <- solve(R, diag(p))
    Sigma <- tcrossprod(Rinv, Rinv)
 
-
    psiprime <- huberPsi@Dpsi(resid / scale)
    Epsi <- sum(w * psiprime) / sum_w
    Epsi2 <- sum(w * psiprime^2) / sum_w
 
    S <- sum(w * (resid * robwgt)^2) / (sum_w - p) 
-
-   kappa <- 1 + p / sum(w) * (Epsi2 / Epsi^2  - 1) * n / (n - 1) # Huber, p. 174 takes the population variance estimator 
-
+   kappa <- 1 + p / sum(w) * (Epsi2 / Epsi^2  - 1) * n / (n - 1) 
    stddev <- kappa * sqrt(S) / Epsi
 
    list(coef = beta, scale = scale, kappa = kappa, stddev = stddev, sigma = Sigma * stddev^2)
@@ -114,6 +127,7 @@ svyreg_huber(f, design, k = 1.345)
 
 svyreg_huberGM(f, design, k = 1.345, type = "Mallows", xwgt = rep(1, 50))
 
+GM(f, education, Mallows = TRUE, xwgt = rep(1, 50))
 
 
 tmp <- svyreg_huberGM(f, design, k = 1.345, type = "Mallows", xwgt = rep(1, 50))
