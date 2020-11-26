@@ -23,9 +23,10 @@ Author: Beat Hulliger [aut, cph],
   Martin Sterchi [aut]
 Maintainer: Tobias Schoch <tobias.schoch@fhnw.ch>
 Description: Functions to compute robust (outlier-resistant) estimates of finite 
-    population characteristics. The package supports the computations of robust 
-    means, totals, ratios, etc. Available methods are Huber M-estimators, 
-    trimming, and winsorization. The package robsurvey complements the survey.
+   population characteristics. The package supports the computations of robust 
+   means, totals, ratios, etc. Available methods are regression M- and 
+   GM-estimators, trimming, and winsorization. The package robsurvey complements 
+   the survey.
 License: GPL (>= 2)
 URL: https://github.com/tobiasschoch/robsurvey
 BugReports: https://github.com/tobiasschoch/robsurvey/issues

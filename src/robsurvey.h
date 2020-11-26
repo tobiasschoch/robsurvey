@@ -12,6 +12,7 @@
 #include <R_ext/Lapack.h>
 #include <R_ext/BLAS.h>
 #include "wquantile.h" 
+#include "cbacon.h" 
 #include "mallows.h" 
 #include "huberm.h" 
 #include "trimmedwinsorized.h"

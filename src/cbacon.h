@@ -15,8 +15,6 @@
 
 #ifndef _CBACON_H 
 #define _CBACON_H
-
 void wbacon(double*, double*, double*, double*, double*, int*, int*, double*, 
    int*, double*, int*, int*);
-
 #endif 

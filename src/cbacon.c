@@ -25,46 +25,63 @@
       pp. 91-103.
 */
 
-#include <R.h>
-#include <Rmath.h>
-#include <R_ext/Lapack.h>
-#include <R_ext/BLAS.h>
-#include "wquantile.h" 
+#include "cbacon.h" 
 
 // macros
-#define _RANK_TOLERANCE 1.0e-8
+#define R_PACKAGE 1		   // 1: *.dll/*.so for R; 0: standalone binary 
+#define DEBUG_MODE 0		   // 1: debug mode on; 0: off
+#define _RANK_TOLERANCE 1.0e-8	   // criterion to detect rank deficiency
 #define _POWER2(_x) ((_x) * (_x))
+
+#if R_PACKAGE			    
+   #define PRINT_TO_CONSOLE(_f, ...) Rprintf((_f), ##__VA_ARGS__)
+#else
+   #define PRINT_TO_CONSOLE(_f, ...) printf((_f), ##__VA_ARGS__)
+#endif
 
 // prototype of local function
 static inline double cutoffval(double, int, int, int) 
    __attribute__((always_inline));
 static inline void initialsubset(double*, double*, double*, int*, int*, int*, 
-   int*, int*) __attribute__((always_inline));
+   int*, int*)  __attribute__((always_inline));
 static inline void weightedscatter(double*, double*, double*, double*, double*, 
    int*, int*) __attribute__((always_inline));
 static inline void weightedmean(double*, double*, double*, int*, int*) 
    __attribute__((always_inline));
 static inline void mahalanobis(double*, double*, double*, double*, double*, 
-   int*, int*) __attribute__((always_inline));
+   double*, int*, int*) __attribute__((always_inline));
+static inline double qchisq2(double, double) __attribute__((always_inline));
+
+#if DEBUG_MODE
+void print_cov(double*, int*);
+#endif
+
+/******************************************************************************\
+|* Quantile of chi-square distr. (approximation by Lin, 1994)		      *|	
+|*    p	    probability							      *|	
+|*    n	    degrees of freedom						      *|	
+|*									      *|	
+|* Lin, J.-T. (1994). New approximations for the precentage points of the     *|	
+|*    chi-square distribution, Probab. Eng. Inf. Sci. 8, pp. 135-146.	      *|	
+\******************************************************************************/
+static inline double qchisq2(double p, double n) 
+{
+   return _POWER2(-0.655 + 0.975 * sqrt(n + 0.6) + 1.839 * sqrt(-log10(p))) - 3.0;
+}
 
 /*****************************************************************************\
-|*  Chi-squared cutoff value (p-dimensional, sample size n	  	     *|
+|* Chi-squared cutoff value (p-dimensional, sample size n	  	     *|
 |*    alpha	  scalar (0 <= alpha <= 1)		                     *|
-|*    n		  scalar						     *|
-|*    p		  scalar	 					     *|
-|*                                                                           *|
-|*    dependency: qchisq <R_ext/Utils.h>                                     *|
+|*    k		  size of subset					     *|
+|*    n, p	  dimensions	 					     *|
 \*****************************************************************************/
 static inline double cutoffval(double alpha, int n, int k, int p)
 {
-   double h = ((double)n + (double)p + 1.0) / 2.0;
-   double chr = fmax(0.0, (h - (double)k) / (h + (double)k));
-   double cnp = 1.0 + ((double)p + 1.0) / ((double)n - (double)p) + 
-      2.0 / ((double)n - 1.0 - 3.0 * (double)p);
-   double cnpr = cnp + chr;
-   double cutoff = cnpr * sqrt(qchisq(alpha / (double)n, p, 0, 0));
-
-   return cutoff;
+   double dn = (double)n, dp = (double)p, dk = (double)k;
+   double h = (dn + dp + 1.0) / 2.0;
+   double chr = fmax(0.0, (h - dk) / (h + dk));
+   double cnp = 1.0 + (dp + 1.0) / (dn - dp) + 2.0 / (dn - 1.0 - 3.0 * dp);
+   return (cnp + chr) * sqrt(qchisq2(alpha / dn, dp));
 }
 
 /*****************************************************************************\
@@ -181,68 +198,87 @@ void wbacon(double *x, double *w, double *center, double *scatter, double *dist,
    int *maxiter, int *verbose)
 {
    int *subset0;
-   double *w_cpy, *work; 
+   double *w_cpy, *work_np, *work_pp; 
 
-   subset0 = (int*) Calloc(*n, int); 
+   subset0 = (int*) Calloc(*n, int);	     
    w_cpy = (double*) Calloc(*n, double); 
-   work = (double*) Calloc(*n * *p, double); 
+   work_np = (double*) Calloc(*n * *p, double); 
+   work_pp = (double*) Calloc(*p * *p, double); 
 
    // STEP 0: establish initial subset 
    double dhalf = 0.5;
    for (int j = 0; j < *p; j++)	 // center: coordinate-wise median
       wquantile(x + *n * j, w, n, &dhalf, &center[j]);   
 
-   weightedscatter(x, work, w, center, scatter, n, p);	 // covariance 
-   mahalanobis(x, work, center, scatter, dist, n, p);	 // Mahalan. dist. 
+   // scatter and Mahalanobis distances
+   weightedscatter(x, work_np, w, center, scatter, n, p);   
+   mahalanobis(x, work_np, work_pp, center, scatter, dist, n, p);  
 
-   Memcpy(w_cpy, w, *n);
+   Memcpy(w_cpy, w, *n);  // copy w (w_cpy will be set 0 if not in subset)
    int subsetsize; 
    initialsubset(x, w_cpy, dist, subset, &subsetsize, n, p, verbose);
 
    // STEP 1: update iteratively
-   int iter = 1;
+   int iter = 1, is_different;
    for (;;) {
 
       if (*verbose) {
 	 double percentage = 100.0 * (double)subsetsize / (double)*n;
-	 Rprintf("Subset %d: n = %d (%.1f%%)\n", iter, subsetsize, percentage);
+	 if (iter > 1)
+	    PRINT_TO_CONSOLE("Subset %d: n = %d (%.1f%%); cutoff: %.2f\n", iter, 
+	       subsetsize, percentage, *cutoff);
+	 else 
+	    PRINT_TO_CONSOLE("Subset %d: n = %d (%.1f%%)\n", iter, subsetsize, 
+	       percentage);
       }
 
-      weightedmean(x, w_cpy, center, n, p);		       // mean on subset
-      weightedscatter(x, work, w_cpy, center, scatter, n, p);  // cov on subset
-      mahalanobis(x, work, center, scatter, dist, n, p);       // Mahalan. dist.
+      // location, scatter and the Mahalanobis distances
+      weightedmean(x, w_cpy, center, n, p);			  
+      weightedscatter(x, work_np, w_cpy, center, scatter, n, p);  
+#if DEBUG_MODE
+      print_cov(work_np, p);
+#endif
+      mahalanobis(x, work_np, work_pp, center, scatter, dist, n, p);       
 
-      // check for convergence (XOR current with last subset)
-      int converged = 0;
+      // check whether the subsets differ (XOR current with previous subset)
+      is_different = 0;
       for (int i = 0; i < *n; i++) {
-	 converged += subset0[i] ^ subset[i];    
-	 if (converged) break;
+	 if (subset0[i] ^ subset[i]) {   
+	    is_different = 1;
+	    break;
+	 }
       }
-      if (converged == 0) { 
+      if (is_different == 0) { 
 	 *maxiter = iter; 
 	 break;
       } 
 
+      // chi-square cutoff value (quantile)
       *cutoff = cutoffval(*alpha, *n, subsetsize, *p);   
+#if DEBUG_MODE
+      PRINT_TO_CONSOLE("cutoff: %.4f\n", *cutoff);
+#endif
 
-      // generate new subset
+      // generate new subset (based on updated Mahalanobis dist.)
       Memcpy(subset0, subset, *n); 
       Memcpy(w_cpy, w, *n); 
 
       subsetsize = 0;
       for (int i = 0; i < *n; i++) {
-	 if (dist[i] < *cutoff) {
-	    subset[i] = 1;  
+	 if (dist[i] < *cutoff) {      
+	    subset[i] = 1;	       
 	    subsetsize += 1;
-	 } else
-	    w_cpy[i] = 0.0;
+	 } else {		       
+	    subset[i] = 0;
+	    w_cpy[i] = 0.0;	    // weight = 0 (if obs. is not in subset)
+	 }
       }
 
       iter++;
       if (iter > *maxiter) break;
    }
- 
-   Free(subset0); Free(w_cpy); Free(work);
+
+   Free(subset0); Free(w_cpy); Free(work_np); Free(work_pp); 
 }
 
 /*****************************************************************************\
@@ -266,8 +302,11 @@ static inline void weightedmean(double *x, double *w, double *center, int *n,
       }
    }
 
-   for (int j = 0; j < *p; j++)
-      center[j] /= sum_w; 
+   if (sum_w > DOUBLE_EPS) 
+      for (int j = 0; j < *p; j++)
+	 center[j] /= sum_w; 
+   else 
+      error("Weighted mean: division by zero\n");
 }
 
 /*****************************************************************************\
@@ -300,47 +339,65 @@ static inline void weightedscatter(double *x, double *work, double *w,
    F77_CALL(dgemm)("T",	"N", p, p, n, &done, work, n, work, n, &dzero, scatter, 
       p);	
 
-   for (int i = 0; i < (*p * *p); i++)
-      scatter[i] /= (sum_w - 1); 
+   if (sum_w > DOUBLE_EPS) 
+      for (int i = 0; i < (*p * *p); i++)
+	 scatter[i] /= (sum_w - 1); 
+   else 
+      error("Weighted scatter: division by zero\n");
 }
 
 /*****************************************************************************\
 |*  Mahalanobis distance						     *|
 |*    x		  array[n, p]				                     *|
-|*    work	  array[n, p]						     *|
+|*    work_np	  array[n, p]						     *|
+|*    work_pp	  array[p, p]						     *|
 |*    center	  array[p]	       		      	                     *|
 |*    scatter	  array[p, p]		     	      	                     *|
 |*    dist	  on return: array[n]	     	      	                     *|
 |*    n, p	  dimensions						     *|
 \*****************************************************************************/
-static inline void mahalanobis(double *x, double *work, double *center, 
-   double *scatter, double *dist, int *n, int *p)
+inline void mahalanobis(double *x, double *work_np, double *work_pp, 
+   double *center, double *scatter, double *dist, int *n, int *p)
 {
-   Memcpy(work, x, *n * *p);		  // copy of 'x' 
+   Memcpy(work_np, x, *n * *p);		     // copy of 'x' 
 
    for (int i = 0; i < *n; i++)       
       for (int j = 0; j < *p; j++) 
-	 work[*n * j + i] -= center[j];	  // center the data
+	 work_np[*n * j + i] -= center[j];   // center the data
 
-   Memcpy(dist, scatter, *p * *p); // store 'scatter' temporarily in 'dist'
-
-   // Cholesky decomposition of scatter matrix (stored in 'dist') 
+   // Cholesky decomposition of scatter matrix 
+   Memcpy(work_pp, scatter, *p * *p); 
    int info;
-   F77_CALL(dpotrf)("L", p, dist, p, &info);
-   if (info != 0) error("mahalanobis: DPOTRF failed\n");
+   F77_CALL(dpotrf)("L", p, work_pp, p, &info);
+   if (info != 0) error("Mahalanobis distance: DPOTRF failed\n");
 
    // Solve for y in A * y = B by forward subsitution (A = Cholesky factor) 
    double done = 1.0;
-   F77_CALL(dtrsm)("R",	"L", "T", "N", n, p, &done, dist, p, work, n);		
- 
+   F77_CALL(dtrsm)("R",	"L", "T", "N", n, p, &done, work_pp, p, work_np, n);		
+
    for (int i = 0; i < *n; i++) {   // Mahalanobis distance
       dist[i] = 0.0;
 
       for (int j = 0; j < *p; j++) 
-	 dist[i] += _POWER2(work[*n * j + i]);
+	 dist[i] += _POWER2(work_np[*n * j + i]);
 
       dist[i] = sqrt(dist[i]);
    }
 }
 
+/*****************************************************************************\
+|* Print square matrix							      *|
+\*****************************************************************************/
+#if DEBUG_MODE
+void print_cov(double *x, int *p)
+{
+   for (int i = 0; i < *p; i++) {
+      for (int j = 0; j < *p; j++) {
+	 PRINT_TO_CONSOLE("%.4f\t", x[j * *p + i]);
+      }
+      PRINT_TO_CONSOLE("\n");
+   }
+   PRINT_TO_CONSOLE("\n");
+}
+#endif
 #undef _POWER2 
