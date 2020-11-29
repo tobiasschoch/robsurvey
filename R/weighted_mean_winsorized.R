@@ -38,7 +38,7 @@ weighted_mean_k_winsorized <- function(x, w, k, info = FALSE, na.rm = FALSE)
    if (k >= n) stop("k must be smaller than n\n", call. = FALSE)
    if (k < 1) stop("k must larger than 1\n", call. = FALSE)
    tmp <- .C("wkwinsorizedmean", x = as.double(dat$x), w = as.double(dat$w),
-      k = as.integer(k - 1), loc = as.double(numeric(1)), n = as.integer(n), 
+      k = as.integer(n - k - 1), loc = as.double(numeric(1)), n = as.integer(n), 
       prob = as.double(numeric(1)), PACKAGE = "robsurvey")
    if (info){
       res <- list(

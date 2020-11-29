@@ -198,17 +198,19 @@ void wbacon(double *x, double *w, double *center, double *scatter, double *dist,
    int *maxiter, int *verbose)
 {
    int *subset0;
-   double *w_cpy, *work_np, *work_pp; 
+   double *w_cpy, *work_np, *work_pp, *work_2n; 
 
    subset0 = (int*) Calloc(*n, int);	     
    w_cpy = (double*) Calloc(*n, double); 
    work_np = (double*) Calloc(*n * *p, double); 
    work_pp = (double*) Calloc(*p * *p, double); 
+   work_2n = (double*) Calloc(2 * *n, double); 
+
 
    // STEP 0: establish initial subset 
    double dhalf = 0.5;
    for (int j = 0; j < *p; j++)	 // center: coordinate-wise median
-      wquantile(x + *n * j, w, n, &dhalf, &center[j]);   
+      wquantile_noalloc(x + *n * j, w, work_2n, n, &dhalf, &center[j]);   
 
    // scatter and Mahalanobis distances
    weightedscatter(x, work_np, w, center, scatter, n, p);   
@@ -278,7 +280,7 @@ void wbacon(double *x, double *w, double *center, double *scatter, double *dist,
       if (iter > *maxiter) break;
    }
 
-   Free(subset0); Free(w_cpy); Free(work_np); Free(work_pp); 
+   Free(subset0); Free(w_cpy); Free(work_np); Free(work_pp); Free(work_2n); 
 }
 
 /*****************************************************************************\

@@ -39,7 +39,7 @@ wBACON <- function(x, w = NULL, alpha = 0.95, intercept = FALSE, na.rm = FALSE,
       cutoff = as.double(numeric(1)), maxiter = as.integer(abs(maxiter)),
       verbose = as.integer(verbose), PACKAGE = "robsurvey")
 
-   tmp$scatter <- matrix(tmp$scatter, ncol = p)
+   tmp$cov <- matrix(tmp$scatter, ncol = p)
    tmp$verbose <- NULL
    tmp$converged <- ifelse(tmp$maxiter < maxiter, TRUE, FALSE)
    tmp$call <- match.call()

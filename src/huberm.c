@@ -52,7 +52,7 @@ void huberm(double *x, double *w, double *robwgt, double *k, double *loc,
 {
    int iter;
    double loc0, scale0, tmp, tmp_loc, tmp_scale, kappa, wtotal; 
-   double *x_wins;
+   double *x_wins, *work_2n;
 
    if (*n == 1) {
       *loc = *x;
@@ -60,7 +60,10 @@ void huberm(double *x, double *w, double *robwgt, double *k, double *loc,
    } else {
       // initialize location (weighted median)
       double p50 = 0.5;
-      wquantile(x, w, n, &p50, &loc0);
+
+      // quantile   
+      work_2n = (double*) Calloc(2 * *n, double);
+      wquantile_noalloc(x, w, work_2n, n, &p50, &loc0);
 
       // initialize variable for winsorized x-variable 
       x_wins = (double*) Calloc(*n, double);
@@ -70,8 +73,8 @@ void huberm(double *x, double *w, double *robwgt, double *k, double *loc,
       // Gaussian distr.)
       double p25 = 0.25, x25 = 0.0;
       double p75 = 0.75, x75 = 0.0; 
-      wquantile(x, w, n, &p25, &x25); 
-      wquantile(x, w, n, &p75, &x75); 
+      wquantile_noalloc(x, w, work_2n, n, &p25, &x25); 
+      wquantile_noalloc(x, w, work_2n, n, &p75, &x75); 
       scale0 = (x75 - x25) / 1.349;
  
       // stop if IQR is zero 
@@ -92,6 +95,7 @@ void huberm(double *x, double *w, double *robwgt, double *k, double *loc,
 	    // update location and scale 
 	    tmp_loc = 0.0; tmp_scale = 0.0;
 	    tmp = *k * scale0;
+
 	    for (int i = 0; i < *n; i++) {
 	       // winsorized x-variable
 	       x_wins[i] = _MIN(_MAX(loc0 - tmp, x[i]), loc0 + tmp);
@@ -100,6 +104,7 @@ void huberm(double *x, double *w, double *robwgt, double *k, double *loc,
 	       // scale
 	       tmp_scale += w[i] * _POWER2(x_wins[i] - loc0);
 	    } 
+
 	    *loc = tmp_loc / wtotal;
 	    *scale = tmp_scale / wtotal;
 	    // normalize the variance/ scale  
@@ -123,6 +128,8 @@ void huberm(double *x, double *w, double *robwgt, double *k, double *loc,
 
 	 Free(x_wins);
       }
+
+      Free(work_2n);
    }
 }
 

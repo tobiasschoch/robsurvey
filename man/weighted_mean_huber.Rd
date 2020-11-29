@@ -3,27 +3,9 @@
 \alias{weighted_total_huber}
 \title{Weighted Huber mean and total (bare-bone functions)}
 \usage{
-weighted_mean_huber(
-  x,
-  w,
-  k = 1.5,
-  type = "rwm",
-  asym = FALSE,
-  info = FALSE,
-  na.rm = FALSE,
-  ...
-)
+weighted_mean_huber(x, w, k = 1.5, type = "rwm", asym = FALSE, info = FALSE, na.rm = FALSE, ...)
 
-weighted_total_huber(
-  x,
-  w,
-  k = 1.5,
-  type = "rwm",
-  asym = FALSE,
-  info = FALSE,
-  na.rm = FALSE,
-  ...
-)
+weighted_total_huber(x, w, k = 1.5, type = "rwm", asym = FALSE, info = FALSE, na.rm = FALSE, ...)
 }
 \arguments{
 \item{x}{\code{[numeric vector]} observations.}

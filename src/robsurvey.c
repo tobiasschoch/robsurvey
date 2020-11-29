@@ -28,7 +28,7 @@ static inline void fitwls(double*, double*, double*, double*, double*, double*,
    double*, int*, int*, double*, int*, int*) __attribute__((always_inline));
 static inline double euclidean_norm(const double*, const double*, int)
     __attribute__((always_inline));
-static inline double wmad(double*, double*, double*, int, double)
+static inline double wmad(double*, double*, double*, double*, int, double)
    __attribute__((always_inline));
 static inline void robweight(double*, double*, double*, double*, double*, 
    double*, double*, int*, int*, int*) __attribute__((always_inline));
@@ -75,13 +75,14 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
 {
    int info = 0, iterations = 0, converged = 0;
    double mad_const = 1.482602;	 
-   double *work_x, *work_y, *work, *beta_new, *w_mallows;
+   double *work_x, *work_y, *work, *work_2n, *beta_new, *w_mallows;
 
    // STEP 0 preparations 
    beta_new = (double*) Calloc(*p, double);
-   work_x = (double*) Calloc(*n * *p, double);	// work array
-   work_y = (double*) Calloc(*n, double);	// work array 
-   w_mallows = (double*) Calloc(*n, double);	// only used for Mallows GM 
+   work_x = (double*) Calloc(*n * *p, double);	// work array[n*p]
+   work_y = (double*) Calloc(*n, double);	// work array[n] 
+   work_2n = (double*) Calloc(2 * *n, double);	// work array[2*n]  
+   w_mallows = (double*) Calloc(*n, double);	// only used for Mallows GM
 
    // determine optimal size of array 'work' and allocate it 
    int lwork = -1; 
@@ -115,7 +116,7 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
    }
 
    // STEP 2: initialize scale by weighted MAD (ignore that Mallows is special)
-   *scale = wmad(resid, w, work_y, *n, mad_const);
+   *scale = wmad(resid, w, work_y, work_2n, *n, mad_const);
    if (*scale < DBL_EPSILON) {
       error("The estimate of scale is zero (or nearly so)\n");
       *maxit = 0;
@@ -139,10 +140,10 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
 	 for (int i = 0; i < *n; i++)
 	    work_y[i] *= sqrt(xwgt[i]);
 
-	 *scale = wmad(work_y, w_mallows, work_x, *n, mad_const);
+	 *scale = wmad(work_y, w_mallows, work_x, work_2n, *n, mad_const);
  
       } else						       // otherwise
-	 *scale = wmad(resid, w, work_y, *n, mad_const); 
+	 *scale = wmad(resid, w, work_y, work_2n, *n, mad_const); 
 
       // check for convergence
       converged = (euclidean_norm(beta0, beta_new, *p) < *tol * *scale) ? 1: 0;
@@ -156,7 +157,8 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
    for (int i = 0; i < *n; i++) 
       robwgt[i] /= w[i];
 
-   Free(beta_new); Free(work_x); Free(work_y); Free(work); Free(w_mallows);
+   Free(beta_new); Free(work_x); Free(work_y); Free(work); Free(work_2n);
+   Free(w_mallows);
 }
 
 /*****************************************************************************\
@@ -585,21 +587,22 @@ static inline void robweight(double *resid, double *robwgt, double *xwgt,
 |*    x	       data, array[n]						     *|
 |*    w	       weights, array[n]					     *|
 |*    work     work array[n]						     *|
+|*    work_2n  work array[2*n]						     *|
 |*    n	       dimension						     *|
 |*    constant normalization constant					     *|
 \*****************************************************************************/
-static inline double wmad(double *x, double *w, double *work, int n, 
-   double constant)
+static inline double wmad(double *x, double *w, double *work, double *work_2n,
+   int n, double constant)
 {
    double med, mad, prob = 0.5;
 
-   wquantile(x, w, &n, &prob, &med); 
+   wquantile_noalloc(x, w, work_2n, &n, &prob, &med); 
 
    // compute absolute deviation from the weighted median
    for (int i = 0; i < n; i++)
       work[i] = fabs(x[i] - med);
 
-   wquantile(work, w, &n, &prob, &mad); 
+   wquantile_noalloc(work, w, work_2n, &n, &prob, &mad); 
  
    return constant * mad;
 }

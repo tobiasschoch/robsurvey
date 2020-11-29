@@ -82,6 +82,10 @@ export(wBACON)
 export(distance)
 S3method(print,robmv)
 
+export(simpsonWgt)
+S3method(simpsonWgt,default)
+S3method(simpsonWgt,robmv)
+
 importFrom(graphics,plot)
 
 useDynLib(robsurvey)

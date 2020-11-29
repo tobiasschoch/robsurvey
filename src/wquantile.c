@@ -57,8 +57,8 @@ void debug_print_state(int, int);
 /******************************************************************************\
 |* wquantile  : weighted quantile					      *|	
 |*									      *| 
-|* array       array[lo..hi]						      *|	
-|* weights     array[lo..hi]						      *|
+|* array       array[n]							      *|	
+|* weights     array[n]							      *|
 |* n	       dimension						      *|	
 |* prob	       probability defining quantile (0 <= prob <= 1)		      *|	
 |* result      on return: weighted quantile				      *|	
@@ -66,23 +66,37 @@ void debug_print_state(int, int);
 void wquantile(double *array, double *weights, int *n, double *prob, 
    double *result)
 {
+   double *work;
+   work = (double*) Calloc(2 * *n, double);
+   wquantile_noalloc(array, weights, work, n, prob, result);
+   Free(work); 
+}
+
+/******************************************************************************\
+|* wquantile_noalloc  : weighted quantile (no memory allocation)	      *|	
+|*									      *| 
+|* array       array[n]							      *|	
+|* work	       array[2*n]						      *|	
+|* weights     array[n]							      *|
+|* n	       dimension						      *|	
+|* prob	       probability defining quantile (0 <= prob <= 1)		      *|	
+|* result      on return: weighted quantile				      *|	
+\******************************************************************************/
+void wquantile_noalloc(double *array, double *weights, double *work, int *n, 
+   double *prob, double *result)
+{
    if (is_equal(*prob, 0.0)) {			// prob = 0.0
       wselect0(array, weights, 0, *n - 1, 0);
       *result = array[0];
    } else if (is_equal(*prob, 1.0)) {		// prob = 1.0
       wselect0(array, weights, 0, *n - 1, *n - 1);
       *result = array[*n - 1];
-   } else {				
-      // make copy 'array' and 'weights' because 'wquant0' is destructive
-      double *array2;
-      // array2 = [array[0..(n-1)], weights[0..(n-1)]], i.e. 'weights' is 
+   } else {
+      // work = [array[0..(n-1)], weights[0..(n-1)]], i.e. 'weights' is 
       // appended to 'array' s.t. we have one contiguous chunk of memory 
-      // => cache optimized
-      array2 = (double*) Calloc(2 * *n, double);
-      Memcpy(array2, array, *n); 
-      Memcpy(array2 + *n, weights, *n); 
-      wquant0(array2, array2 + *n, 0.0, 0, *n - 1, *prob, result);      
-      Free(array2); 
+      Memcpy(work, array, *n); 
+      Memcpy(work + *n, weights, *n); 
+      wquant0(work, work + *n, 0.0, 0, *n - 1, *prob, result);      
    }
 }
 

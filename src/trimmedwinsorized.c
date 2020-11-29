@@ -34,10 +34,12 @@ void wtrimmedmean(double *x, double *w, double *lo, double *hi, double *mean,
    int *n)
 {
    double quantile_lo, quantile_hi, sum_w = 0.0, sum_x = 0.0;   
+   double *work_2n;
+   work_2n = (double*) Calloc(2 * *n, double);
 
    // quantiles   
-   wquantile(x, w, n, lo, &quantile_lo); 
-   wquantile(x, w, n, hi, &quantile_hi); 
+   wquantile_noalloc(x, w, work_2n, n, lo, &quantile_lo); 
+   wquantile_noalloc(x, w, work_2n, n, hi, &quantile_hi); 
 
    // trimmed mean 
    for (int i = 0; i < *n; i++) {
@@ -53,6 +55,7 @@ void wtrimmedmean(double *x, double *w, double *lo, double *hi, double *mean,
       *mean = 0.0;
       error("Error: trimmed mean: division by zero\n");
    }
+   Free(work_2n);
 }
 
 /*****************************************************************************\
@@ -65,14 +68,16 @@ void wtrimmedmean(double *x, double *w, double *lo, double *hi, double *mean,
 |*    mean	  on return: weighted trimmed mean			     *|
 |*    n		  dimension						     *|
 \*****************************************************************************/
-void wwinsorizedmean(double *x, double *w, double *lo, double *hi, 
-   double *mean, int *n)
+void wwinsorizedmean(double *x, double *w, double *lo, double *hi, double *mean, 
+   int *n)
 {
    double quantile_lo, quantile_hi, sum_w = 0.0, sum_x = 0.0;   
+   double *work_2n;
+   work_2n = (double*) Calloc(2 * *n, double);
 
    // quantiles   
-   wquantile(x, w, n, lo, &quantile_lo); 
-   wquantile(x, w, n, hi, &quantile_hi); 
+   wquantile_noalloc(x, w, work_2n, n, lo, &quantile_lo); 
+   wquantile_noalloc(x, w, work_2n, n, hi, &quantile_hi); 
 
    // winsorized mean 
    for (int i = 0; i < *n; i++) {
@@ -88,6 +93,7 @@ void wwinsorizedmean(double *x, double *w, double *lo, double *hi,
    }
    
    *mean = sum_x / sum_w;
+   Free(work_2n);
 }
 
 /*****************************************************************************\
