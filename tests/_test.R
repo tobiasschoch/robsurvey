@@ -18,13 +18,14 @@ setkey(MU284, REG)
 MU284 <- MU284[MU284[, .N, keyby = REG]]
 setkey(MU284, LABEL)
 # stratified srswor by region (sample size per stratum = 9)
-dat <- as.data.table(sampling:::strata(MU284, "REG", rep(9, 8), method = "srswor"))
-dat[, REG := NULL] 
+dat <- as.data.table(sampling:::strata(MU284, "REG", rep(9, 8),
+    method = "srswor"))
+dat[, REG := NULL]
 setkey(dat, ID_unit)
 dat <- MU284[dat]
 dat[, weight := 1 / Prob]
-d_strat_MU284 <- svydesign(id = ~1, strata = ~ Stratum, weights = ~weight, 
-   fpc = ~N, data = dat)
+d_strat_MU284 <- svydesign(id = ~1, strata = ~ Stratum, weights = ~weight,
+    fpc = ~N, data = dat)
 
 
 w <- weights(d_strat_MU284)

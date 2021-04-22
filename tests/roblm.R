@@ -2,88 +2,91 @@ setwd("C:/My/code/robsurvey/src")
 dyn.load("robsurvey.dll")
 
 x <- rep(1, 10)
-tmp <- .C("test", x = as.double(x), y = as.integer(length(x))) 
+tmp <- .C("test", x = as.double(x), y = as.integer(length(x)))
 
 
 huber_wgt <- function(x, k) pmin.int(1, k / abs(x))
 huber_psi <- function(x, k) pmin.int(k, pmax.int(-k, x))
 huber_psi_prime <- function(x, k) abs(x) <= k
 
-w_median <- function(x, w = NULL){
-   n <- length(x)
-   if (is.null(w)) w <- rep(1, n)
-   .C("wquantile", x = as.double(x), w = as.double(w), n = as.integer(n), 
-      p = as.double(0.5), med = as.double(numeric(1)))$med
+w_median <- function(x, w = NULL)
+{
+    n <- length(x)
+    if (is.null(w))
+        w <- rep(1, n)
+    .C("wquantile", x = as.double(x), w = as.double(w), n = as.integer(n),
+        p = as.double(0.5), med = as.double(numeric(1)))$med
 }
 
-w_mad <- function(x, w = NULL){
-   if (is.null(w)) w <- rep(1, length(x))
-   w_median(abs(x - w_median(x, w)), w) * 1.4826
+w_mad <- function(x, w = NULL)
+{
+    if (is.null(w))
+        w <- rep(1, length(x))
+    w_median(abs(x - w_median(x, w)), w) * 1.4826
 }
 
-# NOTE: 
-# MASS:rlm(x, y, weights = w, k = 2, init = "ls", scale.est = "MAD", 
+# NOTE:
+# MASS:rlm(x, y, weights = w, k = 2, init = "ls", scale.est = "MAD",
 #	   method = "M", wt.method = "case", test.vec = "coef")
 # MASS: mad about zero (not about median of abs. residuals => can be a problem
-#       when the model does not have an intercept, see A. Welsh, Ann. Stat, 
+#       when the model does not have an intercept, see A. Welsh, Ann. Stat,
 #       1986)
 # MASS: different termination rule
 
-roblm <- function(x, y, w, k){
-   tol <- 1e-4; iter <- 1 
-   n <- length(y)
+roblm <- function(x, y, w, k)
+{
+    tol <- 1e-4; iter <- 1
+    n <- length(y)
 
-   # inital estiamtes
-   tmp <- lm.wfit(x, y, w)
-   beta0 <- tmp$coefficients
-   res <- tmp$residuals
-   s0 <- w_mad(res, w)
-   
-   while (iter < 50){
-      iter <- iter + 1
-      ui <- huber_wgt(res / s0, k)
+    # inital estiamtes
+    tmp <- lm.wfit(x, y, w)
+    beta0 <- tmp$coefficients
+    res <- tmp$residuals
+    s0 <- w_mad(res, w)
 
-      tmp <- lm.wfit(x, y, w * ui)
-      beta <- tmp$coefficients
-      res <- tmp$residuals
+    while (iter < 50) {
+        iter <- iter + 1
+        ui <- huber_wgt(res / s0, k)
 
-      s <- w_mad(res, w)
+        tmp <- lm.wfit(x, y, w * ui)
+        beta <- tmp$coefficients
+        res <- tmp$residuals
 
-      if (norm(as.matrix(beta - beta0), type = "F") < s * tol){
-	 break
-      }
+        s <- w_mad(res, w)
 
-      beta0 <- beta
-      s0 <- s
-   }
+        if (norm(as.matrix(beta - beta0), type = "F") < s * tol)
+	        break
 
-   # u_i's with (normalized) weighted mad as estimate of scale 
-   ui <- huber_wgt(res / s, k)
+        beta0 <- beta
+        s0 <- s
+    }
 
-   # compute "Proposal 2" variance estimate 
-   kappa <- ifelse(k < 10, 1 - 2 * (k * dnorm(k) + (1 - k * k) * pnorm(k, 
-      lower = FALSE)), 1)
-   scale <- sqrt(sum(w * (ui * res)^2) / (n * kappa))
+    # u_i's with (normalized) weighted mad as estimate of scale
+    ui <- huber_wgt(res / s, k)
 
-   # empirical estimates of Epsi2 and Epsi_prime
-   Epsi2 <- sum(huber_psi(res / scale, k)^2) / n
-   Epsi_prime <- sum(huber_psi_prime(res / scale, k)) / n
+    # compute "Proposal 2" variance estimate
+    kappa <- ifelse(k < 10, 1 - 2 * (k * dnorm(k) + (1 - k * k) * pnorm(k,
+        lower = FALSE)), 1)
+    scale <- sqrt(sum(w * (ui * res)^2) / (n * kappa))
 
-   list(beta = beta, scale = scale, Epsi2 = Epsi2, Epsi_prime = Epsi_prime)
+    # empirical estimates of Epsi2 and Epsi_prime
+    Epsi2 <- sum(huber_psi(res / scale, k)^2) / n
+    Epsi_prime <- sum(huber_psi_prime(res / scale, k)) / n
+
+    list(beta = beta, scale = scale, Epsi2 = Epsi2, Epsi_prime = Epsi_prime)
 }
 
 
 
 
 
-roblm2 <- function(x, y, w, k){
-   n <- length(y)
-   p <- ncol(x)
-   maxit = 50
-   tol = 1e-4
-
-
-   list(beta = tmp$beta, scale = tmp$scale)
+roblm2 <- function(x, y, w, k)
+{
+    n <- length(y)
+    p <- ncol(x)
+    maxit = 50
+    tol = 1e-4
+    list(beta = tmp$beta, scale = tmp$scale)
 }
 
 
@@ -92,24 +95,24 @@ data(iris)
 y <- iris[, 1]
 n <- length(y)
 x <- as.matrix(cbind(rep(1, n), iris[, 2:3]))
-colnames(x)[1] <- "(Intercept)" 
+colnames(x)[1] <- "(Intercept)"
 w <- rep(1, n)
 lm.wfit(x, y, w)
 #m1 <- roblm(x, y, w, k = 2)
 #m2 <- roblm2(x, y, w, k = 2)
 
 # variance of MLE variance estimator (i.e. without accounting for the loss of
-# degrees of freedom 
+# degrees of freedom
 # sqrt(sum(lm.fit(x, y)$residuals^2) / length(y))
 
 svyreg_control <- function(tol = 1e-5, maxit = 100, psi = "Huber", k_Inf = 1e5,
-   ...)
+    ...)
 {
-   if(!(psi %in% c("Huber", "asymHuber"))) stop("Function 'psi' must be 
-      either 'Huber' or 'asymHuber'\n")
-   psi0 <- switch(psi, "Huber" = 0L, "asymHuber" = 1L)
-   list(tol= unname(tol), maxit = unname(maxit), psi = unname(psi0), 
-      k_Inf = unname(k_Inf))
+    if (!(psi %in% c("Huber", "asymHuber")))
+        stop("Function 'psi' must be either 'Huber' or 'asymHuber'\n")
+    psi0 <- switch(psi, "Huber" = 0L, "asymHuber" = 1L)
+    list(tol= unname(tol), maxit = unname(maxit), psi = unname(psi0),
+        k_Inf = unname(k_Inf))
 }
 
 

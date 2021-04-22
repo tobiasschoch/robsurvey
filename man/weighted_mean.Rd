@@ -1,18 +1,16 @@
 \name{weighted_mean}
 \alias{weighted_mean}
 \alias{weighted_total}
-\title{Weighted total and mean (Horvitz-Thompson and Hajek estimators)}
+\title{Weighted Total and Mean (Horvitz-Thompson and Hajek Estimators)}
 \usage{
 weighted_mean(x, w, na.rm = FALSE)
-
 weighted_total(x, w, na.rm = FALSE)
 }
 \arguments{
 \item{x}{\code{[numeric vector]} observations.}
-
 \item{w}{\code{[numeric vector]} weights (same length as vector \code{x}).}
-
-\item{na.rm}{\code{[logical]} indicating whether \code{NA} values should be removed before the computation proceeds (default: \code{FALSE}).}
+\item{na.rm}{\code{[logical]} indicating whether \code{NA} values should be
+    removed before the computation proceeds (default: \code{FALSE}).}
 }
 \value{
 estimated population mean or total
@@ -21,11 +19,11 @@ estimated population mean or total
 Weighted total and mean (Horvitz-Thompson and Hajek estimators)
 }
 \details{
-Computation of the Horvitz-Thompson and the Hajek estimator of, 
+Computation of the Horvitz-Thompson and the Hajek estimator of,
 respectively, the total and the mean
 }
 \examples{
-data(workplace) 
+data(workplace)
 
 # Horvitz-Thompson estimator of the total
 weighted_total(workplace$employment, workplace$weight)

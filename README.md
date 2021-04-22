@@ -17,4 +17,3 @@ You can install the package from CRAN
 or github
 
 `devtools::install_github("tobiasschoch/robsurvey")?
-
