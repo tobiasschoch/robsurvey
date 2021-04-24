@@ -1,4 +1,4 @@
-# robsurvey<img src="inst/logo.svg" align="right" width=120 height=139 alt="" />
+# robsurvey<img src="inst/varia/logo.svg" align="right" width=120 height=139 alt="" />
 
 <!-- badges: start -->
 [![CRAN](https://www.r-pkg.org/badges/version/robsurvey)](https://cran.r-project.org/package=robsurvey)
