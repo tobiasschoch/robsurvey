@@ -15,7 +15,7 @@ svytotal_huber(x, design, k = 1.5, type = "rwm", asym = FALSE, na.rm = FALSE,
 \item{k}{\code{[double]} robustness tuning constant
     (\eqn{0 < k \leq \infty}{0 < k <= Inf}; default: \code{k = 1.5}).}
 \item{type}{\code{[character]} type of method: \code{"rwm"} or \code{"rht"}.}
-\item{asym}{\code{[logical]} toogle for asymmetric Huber psi-function
+\item{asym}{\code{[logical]} toggle for asymmetric Huber psi-function
     (default: \code{FALSE}).}
 \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should
     be removed before the computation proceeds (default: \code{FALSE}).}

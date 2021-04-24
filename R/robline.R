@@ -27,11 +27,12 @@ weighted_line <- function(x, y = NULL, w, na.rm = FALSE, iter = 1)
     ok <- stats::complete.cases(dat$x, dat$y, dat$w)
     n <- sum(ok)
     if (n < length(x)) {
-        if (na.rm)
+        if (na.rm) {
 	        x <- dat$x[ok]; y <- dat$y[ok]; w <- dat$w[ok]
-        else
+        } else {
 	        stop("There are missing values in 'x', 'y' or 'w'.\n",
                 call. = FALSE)
+        }
     }
 
     # Sort data according to x
@@ -92,11 +93,12 @@ weighted_median_line <- function(x, y = NULL, w, type = "slopes",
     ok <- stats::complete.cases(data.frame(x, y, w))
     n <- sum(ok)
     if (n < length(x)) {
-        if (na.rm)
+        if (na.rm) {
 	        x <- x[ok]; y <- y[ok]; w <- w[ok]
-        else
+        } else {
 	        stop("There are missing values in 'x', 'y' or 'w'.\n",
                 call. = FALSE)
+        }
     }
 
     # univariate medians
@@ -140,11 +142,12 @@ weighted_median_ratio <- function(x, y = NULL, w, na.rm = FALSE)
     ok <- stats::complete.cases(data.frame(x, y, w))
     n <- sum(ok)
     if (n < length(x)) {
-        if (na.rm)
+        if (na.rm) {
 	        x <- x[ok]; y <- y[ok]; w <- w[ok]
-        else
+        } else {
 	        stop("There are missing values in 'x', 'y' or 'w'.\n",
                 call. = FALSE)
+        }
     }
 
     # ratio

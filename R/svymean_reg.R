@@ -83,8 +83,3 @@ svymean_reg <- function(object, auxiliary, k = NULL, check.names = TRUE)
 #
 #setwd("C:/My/code/robsurvey/R")
 #source("svymean_reg.R")
-
-#FIXME: add function to NAMESPACE
-#FIXME: write Rd-file
-
-

@@ -11,8 +11,10 @@ robsvyreg <- function(x, y, w, k, psi, type, xwgt = NULL, var = NULL, ...)
         xwgt <- rep(1, n)
 
     # account for heteroscedasticity
-    if (!is.null(var))
-        x <- x / sqrt(var); y <- y / sqrt(var)
+    if (!is.null(var)) {
+        x <- x / sqrt(var)
+        y <- y / sqrt(var)
+    }
 
     tmp <- .C("rwlslm", x = as.double(x), y = as.double(y), w = as.double(w),
         resid = as.double(numeric(n)), robwgt = as.double(numeric(n)),

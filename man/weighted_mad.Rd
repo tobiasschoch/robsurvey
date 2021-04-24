@@ -2,7 +2,7 @@
 \alias{weighted_mad}
 \title{Weighted Median Absolute Deviation from the Median (MAD)}
 \usage{
-weighted_mad(x, w, na.rm = FALSE, constant = 1.4826)
+weighted_mad(x, w, na.rm = FALSE, constant = 1.482602)
 }
 \arguments{
 \item{x}{\code{[numeric vector]} observations.}

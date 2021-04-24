@@ -1,6 +1,6 @@
 /* Functions used to compute the Mallows generalized regression M-estimator
 
-   Copyright (C) 2020 Tobias Schoch (e-mail: tobias.schoch@gmail.com)
+   Copyright (C) 2020-21 Tobias Schoch (e-mail: tobias.schoch@gmail.com)
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -47,7 +47,7 @@ double mallows_mad_normalization(double *xwgt, int *n)
     // allocate structure
     struct zeroin_data_t *info;
     info = (struct zeroin_data_t*) malloc(sizeof(struct zeroin_data_t) +
-    sizeof(double) * *n);
+        sizeof(double) * *n);
 
     // intialize structure
     info->n = *n;

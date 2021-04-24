@@ -1,7 +1,7 @@
 /* Functions to compute weighted (generalized) regression M-estimators,
    winsorized, and trimmed estimators of location
 
-   Copyright (C) 2020 Tobias Schoch (e-mail: tobias.schoch@gmail.com)
+   Copyright (C) 2020-21 Tobias Schoch (e-mail: tobias.schoch@gmail.com)
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -163,7 +163,7 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
 |*                                                                            *|
 |*  resid   residuals, array[n]                                               *|
 |*  x       design matrix, array[n * p]; on return: the p * p cov             *|
-|*  matrix  is stored in x[1..(p * p)]                                        *|
+|*          matrix  is stored in x[1..(p * p)]                                *|
 |*  xwgt    weights in design space, array[n]                                 *|
 |*  robwgt  robustness weight, array[n]                                       *|
 |*  w       sampling weight, array[n]                                         *|
@@ -244,17 +244,17 @@ void cov_rwlslm(double *resid, double *x, double *xwgt, double *robwgt,
             work_x[i] = tmp2 / tmp;             // temporarily store s_2 / s_1
         }
 
-            Memcpy(work_y, work_x, *n);         // temporarily store s_2 / s_1
+        Memcpy(work_y, work_x, *n);             // temporarily store s_2 / s_1
 
-            // QR factorization: Q -> x; R^{-1} -> work_x[1..(p * p)]
-            inverse_qr(x, work_x, work, n, p, &lwork, 1);
+        // QR factorization: Q -> x; R^{-1} -> work_x[1..(p * p)]
+        inverse_qr(x, work_x, work, n, p, &lwork, 1);
 
-            // pre-multiply Q by sqrt(s2 / s1)
-            for (int i = 0; i < *n; i++) {
-                tmp = sqrt(work_y[i]);
-                for (int j = 0; j < *p; j++)
-                    x[*n * j + i] *= tmp;       // pre-multiply Q
-            }
+        // pre-multiply Q by sqrt(s2 / s1)
+        for (int i = 0; i < *n; i++) {
+            tmp = sqrt(work_y[i]);
+            for (int j = 0; j < *p; j++)
+                x[*n * j + i] *= tmp;           // pre-multiply Q
+        }
 
         // B  := Q * R^{-T} (result -> x)
         double done = 1.0, dzero = 0.0;

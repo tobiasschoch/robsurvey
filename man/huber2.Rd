@@ -2,7 +2,8 @@
 \alias{huber2}
 \title{Weighted Huber Proposal 2 Estimator}
 \usage{
-huber2(x, w, k, na.rm = FALSE, maxit = 50, tol = 1e-04, info = FALSE)
+huber2(x, w, k = 1.5, na.rm = FALSE, maxit = 50, tol = 1e-04, info = FALSE,
+    k_Inf = 1e5, df_cor = TRUE)
 }
 \arguments{
 \item{x}{\code{[numeric vector]} observations.}
@@ -16,6 +17,10 @@ huber2(x, w, k, na.rm = FALSE, maxit = 50, tol = 1e-04, info = FALSE)
 \item{tol}{\code{[double]} numerical tolerance criterion to stop the
     iterations (default: \code{1e-04}).}
 \item{info}{\code{[logical]} observations (default: \code{FALSE}).}
+\item{k_Inf}{\code{[integer]} numerical value that represents \code{Inf}
+    (default: \code{1e+05}).}
+\item{df_cor}{\code{[logical]} toggle for the adjustment of the degrees of
+    freedom for the estimate of scale (default: \code{TRUE}).}
 }
 \value{
 The return value depends on \code{info}: \describe{

@@ -20,7 +20,7 @@
 
 \method{vcov}{svyreg_rob}(object, ...)
 
-\method{residual}{svyreg_rob}(object, ...)
+\method{residuals}{svyreg_rob}(object, ...)
 
 \method{fitted}{svyreg_rob}(object, ...)
 

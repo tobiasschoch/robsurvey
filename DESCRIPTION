@@ -28,6 +28,7 @@ Description: Functions to compute robust (outlier-resistant) estimates of finite
    GM-estimators, trimming, and winsorization. The package robsurvey complements
    the survey.
 License: GPL (>= 2)
+Classification/MSC-2010: 62D05, 62F35
 URL: https://github.com/tobiasschoch/robsurvey
 BugReports: https://github.com/tobiasschoch/robsurvey/issues
 Encoding: UTF-8
@@ -39,3 +40,7 @@ Imports:
     stats,
     survey (>= 3.35-1),
     KernSmooth
+Suggests:
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr, rmarkdown

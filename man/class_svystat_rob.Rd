@@ -17,7 +17,7 @@
 \method{coef}{svystat_rob}(object, ...)
 \method{SE}{svystat_rob}(object, ...)
 \method{vcov}{svystat_rob}(object, ...)
-\method{residual}{svystat_rob}(object, ...)
+\method{residuals}{svystat_rob}(object, ...)
 \method{fitted}{svystat_rob}(object, ...)
 robweights(object)
 \method{robweights}{svystat_rob}(object)

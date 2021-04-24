@@ -4,7 +4,7 @@ svymean_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
     dat <- .checkformula(x, design)
     res <- weighted_mean_winsorized(dat$y, dat$w, LB, UB, info = TRUE, na.rm)
     # influence function
-    infl if (simple_var)
+    infl <- if (simple_var)
         .infl_trimmed(dat$y, dat$w, LB, UB, res$estimate)
     else
         .infl_winsorized(dat$y, dat$w, LB, UB, res$estimate)

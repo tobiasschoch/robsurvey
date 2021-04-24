@@ -1,24 +1,29 @@
 # some sanity checks (univariate)
 .check <- function(x, w, na.rm)
 {
+    if (missing(w))
+        stop("Argument 'w' is missing\n", call. = FALSE)
+
     if (is.factor(x) || is.factor(w) || is.data.frame(x))
         stop("Arguments data and weights must be numeric vectors\n",
             call. = FALSE)
 
-    n <- length(x); nw <- length(w)
-    if (nw != n)
+    n <- length(x)
+    if (n != length(w))
         stop("Data vector and weights are not of the same dimension\n",
 	        call. = FALSE)
     if (n == 0)
-        return(NA)
+        return(NULL)
 
     # check for missing values
     cc <- stats::complete.cases(x, w)
     if (sum(cc) != n) {
-        if (na.rm)
-	        x <- x[cc]; w <- w[cc]
-        else
+        if (na.rm) {
+	        x <- x[cc]
+            w <- w[cc]
+        } else {
 	        return(NULL)
+        }
     }
     n <- length(x)
 

@@ -29,7 +29,7 @@ weighted_mean_huber <- function(x, w, k = 1.5, type = "rwm", asym = FALSE,
         res$call <- match.call()
         return(res)
     } else {
-      return(res$estimate)
+        return(res$estimate)
     }
 }
 
