@@ -1,3 +1,4 @@
+# weighted winsorized mean
 svymean_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
     na.rm = FALSE, simple_var = FALSE)
 {
@@ -19,6 +20,7 @@ svymean_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
     res
 }
 
+# weighted one-sided k winsorized mean
 svymean_k_winsorized <- function(x, design, k, na.rm = FALSE,
     simple_var = FALSE)
 {
@@ -41,6 +43,7 @@ svymean_k_winsorized <- function(x, design, k, na.rm = FALSE,
     res
 }
 
+# weighted winsorized total
 svytotal_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
     na.rm = FALSE, simple_var = FALSE)
 {
@@ -53,6 +56,7 @@ svytotal_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
     res
 }
 
+# weighted one-sided k winsorized total
 svytotal_k_winsorized <- function(x, design, k, na.rm = FALSE,
     simple_var = FALSE)
 {
@@ -63,4 +67,25 @@ svytotal_k_winsorized <- function(x, design, k, na.rm = FALSE,
     res$characteristic <- "total"
     res$call <- match.call()
     res
+}
+
+# influence function, Huber (1981, p. 58-59)
+.infl_winsorized <- function(x, w, LB, UB, wm, ngrid = 401)
+{
+    qs <- weighted_quantile(x, w, probs = c(LB, UB))
+    # density estimates at 'LB' and '1 - UB'
+    bwd <- KernSmooth::dpik(x, scalest = "minim", level = 2, kernel = "normal",
+        canonical = FALSE, gridsize = ngrid, range.x = range(x),
+        truncate = TRUE)
+    at <- seq(min(x), max(x), length = ngrid)
+    nx <- rowsum(c(rep(0, ngrid), w), c(1:ngrid, findInterval(x, at)))
+    dens <- KernSmooth::locpoly(rep(1, ngrid), nx * ngrid / (diff(range(x)) *
+        sum(w)), binned = TRUE, bandwidth = bwd, range.x = range(x))
+    f_LB <- dens$y[floor(ngrid * LB) + 1]
+    f_UB <- dens$y[floor(ngrid * UB)]
+    # influence function
+    infl <- pmin.int(qs[2] + (1 - UB) / f_UB, pmax.int(qs[1] - LB / f_LB, x))
+    # functional W corresponding to winsorized mean
+    W <- (UB - LB) * wm + LB * qs[1] + (1 - UB) * qs[2]
+    infl - W + LB^2 / f_LB + (1 - UB)^2 / f_UB
 }

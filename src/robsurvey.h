@@ -15,17 +15,13 @@
 #include "mallows.h"
 #include "huberm.h"
 #include "fitwls.h"
-#include "trimmedwinsorized.h"
 
 #ifndef _ROBSURVEY_H
 #define _ROBSURVEY_H
 
 // prototypes for the functions
-void wtrimmedmean(double*, double*, double*, double*, double*, int*);
-void wwinsorizedmean(double*, double*, double*, double*, double*, int*);
 void rwlslm(double*, double*, double*, double*, double*, double*, int*, int*,
     double*, double*, double*, double*, int*, int*, int*);
-void wkwinsorizedmean(double*, double*, int*, double*, int*, double*);
 void cov_rwlslm(double*, double*, double*, double*, double*, double*, double*,
     double*, int*, int*, int*, int*);
 #endif

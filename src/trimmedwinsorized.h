@@ -14,7 +14,10 @@
 #define _TRIMMEDWINSORIZED_H
 
 // prototypes for the functions
-void wtrimmedmean(double*, double*, double*, double*, double*, int*);
-void wwinsorizedmean(double*, double*, double*, double*, double*, int*);
-void wkwinsorizedmean(double*, double*, int*, double*, int*, double*);
+void wtrimmedmean(double* restrict, double* restrict, double*, double*,
+    double*, int*, int*);
+void wwinsorizedmean(double* restrict, double* restrict, double*, double*,
+    double*, int*);
+void wkwinsorizedmean(double* restrict, double* restrict, int*, double*, int*,
+    double*);
 #endif

@@ -1,3 +1,4 @@
+# weighted trimmed mean
 weighted_mean_trimmed <- function(x, w, LB = 0.05, UB = 1 - LB, info = FALSE,
     na.rm = FALSE)
 {
@@ -14,8 +15,14 @@ weighted_mean_trimmed <- function(x, w, LB = 0.05, UB = 1 - LB, info = FALSE,
 
     tmp <- .C("wtrimmedmean", x = as.double(dat$x), w = as.double(dat$w),
         lb = as.double(LB), ub = as.double(UB), loc = as.double(numeric(1)),
-        n = as.integer(dat$n), PACKAGE = "robsurvey")
-     if (info) {
+        n = as.integer(dat$n), success = as.integer(1), PACKAGE = "robsurvey")
+
+    if (tmp$success == 0) {
+        warning("Division by zero\n", call. = FALSE)
+        return(NA)
+    }
+
+    if (info) {
         resid <- dat$x - tmp$loc
         res <- list(characteristic = "mean",
 	        estimator = paste0("Weighted trimmed estimator (", LB, ", ",
@@ -31,6 +38,7 @@ weighted_mean_trimmed <- function(x, w, LB = 0.05, UB = 1 - LB, info = FALSE,
     }
 }
 
+# weighted trimmed total
 weighted_total_trimmed <- function(x, w, LB = 0.05, UB = 1 - LB, info = FALSE,
     na.rm = FALSE)
 {

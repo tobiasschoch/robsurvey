@@ -1,3 +1,4 @@
+# weighted trimmed mean
 svymean_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE)
 {
     dat <- .checkformula(x, design)
@@ -15,6 +16,7 @@ svymean_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE)
     res
 }
 
+# weighted trimmed total
 svytotal_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE)
 {
     res <- svymean_trimmed(x, design, LB, UB, na.rm)
@@ -24,4 +26,15 @@ svytotal_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE)
     res$characteristic <- "total"
     res$call <- match.call()
     res
+}
+
+# influence function, Huber (1981, p. 58)
+.infl_trimmed <- function(x, w, LB, UB, tm)
+{
+    qs <- weighted_quantile(x, w, probs = c(LB, UB))
+    x_wins <- pmin.int(qs[2], pmax.int(qs[1], x))
+    # functional W corresponding to winsorized mean
+    W <- (UB - LB) * tm + LB * qs[1] + (1 - UB) * qs[2]
+    # return
+    (x_wins - W) / (UB - LB)
 }

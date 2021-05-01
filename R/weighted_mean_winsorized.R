@@ -1,3 +1,4 @@
+# weighted winsorized mean
 weighted_mean_winsorized <- function(x, w, LB = 0.05, UB = 1 - LB,
     info = FALSE, na.rm = FALSE)
 {
@@ -31,6 +32,7 @@ weighted_mean_winsorized <- function(x, w, LB = 0.05, UB = 1 - LB,
     }
 }
 
+# one-sided weighted k winsorized mean
 weighted_mean_k_winsorized <- function(x, w, k, info = FALSE, na.rm = FALSE)
 {
     dat <- .check(x, w, na.rm)
@@ -47,7 +49,7 @@ weighted_mean_k_winsorized <- function(x, w, k, info = FALSE, na.rm = FALSE)
         stop("k must larger than 1\n", call. = FALSE)
 
     tmp <- .C("wkwinsorizedmean", x = as.double(dat$x), w = as.double(dat$w),
-        k = as.integer(n - k - 1), loc = as.double(numeric(1)),
+        k = as.integer(k), loc = as.double(numeric(1)),
         n = as.integer(n), prob = as.double(numeric(1)), PACKAGE = "robsurvey")
 
     if (info) {
@@ -65,6 +67,7 @@ weighted_mean_k_winsorized <- function(x, w, k, info = FALSE, na.rm = FALSE)
     }
 }
 
+# weighted winsorized total
 weighted_total_winsorized <- function(x, w, LB = 0.05, UB = 1 - LB,
     info = FALSE, na.rm = FALSE)
 {
@@ -79,6 +82,7 @@ weighted_total_winsorized <- function(x, w, LB = 0.05, UB = 1 - LB,
     }
 }
 
+# one-sided weighted k winsorized total
 weighted_total_k_winsorized <- function(x, w, k, info = FALSE, na.rm = FALSE)
 {
     res <- weighted_mean_k_winsorized(x, w, k, info, na.rm)

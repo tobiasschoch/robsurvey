@@ -1,10 +1,11 @@
 // RegisteringDynamic Symbols
 #include <R_ext/Rdynload.h>
 #include "robsurvey.h"
+#include "trimmedwinsorized.h"
 
 // create arrays describing each C routine
 static const R_CMethodDef cMethods[]  = {
-    {"wtrimmedmean", (DL_FUNC) &wtrimmedmean, 6},
+    {"wtrimmedmean", (DL_FUNC) &wtrimmedmean, 7},
     {"wwinsorizedmean", (DL_FUNC) &wwinsorizedmean, 6},
     {"huberm", (DL_FUNC) &huberm, 11},
     {"rwlslm", (DL_FUNC) &rwlslm, 15},

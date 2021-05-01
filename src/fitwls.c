@@ -36,8 +36,9 @@
 |*          size)                                                             *|
 |*  info    on return: info on fitwls (error if != 0)                         *|
 \******************************************************************************/
-void fitwls(double *x, double *work_x, double *y, double *work_y, double *w,
-    double *resid, double *beta0, int *n, int *p, double *work, int *lwork,
+void fitwls(double* restrict x, double* restrict work_x, double* restrict y,
+    double* restrict work_y, double* restrict w, double* restrict resid,
+    double* restrict beta0, int *n, int *p, double *work, int *lwork,
     int *info)
 {
     // define constants for the call of 'dgels'

@@ -121,36 +121,6 @@
     list(yname = yname, y = as.numeric(y), w = as.numeric(1 / design$prob))
 }
 
-# influence function winsorized mean
-.infl_winsorized <- function(x, w, LB, UB, wm, ngrid = 401)
-{
-    qs <- weighted_quantile(x, w, probs = c(LB, UB))
-    # density estimates at 'LB' and '1 - UB'
-    bwd <- KernSmooth::dpik(x, scalest = "minim", level = 2, kernel = "normal",
-        canonical = FALSE, gridsize = ngrid, range.x = range(x),
-        truncate = TRUE)
-    at <- seq(min(x), max(x), length = ngrid)
-    nx <- rowsum(c(rep(0, ngrid), w), c(1:ngrid, findInterval(x, at)))
-    dens <- KernSmooth::locpoly(rep(1, ngrid), nx * ngrid / (diff(range(x)) *
-        sum(w)), binned = TRUE, bandwidth = bwd, range.x = range(x))
-    f_LB <- dens$y[floor(ngrid * LB) + 1]
-    f_UB <- dens$y[floor(ngrid * UB)]
-    # influence function
-    infl <- pmin.int(qs[2] + (1 - UB) / f_UB, pmax.int(qs[1] - LB / f_LB, x))
-    w <- (UB - LB) * wm + LB * qs[1] + (1 - UB) * qs[2]
-    infl - w + LB^2 / f_LB + (1 - UB)^2 / f_UB
-}
-
-# influence function trimmed mean
-.infl_trimmed <- function(x, w, LB, UB, tm)
-{
-    qs <- weighted_quantile(x, w, probs = c(LB, UB))
-    # influence function
-    infl <- pmin.int(qs[2], pmax.int(qs[1], x))
-    w <- (UB - LB) * tm + LB * qs[1] + (1 - UB) * qs[2]
-    (infl - w) / (UB - LB)
-}
-
 # onAttach function
 .onAttach <- function(libname, pkgname)
 {

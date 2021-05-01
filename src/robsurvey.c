@@ -83,7 +83,7 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
 
     // determine optimal size of array 'work' and allocate it
     int lwork = -1;
-    fitwls(x, work_x, y, work_y, w, resid, beta0, n, p, work_x, &lwork, &info);
+    fitwls(x, work_x, y, work_y, w, resid, beta0, n, p, work_2n, &lwork, &info);
     work = (double*) Calloc(lwork, double);
 
     // STEP 1: initialize beta by weighted least squares
