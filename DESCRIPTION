@@ -41,6 +41,7 @@ Imports:
     survey (>= 3.35-1),
     KernSmooth
 Suggests:
+    MASS,
     knitr,
     rmarkdown
 VignetteBuilder: knitr, rmarkdown

@@ -1,4 +1,5 @@
-/* Weighted Huber proposal 2 estimator of location and scale
+/* Weighted Huber proposal 2 estimator of location and scale, initialized
+   by, respectively, the weighted median and the weighted interquartile range
 
    Copyright (C) 2020-21 Tobias Schoch (e-mail: tobias.schoch@gmail.com)
 
@@ -15,6 +16,11 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; if not, a copy is available at
    https://www.gnu.org/licenses/
+
+   References
+   Higham (2002). Accuracy and Stability of Numerical Algorithms, 2nd ed.,
+       Philadelphia: SIAM.
+   Huber (1981). Robust Statistics, New York: John Wiley & Sons.
 */
 
 #include <R.h>
@@ -84,7 +90,7 @@ void huberm(double* restrict x, double* restrict w, double* restrict robwgt,
     double p75 = 0.75, x75 = 0.0;
     wquantile_noalloc(x, w, work_2n, n, &p25, &x25);
     wquantile_noalloc(x, w, work_2n, n, &p75, &x75);
-    scale0 = (x75 - x25) / 1.34898;
+    scale0 = (x75 - x25) * 0.7413;
 
     // stop if IQR is zero
     if (scale0 < DBL_EPSILON) {
@@ -106,27 +112,37 @@ void huberm(double* restrict x, double* restrict w, double* restrict robwgt,
     double kappa = kappa_huber(*k);
 
     // loop
-    double s, tmp_loc, tmp_scale;
+    double a, s, total_wins, ssq, tmp, comp;
     for (iter = 0; iter < *maxit; iter ++) {
-        // update location and scale
-        tmp_loc = 0.0; tmp_scale = 0.0;
         s = *k * scale0;
 
+        // update location
+        total_wins = 0.0; comp = 0.0;
         for (int i = 0; i < *n; i++) {
             // winsorized x-variable
             x_wins[i] = _MIN(_MAX(loc0 - s, x[i]), loc0 + s);
-            // location step
-            tmp_loc += w[i] * x_wins[i];
-            // scale
-            tmp_scale += w[i] * _POWER2(x_wins[i] - loc0);
+            // Kahan compensated weighted sum, see e.g., Higham (2002, ch. 4.3)
+            tmp = total_wins;
+            a = w[i] * x_wins[i] + comp;
+            total_wins = tmp + a;
+            comp = (tmp - total_wins) + a;
+        }
+        *loc = total_wins / wtotal;
+
+        // update scale
+        ssq = 0.0; comp = 0.0;
+        for (int i = 0; i < *n; i++) {
+            // Kahan compensated weighted sum
+            tmp = ssq;
+            a = w[i] * _POWER2(x_wins[i] - *loc) + comp;
+            ssq = tmp + a;
+            comp = (tmp - ssq) + a;
         }
 
-        *loc = tmp_loc / wtotal;
-
-        if (df_cor)
-            *scale = tmp_scale / (wtotal - 1.0);
+        if (*df_cor)
+            *scale = ssq / (wtotal - 1.0);
         else
-            *scale = tmp_scale / wtotal;
+            *scale = ssq / wtotal;
 
         // normalize the variance/ scale
         *scale = sqrt(*scale / kappa);
@@ -153,7 +169,7 @@ clean_up:
 
 /******************************************************************************\
 |* This function computes the multiplicative consistency correction term      *|
-|* for the Huber 'Proposal 2' type of scale estimator.                        *|
+|* for the Huber 'Proposal 2' type of scale estimator; Huber (1981, ch. 5.2)  *|
 \******************************************************************************/
 static inline double kappa_huber(const double k)
 {

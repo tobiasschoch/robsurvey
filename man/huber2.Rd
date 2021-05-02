@@ -50,11 +50,33 @@ estimates of location and scale.
 The method is initialized by the weighted median (location) and the
 weighted interquartile range (scale).
 }
+\section{Comparison}{
+The \code{huber2} estimator is initialized by the weighted median and
+the weighted (scaled) interquartile range. For unweighted data, this
+estimator \emph{differs} from \code{\link[MASS]{hubers}} in \pkg{MASS},
+which is initialized by \code{\link{mad}}.
+
+The difference between the estimators is usually negligible (for sufficiently
+small values of \code{tol}). See examples.
+}
 \examples{
 data(workplace)
 
 # Weighted Proposal 2 M-estimator of the mean
 huber2(workplace$employment, workplace$weight, k = 8)
+
+# Comparison with MASS::hubers (without weights). We make a copy of MASS::hubers
+library(MASS)
+hubers_mod <- hubers
+# Then we replace mad by the (scaled) IQR as initial scale estimator
+body(hubers_mod)[[7]][[3]][[2]] <- substitute(s0 <- IQR(y, type = 2) * 0.7413)
+# Define the numerical tolerance
+TOLERANCE <- 1e-8
+# Comparison
+m1 <- huber2(workplace$payroll, rep(1, 142), tol = TOLERANCE)
+m2 <- hubers_mod(workplace$payroll, tol = TOLERANCE)$mu
+m1 / m2 - 1
+# The absolute relative difference is < 4.0-09 (smaller than TOLERANCE)
 }
 \references{
 Huber, P. J. (1964). Robust Estimation of a Location Parameter,
