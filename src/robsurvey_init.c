@@ -2,6 +2,7 @@
 #include <R_ext/Rdynload.h>
 #include "robsurvey.h"
 #include "trimmedwinsorized.h"
+#include "huberm.h"
 
 // create arrays describing each C routine
 static const R_CMethodDef cMethods[]  = {

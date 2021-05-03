@@ -23,10 +23,10 @@ endif
 ifneq (, $(findstring mingw, $(SYS)))
 # Windows MinGW
 robsurvey: robsurvey.o wquantile.o mallows.o zeroin.o huberm.o \
-	trimmedwinsorized.o fitwls.o
+	trimmedwinsorized.o fitwls.o psifunctions.o
 	$(CC) -shared -o $@.dll $@.o $(DLL_BLAS) $(DLL_LAPACK) $(DLL_R) \
 		wquantile.o mallows.o zeroin.o huberm.o \
-		trimmedwinsorized.o fitwls.o
+		trimmedwinsorized.o fitwls.o psifunctions.o
 else
 # Linux
 
@@ -60,8 +60,12 @@ trimmedwinsorized.o: trimmedwinsorized.c
 fitwls.o: fitwls.c
 	$(CC) -Wall -pedantic -I $(R_C_HEADER) -c $*.c $(CFLAGS)
 
+# compile
+psifunctions.o: psifunctions.c
+	$(CC) -Wall -pedantic -I $(R_C_HEADER) -c $*.c $(CFLAGS)
+
 # housekeeping (using make clean)
 .PHONY: clean
 clean:
 	rm robsurvey.o wquantile.o zeroin.o huberm.o mallows.o \
-	trimmedwinsorized.o fitwls.o
+	trimmedwinsorized.o fitwls.o psifunctions.o

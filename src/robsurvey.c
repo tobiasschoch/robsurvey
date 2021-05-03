@@ -22,140 +22,331 @@
 
 // some macros
 #define _POWER2(_x) ((_x) * (_x))
+#define PRINT_OUT(_f, ...) Rprintf((_f), ##__VA_ARGS__)
 
-// declaration of 'local' functions (inline imperative is GCC specific)
-static inline double euclidean_norm(const double*, const double*, int)
+// error handling
+typedef enum robsurvey_error_enum {
+    ROBSURVEY_ERROR_OK = 0,         // no error
+    ROBSURVEY_ERROR_SCALE_ZERO,     // scale estimate is zero
+    ROBSURVEY_ERROR_RANK_DEFICIENT, // design matrix is rank deficient
+    ROBSURVEY_ERROR_COUNT,          // [not an actual error type]
+} robsurvey_error_type;
+
+// human readable errors
+const char* const ROBSURVEY_ERROR_STRINGS[] = {
+    "no errors",
+    "scale estimate is zero (or nearly so)",
+    "design matrix is rank deficient (or nearly so)"
+};
+
+// structure: regression data
+typedef struct regdata_struct {
+    int n;
+    int p;
+    double *x;
+    double *y;
+    double *w;
+    double *xwgt;
+} regdata;
+
+// structure: work arrays
+typedef struct workarray_struct {
+    int lwork;
+    double *work_dgels;
+    double *work_x;
+    double *work_y;
+    double *work_2n;
+} workarray;
+
+// declaration
+const char* robsurvey_error(robsurvey_error_type);
+robsurvey_error_type wmad(regdata *dat, workarray *work, double* restrict resid,
+    double constant, double *mad);
+robsurvey_error_type rfitwls(regdata*, workarray*, double* restrict,
+    double* restrict, double* restrict);
+static inline double euclidean_norm(const double*, const double*, const int)
     __attribute__((always_inline));
-static inline double wmad(double*, double*, double*, double*, int, double)
-    __attribute__((always_inline));
-static inline void robweight(double*, double*, double*, double*, double*,
-    double*, double*, int*, int*, int*) __attribute__((always_inline));
-
-double huber_psi(double, double);
-double huber_psi_prime(double, double);
-static inline double huber_wgt(double, double) __attribute__((always_inline));
-
-double huber_psi_asym(double, double);
-double huber_psi_prime_asym(double, double);
-static inline double huber_wgt_asym(double, double)
-    __attribute__((always_inline));
-
-double tukey_psi(double, double);
-double tukey_psi_prime(double, double);
-static inline double tukey_wgt(double, double) __attribute__((always_inline));
-
 static inline void inverse_qr(double*, double*, double*, int*, int*, int*, int)
     __attribute__((always_inline));
+static inline void weighting_scheme(regdata*, double* restrict, double*,
+    double*, int*, int, double* restrict);
 
 /******************************************************************************\
-|* rwlslm: iteratively reweighted least squares                               *|
 |*                                                                            *|
-|*  x         vectorized design matrix, array[n * p]                          *|
-|*  y         response vector, array[n]                                       *|
-|*  w         weights, array[n] (on return: a vector of ones)                 *|
-|*  resid     on return: residuals vector, array[n]                           *|
-|*  robwgt    on return: robustness weights, array[n]                         *|
-|*  xwgt      weight in design space, GM-estimator, array[n]                  *|
-|*  n         (array dimensions)                                              *|
-|*  p         (array dimensions)                                              *|
-|*  k         robustness tuning constant                                      *|
-|*  beta0     on return: coefficient vector, array[p]                         *|
-|*  scale     on return: normalized MAD                                       *|
-|*  tol       numerical tolerance criterion (stoping rule in rwls updt. rule) *|
-|*  maxit     max iterations (on input); iterations (on return)               *|
-|*  psi       0 = Huber, 1 = asymmetric Huber, 2 = Tukey biweight             *|
-|*  type      0 = M-est., 1 = Mallows GM-est., 2 = Schweppe GM-est.           *|
 \******************************************************************************/
 void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
     double *xwgt, int *n, int *p, double *k, double *beta0, double *scale,
     double *tol, int *maxit, int *psi, int *type)
 {
-    int info = 0, iterations = 0, converged = 0;
+    // STEP 0: preparations
+    int init = 1;
     double mad_const = 1.482602;
-    double *work_x, *work_y, *work, *work_2n, *beta_new, *w_mallows;
+    robsurvey_error_type status;
 
-    // STEP 0 preparations
-    beta_new = (double*) Calloc(*p, double);
-    work_x = (double*) Calloc(*n * *p, double); // work array[n*p]
-    work_y = (double*) Calloc(*n, double);      // work array[n]
-    work_2n = (double*) Calloc(2 * *n, double); // work array[2*n]
-    w_mallows = (double*) Calloc(*n, double);   // only used for Mallows GM
+    // initialize and populate structure with regression-specific data
+    regdata data;
+    regdata *dat = &data;
+    dat->n = *n;
+    dat->p = *p;
+    dat->x = x;
+    dat->y = y;
+    dat->w = w;
+    dat->xwgt = xwgt;
 
-    // determine optimal size of array 'work' and allocate it
-    int lwork = -1;
-    fitwls(x, work_x, y, work_y, w, resid, beta0, n, p, work_2n, &lwork, &info);
-    work = (double*) Calloc(lwork, double);
+    // initialize and populate structure with work arrays
+    double* restrict work_x = (double*) Calloc(*n * *p, double);
+    double* restrict work_y = (double*) Calloc(*n, double);
+    double* restrict work_2n = (double*) Calloc(2 * *n, double);
+    workarray wwork;
+    workarray *work = &wwork;
+    work->work_x = work_x;
+    work->work_y = work_y;
+    work->work_2n = work_2n;
+    // determine work array for 'dgels' (and allocate 'work_dgels')
+    work->lwork = -1;
+    status = rfitwls(dat, work, w, beta0, resid);
+    double* restrict work_dgels = (double*) Calloc(work->lwork, double);
+    work->work_dgels = work_dgels;
 
-    // STEP 1: initialize beta by weighted least squares
-    fitwls(x, work_x, y, work_y, w, resid, beta0, n, p, work, &lwork, &info);
-    if (info > 0){
-        error("The design matrix is rank deficient (or nearly so)\n");
-        *maxit = 0;
-        return;
-    }
+    // additional arrays
+    double* restrict beta1 = (double*) Calloc(*p, double);
 
-    // preparations for GM-estimators
-    if (*type == 1) {                           // Mallows
-        Memcpy(w_mallows, w, *n);
-        for (int i = 0; i < *n; i++)
-            w[i] *= xwgt[i];                    // modify w to include xwgt
-
-        // Mallows type has special normalization constant (see 'mallows.c')
-        mad_const = mallows_mad_normalization(xwgt, n);
-    }
-    if (*type == 2) {                           // Schweppe
-        for (int i = 0; i < *n; i++) {
-            if (fabs(xwgt[i]) < DBL_EPSILON)
-            xwgt[i] = 0.0;
-            else
-            xwgt[i] = 1.0 / xwgt[i]; // xwgt turned into multiplicative wgt
+    // STEP 1: initialize 'beta' and 'scale'
+    if (init) {
+        // compute least squares estimate of 'beta' (and residuals)
+        status = rfitwls(dat, work, w, beta0, resid);
+        if (status != ROBSURVEY_ERROR_OK) {
+            PRINT_OUT("Error: %s\n", robsurvey_error(status));
+            *maxit = 0;
+            goto clean_up;
         }
+
+        // compute 'scale' by weighted mad
+        status = wmad(dat, work, resid, mad_const, scale);
+        if (status != ROBSURVEY_ERROR_OK) {
+            PRINT_OUT("Error: %s\n", robsurvey_error(status));
+            *maxit = 0;
+            goto clean_up;
+        }
+    } else {
+        // compute the residuals (BLAS::dgemv)
+        const int int_1 = 1;
+        const double double_minus1 = -1.0, double_1 = 1.0;
+        Memcpy(resid, y, *n);
+        F77_CALL(dgemv)("N", n, p, &double_minus1, x, n, beta0, &int_1,
+            &double_1, resid, &int_1);
     }
 
-    // STEP 2: initialize scale by weighted MAD (ignore that Mallows is special)
-    *scale = wmad(resid, w, work_y, work_2n, *n, mad_const);
-    if (*scale < DBL_EPSILON) {
-        error("The estimate of scale is zero (or nearly so)\n");
-        *maxit = 0;
-        return;
-    }
+    // STEP 2: irwls updating
+    int iterations = 0, converged = 0;
+    while (iterations < *maxit) {
 
-    // STEP 3: irls updating
-    while (!converged && ++iterations < *maxit) {
-        // compute robwgt (i.e. total wgt = sampling wgt * xwgt * robwgt)
-        robweight(resid, robwgt, xwgt, w, work_y, k, scale, n, psi, type);
+        // robustness weights: robwgt
+        weighting_scheme(dat, resid, scale, k, psi, 1, robwgt);
 
         // update beta and residuals
-        fitwls(x, work_x, y, work_y, robwgt, resid, beta_new, n, p, work,
-            &lwork, &info);
+        status = rfitwls(dat, work, robwgt, beta1, resid);
+
+        if (status != ROBSURVEY_ERROR_OK) {
+            PRINT_OUT("Error: %s\n", robsurvey_error(status));
+            *maxit = 0;
+            goto clean_up;
+        }
 
         // update scale
-        if (*type == 1) {                       // Mallows GM
-            // we work on work_y, which is a temporary copy of resid
-            Memcpy(work_y, resid, *n);
-            for (int i = 0; i < *n; i++)
-            work_y[i] *= sqrt(xwgt[i]);
-
-            *scale = wmad(work_y, w_mallows, work_x, work_2n, *n, mad_const);
-
-        } else {                                // otherwise
-            *scale = wmad(resid, w, work_y, work_2n, *n, mad_const);
+        status = wmad(dat, work, resid, mad_const, scale);
+        if (status != ROBSURVEY_ERROR_OK) {
+            PRINT_OUT("Error: %s\n", robsurvey_error(status));
+            *maxit = 0;
+            goto clean_up;
         }
 
         // check for convergence
-        converged = (euclidean_norm(beta0, beta_new, *p) < *tol * *scale) ? 1: 0;
+        converged = (euclidean_norm(beta0, beta1, *p) < *tol * *scale) ? 1: 0;
+        if (converged)
+            break;
+        else
+            iterations++;
 
         // prepare the next while run
-        Memcpy(beta0, beta_new, *p);
+        Memcpy(beta0, beta1, *p);
     }
     *maxit = (converged) ? iterations : 0;
 
-    // compute robwgt (without sampling weights)
-    for (int i = 0; i < *n; i++)
-        robwgt[i] /= w[i];
+    // final robustness weight
+    weighting_scheme(dat, resid, scale, k, psi, 0, robwgt);
 
-    Free(beta_new); Free(work_x); Free(work_y); Free(work); Free(work_2n);
-    Free(w_mallows);
+clean_up:
+    Free(beta1); Free(work_x); Free(work_y); Free(work_2n); Free(work_dgels);
+}
+
+/******************************************************************************\
+|*
+\******************************************************************************/
+static inline void weighting_scheme(regdata *dat, double* restrict resid,
+    double *scale, double *k, int *psi, int sampling, double* restrict robwgt)
+{
+    double (*f_wgt_psi)(double, double);
+
+    // select weight function
+    switch (*psi) {
+    case 0: // weight of Huber psi-function
+        f_wgt_psi = huber_wgt;
+        break;
+    case 1: // weight of Huber asymmetric psi-function
+        f_wgt_psi = huber_wgt_asym;
+        break;
+    case 2: // weight of Tukey biweight psi-function
+        f_wgt_psi = tukey_wgt;
+        break;
+    default:
+        f_wgt_psi = huber_wgt;
+    }
+
+    // compute robustness weight
+    int n = dat->n;
+    double* restrict w = dat->w;
+    if (sampling) {
+        for (int i = 0; i < n; i++)
+            robwgt[i] = w[i] * f_wgt_psi(resid[i] / *scale, *k);
+    } else {
+        for (int i = 0; i < n; i++)
+            robwgt[i] = f_wgt_psi(resid[i] / *scale, *k);
+    }
+}
+
+/******************************************************************************\
+|* Weighted least squares estimate (coefficients and residuals)               *|
+|*                                                                            *|
+|*  x       vectorized design matrix, array[n * p]                            *|
+|*  work_x  array[n * p], on return: QR factor (dgels)                        *|
+|*  y       response vector, array[n]                                         *|
+|*  work_y  array[n]                                                          *|
+|*  w       weights vector, array[n]                                          *|
+|*  resid   on return: residuals vector, array[n]                             *|
+|*  beta0   on return: coefficient vector, array[p]                           *|
+|*  n, p    array dimensions                                                  *|
+|*  work    work array, array[lwork] used for QR factorization                *|
+|*  lwork   size of array 'work' (if < 0, then 'dgels' determines the optimal *|
+|*          size)                                                             *|
+\******************************************************************************/
+robsurvey_error_type rfitwls(regdata *dat, workarray *work, double* restrict w,
+    double* restrict beta, double* restrict resid)
+{
+    int n = dat->n;
+    int p = dat->p;
+    int lwork = work->lwork;
+    double* restrict x = dat->x;
+    double* restrict y = dat->y;
+
+    // define constants for the call of 'dgels'
+    const int int_1 = 1;
+    int info_dgels = 1;
+
+    // STEP 0: determine the optimal size of array 'work_dgels'
+    if (lwork < 0) {
+        double dummy_work_dgels;
+        F77_CALL(dgels)("N", &n, &p, &int_1, x, &n, y, &n, &dummy_work_dgels,
+            &lwork, &info_dgels);
+        work->lwork = (int) dummy_work_dgels;
+        return ROBSURVEY_ERROR_OK;
+
+	// STEP 1: compute least squares fit
+	} else {
+        double* restrict work_x = work->work_x;
+        double* restrict work_y = work->work_y;
+        double* restrict work_dgels = work->work_dgels;
+
+        // pre-multiply the design matrix and the response vector by sqrt(w)
+        double tmp;
+        for (int i = 0; i < n; i++) {
+            tmp = sqrt(w[i]);
+            work_y[i] = y[i] * tmp;
+
+            for (int j = 0; j < p; j++)
+                work_x[n * j + i] = x[n * j + i] * tmp;
+        }
+
+        // compute the (weighted) least squares estimate (LAPACK::dgels),
+        // solves minimize |B - A*X| for X (using QR factorization)
+        F77_CALL(dgels)("N", &n, &p, &int_1, work_x, &n, work_y, &n,
+            work_dgels, &lwork, &info_dgels);
+
+        // dgels is not well suited as a rank-revealing procedure; i.e., INFO<0
+        // iff a diagonal element of the R matrix is exactly 0. This is not
+        // helpful; hence, we check the diagonal elements of R separately and
+        // issue and error flag if any(abs(diag(R))) is close to zero
+        for (int i = 0; i < p; i++)
+            if (fabs(work_x[(n + 1) * i]) < sqrt(DBL_EPSILON))
+                return ROBSURVEY_ERROR_RANK_DEFICIENT;
+
+        // retrieve 'betacoefficients'
+        Memcpy(beta, work_y, p);
+
+        // compute the residuals (BLAS::dgemv)
+        const double double_minus1 = -1.0, double_1 = 1.0;
+        Memcpy(resid, y, n);
+        F77_CALL(dgemv)("N", &n, &p, &double_minus1, x, &n, beta, &int_1,
+            &double_1, resid, &int_1);
+        return ROBSURVEY_ERROR_OK;
+    }
+}
+
+/******************************************************************************\
+|*                                                                            *|
+\******************************************************************************/
+robsurvey_error_type wmad(regdata *dat, workarray *work, double* restrict resid,
+    double constant, double *mad)
+{
+    int n = dat->n;
+    double med, prob = 0.5;
+    double* restrict w = dat->w;
+    double* restrict work_y = work->work_y;
+    double* restrict work_2n = work->work_2n;
+
+    // median
+    wquantile_noalloc(resid, w, work_2n, &n, &prob, &med);
+
+    // compute absolute deviation from the weighted median
+    for (int i = 0; i < n; i++)
+        work_y[i] = fabs(resid[i] - med);
+
+    // compute mad
+    wquantile_noalloc(work_y, w, work_2n, &n, &prob, mad);
+    *mad *= constant;
+
+    if (*mad < DBL_EPSILON)
+        return ROBSURVEY_ERROR_SCALE_ZERO;
+    else
+        return ROBSURVEY_ERROR_OK;
+}
+
+/******************************************************************************\
+|* obtain a human readable error message                                      *|
+\******************************************************************************/
+const char* robsurvey_error(robsurvey_error_type err)
+{
+    if (err >= ROBSURVEY_ERROR_COUNT)
+        return NULL;
+    else
+        return ROBSURVEY_ERROR_STRINGS[err];
+}
+
+/******************************************************************************\
+|* euclidean norm                                                             *|
+|*                                                                            *|
+|*  x   array[p]                                                              *|
+|*  y   array[p]                                                              *|
+|*  p   dimension                                                             *|
+\******************************************************************************/
+static inline double euclidean_norm(const double *x, const double *y,
+    const int p)
+{
+    double s = 0.0;
+    for (int i = 0; i < p; i++)
+        s += _POWER2(x[i] - y[i]);
+
+    return sqrt(s);
 }
 
 /******************************************************************************\
@@ -377,178 +568,5 @@ static inline void inverse_qr(double *x, double *work_x, double *work,
             error("dorgqr failed\n");
     }
 }
-
-/******************************************************************************\
-|* Huber psi-, psi-prime- and wgt-functions                                   *|
-\******************************************************************************/
-double huber_psi(double x, double k)
-{
-    return (x <= -k) ? -k : ((x < k) ? x : k);
-}
-
-double huber_psi_prime(double x, double k)
-{
-    return (fabs(x) <= k) ? 1.0 : 0.0;
-}
-
-static inline double huber_wgt(double x, double k)
-{
-    double z = fabs(x);
-    if (z > DBL_EPSILON)
-        return (z >= k) ? k / z : 1.0;
-    else
-        return 0.0;
-}
-
-/******************************************************************************\
-|* Huber asymmetric psi-, psi-prime- and wgt-functions                        *|
-\******************************************************************************/
-double huber_psi_asym(double x, double k)
-{
-    return (x <= k) ? x : k;
-}
-
-double huber_psi_prime_asym(double x, double k)
-{
-    return (x <= k) ? 1.0 : 0.0;
-}
-
-static inline double huber_wgt_asym(double x, double k)
-{
-    double z = fabs(x);
-    if (z > DBL_EPSILON)
-        return (x <= k) ? 1.0 : k / x;
-    else
-        return 0.0;
-}
-
-/******************************************************************************\
-|* Tukey biweigt psi-, psi-prime- and wgt-functions                           *|
-\******************************************************************************/
-double tukey_psi(double x, double k)
-{
-    if (fabs(x) > k) {
-        return 0.0;
-    } else {
-        double z = x / k;
-        double u = 1.0 - _POWER2(z);
-        return x * _POWER2(u);
-    }
-}
-
-double tukey_psi_prime(double x, double k)
-{
-    if (fabs(x) > k) {
-        return 0.0;
-    } else {
-        x /= k;
-        double z = _POWER2(x);
-        return (1.0 - z) * (1.0 - 5.0 * z);
-    }
-}
-
-static inline double tukey_wgt(double x, double k)
-{
-    if (fabs(x) > k) {
-        return 0.0;
-    } else {
-        double z = x / k;
-        z = (1.0 - z) * (1.0 + z);
-        return _POWER2(z);
-    }
-}
-
-/******************************************************************************\
-|* Robustness wgt-functions                                                   *|
-|*                                                                            *|
-|*  resid  residuals, array[n]                                                *|
-|*  robwgt on return: robustness weight, array[n]                             *|
-|*  xwgt   weight on the design space, array[n]                               *|
-|*  w      sampling weight, array[n]                                          *|
-|*  work_y work array, array[n]                                               *|
-|*  k      robustness tuning constant                                         *|
-|*  scale  estimate of scale                                                  *|
-|*  n      dimension                                                          *|
-|*  psi    0 = Huber, 1 = asymmetric Huber, 2 = Tukey biweight                *|
-|*  type   0 = M-est., 1 = Mallows GM-est., 2 = Schweppe GM-est.              *|
-\******************************************************************************/
-static inline void robweight(double *resid, double *robwgt, double *xwgt,
-    double *w, double *work_y, double *k, double *scale, int *n, int *psi,
-    int *type)
-{
-    double *ptr;
-
-    if (*type == 2) {                   // pre-treatment for Schweppe type GM
-        Memcpy(work_y, resid, *n);
-
-        for (int i = 0; i < *n; i++)
-            work_y[i] *= xwgt[i];       // note: xwgt := 1.0 / xwgt (in rwlslm)
-
-        ptr = resid;
-        resid = work_y;                 // resid -> work_y
-    }
-
-    switch (*psi) {                     // M- and GM-estimators
-    case 0:                             // Huber weight
-        for (int i = 0; i < *n; i++)
-            robwgt[i] = w[i] * huber_wgt(resid[i] / *scale, *k);
-        break;
-
-    case 1:                             // asymmetric Huber weight
-        for (int i = 0; i < *n; i++)
-            robwgt[i] = w[i] * huber_wgt_asym(resid[i] / *scale, *k);
-        break;
-
-    case 2:                             // Tukey biweight weight
-        for (int i = 0; i < *n; i++)
-            robwgt[i] = w[i] * tukey_wgt(resid[i] / *scale, *k);
-        break;
-    }
-
-    if (*type == 2)                     // undo resid -> work_w
-        resid = ptr;
-}
-
-/******************************************************************************\
-|* weighted median of the absolute deviations from the weighted median; the   *|
-|* mad is normalized to be a consistent estimator of scale at the Gaussian    *|
-|* core model (i.e., times the constant 1.4826)                               *|
-|*                                                                            *|
-|*  x        data, array[n]                                                   *|
-|*  w        weights, array[n]                                                *|
-|*  work     work array[n]                                                    *|
-|*  work_2n  work array[2*n]                                                  *|
-|*  n        dimension                                                        *|
-|*  constant normalization constant                                           *|
-\******************************************************************************/
-static inline double wmad(double *x, double *w, double *work, double *work_2n,
-    int n, double constant)
-{
-    double med, mad, prob = 0.5;
-    wquantile_noalloc(x, w, work_2n, &n, &prob, &med);
-
-    // compute absolute deviation from the weighted median
-    for (int i = 0; i < n; i++)
-        work[i] = fabs(x[i] - med);
-
-    wquantile_noalloc(work, w, work_2n, &n, &prob, &mad);
-    return constant * mad;
-}
-
-/******************************************************************************\
-|* euclidean norm                                                             *|
-|*                                                                            *|
-|*  x   array[p]                                                              *|
-|*  y   array[p]                                                              *|
-|*  p   dimension                                                             *|
-\******************************************************************************/
-static inline double euclidean_norm(const double *x, const double *y,
-    const int p)
-{
-    double s = 0.0;
-    for (int i = 0; i < p; i++)
-        s += _POWER2(x[i] - y[i]);
-
-    return sqrt(s);
-}
 #undef _POWER2
+#undef PRINT_OUT
