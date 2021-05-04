@@ -42,4 +42,5 @@ expect_equal(
     c("(Intercept)" = 7769.1899, employment = 14424.6617),
     tolerance = 1e-4, label = "Schweppe regression GM-est: Huber")
 
+expect_equal(1, 2, label = "not a real test")
 
