@@ -4,8 +4,7 @@
 #include <R_ext/BLAS.h>
 #include "wquantile.h"
 #include "psifunctions.h"
-
-// #include "mallows.h"
+#include "mallows.h"
 
 #ifndef _ROBSURVEY_H
 #define _ROBSURVEY_H
