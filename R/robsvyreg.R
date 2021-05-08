@@ -16,13 +16,29 @@ robsvyreg <- function(x, y, w, k, psi, type, xwgt = NULL, var = NULL, ...)
         y <- y / sqrt(var)
     }
 
+    # initialization
+    if (is.null(ctrl$init)) {
+        init <- 1 # initialization by weighted least squares
+        beta <- numeric(p)
+    } else {
+        init <- 0 # regression is initialized by ctrl$init
+        beta <- ctrl$init
+        if (length(as.vector(beta)) != p || !is.numeric(beta))
+            stop("Argument 'init' must be a numerical p-vector\n",
+                call. = FALSE)
+        if (sqrt(sum(beta^2)) < sqrt(.Machine$double.eps))
+            stop("Euclidean norm of 'init' is zero (or nearly so)\n",
+                call. = FALSE)
+    }
+
     tmp <- .C("rwlslm", x = as.double(x), y = as.double(y), w = as.double(w),
         resid = as.double(numeric(n)), robwgt = as.double(numeric(n)),
         xwgt = as.double(xwgt), n = as.integer(n), p = as.integer(p),
-        k = as.double(k), beta = as.double(numeric(p)),
+        k = as.double(k), beta = as.double(beta),
         scale = as.double(numeric(1)), tol = as.double(ctrl$tol),
         maxit = as.integer(ctrl$maxit), psi = as.integer(psi),
-        type = as.integer(type), PACKAGE = "robsurvey")
+        type = as.integer(type), init = as.integer(init),
+        mad_center = as.integer(ctrl$mad_center), PACKAGE = "robsurvey")
 
     psi_fun <- switch(psi + 1, "Huber", "asymHuber", "Tukey")
     names(tmp$beta) <- colnames(x)
@@ -42,7 +58,20 @@ robsvyreg <- function(x, y, w, k, psi, type, xwgt = NULL, var = NULL, ...)
         call = NA)
 }
 
-svyreg_control <- function(tol = 1e-5, maxit = 100, k_Inf = 1e5, ...)
+svyreg_control <- function(tol = 1e-5, maxit = 100, k_Inf = 1e5, init = NULL,
+    mad_center = TRUE, ...)
 {
-    list(tol = unname(tol), maxit = unname(maxit), k_Inf = unname(k_Inf))
+    if (!is.numeric(tol))
+        stop("Argument 'tol' must be of type 'numeric'\n", call. = FALSE)
+    if (maxit <= 0 || !is.numeric(maxit))
+        stop("Argument 'maxit' must be a positive integer\n", call. = FALSE)
+    if (!is.logical(mad_center))
+        stop("Argument 'mad_center' must be of type 'logical'\n",
+            call. = FALSE)
+    if (!is.numeric(k_Inf))
+        stop("Argument 'k_Inf' must be of type 'numeric'\n",
+            call. = FALSE)
+    list(tol = unname(tol), maxit = unname(as.integer(maxit)),
+        k_Inf = unname(k_Inf), init = unname(init),
+        mad_center = unname(mad_center))
 }

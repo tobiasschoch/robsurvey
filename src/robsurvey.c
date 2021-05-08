@@ -23,21 +23,6 @@
 #define _POWER2(_x) ((_x) * (_x))
 #define PRINT_OUT(_f, ...) Rprintf((_f), ##__VA_ARGS__)
 
-// error handling
-typedef enum robsurvey_error_enum {
-    ROBSURVEY_ERROR_OK = 0,         // no error
-    ROBSURVEY_ERROR_SCALE_ZERO,     // scale estimate is zero
-    ROBSURVEY_ERROR_RANK_DEFICIENT, // design matrix is rank deficient
-    ROBSURVEY_ERROR_COUNT,          // [not an actual error type]
-} robsurvey_error_type;
-
-// human readable errors
-const char* const ROBSURVEY_ERROR_STRINGS[] = {
-    "no errors",
-    "scale estimate is zero (or nearly so)",
-    "design matrix is rank deficient (or nearly so)"
-};
-
 // structure: regression data
 typedef struct regdata_struct {
     int n;
@@ -58,7 +43,6 @@ typedef struct workarray_struct {
 } workarray;
 
 // declaration
-const char* robsurvey_error(robsurvey_error_type);
 robsurvey_error_type wmad(regdata*, workarray*, double* restrict, int*,
     double, double*);
 robsurvey_error_type rfitwls(regdata*, workarray*, double* restrict,
@@ -78,13 +62,9 @@ robsurvey_error_type initialize(regdata*, workarray*, double* restrict,
 \******************************************************************************/
 void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
     double *xwgt, int *n, int *p, double *k, double *beta0, double *scale,
-    double *tol, int *maxit, int *psi, int *type)
+    double *tol, int *maxit, int *psi, int *type, int *init, int *mad_center)
 {
     // STEP 0: general preparations
-    //FIXME:
-    int init = 1;
-    int mad_center = 1;
-
     robsurvey_error_type status;
     double* restrict beta1 = (double*) Calloc(*p, double);
 
@@ -130,12 +110,17 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
         f_wgt_psi = huber_wgt;
     }
 
-    double mad_const = 1.482602;                // mad consistency correction
+    double mad_const = mad_NORM_CONSTANT;       // mad consistency correction
 
     switch (*type) {
     case 1:                                     // Mallows GM-estimator
-        // consistency correction term for mad
-        mad_const = mallows_mad_normalization(xwgt, n);
+        // consistency correction for mad
+        status = mallows_mad_normalization(xwgt, n, &mad_const);
+        if (status != ROBSURVEY_ERROR_OK) {
+            PRINT_OUT("Error: %s\n", robsurvey_error(status));
+            *maxit = 0;
+            goto clean_up;
+        }
         dat->xwgt = xwgt;
         break;
     case 2:                                     // Schweppe GM-estimator
@@ -151,7 +136,7 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
     }
 
     // STEP 2: initialize
-    status = initialize(dat, work, resid, beta0, scale, &init, &mad_center);
+    status = initialize(dat, work, resid, beta0, scale, init, mad_center);
     if (status != ROBSURVEY_ERROR_OK) {
         PRINT_OUT("Error: %s\n", robsurvey_error(status));
         *maxit = 0;
@@ -177,11 +162,11 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
             double* restrict dummy_resid = robwgt;
             for (int i = 0; i < *n; i++)
                 dummy_resid[i] = resid[i] * sqrt(xwgt[i]);
-            status = wmad(dat, work, dummy_resid, &mad_center, mad_const,
+            status = wmad(dat, work, dummy_resid, mad_center, mad_const,
                 scale);
 
         } else {                                // otherwise
-            status = wmad(dat, work, resid, &mad_center, mad_const, scale);
+            status = wmad(dat, work, resid, mad_center, mad_const, scale);
         }
         if (status != ROBSURVEY_ERROR_OK) {
             PRINT_OUT("Error: %s\n", robsurvey_error(status));
@@ -222,26 +207,25 @@ robsurvey_error_type initialize(regdata *dat, workarray *work,
     double* restrict resid, double* restrict beta0, double *scale, int *init,
     int *mad_center)
 {
+    robsurvey_error_type status;
     if (*init) {
-        // compute least squares estimate of 'beta' (and residuals)
-        robsurvey_error_type status = rfitwls(dat, work, dat->w, beta0, resid);
+        // compute least squares estimate of 'beta'
+        status = rfitwls(dat, work, dat->w, beta0, resid);
         if (status != ROBSURVEY_ERROR_OK)
             return status;
-
-        // compute 'scale' by the weighted mad
-        status = wmad(dat, work, resid, mad_center, 1.482602, scale);
-        return status;
-    } else {
-        // compute the residuals (BLAS::dgemv)
-        const int n = dat->n;
-        const int p = dat->p;
-        const int int_1 = 1;
-        const double double_minus1 = -1.0, double_1 = 1.0;
-        Memcpy(resid, dat->y, n);
-        F77_CALL(dgemv)("N", &n, &p, &double_minus1, dat->x, &n, beta0, &int_1,
-            &double_1, resid, &int_1);
-        return ROBSURVEY_ERROR_OK;
     }
+    // compute the residuals (BLAS::dgemv)
+    const int n = dat->n;
+    const int p = dat->p;
+    const int int_1 = 1;
+    const double double_minus1 = -1.0, double_1 = 1.0;
+    Memcpy(resid, dat->y, n);
+    F77_CALL(dgemv)("N", &n, &p, &double_minus1, dat->x, &n, beta0, &int_1,
+        &double_1, resid, &int_1);
+
+    // compute 'scale' by the weighted mad
+    status = wmad(dat, work, resid, mad_center, mad_NORM_CONSTANT, scale);
+    return status;
 }
 
 /******************************************************************************\
@@ -374,11 +358,11 @@ robsurvey_error_type wmad(regdata *dat, workarray *work, double* restrict resid,
 
     // center the absolute deviations about the weighted median or about zero
     double med, prob = 0.5;
-    if (*median) {
+    if (*median) {          // centered about the weighted median
         wquantile_noalloc(resid, w, work_2n, &n, &prob, &med);
         for (int i = 0; i < n; i++)
             work_y[i] = fabs(resid[i] - med);
-    } else {
+    } else {                // centered about zero
          for (int i = 0; i < n; i++)
             work_y[i] = fabs(resid[i]);
     }
@@ -391,17 +375,6 @@ robsurvey_error_type wmad(regdata *dat, workarray *work, double* restrict resid,
         return ROBSURVEY_ERROR_SCALE_ZERO;
     else
         return ROBSURVEY_ERROR_OK;
-}
-
-/******************************************************************************\
-|* obtain a human readable error message                                      *|
-\******************************************************************************/
-const char* robsurvey_error(robsurvey_error_type err)
-{
-    if (err >= ROBSURVEY_ERROR_COUNT)
-        return NULL;
-    else
-        return ROBSURVEY_ERROR_STRINGS[err];
 }
 
 /******************************************************************************\
@@ -445,6 +418,7 @@ static inline double norm(const double *x, const double *y, const int p)
 |* psi     0 = Huber, 1 = asymmetric Huber, 2 = Tukey biweight                *|
 |* type    0 = M-est., 1 = Mallows GM-est., 2 = Schweppe GM-est.              *|
 \******************************************************************************/
+//FIXME
 void cov_rwlslm(double *resid, double *x, double *xwgt, double *robwgt,
     double *w, double *k, double *scale, double *scale2, int *n, int *p,
     int *psi, int *type)
@@ -621,6 +595,7 @@ void cov_rwlslm(double *resid, double *x, double *xwgt, double *robwgt,
 |*                                                                            *|
 |* NOTE: array x will be overwritten                                          *|
 \******************************************************************************/
+//FIXME error
 static inline void inverse_qr(double *x, double *work_x, double *work,
     int *n, int *p, int *lwork, int qmatrix)
 {

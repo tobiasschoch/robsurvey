@@ -1,13 +1,4 @@
-/******************************************************************************\
-|* robsurvey                                                                  *|
-|* -------------------------------------------------------------------------- *|
-|* PROJECT  robsurvey library                                                 *|
-|* SUBEJCT  header file for trimmed and winsorized mean                       *|
-|* AUTHORS  Tobias Schoch (tobias.schoch@fhnw.ch), January, 2020              *|
-|* LICENSE  GPL >= 2                                                          *|
-|* COMMENT  [none]                                                            *|
-\******************************************************************************/
-
+#include <R.h>
 #include "wquantile.h"
 
 #ifndef _TRIMMEDWINSORIZED_H

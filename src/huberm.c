@@ -24,7 +24,7 @@
 */
 
 #include <R.h>
-#include "wquantile.h"
+#include "huberm.h"
 
 // some macros
 #define _WGT_HUBER(_x, _k) ((fabs(_x) >= _k) ? _k / fabs(_x) : 1.0)
@@ -90,7 +90,7 @@ void huberm(double* restrict x, double* restrict w, double* restrict robwgt,
     double p75 = 0.75, x75 = 0.0;
     wquantile_noalloc(x, w, work_2n, n, &p25, &x25);
     wquantile_noalloc(x, w, work_2n, n, &p75, &x75);
-    scale0 = (x75 - x25) * 0.7413;
+    scale0 = (x75 - x25) * iqr_NORM_CONSTANT;
 
     // stop if IQR is zero
     if (scale0 < DBL_EPSILON) {

@@ -15,6 +15,22 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; if not, a copy is available at
    https://www.gnu.org/licenses/
+
+   Notes:
+    + Currently, the following psi-functions (and their respective weight-
+      and psi-prime functions) are implemented:
+       - psi = 0: Huber psi-function (see Huber, 1981)
+       - psi = 1: asymmetric Huber psi-function (see Hulliger, 1995)
+       - psi = 2: Tukey biweight psi-function (see Huber, 1981)
+    + Additional psi-functions can be added if required. The method
+      dispatch takes place in the functions 'rwlslm' and 'cov_rwlslm'
+      (see file 'robsurvey.c'). You must add the psi-, psi-prime-, and
+      weight-functions in the switch statement in the mentioned functions.
+
+  References:
+    - Huber, P.J. (1981). Robust Statistics, New York: John Wiley & Sons.
+    - Hulliger, B. (1995). Outlier Robust Horvitz-Thompson Estimator, Survey
+      Methodology 21, pp. 79-87.
 */
 
 #include "psifunctions.h"

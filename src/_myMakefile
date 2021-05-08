@@ -23,10 +23,10 @@ endif
 ifneq (, $(findstring mingw, $(SYS)))
 # Windows MinGW
 robsurvey: robsurvey.o wquantile.o mallows.o zeroin.o huberm.o \
-	trimmedwinsorized.o fitwls.o psifunctions.o
+	trimmedwinsorized.o fitwls.o psifunctions.o robsurvey_error.o
 	$(CC) -shared -o $@.dll $@.o $(DLL_BLAS) $(DLL_LAPACK) $(DLL_R) \
 		wquantile.o mallows.o zeroin.o huberm.o \
-		trimmedwinsorized.o fitwls.o psifunctions.o
+		trimmedwinsorized.o fitwls.o psifunctions.o robsurvey_error.o
 else
 # Linux
 
@@ -64,8 +64,12 @@ fitwls.o: fitwls.c
 psifunctions.o: psifunctions.c
 	$(CC) -Wall -pedantic -I $(R_C_HEADER) -c $*.c $(CFLAGS)
 
+# compile with -fpic flag otherwise the array of strings is not relocatable
+robsurvey_error.o: robsurvey_error.c
+	$(CC) -fpic -Wall -pedantic -I $(R_C_HEADER) -c $*.c $(CFLAGS)
+
 # housekeeping (using make clean)
 .PHONY: clean
 clean:
 	rm robsurvey.o wquantile.o zeroin.o huberm.o mallows.o \
-	trimmedwinsorized.o fitwls.o psifunctions.o
+	trimmedwinsorized.o fitwls.o psifunctions.o robsurvey_error.o

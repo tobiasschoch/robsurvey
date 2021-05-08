@@ -4,7 +4,8 @@
 \title{Internal Function for the Regression GM-Estimator}
 \usage{
 robsvyreg(x, y, w, k, psi, type, xwgt = NULL, var = NULL, ...)
-svyreg_control(tol = 1e-05, maxit = 100, k_Inf = 1e+05, ...)
+svyreg_control(tol = 1e-5, maxit = 100, k_Inf = 1e5, init = NULL,
+    mad_center = TRUE, ...)
 }
 \arguments{
 \item{x}{\code{[array]} design matrix (no \code{NA}'s allowed).}
@@ -28,6 +29,14 @@ svyreg_control(tol = 1e-05, maxit = 100, k_Inf = 1e+05, ...)
     (default: \code{100}).}
 \item{k_Inf}{\code{[integer]} numerical value that represents \code{Inf}
     (default: \code{1e+05}).}
+\item{init}{either \code{NULL} or \code{[numeric vector]}, if
+    \code{init = NULL} the regression estimator is initialized by
+    weighted least squares; otherwise, \code{init} can be specified as
+    the estimate (i.e., \emph{p}-vector) to initialize the iteratively
+    re-weighted least squares method (default: \code{NULL}).}
+\item{mad_center}{\code{[logical]} toggle to select whether the MAD is
+    centered about the (weighted) median (\code{TRUE}) or about zero
+    (default: \code{TRUE}).}
 }
 \value{
 \code{[list]}

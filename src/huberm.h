@@ -1,4 +1,6 @@
 #include <R.h>
+#include "wquantile.h"
+#include "constants.h"
 
 #ifndef _HUBERM_H
 #define _HUBERM_H

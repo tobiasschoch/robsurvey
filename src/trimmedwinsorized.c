@@ -21,7 +21,7 @@
        Philadelphia: SIAM.
 */
 
-#include "wquantile.h"
+#include "trimmedwinsorized.h"
 
 /******************************************************************************\
 |* weighted trimmed mean (scalar)                                             *|
