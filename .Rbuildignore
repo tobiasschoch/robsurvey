@@ -11,14 +11,18 @@
 ^inst/doc/sctmath\.tex
 ^inst/doc/test_svyreg_huber\.R
 ^inst/varia$
-^inst/comparison$
+# comparison
+^inst/comparison/comparison\.Rnw$
+^inst/comparison/Sweave\.sty$
+^inst/comparison/Makefile$
+^inst/comparison/R_functions\.R$
 # tests
 ^tests
 # src folder
-^src/_myMakefile$
+^src/Makefile$
 ^src/_checkout_wquantile\.bat$
 # vignettes folder
-^vignettes/_my_Makefile$
+^vignettes/Makefile$
 ^vignettes/robsurvey\.html$
 # license (github requries it in the base directory but CRAN complains)
 ^LICENSE$
