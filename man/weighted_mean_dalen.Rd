@@ -3,15 +3,15 @@
 \alias{weighted_total_dalen}
 \title{Dalen Estimator of the Mean and Total}
 \usage{
-weighted_mean_dalen(x, w, censored, na.rm = FALSE, verbose = TRUE,
+weighted_mean_dalen(x, w, censoring, na.rm = FALSE, verbose = TRUE,
     info = FALSE)
-weighted_total_dalen( x, w, censored, na.rm = FALSE, verbose = TRUE,
+weighted_total_dalen( x, w, censoring, na.rm = FALSE, verbose = TRUE,
     info = FALSE)
 }
 \arguments{
 \item{x}{\code{[numeric vector]} observations.}
 \item{w}{\code{[numeric vector]} weights (same length as vector \code{x}).}
-\item{censored}{\code{[double]} threshold above which all observations are
+\item{censoring}{\code{[double]} threshold above which all observations are
     censored (i.e., set equal to the threshold).}
 \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should be
     removed before the computation proceeds (default: \code{FALSE}).}

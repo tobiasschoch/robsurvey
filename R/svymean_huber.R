@@ -1,4 +1,4 @@
-svymean_huber <- function(x, design, k = 1.5, type = "rwm", asym = FALSE,
+svymean_huber <- function(x, design, k, type = "rwm", asym = FALSE,
     na.rm = FALSE, ...)
 {
     dat <- .checkformula(x, design)
@@ -19,11 +19,11 @@ svymean_huber <- function(x, design, k = 1.5, type = "rwm", asym = FALSE,
     names(res$estimate) <- dat$yname
     res$call <- match.call()
     res$design <- design
-    class(res) <- "svystat_rob"
+    class(res) <- c("svystat_rob", "mer_capable")
     res
 }
 
-svytotal_huber <- function(x, design, k = 1.5, type = "rwm", asym = FALSE,
+svytotal_huber <- function(x, design, k, type = "rwm", asym = FALSE,
     na.rm = FALSE, ...)
 {
     res <- svymean_huber(x, design, k, type, asym, na.rm, ...)

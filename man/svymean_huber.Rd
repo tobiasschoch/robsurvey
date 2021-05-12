@@ -3,9 +3,9 @@
 \alias{svytotal_huber}
 \title{Weighted Huber Mean and Total - Robust Horvitz-Thompson Estimator}
 \usage{
-svymean_huber(x, design, k = 1.5, type = "rwm", asym = FALSE, na.rm = FALSE,
+svymean_huber(x, design, k, type = "rwm", asym = FALSE, na.rm = FALSE,
     ...)
-svytotal_huber(x, design, k = 1.5, type = "rwm", asym = FALSE, na.rm = FALSE,
+svytotal_huber(x, design, k, type = "rwm", asym = FALSE, na.rm = FALSE,
     ...)
 }
 \arguments{
@@ -13,7 +13,7 @@ svytotal_huber(x, design, k = 1.5, type = "rwm", asym = FALSE, na.rm = FALSE,
 \item{design}{an object of class \code{survey.design} or
     \code{survey.design2}.}
 \item{k}{\code{[double]} robustness tuning constant
-    (\eqn{0 < k \leq \infty}{0 < k <= Inf}; default: \code{k = 1.5}).}
+    (\eqn{0 < k \leq \infty}{0 < k <= Inf}).}
 \item{type}{\code{[character]} type of method: \code{"rwm"} or \code{"rht"}.}
 \item{asym}{\code{[logical]} toggle for asymmetric Huber psi-function
     (default: \code{FALSE}).}

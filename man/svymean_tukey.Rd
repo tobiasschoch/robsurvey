@@ -4,14 +4,14 @@
 \title{Weighted Tukey Biweight Mean and Total - Robust Horvitz-Thompson
 Estimator}
 \usage{
-svymean_tukey(x, design, k = 1.5, type = "rwm", na.rm = FALSE, ...)
-svytotal_tukey(x, design, k = 1.5, type = "rwm", na.rm = FALSE, ...)
+svymean_tukey(x, design, k, type = "rwm", na.rm = FALSE, ...)
+svytotal_tukey(x, design, k, type = "rwm", na.rm = FALSE, ...)
 }
 \arguments{
 \item{x}{a one-sided \code{[formula]}, e.g., \code{~myVariable}.}
 \item{design}{an object of class \code{survey.design} or \code{survey.design2}.}
 \item{k}{\code{[double]} robustness tuning constant
-    (\eqn{0 < k \leq \infty}{0 < k <= Inf}; default: \code{k = 1.5}).}
+    (\eqn{0 < k \leq \infty}{0 < k <= Inf}).}
 \item{type}{\code{[character]} type of method: \code{"rwm"} or \code{"rht"}.}
 \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should
     be removed before the computation proceeds (default: \code{FALSE}).}

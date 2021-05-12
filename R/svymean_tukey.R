@@ -1,4 +1,4 @@
-svymean_tukey <- function(x, design, k = 1.5, type = "rwm", na.rm = FALSE, ...)
+svymean_tukey <- function(x, design, k, type = "rwm", na.rm = FALSE, ...)
 {
     dat <- .checkformula(x, design)
     res <- weighted_mean_tukey(dat$y, dat$w, k, type, info = TRUE, na.rm, ...)
@@ -16,12 +16,11 @@ svymean_tukey <- function(x, design, k = 1.5, type = "rwm", na.rm = FALSE, ...)
     names(res$estimate) <- dat$yname
     res$call <- match.call()
     res$design <- design
-    class(res) <- "svystat_rob"
+    class(res) <- c("svystat_rob", "mer_capable")
     res
 }
 
-svytotal_tukey <- function(x, design, k = 1.5, type = "rwm", na.rm = FALSE,
-    ...)
+svytotal_tukey <- function(x, design, k, type = "rwm", na.rm = FALSE, ...)
 {
     res <- svymean_tukey(x, design, k, type, na.rm, ...)
     sum_w <- sum(res$model$w)

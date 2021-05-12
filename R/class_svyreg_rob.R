@@ -2,7 +2,7 @@ print.svyreg_rob <- function(x, digits = max(3L, getOption("digits") - 3L), ...)
 {
     converged <- x$optim$converged
     if (is.null(converged) || converged) {
-        cat(paste0("\n", x$estimator$string, "\n"))
+        cat("\n", x$estimator$string, "\n")
         cat("\nCall:\n", paste(deparse(x$call), sep = "\n", collapse = "\n"),
             "\n", sep = "")
         if (!is.null(x$optim))

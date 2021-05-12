@@ -23,6 +23,7 @@
 ^src/_checkout_wquantile\.bat$
 # vignettes folder
 ^vignettes/Makefile$
-^vignettes/robsurvey\.html$
+^vignettes/basic\.html$
+^vignettes/rht\.html$
 # license (github requries it in the base directory but CRAN complains)
 ^LICENSE$

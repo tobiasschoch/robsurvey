@@ -1,7 +1,7 @@
 \name{svyreg_tukey}
 \alias{svyreg_tukey}
 \alias{svyreg_tukeyGM}
-\title{Huber Robust Survey Regression M- and GM-Estimator}
+\title{Tukey Biweight Robust Survey Regression M- and GM-Estimator}
 \usage{
 svyreg_tukey(formula, design, k, var = NULL, na.rm = FALSE, ...)
 svyreg_tukeyGM(formula, design, k, type, xwgt, var = NULL, na.rm = FALSE, ...)
@@ -27,7 +27,8 @@ svyreg_tukeyGM(formula, design, k, type, xwgt, var = NULL, na.rm = FALSE, ...)
 object of class \code{svyreg.rob}
 }
 \description{
-Huber robust survey regression M- and GM-estimator (Mallows and Schweppe type)
+Tukey biweight robust survey regression M- and GM-estimator (Mallows and
+Schweppe type)
 }
 \details{
 Details

@@ -3,16 +3,16 @@
 \alias{weighted_total_huber}
 \title{Weighted Huber Mean and Total (bare-bone functions)}
 \usage{
-weighted_mean_huber(x, w, k = 1.5, type = "rwm", asym = FALSE, info = FALSE,
+weighted_mean_huber(x, w, k, type = "rwm", asym = FALSE, info = FALSE,
     na.rm = FALSE, ...)
-weighted_total_huber(x, w, k = 1.5, type = "rwm", asym = FALSE, info = FALSE,
+weighted_total_huber(x, w, k, type = "rwm", asym = FALSE, info = FALSE,
     na.rm = FALSE, ...)
 }
 \arguments{
 \item{x}{\code{[numeric vector]} observations.}
 \item{w}{\code{[numeric vector]} weights (same length as vector \code{x}).}
 \item{k}{\code{[double]} robustness tuning constant
-    (\eqn{0 < k \leq \infty}{0 < k <= Inf}; default: \code{k = 1.5}).}
+    (\eqn{0 < k \leq \infty}{0 < k <= Inf}).}
 \item{type}{\code{[character]} type of method: \code{"rwm"} or \code{"rht"};
     see below (default: \code{"rwm"}).}
 \item{asym}{\code{[logical]} toggle for asymmetric Huber psi-function

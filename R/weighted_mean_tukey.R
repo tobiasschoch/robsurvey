@@ -1,4 +1,4 @@
-weighted_mean_tukey <- function(x, w, k = 1.5, type = "rwm", info = FALSE,
+weighted_mean_tukey <- function(x, w, k, type = "rwm", info = FALSE,
     na.rm = FALSE, ...)
 {
     dat <- .check(x, w, na.rm)
@@ -29,7 +29,7 @@ weighted_mean_tukey <- function(x, w, k = 1.5, type = "rwm", info = FALSE,
     }
 }
 
-weighted_total_tukey <- function(x, w, k = 1.5, type = "rwm", info = FALSE,
+weighted_total_tukey <- function(x, w, k, type = "rwm", info = FALSE,
     na.rm = FALSE, ...)
 {
     res <- weighted_mean_tukey(x, w, k, type, info, na.rm, ...)

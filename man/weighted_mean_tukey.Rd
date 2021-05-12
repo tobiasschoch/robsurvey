@@ -3,16 +3,16 @@
 \alias{weighted_total_tukey}
 \title{Weighted Tukey Biweight Mean and Total (bare-bone functions)}
 \usage{
-weighted_mean_tukey(x, w, k = 1.5, type = "rwm", info = FALSE, na.rm = FALSE,
+weighted_mean_tukey(x, w, k, type = "rwm", info = FALSE, na.rm = FALSE,
     ...)
-weighted_total_tukey(x, w, k = 1.5, type = "rwm", info = FALSE, na.rm = FALSE,
+weighted_total_tukey(x, w, k, type = "rwm", info = FALSE, na.rm = FALSE,
     ...)
 }
 \arguments{
 \item{x}{\code{[numeric vector]} observations.}
 \item{w}{\code{[numeric vector]} weights (same length as vector \code{x}).}
 \item{k}{\code{[double]} robustness tuning constant
-    (\eqn{0 < k \leq \infty}{0 < k <= Inf}; default: \code{k = 1.5}).}
+    (\eqn{0 < k \leq \infty}{0 < k <= Inf}).}
 \item{type}{\code{[character]} type of method: \code{"rwm"} or \code{"rht"};
     see below (default: \code{"rwm"}).}
 \item{info}{\code{[logical]} indicating whether additional information

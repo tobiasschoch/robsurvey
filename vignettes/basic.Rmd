@@ -1,0 +1,498 @@
+---
+title: "Vignette: Basic Robust Estimators"
+author: "Beat Hulliger and Tobias Schoch (package vers. 0.2)"
+output:
+    html_document:
+        highlight: tango
+vignette: >
+  %\VignetteIndexEntry{Basic Robust Estimators}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "",
+    prompt = TRUE
+)
+```
+
+```{css, echo = FALSE}
+.my-sidebar-orange {
+    padding-left: 1.5rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.25rem;
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
+    border: 1px solid #eee;
+    border-left-width: 0.75rem;
+    border-radius: .25rem;
+    border-left-color: #ce5b00;
+}
+
+.my-sidebar-blue {
+    padding-left: 1.5rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.25rem;
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
+    border: 1px solid #eee;
+    border-left-width: 0.75rem;
+    border-radius: .25rem;
+    border-left-color: #1f618d;
+}
+```
+
+## Outline
+
+In this vignette, we discuss the usage of the basic robust estimators. The function/ estimators are grouped by three categories
+
+#### Estimating methods
+
+ - Trimming (Chap. 2)
+ - Winsorization (Chap. 3)
+ - Weight reduction (Chap. 4)
+ - M-estimation (Chap. 5)
+
+#### Population characteristics
+
+ - mean
+ - total
+ - (standard deviation $\rightarrow$ see utility functions, Chap. 6)
+
+
+#### Modes
+
+ - bare-bone methods
+ - survey methods
+
+Bare-bone methods are stripped-down versions of the survey methods in terms of functionality and informativeness. These functions may serve users and other package developers as building blocks. In particular, bare-bone functions cannot compute variances. The survey methods are much more capable and depend, for variance estimation, on the R package `survey` [Lumley](#biblio) (2021, 2010).
+
+<div class="my-sidebar-blue">
+<p style="color: #1f618d;">
+**Good to know.**
+</p>
+<p>All bare-bone methods can be called with the argument `info = TRUE` (default: `FALSE`). This instructs the functions to return a list with the entries
+
+ - characteristic (e.g., mean)
+ - estimator (e.g., trimmed estimator)
+ - estimate (numerical value)
+ - variance (by default: `NA`)
+ - robust (list of arguments that specify robustness)
+ - residuals (numerical vector)
+ - model (list of data used for estimation)
+ - design (by default: `NA`)
+ - call
+</p>
+</div>
+
+<div class="my-sidebar-orange">
+<p style="color: #ce5b00;">
+**IMPORTANT**
+</p>
+<p>
+To avoid unnecessary repetition, we discuss the details of estimation *only* for the weighted trimmed mean and total. The details are the same for all other estimating methods.
+</p>
+</div>
+
+## 1 LOS (Length-of-stay) Hospital Data
+
+The losdata are a simple random sample without replacement of $n = 70$ patients from the (fictive) population of $N = 2479$ patients in inpatient hospital treatment. We have constructed the losdata as a showcase; though, the LOS measurements are real data that we have taken from the $201$ observations in [Ruffieux](#biblio) et al. (2000). [Our losdata are a sample of size $n = 70$ from the $201$ original observations].
+
+First, we load the package and the losdata
+
+```{r}
+library(robsurvey, quietly = TRUE)
+data(losdata)
+attach(losdata)
+```
+
+The first 5 rows of the losdata are
+
+```{r}
+head(losdata, 5)
+```
+We have data on the following variables
+
+ - `los` length-of-stay in hospital (days)
+ - `weight` sampling weight
+ - `fpc` finite population correction
+
+We consider estimating average length-of-stay in hospital (LOS, days).
+
+### 1.1 Survey design object
+
+**For the survey methods** (not bare-bone methods), we must **load** the `survey` package ([Lumley](#biblio), 2010, 2021)
+
+```{r, eval = FALSE}
+library(survey)
+```
+
+and specify a `survey.design` object
+
+```{r, eval = FALSE}
+dn <- svydesign(ids = ~1, fpc = ~fpc, weights = ~weight, data = losdata)
+```
+
+```{r, echo = FALSE}
+suppressPackageStartupMessages(library(survey))
+dn <- svydesign(ids = ~1, fpc = ~fpc, weights = ~weight, data = losdata)
+```
+
+### 1.2 Exploring the data
+
+The distribution of the variable los is skewed to the right (see boxplot), and we see a couple of rather heavy outliers. On a logarithmic scale, the distribution is still slightly skewed, and we observe one outlier. The outliers need not be errors. Following [Chambers](#biblio) (1986), we distinguish representative outliers from non-representative outliers.
+
+<div class="my-sidebar-blue">
+<p style="color: #1f618d;">
+**Definition**
+</p>
+<p>Representative outliers are extreme but correct values and are thought to represent other population units similar in value. A nonrepresentative outlier is an atypical or extreme observation whose value is either deemed erroneous or unique in the sense that there is no other unit like it ([Chambers](#biblio), 1986).
+</p>
+</div>
+
+The outliers visible in the boxplot refer to a few individuals who stayed for a long time in inpatient care. Moreover, we assume that these outliers represent patients in the population that are similar in value (i.e., representative outliers).
+
+```{r, echo = FALSE, fig.height = 2}
+layout(matrix(1:2, ncol = 2))
+par(mar = c(4, 1, 1, 1))
+svyboxplot(los ~ 1, dn, all.outliers = TRUE, xlab = "los", horizontal = TRUE)
+svyboxplot(log(los) ~ 1, dn, all.outliers = TRUE, xlab = "log(los)", horizontal = TRUE)
+```
+
+Although the outliers are not some kind of error, it is beneficiary (from the perspective of efficiency) not consider estimating the population average of los by the weighted mean (Hajek estimator). The influence that the outliers exert on the weighted mean and its variance estimator can lead to inefficiencies. Instead, we shall "treat" the outliers (e.g., downweight) to limit their influence on the estimators. As a result, we may hope to obtain more efficient estimates.
+
+The population average of los and the standard error of the estimate (SE) can be estimated by the Hajek estimator (in the `survey` package)
+
+```{r}
+svymean(~los, dn)
+```
+
+Next, we shall study different methods/ strategies that limit the influence of outliers.
+
+## 2 Trimming
+
+### 2.1 Bare-bone methods
+
+The following estimation methods are available:
+
+ - `weighted_mean_trimmed()`
+ - `weighted_total_trimmed()`
+
+We consider estimating the population one-sided trimmed *mean* of LOS. The lower end of the distribution is not trimmed (lower bound: `LB = 0`). The 5% largest observations are trimmed (upper bound: `UB = 0.95`). The range of values to be considered for estimation is thus defined as `UB - LB`.
+
+```{r}
+weighted_mean_trimmed(los, weight, LB = 0, UB = 0.95)
+```
+
+We obtain an estimate of (roughly) 9.3 days.
+
+### 2.2 Survey methods
+
+The following estimation methods are available:
+
+ - `svymean_trimmed()`
+ - `svytotal_trimmed()`
+
+For our losdata, we compute the weighted trimmed mean (as before). In contrast to `weighted_mean_trimmed()`, the method `svymean_trimmed()` computes the standard error of the estimate using the functionality of the `survey` package.
+
+```{r}
+m <- svymean_trimmed(~los, dn, LB = 0, UB = 0.95)
+m
+```
+
+The estimated location, variance, and standard error of the estimator can be extracted from object `m` with the following commands.
+
+```{r}
+coef(m)
+vcov(m)
+SE(m)
+```
+
+**Additional utility functions**
+
+ - `summary()` for a summary of estimates
+ - `residuals()` to extract the residuals. [For the weighted trimmed mean, the residuals are not so interesting].
+ - `fitted()` to extract the fitted values under the model in use. [Relevant for $M$-estimators].
+ - `robweights()` to extract the robustness weights. [Relevant for $M$-estimators.]
+
+## 3 Winsorization
+
+### 3.1 Bare-bone methods
+
+The following estimation methods are available:
+
+ - `weighted_mean_winsorized()`
+ - `weighted_mean_k_winsorized()`
+ - `weighted_total_winsorized()`
+ - `weighted_total_k_winsorized()`
+
+We consider estimating the population one-sided winsorized *mean* of LOS. The lower end of the distribution is not winsorized (lower bound: `LB = 0`). The 5% largest observations are winsorized (upper bound: `UB = 0.95`).
+
+```{r}
+weighted_mean_winsorized(los, weight, LB = 0, UB = 0.95)
+```
+
+There is *another variant* of the winsorized mean (and total) available, which is specified in terms of the number of $k=1, 2, ...$ observations to be winsorized in the *right tail* of the distribution. It is called the one-sided k-winsorized mean (and total) and is computed as follows
+
+```{r}
+weighted_mean_k_winsorized(los, weight, k = 1)
+```
+
+### 3.2 Survey methods
+
+The following estimation methods are available:
+
+ - `svymean_winsorized()`
+ - `svymean_k_winsorized()`
+ - `svytotal_winsorized()`
+ - `svytotal_k_winsorized()`
+
+```{r}
+svymean_winsorized(~los, dn, LB = 0, UB = 0.95)
+```
+
+The utility functions `coef()`, `vcov()`, `SE()`, `summary()`, `residuals()`, `fitted()`, and `robweights()` are available.
+
+
+<div class="my-sidebar-blue">
+<p style="color: #1f618d;">
+**Good to know.**
+</p>
+<p>
+For the survey methods with postfix `_winsorized`, the implementation offers two variance estimation techniques.
+
+ - `simple_var = FALSE`: the "standard" variance estimation technique for the winsorized mean (and total). It depends on a kernel-based estimate of the density function, which is evaluated at the winsorization quantiles. Under circumstances, this estimate can be difficult to compute and/ or unreliable.
+ - `simple_var = TRUE`: a *simplified* variance estimation technique, which is based on the variance of the weighted trimmed mean (or total).
+</p>
+</div>
+
+## 4 Weight Reduction Methods
+
+The weight reduction method is due to [Dalén](#biblio) (1987). Consider the weighted $x$-total $\sum_{i \in s} w_i x_i$, where summation is over the set of elements in the sample $s$. The estimator of Dalén censors $w_ix_i$ to a constant, $c$, if $w_ix_i > c$. Only bare-bone functions are available.
+
+ - `weighted_mean_dalen()`
+ - `weighted_total_dalen()`
+
+From a practical point of view, the choice of constant $c$ in Dalén's estimators is rather tricky because we cannot only derive $c$ from a large order statistic, say $y_{(k)}$, $k < n$. Instead, the corresponding weight $w_{(k)}$ needs to be taken into account.
+
+<div class="my-sidebar-blue">
+<p style="color: #1f618d;">
+**Good to know.**
+</p>
+<p>
+It is helpful to plot $w_iy_i$ (weight times los) against $y_i$ (los). The censoring constant $c = 1500$ (see dotted horizontal line) is such that the two largest $(w_iy_i)$'s are censored to $1500$.
+
+```{r, echo = FALSE, fig.height = 3, fig.width = 5}
+par(mar = c(4, 4, 1, 0))
+plot(los, weight * los, xlab = "los", ylab = "weight * los")
+abline(h = 1500, lty = 3)
+```
+</p>
+</div>
+
+```{r}
+weighted_mean_dalen(los, weight, censoring = 1500)
+```
+By default, the functions to compute Dalén's estimators are called with the argument `verbose = TRUE` to learn how many observations were censored.
+
+## 5 *M*-Estimation
+
+### 5.1 Bare-bone methods
+
+The following estimation methods are available:
+
+ - `weighted_mean_huber()`
+ - `weighted_total_huber()`
+ - `weighted_mean_tukey()`
+ - `weighted_total_tukey()`
+
+The estimators with postfix `_huber` and `_tukey` are based on, respectively, the Huber and Tukey (biweight) $\psi$-function.
+
+<div class="my-sidebar-orange">
+<p style="color: #ce5b00;">
+**IMPORTANT**
+</p>
+<p>
+Two *types* of $M$-estimators are available:
+
+ - `type = "rwm"`: robust weighted mean (robust Hajek estimator)
+ - `type = "rht"`: robust Horvitz-Thompson estimator of [Hulliger](#biblio) (1995) $\rightarrow$ <b><a style="color: #ce5b00;">separate vignette</a></b>
+
+The robust Horvitz-Thompson estimator (`type = "rht"`) is the method of choice for pps designs (i.e., designs without replacement where the sample inclusion probabilities are proportional to some measure of size). For equal-probability designs, the $M$-estimator of `type = "rwm"` tends to be superior.
+</p>
+</div>
+
+The losdata is a simple random sample; thus, $M$-estimators of `type = "rht"` are the methods of choice. Here, we compute the Huber-type robust weighted $M$-estimator of the mean with robustness tuning constant $k=8$.
+
+```{r}
+weighted_mean_huber(los, weight, type = "rwm", k = 8)
+```
+
+<div class="my-sidebar-blue">
+<p style="color: #1f618d;">
+**Good to know.**
+</p>
+<p>
+In general, the tuning constant `k` must be chosen larger than (loosely speaking) "we are used to choose it". More precisely, in the context of an *infinite population* with a standard *Gaussian* distribution, the constant $k = 1.345$ ensures that the Huber $M$-estimator of location achieves 95% efficiency compared with the arithmetic mean under the Gaussian model. The efficiency considerations underlying the choice of $k = 1.345$ *do not* carry over to distributions other than the Gaussian.
+</p>
+</div>
+
+### 5.2 Survey methods
+
+The following estimation methods are available:
+
+ - `svymean_huber()`
+ - `svytotal_huber()`
+ - `svymean_tukey()`
+ - `svytotal_tukey()`
+
+The Huber $M$-estimator of the mean (and its standard error) can be computed with
+
+```{r}
+m <- svymean_huber(~los, dn, type = "rwm", k = 8)
+m
+```
+
+The `summary()` method summarizes the most important facts about the $M$-estimate
+
+```{r}
+summary(m)
+```
+
+Additional utility functions are `coef()`, `vcov()`, `SE()`, `residuals()`, `fitted()`, and `robweights()`.
+
+### 5.3 Adaptive estimation
+
+An adaptive $M$-estimator of the total (or mean) is defined by letting the data chose the tuning constant $k$. Let $\widehat{T}$ denote the weighted total, and let $\widehat{T}_k$ be the Huber $M$-estimator of the weighted total with robustness tuning constant $k$. Under quite general regularity conditions, the estimated mean square error (MSE) of $\widehat{T}_k$ can be approximated by (see e.g., [Get and Rivest](#biblio), 1992; [Hulliger](#biblio), 1995)
+
+$$\widehat{\mathrm{mse}}\big(\widehat{T}_{k}\big) \approx \mathrm{var}\big(\widehat{T}_{k}\big) +\big(\widehat{T} - \widehat{T}_{k}\big)^2.$$
+
+The minimum estimated risk (MER) estimator ([Hulliger](#biblio), 1995) selects $k$ such that $\widehat{\mathrm{mse}}\big(\widehat{T}_{k}\big)$ is minimal (among all candidate estimators).
+
+Now, suppose that we have been working on the $M$-estimator with $k=8$.
+
+```{r}
+m <- svymean_huber(~los, dn, type = "rwm", k = 8)
+```
+
+Next, we compute the MER, starting from the current $M$-estimate, i.e., object `m`.
+
+```{r}
+m_optimal <- mer(m)
+m_optimal
+```
+
+We can learn more by the summary method.
+
+```{r}
+summary(m_optimal)
+```
+
+For the weighted total, the estimated MSE (say, `mse0`) is equal to the estimated variance because it is a design-unbiased estimator of the population total.
+
+```{r}
+m0 <- svymean(~los, dn)
+mse0 <- vcov(m0)
+unname(mse0)
+```
+
+The estimated MSE of the MER estimator is
+
+```{r}
+mse_optimal <- vcov(m_optimal) + (coef(m_optimal) - coef(m0))^2
+unname(mse_optimal)
+```
+
+Hence, the classical weighted total is `r round(100 * (mse0 / mse_optimal - 1), 1)`% less efficient than the MER as an estimator of the population total.
+
+## 6 Utility Functions
+
+### 6.1 Weighted quantile and median
+
+The weighted quantile (and median) can be computed by
+
+```{r}
+weighted_quantile(los, weight, probs = c(0.1, 0.9))
+weighted_median(los, weight)
+```
+
+When all weights are equal, the computed quantiles of `weighted_quantile()` are equal to `base::quantile()` with argument `type = 2`.
+
+### 6.2 Weighted MAD: median absolute deviation
+
+The normalized weighted median absolute deviations about the weighted median can be computed with
+
+```{r}
+weighted_mad(los, weight)
+```
+
+By default, the normalization constant to make the weighted MAD an unbiased estimator of scale at the Gaussian core model is `constant = 1.482602`. This constant can be changed if necessary.
+
+### 6.3 Weighted IQR: interquartile range
+
+The normalized weighted interquartile range can be computed with
+
+```{r}
+weighted_IQR(los, weight)
+```
+
+By default, the normalization constant to make the weighted IQR an unbiased estimator of scale at the Gaussian core model is `constant = 0.7413`. This constant can be changed if necessary.
+
+---
+
+## Bibliographical Notes
+
+The paper of [Chambers](#biblio) (1986) is the landmark paper about outliers in finite population sampling. [Lee](#biblio) (1995) and [Beaumont and Rivest](#biblio) (2009) are a good starting point to learn about robustness in finite population sampling.
+
+#### Trimming and winsorization
+
+Trimming and winsorization are discussed in [Lee](#biblio) (1995) and [Beaumont and Rivest](#biblio) (2009).The variance estimators are straightforward adaptions of the classical estimators; see [Huber](#biblio) (1981) or [Serfling](#biblio) (1980). A rigorous treatment in the context of finite population sampling can be found in [Shao](#biblio) (1994).
+
+#### Weight reduction methods
+
+[Rao](#biblio) (1971) was among the first to propose weight reduction. Consider a sample of size $n$, and suppose that the $i$th observation is an outlier. He suggested to reduce the outlier’s sampling weight $w_i$ to one, and redistribute the weight difference $w_i−1$ among the remaining
+observations. As a result, observation $i$ does not represent other values like it. Dalén's estimator offers a more general notion of weight reducution; see [Dalén](#biblio) (1987) and also [Chen et al.](#biblio) (2017).
+
+#### M-estimators
+
+In the context of finite population sampling, M-estimators were first studied by [Chambers](#biblio) (1986). He investigated robust methods in the model- or prediction based framework of [Royall and Cumberland](#biblio) (1981). Model-assisted estimators were introduced (for ratio estimation) by [Gwet and Rivest](#biblio) (1992) and studied by [Lee](#biblio) (1995), and [Hulliger](#biblio) (1995, 1999, 2005). A recent comprehensive treatment can be found in [Beaumont and Rivest](#biblio) (2009).
+
+---
+
+## References {#biblio}
+
+Beaumont, J.F., Rivest, L.P. (2009). Dealing with outliers in survey data, in: D. Pfeffermann, C.R. Rao (eds.), *Sample Surveys: Theory, Methods and Inference*, volume 29A of Handbook of Statistics, chapter 11, pp. 247–280. Elsevier, Amsterdam.
+
+Chambers, R. (1986). Outlier Robust Finite Population Estimation. *Journal of the American Statistical Association* 81, pp. 1063–1069.
+
+Dalén, J. (1987). Practical Estimators of a Population Total Which Reduce the Impact of Large Observations, Research Report, Statistics Sweden.
+
+Chen. Q, Elliott, M.R., Haziza, D., Yang, Y., Ghosh, M., Little, R.J.A., Sedransk, J., Thompson, M. (2017). Approaches to Improving Survey-Weighted Estimates. *Statistical Science* 32, pp. 227–248.
+
+Gwet J.P. and Rivest L.P. (1992). Outlier Resistant Alternatives to the Ratio Estimator. *Journal of the American Statistical Association* 87, pp. 1174-1182.
+
+Huber, P. (1981). *Robust Statistics*, John Wiley & Sons, New York.
+
+Hulliger B (2005). Horvitz-Thompson Estimators, Robustified, in: S. Kotz (ed.), *Encyclopedia of Statistical Sciences*, volume 5, 2nd edition. John Wiley and Sons, Hoboken (NJ).
+
+Hulliger, B (1999). Simple and robust estimators for sampling, in: *Proceedings of the Survey Research Methods Section, American Statistical Association*, pp. 54–63. American Statistical Association.
+
+Hulliger. B. (1995). Outlier Robust Horvitz–Thompson Estimators. *Survey Methodology* 21, pp. 79–87.
+
+Lee, H. (1995). Outliers in business surveys, in: B.G. Cox, D.A. Binder, B.N. Chinnappa, A. Christianson, M.J. Colledge, and P.S. Kott (eds.), *Business survey methods*, chapter 26: 503–526. John Wiley and Sons, New York.
+
+Lumley, T (2021). survey: analysis of complex survey samples. R package version 4.0, URL https://CRAN.R-project.org/package=survey.
+
+Lumley, T. (2010). Complex Surveys: A Guide to Analysis Using R: *A Guide to Analysis Using R*. John Wiley and Sons, Hoboken, NJ.
+
+Rao, J.N.K. (1971). Some Aspects of Statistical Inference in Problems of Sampling from Finite Populations, in: V.P. Godambe and D.A. Sprott (eds.), *Foundations of Statistical Inference*, pp.  171-202. Holt, Rinehart, and Winston, Toronto.
+
+Royall, R.M. and Cumberland, W.G. (1981). An Empirical Study of the Ratio Estimator and Estimators of its Variance. *Journal of the American Statistical Association* 76, pp. 66-82.
+
+Ruffieux, C., F. Paccaud, and A. Marazzi (2000). Comparing rules for truncating hospital length of stay, *Casemix Quarterly* 2.
+
+Shao., J (1994). L-Statistics in complex survey problems. *The Annals of Statistics* 22, pp. 946–967.
+
+Serfling, R.J. (1980). *Approximation Theorems of Mathematical Statistics* John Wiley & Sons, New York.

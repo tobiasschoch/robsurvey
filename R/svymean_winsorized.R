@@ -2,6 +2,9 @@
 svymean_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
     na.rm = FALSE, simple_var = FALSE)
 {
+    if (!is.language(x))
+        stop("Argument 'x' must be a formula object\n", call. = FALSE)
+
     dat <- .checkformula(x, design)
     res <- weighted_mean_winsorized(dat$y, dat$w, LB, UB, info = TRUE, na.rm)
     # influence function

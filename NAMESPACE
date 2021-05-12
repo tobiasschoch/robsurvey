@@ -80,6 +80,8 @@ export(weighted_total_trimmed)
 export(weighted_total_tukey)
 export(weighted_total_winsorized)
 
+export(mer)
+
 export(simpsonWgt)
 
 importFrom(graphics,plot)

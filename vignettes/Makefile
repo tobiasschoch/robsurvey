@@ -1,8 +1,20 @@
-DOCUMENT=robsurvey
+# make DOCUMENT=basic
+
+DOCUMENT=basic
+EDIT=gvim.exe
+BROWSER=firefox.exe
 RSCRIPT=Rscript.exe
 
-$(DOCUMENT).html:
+all: knitr
+
+knitr: $(DOCUMENT).Rmd
 	$(RSCRIPT) -e "library(rmarkdown); rmarkdown::render('$(DOCUMENT).Rmd', 'html_document')"
+
+view: $(DOCUMENT).html
+	$(BROWSER) $(DOCUMENT).html
+
+edit: $(DOCUMENT).Rmd
+	$(EDIT) $(DOCUMENT).Rmd &
 
 .PHONY: clean
 clean:

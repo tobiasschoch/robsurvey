@@ -1,4 +1,4 @@
-weighted_mean_huber <- function(x, w, k = 1.5, type = "rwm", asym = FALSE,
+weighted_mean_huber <- function(x, w, k, type = "rwm", asym = FALSE,
     info = FALSE, na.rm = FALSE, ...)
 {
     dat <- .check(x, w, na.rm)
@@ -33,7 +33,7 @@ weighted_mean_huber <- function(x, w, k = 1.5, type = "rwm", asym = FALSE,
     }
 }
 
-weighted_total_huber <- function(x, w, k = 1.5, type = "rwm", asym = FALSE,
+weighted_total_huber <- function(x, w, k, type = "rwm", asym = FALSE,
     info = FALSE, na.rm = FALSE, ...)
 {
     res <- weighted_mean_huber(x, w, k, type, asym, info, na.rm, ...)
