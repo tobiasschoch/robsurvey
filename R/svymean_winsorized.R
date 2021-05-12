@@ -71,6 +71,7 @@ svytotal_k_winsorized <- function(x, design, k, na.rm = FALSE,
 # influence function, Huber (1981, p. 58-59)
 .infl_winsorized <- function(x, w, LB, UB, wm, ngrid = 401)
 {
+    x <- as.double(x); w <- as.double(w)
     qs <- weighted_quantile(x, w, probs = c(LB, UB))
     # density estimates at 'LB' and '1 - UB'
     bwd <- KernSmooth::dpik(x, scalest = "minim", level = 2, kernel = "normal",
@@ -80,11 +81,16 @@ svytotal_k_winsorized <- function(x, design, k, na.rm = FALSE,
     nx <- rowsum(c(rep(0, ngrid), w), c(1:ngrid, findInterval(x, at)))
     dens <- KernSmooth::locpoly(rep(1, ngrid), nx * ngrid / (diff(range(x)) *
         sum(w)), binned = TRUE, bandwidth = bwd, range.x = range(x))
-    f_LB <- dens$y[floor(ngrid * LB) + 1]
-    f_UB <- dens$y[floor(ngrid * UB)]
+    f_LB <- dens$y[min(which(dens$x >= qs[1]))]
+    f_UB <- dens$y[max(which(dens$x <= qs[2]))]
     # influence function
     infl <- pmin.int(qs[2] + (1 - UB) / f_UB, pmax.int(qs[1] - LB / f_LB, x))
     # functional W corresponding to winsorized mean
-    W <- (UB - LB) * wm + LB * qs[1] + (1 - UB) * qs[2]
-    infl - W + LB^2 / f_LB + (1 - UB)^2 / f_UB
+    W <- unname((UB - LB) * wm + LB * qs[1] + (1 - UB) * qs[2])
+    infl <- infl - W
+    if (f_LB > 0)
+        infl <- infl + LB^2 / f_LB
+    if (f_UB > 0)
+        infl <- infl + (1 - UB)^2 / f_UB
+    infl
 }
