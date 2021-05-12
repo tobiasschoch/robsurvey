@@ -1,3 +1,4 @@
+# Tukey biweight M-estimator of the weighted mean (depends on pkg survey)
 svymean_tukey <- function(x, design, k, type = "rwm", na.rm = FALSE, ...)
 {
     dat <- .checkformula(x, design)
@@ -19,7 +20,7 @@ svymean_tukey <- function(x, design, k, type = "rwm", na.rm = FALSE, ...)
     class(res) <- c("svystat_rob", "mer_capable")
     res
 }
-
+# Tukey biweight M-estimator of the weighted total (depends on pkg survey)
 svytotal_tukey <- function(x, design, k, type = "rwm", na.rm = FALSE, ...)
 {
     res <- svymean_tukey(x, design, k, type, na.rm, ...)

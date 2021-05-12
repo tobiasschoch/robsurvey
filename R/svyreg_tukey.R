@@ -1,3 +1,4 @@
+# robust Tukey biweight M-estimator of regression (depends on pkg survey)
 svyreg_tukey <- function(formula, design, k, var = NULL, na.rm = FALSE,
     ...)
 {
@@ -10,7 +11,7 @@ svyreg_tukey <- function(formula, design, k, var = NULL, na.rm = FALSE,
     class(res) <- "svyreg_rob"
     res
 }
-
+# robust Tukey biweight GM-estimator of regression (depends on pkg survey)
 svyreg_tukeyGM <- function(formula, design, k, type, xwgt, var = NULL,
     na.rm = FALSE, ...)
 {

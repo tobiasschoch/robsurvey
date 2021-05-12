@@ -1,3 +1,4 @@
+# Huber M-estimator of the weighted mean
 weighted_mean_huber <- function(x, w, k, type = "rwm", asym = FALSE,
     info = FALSE, na.rm = FALSE, ...)
 {
@@ -6,14 +7,15 @@ weighted_mean_huber <- function(x, w, k, type = "rwm", asym = FALSE,
         return(NA)
     psi <- ifelse(asym, 1, 0)
 
-    if (type == "rwm")
+    if (type == "rwm") {
         res <- robsvyreg(rep(1, dat$n), dat$x, dat$w, k, psi, 0, NULL, NULL,
             ...)
-    else if (type == "rht")
-        res <- robsvyreg(mean(dat$w) / dat$w, dat$x, dat$w, k, psi, 0, NULL,
-            x, ...)
-    else
+    } else if (type == "rht") {
+        xvar <- mean(dat$w) / dat$w
+        res <- robsvyreg(xvar, dat$x, dat$w, k, psi, 0, NULL, xvar, ...)
+    } else {
         stop(paste0("Method '", type, "' does not exist\n"), call. = FALSE)
+    }
 
     if (length(res) == 1)
         return(NA)
@@ -32,7 +34,7 @@ weighted_mean_huber <- function(x, w, k, type = "rwm", asym = FALSE,
         return(res$estimate)
     }
 }
-
+# Huber M-estimator of the weighted total
 weighted_total_huber <- function(x, w, k, type = "rwm", asym = FALSE,
     info = FALSE, na.rm = FALSE, ...)
 {

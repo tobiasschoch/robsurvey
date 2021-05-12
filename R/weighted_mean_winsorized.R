@@ -31,7 +31,6 @@ weighted_mean_winsorized <- function(x, w, LB = 0.05, UB = 1 - LB,
         return(tmp$loc)
     }
 }
-
 # one-sided weighted k winsorized mean
 weighted_mean_k_winsorized <- function(x, w, k, info = FALSE, na.rm = FALSE)
 {
@@ -66,7 +65,6 @@ weighted_mean_k_winsorized <- function(x, w, k, info = FALSE, na.rm = FALSE)
         return(tmp$loc)
     }
 }
-
 # weighted winsorized total
 weighted_total_winsorized <- function(x, w, LB = 0.05, UB = 1 - LB,
     info = FALSE, na.rm = FALSE)
@@ -81,7 +79,6 @@ weighted_total_winsorized <- function(x, w, LB = 0.05, UB = 1 - LB,
         return(res)
     }
 }
-
 # one-sided weighted k winsorized total
 weighted_total_k_winsorized <- function(x, w, k, info = FALSE, na.rm = FALSE)
 {

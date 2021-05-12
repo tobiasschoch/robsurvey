@@ -811,8 +811,8 @@ In general, the tuning constant <code>k</code> must be chosen larger than (loose
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="op">&gt;</span><span class="st"> </span>m &lt;-<span class="st"> </span><span class="kw">svymean_huber</span>(<span class="op">~</span>los, dn, <span class="dt">type =</span> <span class="st">&quot;rwm&quot;</span>, <span class="dt">k =</span> <span class="dv">8</span>)</span></code></pre></div>
 <p>Next, we compute the MER, starting from the current <span class="math inline">\(M\)</span>-estimate, i.e., object <code>m</code>.</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="op">&gt;</span><span class="st"> </span>m_optimal &lt;-<span class="st"> </span><span class="kw">mer</span>(m)</span>
-<span id="cb17-2"><a href="#cb17-2"></a></span>
-<span id="cb17-3"><a href="#cb17-3"></a>minimum found <span class="cf">for</span> k =<span class="st"> </span><span class="fl">14.4532</span></span>
+<span id="cb17-2"><a href="#cb17-2"></a>Search interval<span class="op">:</span><span class="st"> </span>[<span class="fl">0.5</span>, <span class="dv">1000</span>]</span>
+<span id="cb17-3"><a href="#cb17-3"></a>Minimum found <span class="cf">for</span> k =<span class="st"> </span><span class="fl">14.4532</span></span>
 <span id="cb17-4"><a href="#cb17-4"></a><span class="op">&gt;</span><span class="st"> </span>m_optimal</span>
 <span id="cb17-5"><a href="#cb17-5"></a>     mean    SE</span>
 <span id="cb17-6"><a href="#cb17-6"></a>los <span class="fl">11.84</span> <span class="fl">1.716</span></span></code></pre></div>
@@ -824,7 +824,7 @@ In general, the tuning constant <code>k</code> must be chosen larger than (loose
 <span id="cb18-5"><a href="#cb18-5"></a>los <span class="fl">11.84</span> <span class="fl">1.716</span></span>
 <span id="cb18-6"><a href="#cb18-6"></a></span>
 <span id="cb18-7"><a href="#cb18-7"></a>Robustness<span class="op">:</span></span>
-<span id="cb18-8"><a href="#cb18-8"></a><span class="st">  </span>Psi<span class="op">-</span><span class="cf">function</span><span class="op">:</span><span class="st"> </span>with k =<span class="st"> </span><span class="fl">14.45319</span> </span>
+<span id="cb18-8"><a href="#cb18-8"></a><span class="st">  </span>Psi<span class="op">-</span><span class="cf">function</span><span class="op">:</span><span class="st"> </span>with k =<span class="st"> </span><span class="fl">14.4532</span> </span>
 <span id="cb18-9"><a href="#cb18-9"></a>  mean of robustness weights<span class="op">:</span><span class="st"> </span><span class="fl">0.993</span> </span>
 <span id="cb18-10"><a href="#cb18-10"></a></span>
 <span id="cb18-11"><a href="#cb18-11"></a>Algorithm performance<span class="op">:</span></span>

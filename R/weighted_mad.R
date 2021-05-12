@@ -1,3 +1,4 @@
+# weighted median absolute deviations about the weighted median
 weighted_mad <- function(x, w, na.rm = FALSE, constant = 1.482602)
 {
     dat <- .check(x, w, na.rm)

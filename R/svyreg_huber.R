@@ -1,3 +1,4 @@
+# robust Huber M-estimator of regression (depends on pkg survey)
 svyreg_huber <- function(formula, design, k, var = NULL, na.rm = FALSE,
     asym = FALSE, ...)
 {
@@ -11,7 +12,7 @@ svyreg_huber <- function(formula, design, k, var = NULL, na.rm = FALSE,
     class(res) <- "svyreg_rob"
     res
 }
-
+# robust Huber GM-estimator of regression (depends on pkg survey)
 svyreg_huberGM <- function(formula, design, k, type, xwgt, var = NULL,
     na.rm = FALSE, asym = FALSE, ...)
 {

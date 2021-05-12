@@ -1,3 +1,4 @@
+# Weighted line estimator
 weighted_line <- function(x, y = NULL, w, na.rm = FALSE, iter = 1)
 {
     if(missing(w)) stop("Argument 'w' (weights) is missing, with no default.\n")
@@ -69,7 +70,7 @@ weighted_line <- function(x, y = NULL, w, na.rm = FALSE, iter = 1)
     structure(list(call = match.call(), coefficients = c(intercept, slope),
         residuals = y - yhat, fitted.values = yhat), class = "tukeyline")
 }
-
+# Weighted median line estimator
 weighted_median_line <- function(x, y = NULL, w, type = "slopes",
     na.rm = FALSE)
 {
@@ -122,7 +123,7 @@ weighted_median_line <- function(x, y = NULL, w, type = "slopes",
     structure(list(call = sys.call(), coefficients = c(intercept, slope),
         residuals = y - yhat, fitted.values = yhat), class = "medline")
 }
-
+# Weighted median ratio estimator
 weighted_median_ratio <- function(x, y = NULL, w, na.rm = FALSE)
 {
     if (missing(w))

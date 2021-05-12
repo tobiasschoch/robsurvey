@@ -1,3 +1,4 @@
+# workhorse function for robust regression
 robsvyreg <- function(x, y, w, k, psi, type, xwgt = NULL, var = NULL, ...)
 {
     ctrl <- svyreg_control(...)
@@ -59,7 +60,7 @@ robsvyreg <- function(x, y, w, k, psi, type, xwgt = NULL, var = NULL, ...)
         design = NA,
         call = NA)
 }
-
+# control function for robust regression
 svyreg_control <- function(tol = 1e-5, maxit = 100, k_Inf = 1e5, init = NULL,
     mad_center = TRUE, ...)
 {

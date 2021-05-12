@@ -1,3 +1,4 @@
+# Regression estimator of the mean, Huber M-estimator (depends on pkg survey)
 svymean_reg_huber <- function(object, mean_auxiliary, k)
 {
     stopifnot(k > 0)

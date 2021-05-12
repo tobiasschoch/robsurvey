@@ -1,3 +1,4 @@
+# Weighted Huber proposal 2 estimator of location and scale
 huber2 <- function(x, w, k = 1.5, na.rm = FALSE, maxit = 50, tol = 1e-4,
     info = FALSE, k_Inf = 1e5, df_cor = TRUE)
 {

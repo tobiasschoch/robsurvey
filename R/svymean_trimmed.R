@@ -1,4 +1,4 @@
-# weighted trimmed mean
+# weighted trimmed mean (depends on pkg survey)
 svymean_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE)
 {
     if (!is.language(x))
@@ -18,8 +18,7 @@ svymean_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE)
     class(res) <- "svystat_rob"
     res
 }
-
-# weighted trimmed total
+# weighted trimmed total (depends on pkg survey)
 svytotal_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE)
 {
     res <- svymean_trimmed(x, design, LB, UB, na.rm)
@@ -30,7 +29,6 @@ svytotal_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE)
     res$call <- match.call()
     res
 }
-
 # influence function, Huber (1981, p. 58)
 .infl_trimmed <- function(x, w, LB, UB, tm)
 {

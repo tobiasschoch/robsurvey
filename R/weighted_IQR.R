@@ -1,3 +1,4 @@
+# weighted interquartile range
 weighted_IQR <- function(x, w, na.rm = FALSE, constant = 0.7413)
 {
     dat <- .check(x, w, na.rm)

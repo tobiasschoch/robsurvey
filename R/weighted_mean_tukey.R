@@ -1,3 +1,4 @@
+# Tukey biweight M-estimator of the weighted mean
 weighted_mean_tukey <- function(x, w, k, type = "rwm", info = FALSE,
     na.rm = FALSE, ...)
 {
@@ -5,12 +6,15 @@ weighted_mean_tukey <- function(x, w, k, type = "rwm", info = FALSE,
     if (is.null(dat))
         return(NA)
 
-    res <- if (type == "rwm")
-        robsvyreg(rep(1, dat$n), dat$x, dat$w, k, 2, 0, NULL, NULL, ...)
-    else if (type == "rht")
-        robsvyreg(mean(dat$w) / dat$w, dat$x, dat$w, k, 2, 0, NULL, x, ...)
-    else
+    if (type == "rwm") {
+        res <- robsvyreg(rep(1, dat$n), dat$x, dat$w, k, 2, 0, NULL, NULL,
+            ...)
+    } else if (type == "rht") {
+        xvar <- mean(dat$w) / dat$w
+        res <- robsvyreg(xvar, dat$x, dat$w, k, 2, 0, NULL, xvar, ...)
+    } else {
         stop(paste0("Method '", type, "' does not exist\n"), call. = FALSE)
+    }
 
     if (length(res) == 1)
         return(NA)
@@ -28,7 +32,7 @@ weighted_mean_tukey <- function(x, w, k, type = "rwm", info = FALSE,
         return(res$estimate)
     }
 }
-
+# Tukey biweight M-estimator of the weighted total
 weighted_total_tukey <- function(x, w, k, type = "rwm", info = FALSE,
     na.rm = FALSE, ...)
 {

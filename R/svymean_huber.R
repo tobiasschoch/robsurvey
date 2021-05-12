@@ -1,3 +1,4 @@
+# Huber M-estimator of the weighted mean (depends on pkg survey)
 svymean_huber <- function(x, design, k, type = "rwm", asym = FALSE,
     na.rm = FALSE, ...)
 {
@@ -22,7 +23,7 @@ svymean_huber <- function(x, design, k, type = "rwm", asym = FALSE,
     class(res) <- c("svystat_rob", "mer_capable")
     res
 }
-
+# Huber M-estimator of the weighted total (depends on pkg survey)
 svytotal_huber <- function(x, design, k, type = "rwm", asym = FALSE,
     na.rm = FALSE, ...)
 {

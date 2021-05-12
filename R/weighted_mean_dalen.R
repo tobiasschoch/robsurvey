@@ -1,3 +1,4 @@
+# Dalén's weight reduction estimating method of the weighted mean
 weighted_mean_dalen <- function(x, w, censoring, na.rm = FALSE,
     verbose = TRUE, info = FALSE)
 {
@@ -11,7 +12,7 @@ weighted_mean_dalen <- function(x, w, censoring, na.rm = FALSE,
     else
         return(res$estimate)
 }
-
+# Dalén's weight reduction estimating method of the weighted total
 weighted_total_dalen <- function(x, w, censoring, na.rm = FALSE,
     verbose = TRUE, info = FALSE)
 {

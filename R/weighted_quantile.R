@@ -1,3 +1,4 @@
+# weighted quantile
 weighted_quantile <- function(x, w, probs, na.rm = FALSE)
 {
     dat <- .check(x, w, na.rm); if (is.null(dat)) return(NA)

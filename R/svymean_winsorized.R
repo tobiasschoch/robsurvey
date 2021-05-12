@@ -1,4 +1,4 @@
-# weighted winsorized mean
+# weighted winsorized mean (depends on pkg survey)
 svymean_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
     na.rm = FALSE, simple_var = FALSE)
 {
@@ -22,8 +22,7 @@ svymean_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
     class(res) <- "svystat_rob"
     res
 }
-
-# weighted one-sided k winsorized mean
+# weighted one-sided k winsorized mean (depends on pkg survey)
 svymean_k_winsorized <- function(x, design, k, na.rm = FALSE,
     simple_var = FALSE)
 {
@@ -45,8 +44,7 @@ svymean_k_winsorized <- function(x, design, k, na.rm = FALSE,
     class(res) <- "svystat_rob"
     res
 }
-
-# weighted winsorized total
+# weighted winsorized total (depends on pkg survey)
 svytotal_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
     na.rm = FALSE, simple_var = FALSE)
 {
@@ -58,8 +56,7 @@ svytotal_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
     res$call <- match.call()
     res
 }
-
-# weighted one-sided k winsorized total
+# weighted one-sided k winsorized total (depends on pkg survey)
 svytotal_k_winsorized <- function(x, design, k, na.rm = FALSE,
     simple_var = FALSE)
 {
@@ -71,7 +68,6 @@ svytotal_k_winsorized <- function(x, design, k, na.rm = FALSE,
     res$call <- match.call()
     res
 }
-
 # influence function, Huber (1981, p. 58-59)
 .infl_winsorized <- function(x, w, LB, UB, wm, ngrid = 401)
 {

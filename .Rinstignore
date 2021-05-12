@@ -1,0 +1,29 @@
+# github stuff
+^\.git$
+^\.gitattributes$
+^\.gitignore$
+^README\.md$
+# documentation
+^inst/doc/doc\.tex
+^inst/doc/GM\.R
+^inst/doc/local_run\.R
+^inst/doc/master\.bib
+^inst/doc/sctmath\.tex
+^inst/doc/test_svyreg_huber\.R
+^inst/varia$
+# comparison
+^inst/comparison/comparison\.Rnw$
+^inst/comparison/Sweave\.sty$
+^inst/comparison/Makefile$
+^inst/comparison/R_functions\.R$
+# tests
+^tests
+# src folder
+^src/Makefile$
+^src/_checkout_wquantile\.bat$
+# vignettes folder
+^vignettes/Makefile$
+^vignettes/basic\.html$
+^vignettes/rht\.html$
+# license (github requries it in the base directory but CRAN complains)
+^LICENSE$

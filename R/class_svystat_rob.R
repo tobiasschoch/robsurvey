@@ -1,3 +1,4 @@
+# summary method for robust survey statistic object
 summary.svystat_rob <- function(object, digits = max(3L, getOption("digits") -
     3L), ...)
 {
@@ -28,17 +29,17 @@ summary.svystat_rob <- function(object, digits = max(3L, getOption("digits") -
     cat("\nSampling design:\n")
     print(object$design)
 }
-
+# extract estimate from robust survey statistic object
 coef.svystat_rob <- function(object, ...)
 {
     object$estimate
 }
-
+# extract standard error from robust survey statistic object
 SE.svystat_rob <- function(object, ...)
 {
     sqrt(object$variance)
 }
-
+# extract variance from robust survey statistic object
 vcov.svystat_rob <- function(object, ...)
 {
     v <- as.matrix(object$variance)
@@ -46,22 +47,22 @@ vcov.svystat_rob <- function(object, ...)
     colnames(v) <- "Variance"
     v
 }
-
+# extract residuals from robust survey statistic object
 residuals.svystat_rob <- function(object, ...)
 {
     object$residuals
 }
-
+# extract fitted values from robust survey statistic object
 fitted.svystat_rob <- function(object, ...)
 {
     object$model$y - object$residuals
 }
-
+# extract robustness weights from robust survey statistic object, generic
 robweights <- function(object)
 {
     UseMethod("robweights", object)
 }
-
+# extract robustness weights from robust survey statistic object
 robweights.svystat_rob <- function(object)
 {
     tmp <- object$robust$robweights
@@ -70,7 +71,7 @@ robweights.svystat_rob <- function(object)
     else
         tmp
 }
-
+# print method for robust survey statistic object
 print.svystat_rob <- function(x, digits = max(3L, getOption("digits") - 3L),
     ...)
 {

@@ -2,15 +2,16 @@
 \alias{mer}
 \title{Minimum Estimated Risk (MER) M-Estimator}
 \usage{
-mer(object, verbose = TRUE, k = c(1, 50))
+mer(object, verbose = TRUE, max_k = 1000, optim_args = list())
 }
 \arguments{
 \item{object}{an M-estimate of the total or mean (object of class
     \code{svystat_rob}).}
 \item{verbose}{\code{[logical]} indicating whether additional information
     is printed to the console (default: \code{TRUE}).}
-\item{k}{\code{[numeric vector]} of size 2: the interval of robustness
-    tuning constant within which the MER is supposed to lie.}
+\item{max_k}{\code{[numeric vector]} defines the right boundary of the
+    search interval (default: \code{max_k = 1000})}
+\item{optim_args}{\code{[list]}: arguments passed on to \code{\link{optim}}.}
 }
 \value{
 The tuning constant that minimizes the estimated mean square error of the

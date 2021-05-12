@@ -1,3 +1,4 @@
+# Regression estimator of the mean (depends on pkg survey)
 svymean_reg <- function(object, auxiliary, k = NULL, check.names = TRUE)
 {
     if (!inherits(object, "svyreg_rob"))

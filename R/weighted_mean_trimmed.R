@@ -37,7 +37,6 @@ weighted_mean_trimmed <- function(x, w, LB = 0.05, UB = 1 - LB, info = FALSE,
         return(tmp$loc)
     }
 }
-
 # weighted trimmed total
 weighted_total_trimmed <- function(x, w, LB = 0.05, UB = 1 - LB, info = FALSE,
     na.rm = FALSE)

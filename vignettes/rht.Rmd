@@ -203,7 +203,7 @@ m
 ### 2.3 Adaptive estimation
 
 ```{r}
-mer(m, k = c(1, 200))
+mer(m)
 ```
 
 

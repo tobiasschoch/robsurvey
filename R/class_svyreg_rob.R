@@ -1,3 +1,4 @@
+# print method for robust regression object
 print.svyreg_rob <- function(x, digits = max(3L, getOption("digits") - 3L), ...)
 {
     converged <- x$optim$converged
@@ -22,7 +23,7 @@ print.svyreg_rob <- function(x, digits = max(3L, getOption("digits") - 3L), ...)
     }
     invisible(x)
 }
-
+# summary method for robust regression object
 summary.svyreg_rob <- function(object, digits = max(3L, getOption("digits")
     - 3L), ...)
 {
@@ -73,12 +74,12 @@ summary.svyreg_rob <- function(object, digits = max(3L, getOption("digits")
             "iterations (with tol =", object$optim$tol, ")\n")
     }
 }
-
+# extract coefficients from robust regression object
 coef.svyreg_rob <- function(object, ...)
 {
     object$estimate
 }
-
+# extract variance from robust regression object
 vcov.svyreg_rob <- function(object, ...)
 {
     converged <- object$optim$converged
@@ -101,17 +102,17 @@ vcov.svyreg_rob <- function(object, ...)
         NA
     }
 }
-
+# extract residuals from robust regression object
 residuals.svyreg_rob <- function(object, ...)
 {
     object$residuals
 }
-
+# extract fitted values from robust regression object
 fitted.svyreg_rob <- function(object, ...)
 {
     object$model$y - object$residuals
 }
-
+# extract robustness weights from robust regression object
 robweights.svyreg_rob <- function(object)
 {
     tmp <- object$robust$robweights
@@ -121,7 +122,7 @@ robweights.svyreg_rob <- function(object)
     } else
         tmp
 }
-
+# plot method for robust regression object
 plot.svyreg_rob <- function (x, which = 1:5, ...)
 {
 }

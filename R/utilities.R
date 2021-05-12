@@ -1,3 +1,4 @@
+# summary method for survey.design object
 summary.formula <- function(object, design, na.rm = FALSE, ...)
 {
     mf <- stats::model.frame(object, design$variables,
