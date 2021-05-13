@@ -4,9 +4,9 @@
 \title{Weighted Huber Mean and Total (bare-bone functions)}
 \usage{
 weighted_mean_huber(x, w, k, type = "rwm", asym = FALSE, info = FALSE,
-    na.rm = FALSE, ...)
+    na.rm = FALSE, verbose = TRUE, ...)
 weighted_total_huber(x, w, k, type = "rwm", asym = FALSE, info = FALSE,
-    na.rm = FALSE, ...)
+    na.rm = FALSE, verbose = TRUE, ...)
 }
 \arguments{
 \item{x}{\code{[numeric vector]} observations.}
@@ -21,6 +21,8 @@ weighted_total_huber(x, w, k, type = "rwm", asym = FALSE, info = FALSE,
     should be returned (default: \code{FALSE}).}
 \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should
     be removed before the computation proceeds (default: \code{FALSE}).}
+\item{verbose}{\code{[logical]} indicating whether additional information
+		is printed to the console (default: \code{TRUE}).}
 \item{...}{additional arguments passed to the method (e.g., \code{maxit}:
     maxit number of iterations, etc.).}
 }

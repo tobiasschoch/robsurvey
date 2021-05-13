@@ -4,8 +4,8 @@
 \title{Weighted Tukey Biweight Mean and Total - Robust Horvitz-Thompson
 Estimator}
 \usage{
-svymean_tukey(x, design, k, type = "rwm", na.rm = FALSE, ...)
-svytotal_tukey(x, design, k, type = "rwm", na.rm = FALSE, ...)
+svymean_tukey(x, design, k, type = "rwm", na.rm = FALSE, verbose = TRUE, ...)
+svytotal_tukey(x, design, k, type = "rwm", na.rm = FALSE, verbose = TRUE, ...)
 }
 \arguments{
 \item{x}{a one-sided \code{[formula]}, e.g., \code{~myVariable}.}
@@ -15,6 +15,8 @@ svytotal_tukey(x, design, k, type = "rwm", na.rm = FALSE, ...)
 \item{type}{\code{[character]} type of method: \code{"rwm"} or \code{"rht"}.}
 \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should
     be removed before the computation proceeds (default: \code{FALSE}).}
+\item{verbose}{\code{[logical]} indicating whether additional information
+		is printed to the console (default: \code{TRUE}).}
 \item{...}{additional arguments passed to the method (e.g., \code{maxit}:
     maxit number of iterations, etc.).}
 }

@@ -1,9 +1,9 @@
 # robust Tukey biweight M-estimator of regression (depends on pkg survey)
 svyreg_tukey <- function(formula, design, k, var = NULL, na.rm = FALSE,
-    ...)
+    verbose = TRUE, ...)
 {
     dat <- .checkreg(formula, design, var, na.rm)
-    res <- robsvyreg(dat$x, dat$y, dat$w, k, 2, 0, NULL, dat$var, ...)
+    res <- robsvyreg(dat$x, dat$y, dat$w, k, 2, 0, NULL, dat$var, verbose, ...)
     res$design <- design
     res$call <- match.call()
     res$model$intercept <- dat$intercept
@@ -13,7 +13,7 @@ svyreg_tukey <- function(formula, design, k, var = NULL, na.rm = FALSE,
 }
 # robust Tukey biweight GM-estimator of regression (depends on pkg survey)
 svyreg_tukeyGM <- function(formula, design, k, type, xwgt, var = NULL,
-    na.rm = FALSE, ...)
+    na.rm = FALSE, verbose = TRUE, ...)
 {
     type_int <- switch(toupper(type), "MALLOWS" = 1, "SCHWEPPE" = 2)
     if (is.null(type_int))
@@ -28,7 +28,8 @@ svyreg_tukeyGM <- function(formula, design, k, type, xwgt, var = NULL,
     if (length(xwgt) != length(dat$y))
         stop("Argument 'xwgt' is not of length n\n", call. = FALSE)
 
-    res <- robsvyreg(dat$x, dat$y, dat$w, k, 2, type_int, xwgt, dat$var, ...)
+    res <- robsvyreg(dat$x, dat$y, dat$w, k, 2, type_int, xwgt, dat$var,
+        verbose, ...)
     res$design <- design
     res$call <- match.call()
     res$model$intercept <- dat$intercept

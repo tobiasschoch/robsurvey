@@ -50,8 +50,9 @@ In this vignette, we discuss the robust Horvitz-Thompson (RHT) estimator of [Hul
 
  - 1 Workplace data
  - 2 Robust Horvitz-Thompson estimator
- - Bibliographical Notes
  - References
+
+(See vignette "Basic Robust Estimators" for bibliographical notes on $M$-estimators in the context of finite population sampling.)
 
 <div class="my-sidebar-blue">
 <p style="color: #1f618d;">
@@ -150,7 +151,7 @@ In the scatter plot, we can spot the following tendency:
 
 This tendency reflects the survey designers' attempt to prevent *influential outliers* at the stage of designing the survey, that is, to prevent observations that are far from the bulk of values *and* have a large sampling weight. The survey designers achieved this by carefully sampling workplaces with large (anticipated) payroll with a sample inclusion probability equal or at least close to unity.
 
-Although the designers did a great job, we are faced with the following problem: Because outliers have a sampling weight that is already close to unity, there is little we can do by reducing the sampling weight in order to limit the impact of an influential value. Hence, weight reduction (see vignette "Basic Robust Estimators") is not a productive strategy. Fortunately, this situation is where the RHT shines.
+Although the designers did a great job, we are faced with the following problem: Because outliers have a sampling weight that is already close to unity, there is little we can do by reducing the sampling weight in order to limit the impact of an influential value. Hence, weight reduction ($\rightarrow$ see vignette "Basic Robust Estimators") is not a productive strategy. Fortunately, this situation is where the RHT shines.
 <p>
 </p>
 </div>
@@ -166,61 +167,101 @@ The RHT estimator is the method of choice for pps designs (i.e., designs without
 </p>
 </div>
 
-
 ### 2.1 Bare-bone methods
 
+The following bare-bone estimating methods are available
+
+ - `weighted_mean_huber()`
+ - `weighted_total_huber()`
+ - `weighted_mean_tukey()`
+ - `weighted_total_tukey()`
+
+The functions with postfix `_tukey` are $M$-estimators with the Tukey biweight $\psi$-function. The Huber RHT $M$-estimator of the payroll total can be computed with
 
 ```{r}
-weighted_total_huber(payroll, weight, k = 12)
+weighted_total_huber(payroll, weight, k = 8, type = "rht")
 ```
-
+Note that we must specify `type = "rht"` for the RHT [the case `type = "rwm"` is discussed in the vignette "Basic Robust Estimators"]. Here, we have chosen the robustness tuning constant $k = 8$.
 
 <div class="my-sidebar-blue">
 <p style="color: #1f618d;">
 **Good to know.**
 </p>
-<p>All bare-bone methods can be called with the argument `info = TRUE` (default: `FALSE`). This instructs the functions to return a list with the entries
+<p>
+In general, the tuning constant `k` must be chosen larger than (loosely speaking) "we are used to choose it". More precisely, in the context of an *infinite population* with a standard *Gaussian* distribution, the constant $k = 1.345$ ensures that the Huber $M$-estimator of location achieves 95% efficiency compared with the arithmetic mean under the Gaussian model. The efficiency considerations underlying the choice of $k = 1.345$ *do not* carry over to distributions other than the Gaussian.
 
- - characteristic (e.g., mean)
- - estimator (e.g., trimmed estimator)
- - estimate (numerical value)
- - variance (by default: `NA`)
- - robust (list of arguments that specify robustness)
- - residuals (numerical vector)
- - model (list of data used for estimation)
- - design (by default: `NA`)
- - call
+All bare-bone methods can be called with the argument `info = TRUE` (default: `FALSE`). This instructs the functions to return a list with estimate-specific information $\rightarrow$ see vignette "Basic Robust Estimators" to learn more.
+
+The Huber $M$-estimator can be computed for an asymmetric Huber $\psi$-function by calling the function with the additional argument `asym = TRUE`.
+
+The $M$-estimators are computed by iterative methods. If the algorithm fails to converge, the functions return `NA`. By default, the algorithm uses a maximum of `maxit = 50` iterations and a numerical tolerance criterion of `tol = 1e-5` as a stopping rule. Other values of `maxit` and `tol` can be specified in the function call.
 </p>
 </div>
 
 ### 2.2 Survey methods
 
+The following survey method are available
+
+ - `svymean_huber()`
+ - `svytotal_huber()`
+ - `svymean_tukey()`
+ - `svytotal_tukey()`
+
+The survey method of the RHT (and its standard error) are computed as follows (`type = "rht"`)
+
 ```{r}
-m <- svytotal_huber(~payroll, dn, k = 12)
+m <- svytotal_huber(~payroll, dn, k = 8, type = "rht")
 m
+```
+
+The `summary()` method summarizes the most important facts about the estimate.
+
+```{r}
+summary(m)
+```
+
+The estimated location, variance, and standard error can be extracted from object `m` with the following commands.
+
+```{r}
+coef(m)
+vcov(m)
+SE(m)
+```
+
+For $M$-estimators, the estimated scale (weighted MAD) can be extracted with the `scale()` function.
+
+```{r}
+scale(m)
+```
+
+Additional utility functions
+
+ - `residuals()` to extract the residuals
+ - `fitted()` to extract the fitted values under the model in use
+ - `robweights()` to extract the robustness weights
+
+In the following figure, the robustness weights of object `m` are plotted against the residuals. The Huber RHT $M$-estimator downweights observations at both ends of the residuals' distribution.
+
+```{r, eval = FALSE}
+plot(residuals(m), robweights(m))
+```
+
+```{r, echo = FALSE, fig.height = 4, fig.width = 6}
+par(mar = c(5, 4, 1, 0))
+plot(residuals(m), robweights(m))
 ```
 
 ### 2.3 Adaptive estimation
 
-```{r}
-mer(m)
-```
-
-
-
-## Bibliographical Notes
+An adaptive $M$-estimator of the total (or mean) is defined by letting the data chose the tuning constant $k$. This approach is available for the RHT estimator $\rightarrow$ see vignette "Basic Robust Estimators", Chap. 5.3 on $M$-estimators.
 
 ---
 
 ## References {#biblio}
 
-Beaumont, J.F., Rivest, L.P. (2009). Dealing with outliers in survey data, in: D. Pfeffermann, C.R. Rao (eds.), *Sample Surveys: Theory, Methods and Inference*, volume 29A of Handbook of Statistics, chapter 11, pp. 247–280. Elsevier, Amsterdam.
-
 Chambers, R. (1986). Outlier Robust Finite Population Estimation. *Journal of the American Statistical Association* 81, pp. 1063–1069.
 
 Fuller, W.A. (2009). *Sampling Statistics*, Jown Wiley & Sons, Hoboken (NJ).
-
-Gwet J.P. and Rivest L.P. (1992). Outlier Resistant Alternatives to the Ratio Estimator. *Journal of the American Statistical Association* 87, pp. 1174-1182.
 
 Hulliger B (2005). Horvitz-Thompson Estimators, Robustified, in: S. Kotz (ed.), *Encyclopedia of Statistical Sciences*, volume 5, 2nd edition. John Wiley and Sons, Hoboken (NJ).
 
@@ -228,10 +269,6 @@ Hulliger, B (1999). Simple and robust estimators for sampling, in: *Proceedings 
 
 Hulliger. B. (1995). Outlier Robust Horvitz–Thompson Estimators. *Survey Methodology* 21, pp. 79–87.
 
-Lee, H. (1995). Outliers in business surveys, in: B.G. Cox, D.A. Binder, B.N. Chinnappa, A. Christianson, M.J. Colledge, and P.S. Kott (eds.), *Business survey methods*, chapter 26: 503–526. John Wiley and Sons, New York.
-
 Lumley, T (2021). survey: analysis of complex survey samples. R package version 4.0, URL https://CRAN.R-project.org/package=survey.
 
 Lumley, T. (2010). Complex Surveys: A Guide to Analysis Using R: *A Guide to Analysis Using R*. John Wiley and Sons, Hoboken, NJ.
-
-Patak, Z., M. Hidiroglou, and P. Lavallée (1998). The methodology of the Workplace and Employee Survey, *Proceedings of the Survey Research Methods Section, American Statistical Association*, pp. 83–91.

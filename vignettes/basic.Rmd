@@ -61,7 +61,6 @@ In this vignette, we discuss the usage of the basic robust estimators. The funct
  - total
  - (standard deviation $\rightarrow$ see utility functions, Chap. 6)
 
-
 #### Modes
 
  - bare-bone methods
@@ -209,10 +208,14 @@ coef(m)
 vcov(m)
 SE(m)
 ```
+The `summary()` method summarizes the most important facts about the estimate. [In contrast to $M$-estimators (see below), the summary is not very interesting here]
 
-**Additional utility functions**
+```{r}
+summary(m)
+```
 
- - `summary()` for a summary of estimates
+Additional utility functions are
+
  - `residuals()` to extract the residuals. [For the weighted trimmed mean, the residuals are not so interesting].
  - `fitted()` to extract the fitted values under the model in use. [Relevant for $M$-estimators].
  - `robweights()` to extract the robustness weights. [Relevant for $M$-estimators.]
@@ -307,6 +310,7 @@ The following estimation methods are available:
  - `weighted_total_huber()`
  - `weighted_mean_tukey()`
  - `weighted_total_tukey()`
+ - `huber2()`
 
 The estimators with postfix `_huber` and `_tukey` are based on, respectively, the Huber and Tukey (biweight) $\psi$-function.
 
@@ -336,8 +340,17 @@ weighted_mean_huber(los, weight, type = "rwm", k = 8)
 </p>
 <p>
 In general, the tuning constant `k` must be chosen larger than (loosely speaking) "we are used to choose it". More precisely, in the context of an *infinite population* with a standard *Gaussian* distribution, the constant $k = 1.345$ ensures that the Huber $M$-estimator of location achieves 95% efficiency compared with the arithmetic mean under the Gaussian model. The efficiency considerations underlying the choice of $k = 1.345$ *do not* carry over to distributions other than the Gaussian.
+
+The $M$-estimators are computed by iterative methods. If the algorithm fails to converge, the functions return `NA`. By default, the algorithm uses a maximum of `maxit = 50` iterations and a numerical tolerance criterion of `tol = 1e-5` as a stopping rule. Other values of `maxit` and `tol` can be specified in the function call.
 </p>
 </div>
+
+The function `huber2()` is an implementation of the weighted Huber proposal 2 estimator. It is only available as bare-bone method.
+
+ ```{r}
+huber2(los, weight, k = 8)
+```
+It is similar to `MASS::hubers()` ([Venables and Ripley](#biblio), 2002). It differs from the implementation in `MASS` in that it allows for weights and is initialized by the (normalized) weighted interquartile range (IQR) not the median absolute deviations (MAD).
 
 ### 5.2 Survey methods
 
@@ -360,8 +373,17 @@ The `summary()` method summarizes the most important facts about the $M$-estimat
 ```{r}
 summary(m)
 ```
+The estimated scale (weighted MAD) can be extracted with the `scale()` function. Additional utility functions are `coef()`, `vcov()`, `SE()`, `residuals()`, `fitted()`, and `robweights()`. The following figure shows a plot of the robustness weights against the residuals. We see that large residuals are downweighted.
 
-Additional utility functions are `coef()`, `vcov()`, `SE()`, `residuals()`, `fitted()`, and `robweights()`.
+```{r, eval = FALSE}
+plot(residuals(m), robweights(m))
+```
+
+```{r, echo = FALSE, fig.height = 3, fig.width = 5}
+par(mar = c(4, 4, 1, 0))
+plot(residuals(m), robweights(m))
+```
+
 
 ### 5.3 Adaptive estimation
 
@@ -496,3 +518,5 @@ Ruffieux, C., F. Paccaud, and A. Marazzi (2000). Comparing rules for truncating 
 Shao., J (1994). L-Statistics in complex survey problems. *The Annals of Statistics* 22, pp. 946–967.
 
 Serfling, R.J. (1980). *Approximation Theorems of Mathematical Statistics* John Wiley & Sons, New York.
+
+Venables, W.N. and Ripley B.D. (2002). *Modern Applied Statistics with S*. 4th edition. Springer, New York.

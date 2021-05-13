@@ -25,6 +25,8 @@ export(SE.svystat_rob)
 
 S3method(plot,svyreg_rob)
 
+S3method(scale,svystat_rob)
+
 export(huber2)
 
 export(tukeyWgt)

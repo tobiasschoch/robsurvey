@@ -3,7 +3,7 @@
 \alias{svyreg_control}
 \title{Internal Function for the Regression GM-Estimator}
 \usage{
-robsvyreg(x, y, w, k, psi, type, xwgt = NULL, var = NULL, ...)
+robsvyreg(x, y, w, k, psi, type, xwgt = NULL, var = NULL, verbose = TRUE, ...)
 svyreg_control(tol = 1e-5, maxit = 100, k_Inf = 1e5, init = NULL,
     mad_center = TRUE, ...)
 }
@@ -21,6 +21,8 @@ svyreg_control(tol = 1e-5, maxit = 100, k_Inf = 1e5, init = NULL,
     GM-estimators (default: \code{NULL}, (no \code{NA}'s allowed).}
 \item{var}{\code{[numeric vector]} heteroscedastic variance
     (default: \code{NULL}).}
+\item{verbose}{\code{[logical]} indicating whether additional information
+		is printed to the console (default: \code{TRUE}).}
 \item{...}{additional arguments passed to the method
     (see \code{svyreg_control}).}
 \item{tol}{\code{[double]} numerical tolerance criterion to stop the

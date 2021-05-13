@@ -3,8 +3,10 @@
 \alias{svyreg_tukeyGM}
 \title{Tukey Biweight Robust Survey Regression M- and GM-Estimator}
 \usage{
-svyreg_tukey(formula, design, k, var = NULL, na.rm = FALSE, ...)
-svyreg_tukeyGM(formula, design, k, type, xwgt, var = NULL, na.rm = FALSE, ...)
+svyreg_tukey(formula, design, k, var = NULL, na.rm = FALSE, verbose = TRUE,
+    ...)
+svyreg_tukeyGM(formula, design, k, type, xwgt, var = NULL, na.rm = FALSE,
+    verbose = TRUE, ...)
 }
 \arguments{
 \item{formula}{a \code{[formula]} object (i.e., symbolic description of the
@@ -16,6 +18,8 @@ svyreg_tukeyGM(formula, design, k, type, xwgt, var = NULL, na.rm = FALSE, ...)
     \code{NULL}, i.e., homoscedastic variance).}
 \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should
     be removed before the computation proceeds (default: \code{FALSE}).}
+\item{verbose}{\code{[logical]} indicating whether additional information
+		is printed to the console (default: \code{TRUE}).}
 \item{...}{additional arguments passed to the method (e.g., \code{maxit}:
     maxit number of iterations, etc.).}
 \item{type}{\code{[character]} \code{"Mallows"} or \code{"Schweppe"}.}

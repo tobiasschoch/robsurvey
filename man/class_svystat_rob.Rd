@@ -10,6 +10,7 @@
 \alias{robweights}
 \alias{robweights.svystat_rob}
 \alias{print.svystat_rob}
+\alias{scale.svystat_rob}
 \title{Utility Functions for Objects of Class svystat_rob}
 \usage{
 \method{summary}{svystat_rob}(object, digits = max(3L,
@@ -17,6 +18,7 @@
 \method{coef}{svystat_rob}(object, ...)
 \method{SE}{svystat_rob}(object, ...)
 \method{vcov}{svystat_rob}(object, ...)
+\method{scale}{svystat_rob}(x, ...)
 \method{residuals}{svystat_rob}(object, ...)
 \method{fitted}{svystat_rob}(object, ...)
 robweights(object)

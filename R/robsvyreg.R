@@ -1,5 +1,6 @@
 # workhorse function for robust regression
-robsvyreg <- function(x, y, w, k, psi, type, xwgt = NULL, var = NULL, ...)
+robsvyreg <- function(x, y, w, k, psi, type, xwgt = NULL, var = NULL,
+    verbose = TRUE, ...)
 {
     ctrl <- svyreg_control(...)
     if (k <= 0)
@@ -41,6 +42,10 @@ robsvyreg <- function(x, y, w, k, psi, type, xwgt = NULL, var = NULL, ...)
         type = as.integer(type), init = as.integer(init),
         mad_center = as.integer(ctrl$mad_center), PACKAGE = "robsurvey")
 
+    converged <- (tmp$maxit != 0)
+    if (verbose && !converged)
+        warning("Failure of convergence\n", call. = FALSE)
+
     psi_fun <- switch(psi + 1, "Huber", "asymHuber", "Tukey")
     names(tmp$beta) <- colnames(x)
     list(characteristic = "regression",
@@ -52,7 +57,7 @@ robsvyreg <- function(x, y, w, k, psi, type, xwgt = NULL, var = NULL, ...)
         scale = tmp$scale,
         robust = list(k = k, robweights = tmp$robwgt,
             outliers = 1 * (tmp$robwgt < 1)),
-        optim = list(converged = (tmp$maxit != 0),
+        optim = list(converged = converged,
             niter = ifelse(tmp$maxit == 0, ctrl$maxit, tmp$maxit),
             tol = ctrl$tol),
         residuals = tmp$resid,

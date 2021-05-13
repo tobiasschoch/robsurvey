@@ -89,3 +89,9 @@ print.svystat_rob <- function(x, digits = max(3L, getOption("digits") - 3L),
         cat("(you may use the 'summary' method to learn more)\n")
     }
 }
+
+# extract estimate of scale
+scale.svystat_rob <- function(x, ...)
+{
+    x$scale
+}

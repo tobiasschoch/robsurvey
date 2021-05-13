@@ -1,10 +1,10 @@
 # Huber M-estimator of the weighted mean (depends on pkg survey)
 svymean_huber <- function(x, design, k, type = "rwm", asym = FALSE,
-    na.rm = FALSE, ...)
+    na.rm = FALSE, verbose = TRUE, ...)
 {
     dat <- .checkformula(x, design)
     res <- weighted_mean_huber(dat$y, dat$w, k, type, asym, info = TRUE,
-        na.rm, ...)
+        na.rm, verbose, ...)
     # modify residuals for type 'rht' (only for variance estimation)
     r <- if (type == "rht")
         sqrt(res$model$var) * res$model$y - res$estimate
@@ -25,9 +25,9 @@ svymean_huber <- function(x, design, k, type = "rwm", asym = FALSE,
 }
 # Huber M-estimator of the weighted total (depends on pkg survey)
 svytotal_huber <- function(x, design, k, type = "rwm", asym = FALSE,
-    na.rm = FALSE, ...)
+    na.rm = FALSE, verbose = TRUE, ...)
 {
-    res <- svymean_huber(x, design, k, type, asym, na.rm, ...)
+    res <- svymean_huber(x, design, k, type, asym, na.rm, verbose, ...)
     sum_w <- sum(res$model$w)
     res$estimate <- res$estimate * sum_w
     res$variance <- res$variance * sum_w^2
