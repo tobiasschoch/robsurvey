@@ -10,6 +10,7 @@
 ^inst/doc/master\.bib
 ^inst/doc/sctmath\.tex
 ^inst/doc/test_svyreg_huber\.R
+^inst/doc/psi_functions\.tex
 ^inst/varia$
 # comparison
 ^inst/comparison/comparison\.Rnw$

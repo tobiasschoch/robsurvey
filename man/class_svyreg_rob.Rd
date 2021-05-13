@@ -33,7 +33,7 @@
 
 \item{digits}{\code{[integer]} minimal number of significant digits.}
 
-\item{...}{additional arguments passed to the method.}
+\item{\dots}{additional arguments passed to the method.}
 
 \item{object, }{x object of class \code{svyreg_rob}.}
 

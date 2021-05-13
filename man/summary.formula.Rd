@@ -10,7 +10,7 @@
 \item{design}{an object of class \code{survey.design} or \code{survey.design2}.}
 \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should
     be removed before the computation proceeds (default: \code{FALSE}).}
-\item{...}{additional arguments.}
+\item{\dots}{additional arguments.}
 }
 \value{
 A numerical summary

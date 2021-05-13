@@ -23,7 +23,7 @@ svyreg_control(tol = 1e-5, maxit = 100, k_Inf = 1e5, init = NULL,
     (default: \code{NULL}).}
 \item{verbose}{\code{[logical]} indicating whether additional information
 		is printed to the console (default: \code{TRUE}).}
-\item{...}{additional arguments passed to the method
+\item{\dots}{additional arguments passed to the method
     (see \code{svyreg_control}).}
 \item{tol}{\code{[double]} numerical tolerance criterion to stop the
     iterations (default: \code{1e-05}).}

@@ -28,7 +28,7 @@ robweights(object)
 \arguments{
 \item{object}{object of class \code{svystat_rob}.}
 \item{digits}{\code{[integer]} minimal number of significant digits.}
-\item{...}{additional arguments passed to the method.}
+\item{\dots}{additional arguments passed to the method.}
 \item{x}{object of class \code{svystat_rob}.}
 }
 \description{

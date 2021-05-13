@@ -1,0 +1,125 @@
+\documentclass[a4paper,oneside,11pt,DIV=12]{scrartcl}
+
+\usepackage{enumerate}
+\usepackage[T1]{fontenc}
+\usepackage{inputenc}
+\usepackage{times}
+\usepackage{framed}
+\usepackage{amsmath,amsfonts,amssymb,bm}
+\usepackage{setspace}
+\usepackage[longnamesfirst]{natbib}
+
+\newcommand{\code}[1]{{\texttt{#1}}}
+
+\setlength\parindent{24pt}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=blue,
+    urlcolor=blue,
+    citecolor=blue
+}
+
+% ==============================================================================
+\begin{document}
+\shortcites{robustbase}
+
+\title{Adding support for other $\psi$-functions}
+
+\author{{\normalsize Tobias Schoch} \\
+\begin{minipage}[t][][t]{\textwidth}
+	\begin{center}
+	\small{University of Applied Sciences Northwestern Switzerland FHNW} \\
+	\small{School of Business, Riggenbachstrasse 16, CH-4600 Olten} \\
+	\small{\texttt{tobias.schoch{@}fhnw.ch}}
+	\end{center}
+\end{minipage}}
+
+\date{{\small \today, version 0.2}}
+\maketitle
+
+\renewenvironment{abstract}{%
+\begin{center}\begin{minipage}{0.9\textwidth}
+\rule{\textwidth}{0.4pt}
+{\sffamily\bfseries\footnotesize Abstract.}\small}
+{\par\noindent\rule{\textwidth}{0.4pt}\end{minipage}\end{center}}
+
+\begin{abstract}
+In this note, we explain how to add support for additional $\psi$-functions
+for $M$- and $GM$-estimators of regression.
+\end{abstract}
+
+\vspace{1em}
+
+\setstretch{1.1}
+
+\section{Introduction}
+The package (version 0.2) implements the Huber and Tukey (biweight)
+$\psi$-functions. The functions are implemented in the \code{C} language,
+see \code{src/psifunctions.c}. For the Huber $\psi$-function, the
+``standard'' function and an asymmetric $\psi$-function are implemented.
+
+The functions are referenced by an integer value (in the \code{C}
+and \code{R} code):
+\begin{itemize}
+    \item \code{psi = 0}: Huber;
+    \item \code{psi = 1}: asymmetric Huber;
+    \item \code{psi = 2}: Tukey biweight.
+\end{itemize}
+
+\noindent For each type of $\psi$-function, the following 3 functions (in
+the \code{C} language) must be defined:
+\begin{itemize}
+    \item \code{psi}-function (the actual $\psi$-function);
+    \item \code{weight}-function associated with the $\psi$-function;
+    \item \code{psi-prime}-function, the first derivative of the
+        $\psi$-function.
+\end{itemize}
+
+\noindent The \code{psi}-, \code{weight}, and \code{psi-prime}-functions
+have the same signature, which is shown here for a dummy function.
+
+\begin{verbatim}
+double foo(double x, const double k)
+{
+    # the code goes here
+}
+\end{verbatim}
+
+\noindent Argument \code{x} is the function argument of $\psi(x)$, \code{k}
+refers to the robustness tuning constant.
+
+\begin{leftbar}
+\noindent \textbf{Limitations:} In this note, we consider only adding support
+for $\psi$-functions whose signature comply with the above dummy function.
+If you want to add functions that do not comply, you have to modify the
+existing code.
+\end{leftbar}
+
+\noindent The method dispatch takes place in the functions (see
+\code{src/robsurvey.c}):
+\begin{itemize}
+    \item \code{rwlslm} ($\rightarrow$ regression coefficients and scale);
+    \item \code{cov\_rwlslm} ($\rightarrow$ asymptotic covariance
+        matrix)
+\end{itemize}
+\noindent and is implemented with function pointers.
+
+\section{Adding another function}
+In order to add support for additional $\psi$-functions (which comply with
+the above signature), follow these steps:
+
+\begin{enumerate}[1]
+    \item add the \code{C} code of the \code{psi}-, \code{weight}, and
+        \code{psi-prime}-functions to the package source;
+    \item add an entry in the \code{switch} statement of the function
+        \code{rwlslm}; it is recommended to refer the new
+        function to the integers \code{psi = 3, 4, ...};
+    \item add an entry in the \code{switch} statement of the function
+        \code{cov\_rwlslm} referring to the same integer;
+    \item add/ modify the \code{R}-functions.
+\end{enumerate}
+
+\end{document}

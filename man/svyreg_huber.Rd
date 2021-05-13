@@ -22,7 +22,7 @@ svyreg_huberGM(formula, design, k, type, xwgt, var = NULL, na.rm = FALSE,
     (default: \code{FALSE}).}
 \item{verbose}{\code{[logical]} indicating whether additional information
 		is printed to the console (default: \code{TRUE}).}
-\item{...}{additional arguments passed to the method (e.g., \code{maxit}:
+\item{\dots}{additional arguments passed to the method (e.g., \code{maxit}:
     maxit number of iterations, etc.).}
 \item{type}{\code{[character]} \code{"Mallows"} or \code{"Schweppe"}.}
 \item{xwgt}{\code{[numerical vector]} of weights in the design space

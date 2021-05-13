@@ -21,7 +21,7 @@ svytotal_huber(x, design, k, type = "rwm", asym = FALSE, na.rm = FALSE,
     be removed before the computation proceeds (default: \code{FALSE}).}
 \item{verbose}{\code{[logical]} indicating whether additional information
 		is printed to the console (default: \code{TRUE}).}
-\item{...}{additional arguments passed to the method (e.g., \code{maxit}:
+\item{\dots}{additional arguments passed to the method (e.g., \code{maxit}:
     maxit number of iterations, etc.).}
 }
 \value{
