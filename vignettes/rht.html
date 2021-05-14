@@ -638,13 +638,13 @@ The <span class="math inline">\(M\)</span>-estimators are computed by iterative 
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="op">&gt;</span><span class="st"> </span>m &lt;-<span class="st"> </span><span class="kw">svytotal_huber</span>(<span class="op">~</span>payroll, dn, <span class="dt">k =</span> <span class="dv">8</span>, <span class="dt">type =</span> <span class="st">&quot;rht&quot;</span>)</span>
 <span id="cb8-2"><a href="#cb8-2"></a><span class="op">&gt;</span><span class="st"> </span>m</span>
 <span id="cb8-3"><a href="#cb8-3"></a>            total        SE</span>
-<span id="cb8-4"><a href="#cb8-4"></a>payroll <span class="fl">1.559e+10</span> <span class="fl">1.254e+09</span></span></code></pre></div>
+<span id="cb8-4"><a href="#cb8-4"></a>payroll <span class="fl">1.559e+10</span> <span class="fl">1.198e+09</span></span></code></pre></div>
 <p>The <code>summary()</code> method summarizes the most important facts about the estimate.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">summary</span>(m)</span>
 <span id="cb9-2"><a href="#cb9-2"></a>Huber M<span class="op">-</span><span class="kw">estimator</span> (<span class="dt">type =</span> rht)  of the sample  total </span>
 <span id="cb9-3"><a href="#cb9-3"></a></span>
 <span id="cb9-4"><a href="#cb9-4"></a>            total        SE</span>
-<span id="cb9-5"><a href="#cb9-5"></a>payroll <span class="fl">1.559e+10</span> <span class="fl">1.254e+09</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a>payroll <span class="fl">1.559e+10</span> <span class="fl">1.198e+09</span></span>
 <span id="cb9-6"><a href="#cb9-6"></a></span>
 <span id="cb9-7"><a href="#cb9-7"></a>Robustness<span class="op">:</span></span>
 <span id="cb9-8"><a href="#cb9-8"></a><span class="st">  </span>Psi<span class="op">-</span><span class="cf">function</span><span class="op">:</span><span class="st"> </span>with k =<span class="st"> </span><span class="dv">8</span> </span>
@@ -664,9 +664,9 @@ The <span class="math inline">\(M\)</span>-estimators are computed by iterative 
 <span id="cb10-3"><a href="#cb10-3"></a><span class="dv">15587090084</span> </span>
 <span id="cb10-4"><a href="#cb10-4"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">vcov</span>(m)</span>
 <span id="cb10-5"><a href="#cb10-5"></a>            Variance</span>
-<span id="cb10-6"><a href="#cb10-6"></a>payroll <span class="fl">1.572923e+18</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a>payroll <span class="fl">1.434857e+18</span></span>
 <span id="cb10-7"><a href="#cb10-7"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">SE</span>(m)</span>
-<span id="cb10-8"><a href="#cb10-8"></a>[<span class="dv">1</span>] <span class="dv">1254162150</span></span></code></pre></div>
+<span id="cb10-8"><a href="#cb10-8"></a>[<span class="dv">1</span>] <span class="dv">1197855270</span></span></code></pre></div>
 <p>For <span class="math inline">\(M\)</span>-estimators, the estimated scale (weighted MAD) can be extracted with the <code>scale()</code> function.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">scale</span>(m)</span>
 <span id="cb11-2"><a href="#cb11-2"></a>[<span class="dv">1</span>] <span class="fl">89474.01</span></span></code></pre></div>

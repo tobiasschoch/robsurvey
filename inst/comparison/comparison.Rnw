@@ -39,7 +39,7 @@
 	\end{center}
 \end{minipage}}
 
-\date{{\small \today, version 0.2}}
+\date{{\small \today}}
 \maketitle
 
 \renewenvironment{abstract}{%
@@ -331,11 +331,22 @@ tabulated for the 3 implementations/ methods under study.
 GM_mallows_compare(delTime ~ n.prod + distance, delivery)
 @
 
+\noindent The estimates of \code{svyreg\_huberGM (Mallows, mad0)} are
+almost identical with results of \code{rywalg (ROBETH, Mallows)}; see
+rows 2 and 3. The estimates of \code{svyreg\_huberGM (Mallows)} (i.e.,
+based on the MAD centered about the weighted median differ slightly
+as is to be expected.
+
 \subsubsection{Schweppe $GM$-estimator}\label{sec:delivery_schweppe}
 
 <<echo=FALSE>>==
 GM_schweppe_compare(delTime ~ n.prod + distance, delivery)
 @
+
+\noindent The estimates of \code{svyreg\_huberGM (Schweppe, mad0)} and
+\code{rywalg (ROBETH, Schweppe)} (see rows 2 and 3) are slightly
+different. We could not figure out the reasons for this discrepancy.
+
 
 %-------------------------------------------------------------------------------
 \subsection{Case 4: salinity data}
@@ -366,12 +377,22 @@ by several implementations of the regression $GM$-estimators.
 GM_mallows_compare(Y ~ X1 + X2 + X3, salinity)
 @
 
+\noindent The differences between the estimates of
+\code{svyreg\_huberGM (Mallows, mad0)} and \code{rywalg (ROBETH, Mallows)}
+are larger (see rows 2 and 3) than in Case 3. Still, the estimates are
+very similar.
+
 \subsubsection{Schweppe $GM$-estimator}
 
 <<echo=FALSE>>==
 GM_schweppe_compare(Y ~ X1 + X2 + X3, salinity)
 @
-%
+
+\noindent The estimates of \code{svyreg\_huberGM (Schweppe, mad0)} and
+\code{rywalg (ROBETH, Schweppe)} (see rows 2 and 3) are slightly
+different. But the differences are minor.
+
+
 %-------------------------------------------------------------------------------
 \section{Summary and conclusions}\label{sec:summary}
 In this paper, we studied the behavior of the methods \code{svyreg\_huber}
@@ -381,9 +402,7 @@ implementations. We restricted attention to studying the methods for
 replicate (or are at least very close to) the results of the competing
 implementations. Although our comparisons provide only anecdotal evidence
 on the performance of the methods, we believe that the comparisons shed
-some light on the behavior of our implementations. We are fairly confident
-that the methods \code{svyreg\_huber}  and \code{svyreg\_huberGM}
-behave the way they are supposed to.
+some light on the behavior of our implementations.
 
 %-------------------------------------------------------------------------------
 

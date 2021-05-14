@@ -32,13 +32,27 @@ mer <- function(object, verbose = TRUE, max_k = 1000, optim_args = list())
         control = optim_args)
 
     if (verbose)
-        cat(paste0("Search interval: [", range_k[1], ", ", round(range_k[2], 1),
-            "]\nMinimum found for k = ", round(opt$par, 4), "\n"))
-    if (any(abs(opt$par - range_k) < .Machine$double.eps^0.25))
-        cat("Minimum is attained at the boundary of the search interval!\n")
-    cat("\n")
-    est$k <- round(opt$par, 4)
-    result <- eval(est)
+        cat(paste0("Search interval: [", range_k[1], ", ",
+            round(range_k[2], 1), "]\n"))
+
+    if (opt$par < 1) {
+        cat("No minimum found\n")
+        result <- ref
+        result$estimate <- NA
+        result$scale <- NA
+        result[c("robust", "residuals")] <- NULL
+        result$optim <- list(converged = FALSE, niter = 0)
+    } else {
+        if (verbose) {
+            cat("Minimum found for k = ", round(opt$par, 4), "\n")
+            cat(paste0("Rel. efficiency gain: ", -100 * round(opt$val - 1, 2),
+                "%\n"))
+        }
+        # compute mer
+        est$k <- round(opt$par, 4)
+        result <- eval(est)
+        result$robust$rel_mse <- opt$value - 1
+    }
     result$estimator <- paste("MER:", result$estimator)
     result$call <- match.call()
     result

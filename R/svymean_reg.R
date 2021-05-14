@@ -10,7 +10,7 @@ svymean_reg <- function(object, auxiliary, k = NULL, check.names = TRUE)
     if (is.data.frame(auxiliary))
         auxiliary <- as.matrix(auxiliary)
 
-    if (is.matrix(auxiliary)) {
+    if (is.matrix(auxiliary)) {                     # why this if?
         if (NCOL(auxiliary) < NROW(auxiliary))
 	        auxiliary <- t(auxiliary)
 
@@ -57,9 +57,10 @@ svymean_reg <- function(object, auxiliary, k = NULL, check.names = TRUE)
     }
 
     # variance estimate  # NOTE:: check
+    infl <- object$robust$robweights * object$residuals * w / sum_w
     design <- object$design
-    v <- survey::svyrecvar(object$residuals * w / sum_w , design$cluster,
-        design$strata, design$fpc, postStrata = design$postStrata)
+    v <- survey::svyrecvar(infl, design$cluster, design$strata, design$fpc,
+        postStrata = design$postStrata)
 
     object$characteristic <- "mean"
     object$estimate <- est

@@ -402,32 +402,9 @@ m <- svymean_huber(~los, dn, type = "rwm", k = 8)
 Next, we compute the MER, starting from the current $M$-estimate, i.e., object `m`.
 
 ```{r}
-m_optimal <- mer(m)
-m_optimal
+mer(m)
 ```
-
-We can learn more by the summary method.
-
-```{r}
-summary(m_optimal)
-```
-
-For the weighted total, the estimated MSE (say, `mse0`) is equal to the estimated variance because it is a design-unbiased estimator of the population total.
-
-```{r}
-m0 <- svymean(~los, dn)
-mse0 <- vcov(m0)
-unname(mse0)
-```
-
-The estimated MSE of the MER estimator is
-
-```{r}
-mse_optimal <- vcov(m_optimal) + (coef(m_optimal) - coef(m0))^2
-unname(mse_optimal)
-```
-
-Hence, the classical weighted total is `r round(100 * (mse0 / mse_optimal - 1), 1)`% less efficient than the MER as an estimator of the population total.
+Hence, the MER is 39% more efficient than the classical estimator as an estimator of the population total.
 
 ## 6 Utility Functions
 

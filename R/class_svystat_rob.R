@@ -84,8 +84,7 @@ print.svystat_rob <- function(x, digits = max(3L, getOption("digits") - 3L),
         colnames(m) <- c(x$characteristic, "SE")
         print(m, digits)
     } else {
-        cat(x$call[[1]], ": failure of convergence in", x$optim$niter,
-            "steps\n")
+        cat(x$call[[1]], ": failure of convergence\n")
         cat("(you may use the 'summary' method to learn more)\n")
     }
 }
