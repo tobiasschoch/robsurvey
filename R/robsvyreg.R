@@ -1,9 +1,7 @@
 # workhorse function for robust regression
 # FIXME:
-#   initialization => new argument init
 #   terms and mf object for regression
 #   see predict.lm
-
 robsvyreg <- function(x, y, w, k, psi, type, xwgt = NULL, var = NULL,
     verbose = TRUE, ...)
 {
@@ -25,10 +23,10 @@ robsvyreg <- function(x, y, w, k, psi, type, xwgt = NULL, var = NULL,
 
     # initialization
     if (is.null(ctrl$init)) {
-        init <- 1 # initialization by weighted least squares
+        init_flag <- 1 # initialization by weighted least squares
         beta <- numeric(p)
     } else {
-        init <- 0 # regression is initialized by ctrl$init
+        init_flag <- 0 # regression is initialized by ctrl$init
         beta <- ctrl$init
         if (length(as.vector(beta)) != p || !is.numeric(beta))
             stop("Argument 'init' must be a numerical p-vector\n",
@@ -44,7 +42,7 @@ robsvyreg <- function(x, y, w, k, psi, type, xwgt = NULL, var = NULL,
         k = as.double(k), beta = as.double(beta),
         scale = as.double(numeric(1)), tol = as.double(ctrl$tol),
         maxit = as.integer(ctrl$maxit), psi = as.integer(psi),
-        type = as.integer(type), init = as.integer(init),
+        type = as.integer(type), init = as.integer(init_flag),
         mad_center = as.integer(ctrl$mad_center), PACKAGE = "robsurvey")
 
     converged <- (tmp$maxit != 0)
