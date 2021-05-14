@@ -12,7 +12,7 @@ static const R_CMethodDef cMethods[]  = {
     {"rwlslm", (DL_FUNC) &rwlslm, 17},
     {"wquantile", (DL_FUNC) &wquantile, 5},
     {"wkwinsorizedmean", (DL_FUNC) &wkwinsorizedmean, 6},
-    {"cov_rwlslm", (DL_FUNC) &cov_rwlslm, 12},
+    {"cov_rwlslm", (DL_FUNC) &cov_rwlslm, 13},
     {NULL, NULL, 0}
 };
 

@@ -47,7 +47,10 @@ summary.svyreg_rob <- function(object, digits = max(3L, getOption("digits")
             scale2 = as.double(numeric(1)),
             n = as.integer(n), p = as.integer(p),
             psi = as.integer(object$estimator$psi),
-            type = as.integer(object$estimator$type))
+            type = as.integer(object$estimator$type), ok = as.integer(0))
+        if (tmp$ok == 0)
+            stop("Covariance estimation failed\n", call. = FALSE)
+
         res <- list(stddev = sqrt(tmp$scale2), covmat = matrix(tmp$x[1:(p * p)],
             ncol = p), n = n, p = p, N = N)
         colnames(res$covmat) <- colnames(object$model$x)
@@ -92,7 +95,10 @@ vcov.svyreg_rob <- function(object, ...)
             scale = as.double(object$scale), scale2 = as.double(numeric(1)),
             n = as.integer(n), p = as.integer(p),
             psi = as.integer(object$estimator$psi),
-            type = as.integer(object$estimator$type))
+            type = as.integer(object$estimator$type), ok = as.integer(0))
+        if (tmp$ok == 0)
+            stop("Covariance estimation failed\n", call. = FALSE)
+
         mat <- matrix(tmp$x[1:(p * p)], ncol = p)
         colnames(mat) <- colnames(object$model$x)
         rownames(mat) <- colnames(object$model$x)

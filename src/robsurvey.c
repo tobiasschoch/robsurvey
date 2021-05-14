@@ -49,8 +49,8 @@ robsurvey_error_type rfitwls(regdata*, workarray*, double* restrict,
     double* restrict, double* restrict);
 static inline double norm(const double*, const double*, const int)
     __attribute__((always_inline));
-static inline void inverse_qr(double*, double*, double*, int*, int*, int*, int)
-    __attribute__((always_inline));
+robsurvey_error_type inverse_qr(double*, double*, double*, int*, int*, int*,
+    int);
 static inline void weighting_scheme(regdata*, double (*f_wgt_psi)(double,
     const double), double* restrict, double*, double*, int*, int*,
     double* restrict);
@@ -417,43 +417,44 @@ static inline double norm(const double *x, const double *y, const int p)
 |* n, p    dimensions                                                         *|
 |* psi     0 = Huber, 1 = asymmetric Huber, 2 = Tukey biweight                *|
 |* type    0 = M-est., 1 = Mallows GM-est., 2 = Schweppe GM-est.              *|
+|* ok      1 = ok; 0 = failure                                                *|
 \******************************************************************************/
-//FIXME
 void cov_rwlslm(double *resid, double *x, double *xwgt, double *robwgt,
     double *w, double *k, double *scale, double *scale2, int *n, int *p,
-    int *psi, int *type)
+    int *psi, int *type, int *ok)
 {
     double tmp, sum_w = 0.0;
-    double *work, *work_x, *work_y;
+    robsurvey_error_type status;
+    double *work_x = (double*) Calloc(*n * *p, double);
+    double *work_y = (double*) Calloc(*n, double);
 
-    work_x = (double*) Calloc(*n * *p, double);
-    work_y = (double*) Calloc(*n, double);
+    *ok = 1;
 
     // determine lwork and allocate work: dgeqrf (used in inverse_qr)
     int lwork = -1, info;
     F77_CALL(dgeqrf)(n, p, x, n, work_x, work_y, &lwork, &info);
     lwork = (int) work_y[0];
-    work = (double*) Calloc(lwork, double);
+    double *work = (double*) Calloc(lwork, double);
 
-    // function ptrs (initialized, otherwise we get an "uninitialized" warning)
-    double (*f_psi)(double, double) = huber_psi;
-    double (*f_psiprime)(double, double) = huber_psi_prime;
-
+    // function ptrs
+    double (*f_psi)(double, double);
+    double (*f_psiprime)(double, double);
     switch (*psi) {
     case 0: // Huber psi
         f_psi = huber_psi;
         f_psiprime = huber_psi_prime;
         break;
-
     case 1: // asymmetric Huber psi
         f_psi = huber_psi_asym;
         f_psiprime = huber_psi_prime_asym;
         break;
-
     case 2: // Tukey biweight psi
         f_psi = tukey_psi;
         f_psiprime = tukey_psi_prime;
         break;
+    default:
+        f_psi = huber_psi;
+        f_psiprime = huber_psi_prime;
     }
 
     // Schweppe GM-est. --------------------------------------------------------
@@ -492,7 +493,12 @@ void cov_rwlslm(double *resid, double *x, double *xwgt, double *robwgt,
         Memcpy(work_y, work_x, *n);             // temporarily store s_2 / s_1
 
         // QR factorization: Q -> x; R^{-1} -> work_x[1..(p * p)]
-        inverse_qr(x, work_x, work, n, p, &lwork, 1);
+        status = inverse_qr(x, work_x, work, n, p, &lwork, 1);
+        if (status != ROBSURVEY_ERROR_OK) {
+            *ok = 0;
+            PRINT_OUT("Error: %s\n", robsurvey_error(status));
+            goto clean_up;
+        }
 
         // pre-multiply Q by sqrt(s2 / s1)
         for (int i = 0; i < *n; i++) {
@@ -547,7 +553,12 @@ void cov_rwlslm(double *resid, double *x, double *xwgt, double *robwgt,
                     x[*n * j + i] *= tmp;
             }
 
-            inverse_qr(x, work_x, work, n, p, &lwork, 0);
+            status = inverse_qr(x, work_x, work, n, p, &lwork, 0);
+            if (status != ROBSURVEY_ERROR_OK) {
+                *ok = 0;
+                PRINT_OUT("Error: %s\n", robsurvey_error(status));
+                goto clean_up;
+            }
 
             F77_CALL(dtrmm)("R", "U", "T", "N", p, p, scale2, work_x, p,
                 work_x, p);
@@ -562,7 +573,12 @@ void cov_rwlslm(double *resid, double *x, double *xwgt, double *robwgt,
             }
 
             // QR factorization: Q -> x; R^{-1} -> work_x[1..(p * p)]
-            inverse_qr(x, work_x, work, n, p, &lwork, 1);
+            status = inverse_qr(x, work_x, work, n, p, &lwork, 1);
+            if (status != ROBSURVEY_ERROR_OK) {
+                *ok = 0;
+                PRINT_OUT("Error: %s\n", robsurvey_error(status));
+                goto clean_up;
+            }
 
             // pre-multiply Q by with sqrt(xwgt)
             for (int i = 0; i < *n; i++) {
@@ -581,6 +597,8 @@ void cov_rwlslm(double *resid, double *x, double *xwgt, double *robwgt,
         }
     }
     Memcpy(x, work_x, *p * *p);                     // store in x[1..(p * p)]
+
+clean_up:
     Free(work); Free(work_x); Free(work_y);
 }
 
@@ -591,19 +609,19 @@ void cov_rwlslm(double *resid, double *x, double *xwgt, double *robwgt,
 |* work_x      on return: inv. R is on work_x[1..(p * p)], array[n * p]       *|
 |* work        work array used for QR factorization, array[lwork]             *|
 |* n, p, lwork dimensions                                                     *|
-|* qmatrix     toogle whether Q matrix is computed : 0 = no; 1 = yes          *|
+|* qmatrix     toggle whether Q matrix is computed : 0 = no; 1 = yes          *|
 |*                                                                            *|
 |* NOTE: array x will be overwritten                                          *|
 \******************************************************************************/
-//FIXME error
-static inline void inverse_qr(double *x, double *work_x, double *work,
+robsurvey_error_type inverse_qr(double *x, double *work_x, double *work,
     int *n, int *p, int *lwork, int qmatrix)
 {
     int info = 1;                                       // QR factoriz. of x
     int offset = _POWER2(*p);
+
     F77_CALL(dgeqrf)(n, p, x, n, work_x + offset, work, lwork, &info);
     if (info != 0)
-        error("dgeqrf failed\n");
+        return ROBSURVEY_ERROR_QR_DGEQRF;
 
     for (int i = 0; i < *p * *p; i++)                   // prepare matrix R
         work_x[i] = 0.0;
@@ -614,14 +632,15 @@ static inline void inverse_qr(double *x, double *work_x, double *work,
 
     F77_CALL(dtrtri)("U", "N", p, work_x, p, &info);    // inverse of R
     if (info != 0)
-        error("dtrtri failed\n");
+        return ROBSURVEY_ERROR_QR_DTRTRI;
 
     if (qmatrix) {
         F77_CALL(dorgqr)(n, p, p, x, n, work_x + offset, // extract matrix Q
             work, lwork, &info);
         if (info != 0)
-            error("dorgqr failed\n");
+            return ROBSURVEY_ERROR_QR_DORGQR;
     }
+    return ROBSURVEY_ERROR_OK;
 }
 #undef _POWER2
 #undef PRINT_OUT

@@ -15,5 +15,5 @@
 void rwlslm(double*, double*, double*, double*, double*, double*, int*, int*,
     double*, double*, double*, double*, int*, int*, int*, int*, int*);
 void cov_rwlslm(double*, double*, double*, double*, double*, double*, double*,
-    double*, int*, int*, int*, int*);
+    double*, int*, int*, int*, int*, int*);
 #endif
