@@ -48,6 +48,7 @@ expect_equal(coef(est),
     tolerance = 1e-4, label = "Huber Mallows regression GM-est")
 # covariance matrix
 #FIXME:
+#vcov(est)
 
 #-------------------------------------------------------------------------------
 # Schweppe regression GM-estimator: Huber psi

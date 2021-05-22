@@ -42,15 +42,19 @@ typedef struct workarray_struct {
     double *work_2n;
 } workarray;
 
-//#if 0
-robsurvey_error_type cov_m_est(workarray *work, double *resid, double *x, double *robwgt,
-    double *w, double *k, double *scale, double *scale2, int *n, int *p,
-    double (*f_psiprime)(double, const double));
-//#endif
-
-
 // declaration
-robsurvey_error_type inverse_qr(workarray*, double*, int*, int*, int);
+robsurvey_error_type scale_est(regdata*, double*restrict, double* restrict,
+    double*, double*, double*, double (*)(double, const double));
+robsurvey_error_type cov_m_est(regdata*, workarray*, double* restrict,
+    double* restrict, double*, double*, double*, double (*)(double,
+    const double));
+robsurvey_error_type cov_mallows_gm_est(regdata*, workarray*, double*,
+    double*, double*, double*, double*, double (*)(double, const double));
+robsurvey_error_type cov_schweppe_gm_est(regdata*, workarray*,
+    double* restrict, double* restrict, double*, double*, double*,
+    double (*)(double, const double), double (*)(double,
+    const double));
+robsurvey_error_type inverse_qr(workarray*, double* restrict, int*, int*, int);
 robsurvey_error_type wmad(regdata*, workarray*, double* restrict, int*,
     double, double*);
 robsurvey_error_type rfitwls(regdata*, workarray*, double* restrict,
@@ -63,9 +67,27 @@ static inline void weighting_scheme(regdata*, double (*f_wgt_psi)(double,
 robsurvey_error_type initialize(regdata*, workarray*, double* restrict,
     double* restrict, double*, int*, int*);
 
-//FIXME: head
 /******************************************************************************\
+|* rwlslm: regression M- and GM-estimator and estimate of scale (w MAD)       *|
 |*                                                                            *|
+|* x          design matrix, array[n * p];                                    *|
+|* y          response vector, array[n]                                       *|
+|* w          sampling weight, array[n]                                       *|
+|* resid      residuals, array[n]                                             *|
+|* robwgt     robustness weight, array[n]                                     *|
+|* xwgt       weights in design space, array[n]                               *|
+|* n, p       dimensions                                                      *|
+|* k          robustness tuning constant                                      *|
+|* beta0      on return: regression coefficients                              *|
+|* scale      estimate of scale (weighted MAD)                                *|
+|* scale      estimate of scale (weighted MAD)                                *|
+|* tol        numerical tolerance criterion to stop the iterations            *|
+|* maxit      maximum number of iterations to use                             *|
+|* psi        0 = Huber, 1 = asymmetric Huber, 2 = Tukey biweight             *|
+|* type       0 = M-est., 1 = Mallows GM-est., 2 = Schweppe GM-est.           *|
+|* init       1 = method is initialized by weighted least squares; 0 = beta0  *|
+|*            is taken as initial estimate of regression                      *|
+|* mad_center 1 = mad is centered about the median, 0 = centered about zero   *|
 \******************************************************************************/
 void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
     double *xwgt, int *n, int *p, double *k, double *beta0, double *scale,
@@ -239,7 +261,7 @@ robsurvey_error_type initialize(regdata *dat, workarray *work,
 |* Weighting scheme for iteratively reweighted least squares; weighting with  *|
 |* respect to sampling, residual and design space outlyingness                *|
 |*                                                                            *|
-|* dat       typedef struct regata                                            *|
+|* dat       typedef struct regdata                                           *|
 |* f_wgt_psi function pointer to the wgt/psi-function                         *|
 |* resid     residuals, array[n]                                              *|
 |* k         tuning constant of the psi-function                              *|
@@ -424,16 +446,20 @@ static inline double norm(const double *x, const double *y, const int p)
 |* n, p    dimensions                                                         *|
 |* psi     0 = Huber, 1 = asymmetric Huber, 2 = Tukey biweight                *|
 |* type    0 = M-est., 1 = Mallows GM-est., 2 = Schweppe GM-est.              *|
-|* ok      1 = ok; 0 = failure                                                *|
+|* ok      on return: 1 = ok; 0 = failure                                     *|
 \******************************************************************************/
 void cov_rwlslm(double *resid, double *x, double *xwgt, double *robwgt,
     double *w, double *k, double *scale, double *scale2, int *n, int *p,
     int *psi, int *type, int *ok)
 {
-    double tmp, sum_w = 0.0;
-    robsurvey_error_type status;
-
-    *ok = 1;
+    // initialize and populate structure with regression-specific data
+    regdata data;
+    regdata *dat = &data;
+    dat->n = *n;
+    dat->p = *p;
+    dat->x = x;
+    dat->w = w;
+    dat->xwgt = xwgt;
 
     // initialize and populate structure with work arrays
     double* restrict work_x = (double*) Calloc(*n * *p, double);
@@ -441,18 +467,20 @@ void cov_rwlslm(double *resid, double *x, double *xwgt, double *robwgt,
     workarray wwork;
     workarray *work = &wwork;
     work->work_x = work_x;
-//    work->work_y = work_y;
+    work->work_y = work_y;
 
     // determine lwork and allocate work_lapack: dgeqrf (used in inverse_qr)
     int lwork = -1, info;
     F77_CALL(dgeqrf)(n, p, x, n, work_x, work_y, &lwork, &info);
     lwork = (int) work_y[0];
+    work->lwork = lwork;
     double* restrict work_lapack = (double*) Calloc(lwork, double);
     work->work_lapack = work_lapack;
 
     // psi-function: function ptrs
     double (*f_psi)(double, double);
     double (*f_psiprime)(double, double);
+
     switch (*psi) {
     case 0: // Huber psi
         f_psi = huber_psi;
@@ -471,17 +499,25 @@ void cov_rwlslm(double *resid, double *x, double *xwgt, double *robwgt,
         f_psiprime = huber_psi_prime;
     }
 
-#if 0
     // type of estimator
+    robsurvey_error_type status;
+
     switch (*type) {
     case 0: // M-estimator
-        status = cov_m_est();
+        status = cov_m_est(dat, work, resid, robwgt, k, scale, scale2,
+            f_psiprime);
         break;
     case 1: // Mallows GM-estimator
+        status = cov_mallows_gm_est(dat, work, resid, robwgt, k, scale, scale2,
+            f_psiprime);
         break;
     case 2: // Schweppe GM-estimator
+        status = cov_schweppe_gm_est(dat, work, resid, robwgt, k, scale, scale2,
+            f_psiprime, f_psi);
         break;
     default:
+        status = cov_m_est(dat, work, resid, robwgt, k, scale, scale2,
+            f_psiprime);
     }
 
     if (status != ROBSURVEY_ERROR_OK) {
@@ -490,136 +526,10 @@ void cov_rwlslm(double *resid, double *x, double *xwgt, double *robwgt,
         goto clean_up;
     }
 
-#endif
+    *ok = 1;
 
-    // Schweppe GM-est. --------------------------------------------------------
-    if (*type == 2) {
-
-        for (int i = 0; i < *n; i++) {
-            work_y[i] = resid[i] / *scale;
-            sum_w += w[i];
-        }
-
-        // compute s_1 and s_2
-        double tmp2, z;
-        for (int i = 0; i < *n; i++) {
-            tmp = 0.0; tmp2 = 0.0;
-
-            if (xwgt[i] > DBL_EPSILON) {
-            for (int j = 0; j < *n; j++) {
-                z = work_y[j] * xwgt[i];
-                tmp += w[j] * f_psiprime(z, *k);
-                tmp2 += w[j] * _POWER2(f_psi(z, *k) / xwgt[i]);
-            }
-            tmp /= sum_w;
-            tmp2 /= sum_w;
-
-            } else {
-                tmp = 1.0;
-                tmp2 = 0.0;
-            }
-
-            for (int j = 0; j < *p; j++)        // x := sqrt(s_1 * w) o x
-                x[*n * j + i] *= sqrt(tmp * w[i]);
-
-            work_x[i] = tmp2 / tmp;             // temporarily store s_2 / s_1
-        }
-
-        Memcpy(work_y, work_x, *n);             // temporarily store s_2 / s_1
-
-        // QR factorization: Q -> x; R^{-1} -> work_x[1..(p * p)]
-        status = inverse_qr(work, x, n, p, 1);
-        if (status != ROBSURVEY_ERROR_OK) {
-            *ok = 0;
-            PRINT_OUT("Error: %s\n", robsurvey_error(status));
-            goto clean_up;
-        }
-
-        // pre-multiply Q by sqrt(s2 / s1)
-        for (int i = 0; i < *n; i++) {
-            tmp = sqrt(work_y[i]);
-            for (int j = 0; j < *p; j++)
-                x[*n * j + i] *= tmp;           // pre-multiply Q
-        }
-
-        // B  := Q * R^{-T} (result -> x)
-        double done = 1.0, dzero = 0.0;
-        F77_CALL(dtrmm)("R", "U", "T", "N", n, p, &done, work_x, p, x, n);
-
-        // compute B^T * B := (x^T * W * W * x)^{-1}
-        *scale2 = _POWER2(*scale) / (1.0 - (double)*p / sum_w);
-        F77_CALL(dgemm)("T", "N", p, p, n, scale2, x, n, x, n, &dzero, work_x,
-            p);
-        *scale2 = *scale;
-
-    // M-est. and Mallows GM-est. ----------------------------------------------
-    } else {
-
-        //FIXME: this part of the Mallows estimator
-
-        double Epsi_prime = 0.0, Epsi_prime2 = 0.0;
-        for (int i = 0; i < *n; i++) {
-            tmp = f_psiprime(resid[i] / *scale, *k);
-            Epsi_prime += w[i] * tmp;
-            Epsi_prime2 += w[i] * _POWER2(tmp);
-            sum_w += w[i];
-        }
-
-        Epsi_prime /= sum_w;
-        Epsi_prime2 /= sum_w;
-
-        // scale estimate
-        *scale2 = 0.0;
-        for (int i = 0; i < *n; i++)
-            *scale2 += w[i] * _POWER2(robwgt[i] * resid[i]);
-
-        *scale2 /= (sum_w - (double)*p) * _POWER2(Epsi_prime);
-
-        // M-est. -----------------------------------------------------
-        if (*type == 0) {
-            status = cov_m_est(work, resid, x, robwgt, w, k, scale, scale2, n, p, f_psiprime);
-            if (status != ROBSURVEY_ERROR_OK) {
-                *ok = 0;
-                PRINT_OUT("Error: %s\n", robsurvey_error(status));
-                goto clean_up;
-            }
-
-        // Mallows GM-est. --------------------------------------------
-        } else {
-
-            // this is part of the Mallows estimator
-
-            for (int i = 0; i < *n; i++) {
-                tmp = sqrt(w[i] * xwgt[i]);
-                for (int j = 0; j < *p; j++)
-                    x[*n * j + i] *= tmp;           // pre-multiply x
-            }
-
-            // QR factorization: Q -> x; R^{-1} -> work_x[1..(p * p)]
-            status = inverse_qr(work, x, n, p, 1);
-            if (status != ROBSURVEY_ERROR_OK) {
-                *ok = 0;
-                PRINT_OUT("Error: %s\n", robsurvey_error(status));
-                goto clean_up;
-            }
-
-            // pre-multiply Q by with sqrt(xwgt)
-            for (int i = 0; i < *n; i++) {
-                tmp = sqrt(xwgt[i]);
-                for (int j = 0; j < *p; j++)
-                    x[*n * j + i] *= tmp;           // pre-multiply Q
-            }
-
-            // B  := Q * R^{-T} (result -> x)
-            double done = 1.0, dzero = 0.0;
-            F77_CALL(dtrmm)("R", "U", "T", "N", n, p, &done, work_x, p, x, n);
-
-            // compute B^T * B := (x^T * W * W * x)^{-1}
-            F77_CALL(dgemm)("T", "N", p, p, n, scale2, x, n, x, n, &dzero,
-            work_x, p);
-        }
-    }
-    Memcpy(x, work_x, *p * *p);                     // store in x[1..(p * p)]
+    // copy cov matrix to x[1..(p * p)]
+    Memcpy(x, work_x, *p * *p);
 
 clean_up:
     Free(work_lapack); Free(work_x); Free(work_y);
@@ -631,20 +541,66 @@ clean_up:
 |* data       typedef struct regdata                                          *|
 |* work       typedef struct workarray                                        *|
 |* resid      residuals, array[n]                                             *|
+|* robwgt     robustness weight, array[n]                                     *|
 |* k          robustness tuning constant                                      *|
 |* scale      weighted mad                                                    *|
 |* scale2     on return: estimate of regression scale                         *|
 |* f_psiprime function ptr to the psi-prime function                          *|
 \******************************************************************************/
-//FIXME: add regata structure
-robsurvey_error_type cov_m_est(workarray *work, double *resid,
-    double *x, double *robwgt,
-    double *w, double *k, double *scale, double *scale2, int *n, int *p,
+robsurvey_error_type cov_m_est(regdata *dat, workarray *work,
+    double* restrict resid, double* restrict robwgt, double *k,
+    double *scale, double *scale2, double (*f_psiprime)(double, const double))
+{
+    int n = dat->n, p = dat->p;
+    double* restrict x = dat->x;
+    double* restrict w = dat->w;
+    robsurvey_error_type status;
+
+    // estimate of scale
+    status = scale_est(dat, resid, robwgt, scale, scale2, k, f_psiprime);
+    if (status != ROBSURVEY_ERROR_OK)
+        return status;
+
+    // pre-multiply x by sqrt(weight)
+    double tmp;
+    for (int i = 0; i < n; i++) {
+        tmp = sqrt(w[i]);
+        for (int j = 0; j < p; j++)
+            x[n * j + i] *= tmp;
+    }
+
+    // inverse of x^T * x (using QR factorization)
+    status = inverse_qr(work, x, &n, &p, 0);
+    if (status != ROBSURVEY_ERROR_OK)
+        return status;
+
+    double* restrict work_x = work->work_x;
+    F77_CALL(dtrmm)("R", "U", "T", "N", &p, &p, scale2, work_x, &p, work_x, &p);
+
+    return ROBSURVEY_ERROR_OK;
+}
+
+/******************************************************************************\
+|* Regression estimate of scale                                               *|
+|*                                                                            *|
+|* dat        typedef struct regdata                                          *|
+|* resid      residuals, array[n]                                             *|
+|* robwgt     robustness weight, array[n]                                     *|
+|* scale      weighted mad                                                    *|
+|* scale2     on return: estimate of regression scale                         *|
+|* k          robustness tuning constant                                      *|
+|* f_psiprime function ptr to the psi-prime function                          *|
+\******************************************************************************/
+robsurvey_error_type scale_est(regdata *dat, double* restrict resid,
+    double* restrict robwgt, double *scale, double *scale2, double *k,
     double (*f_psiprime)(double, const double))
 {
+    int n = dat->n, p = dat->p;
+    double* restrict w = dat->w;
+
     // E(psi') and E(psi')^2
     double tmp, Epsi_prime = 0.0, Epsi_prime2 = 0.0, sum_w = 0.0;
-    for (int i = 0; i < *n; i++) {
+    for (int i = 0; i < n; i++) {
         tmp = (*f_psiprime)(resid[i] / *scale, *k);
         Epsi_prime += w[i] * tmp;
         Epsi_prime2 += w[i] * _POWER2(tmp);
@@ -655,33 +611,166 @@ robsurvey_error_type cov_m_est(workarray *work, double *resid,
 
     // scale estimate
     *scale2 = 0.0;
-    for (int i = 0; i < *n; i++)
+    for (int i = 0; i < n; i++)
         *scale2 += w[i] * _POWER2(robwgt[i] * resid[i]);
 
-    *scale2 /= (sum_w - (double)*p) * _POWER2(Epsi_prime);
+    *scale2 /= (sum_w - (double)p) * _POWER2(Epsi_prime);
 
     // correction factor (see Huber, 1981, p. 172-174)
-    double kappa = 1.0 + (double)*p / sum_w * (Epsi_prime2 /
-        _POWER2(Epsi_prime) - 1.0) * (double)*n / (double)(*n - 1);
+    double kappa = 1.0 + (double)p / sum_w * (Epsi_prime2 /
+        _POWER2(Epsi_prime) - 1.0) * (double)n / (double)(n - 1);
     *scale2 *= _POWER2(kappa);
 
     if (*scale2 < DBL_EPSILON)
         return ROBSURVEY_ERROR_SCALE_ZERO;
+    else
+        return ROBSURVEY_ERROR_OK;
+}
 
-    // pre-multiply x by sqrt(weight)
-    for (int i = 0; i < *n; i++) {
-        tmp = sqrt(w[i]);
-        for (int j = 0; j < *p; j++)
-            x[*n * j + i] *= tmp;
+/******************************************************************************\
+|* Asymptotic covariance matrix of the Schweppe GM-estimator                  *|
+|*                                                                            *|
+|* data       typedef struct regdata                                          *|
+|* work       typedef struct workarray                                        *|
+|* resid      residuals, array[n]                                             *|
+|* robwgt     robustness weight, array[n]                                     *|
+|* k          robustness tuning constant                                      *|
+|* scale      weighted mad                                                    *|
+|* scale2     on return: estimate of regression scale                         *|
+|* f_psiprime function ptr to the psi-prime function                          *|
+|* f_psi      function ptr to the psi-function                                *|
+\******************************************************************************/
+robsurvey_error_type cov_schweppe_gm_est(regdata *dat, workarray *work,
+    double* restrict resid, double* restrict robwgt, double *k, double *scale,
+    double *scale2, double (*f_psiprime)(double, const double),
+    double (*f_psi)(double, const double))
+{
+    int n = dat->n, p = dat->p;
+    double* restrict x = dat->x;
+    double* restrict w = dat->w;
+    double* restrict xwgt = dat->xwgt;
+    double* restrict work_x = work->work_x;
+    double* restrict work_y = work->work_y;
+
+    double sum_w = 0.0;
+    for (int i = 0; i < n; i++) {
+        work_y[i] = resid[i] / *scale;
+        sum_w += w[i];
     }
 
-    // inverse of x^T * x (using QR factorization of)
-    robsurvey_error_type status = inverse_qr(work, x, n, p, 0);
+    // compute s_1 and s_2
+    double tmp, tmp2, z;
+    for (int i = 0; i < n; i++) {
+        tmp = 0.0; tmp2 = 0.0;
+
+        if (xwgt[i] > DBL_EPSILON) {
+            for (int j = 0; j < n; j++) {
+                z = work_y[j] * xwgt[i];
+                tmp += w[j] * f_psiprime(z, *k);
+                tmp2 += w[j] * _POWER2(f_psi(z, *k) / xwgt[i]);
+            }
+            tmp /= sum_w;
+            tmp2 /= sum_w;
+
+        } else {
+            tmp = 1.0;
+            tmp2 = 0.0;
+        }
+
+        // x := sqrt(s_1 * w) o x
+        for (int j = 0; j < p; j++)
+            x[n * j + i] *= sqrt(tmp * w[i]);
+
+        // temporarily store s_2 / s_1
+        work_x[i] = tmp2 / tmp;
+    }
+
+    // temporarily store s_2 / s_1
+    Memcpy(work_y, work_x, n);
+
+    // QR factorization: Q -> x; R^{-1} -> work_x[1..(p * p)]
+    robsurvey_error_type status = inverse_qr(work, x, &n, &p, 1);
     if (status != ROBSURVEY_ERROR_OK)
         return status;
 
+    // pre-multiply Q by sqrt(s2 / s1)
+    for (int i = 0; i < n; i++) {
+        tmp = sqrt(work_y[i]);
+        for (int j = 0; j < p; j++)
+            x[n * j + i] *= tmp;           // pre-multiply Q
+    }
+
+    // B  := Q * R^{-T} (result -> x)
+    double done = 1.0, dzero = 0.0;
+    F77_CALL(dtrmm)("R", "U", "T", "N", &n, &p, &done, work_x, &p, x, &n);
+
+    // compute B^T * B := (x^T * W * W * x)^{-1}
+    *scale2 = _POWER2(*scale) / (1.0 - (double)p / sum_w);
+    if (*scale2 < DBL_EPSILON)
+        return ROBSURVEY_ERROR_SCALE_ZERO;
+
+    F77_CALL(dgemm)("T", "N", &p, &p, &n, scale2, x, &n, x, &n, &dzero,
+        work_x, &p);
+    *scale2 = *scale;
+
+    return ROBSURVEY_ERROR_OK;
+}
+
+/******************************************************************************\
+|* Asymptotic covariance matrix of the Mallows GM-estimator                   *|
+|*                                                                            *|
+|* data       typedef struct regdata                                          *|
+|* work       typedef struct workarray                                        *|
+|* resid      residuals, array[n]                                             *|
+|* robwgt     robustness weight, array[n]                                     *|
+|* k          robustness tuning constant                                      *|
+|* scale      weighted mad                                                    *|
+|* scale2     on return: estimate of regression scale                         *|
+|* f_psiprime function ptr to the psi-prime function                          *|
+\******************************************************************************/
+robsurvey_error_type cov_mallows_gm_est(regdata *dat, workarray *work,
+    double* restrict resid, double* restrict robwgt, double *k,
+    double *scale, double *scale2, double (*f_psiprime)(double, const double))
+{
+    int n = dat->n, p = dat->p;
+    double* restrict x = dat->x;
+    double* restrict w = dat->w;
+    double* restrict xwgt = dat->xwgt;
     double* restrict work_x = work->work_x;
-    F77_CALL(dtrmm)("R", "U", "T", "N", p, p, scale2, work_x, p, work_x, p);
+    robsurvey_error_type status;
+
+    // estimate of scale
+    status = scale_est(dat, resid, robwgt, scale, scale2, k, f_psiprime);
+    if (status != ROBSURVEY_ERROR_OK)
+        return status;
+
+    // pre-multiply x by sqrt(xwgt)
+    double tmp;
+    for (int i = 0; i < n; i++) {
+        tmp = sqrt(w[i] * xwgt[i]);
+        for (int j = 0; j < p; j++)
+            x[n * j + i] *= tmp;
+    }
+
+    // QR factorization: Q -> x; R^{-1} -> work_x[1..(p * p)]
+    status = inverse_qr(work, x, &n, &p, 1);
+    if (status != ROBSURVEY_ERROR_OK)
+        return status;
+
+    // pre-multiply Q by with sqrt(xwgt)
+    for (int i = 0; i < n; i++) {
+        tmp = sqrt(xwgt[i]);
+        for (int j = 0; j < p; j++)
+            x[n * j + i] *= tmp;
+    }
+
+    // B := Q * R^{-T} (result -> x)
+    double done = 1.0, dzero = 0.0;
+    F77_CALL(dtrmm)("R", "U", "T", "N", &n, &p, &done, work_x, &p, x, &n);
+
+    // compute B^T * B := (x^T * W * W * x)^{-1}
+    F77_CALL(dgemm)("T", "N", &p, &p, &n, scale2, x, &n, x, &n, &dzero,
+        work_x, &p);
 
     return ROBSURVEY_ERROR_OK;
 }
@@ -696,8 +785,8 @@ robsurvey_error_type cov_m_est(workarray *work, double *resid,
 |*                                                                            *|
 |* NOTE: array x will be overwritten                                          *|
 \******************************************************************************/
-robsurvey_error_type inverse_qr(workarray *work, double *x, int *n, int *p,
-    int qmatrix)
+robsurvey_error_type inverse_qr(workarray *work, double* restrict x, int *n,
+    int *p, int qmatrix)
 {
     int lwork = work->lwork;
     int info = 1;
@@ -721,8 +810,8 @@ robsurvey_error_type inverse_qr(workarray *work, double *x, int *n, int *p,
     if (info != 0)
         return ROBSURVEY_ERROR_QR_DTRTRI;
 
-    if (qmatrix) {
-        F77_CALL(dorgqr)(n, p, p, x, n, R + offset,     // extract matrix Q
+    if (qmatrix) {                                      // extract matrix Q
+        F77_CALL(dorgqr)(n, p, p, x, n, R + offset,
             work_dgeqrf, &lwork, &info);
         if (info != 0)
             return ROBSURVEY_ERROR_QR_DORGQR;
