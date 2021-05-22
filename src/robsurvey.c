@@ -36,27 +36,34 @@ typedef struct regdata_struct {
 // structure: work arrays
 typedef struct workarray_struct {
     int lwork;
-    double *work_dgels;
+    double *work_lapack;
     double *work_x;
     double *work_y;
     double *work_2n;
 } workarray;
 
+//#if 0
+robsurvey_error_type cov_m_est(workarray *work, double *resid, double *x, double *robwgt,
+    double *w, double *k, double *scale, double *scale2, int *n, int *p,
+    double (*f_psiprime)(double, const double));
+//#endif
+
+
 // declaration
+robsurvey_error_type inverse_qr(workarray*, double*, int*, int*, int);
 robsurvey_error_type wmad(regdata*, workarray*, double* restrict, int*,
     double, double*);
 robsurvey_error_type rfitwls(regdata*, workarray*, double* restrict,
     double* restrict, double* restrict);
 static inline double norm(const double*, const double*, const int)
     __attribute__((always_inline));
-robsurvey_error_type inverse_qr(double*, double*, double*, int*, int*, int*,
-    int);
 static inline void weighting_scheme(regdata*, double (*f_wgt_psi)(double,
     const double), double* restrict, double*, double*, int*, int*,
     double* restrict);
 robsurvey_error_type initialize(regdata*, workarray*, double* restrict,
     double* restrict, double*, int*, int*);
 
+//FIXME: head
 /******************************************************************************\
 |*                                                                            *|
 \******************************************************************************/
@@ -87,11 +94,11 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
     work->work_y = work_y;
     work->work_2n = work_2n;
 
-    // determine work array for 'dgels' (and allocate 'work_dgels')
+    // determine work array for 'dgels' (and allocate 'work_lapack')
     work->lwork = -1;
     status = rfitwls(dat, work, w, beta0, resid);
-    double* restrict work_dgels = (double*) Calloc(work->lwork, double);
-    work->work_dgels = work_dgels;
+    double* restrict work_lapack = (double*) Calloc(work->lwork, double);
+    work->work_lapack = work_lapack;
 
     // STEP 1: estimator type-specific preparations
     double (*f_wgt_psi)(double, double);
@@ -189,7 +196,7 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
         robwgt[i] /= w[i];
 
 clean_up:
-    Free(beta1); Free(work_x); Free(work_y); Free(work_2n); Free(work_dgels);
+    Free(beta1); Free(work_x); Free(work_y); Free(work_2n); Free(work_lapack);
 }
 
 /******************************************************************************\
@@ -300,7 +307,7 @@ robsurvey_error_type rfitwls(regdata *dat, workarray *work, double* restrict w,
 	} else {
         double* restrict work_x = work->work_x;
         double* restrict work_y = work->work_y;
-        double* restrict work_dgels = work->work_dgels;
+        double* restrict work_dgels = work->work_lapack;
 
         // pre-multiply the design matrix and the response vector by sqrt(w)
         double tmp;
@@ -425,18 +432,25 @@ void cov_rwlslm(double *resid, double *x, double *xwgt, double *robwgt,
 {
     double tmp, sum_w = 0.0;
     robsurvey_error_type status;
-    double *work_x = (double*) Calloc(*n * *p, double);
-    double *work_y = (double*) Calloc(*n, double);
 
     *ok = 1;
 
-    // determine lwork and allocate work: dgeqrf (used in inverse_qr)
+    // initialize and populate structure with work arrays
+    double* restrict work_x = (double*) Calloc(*n * *p, double);
+    double* restrict work_y = (double*) Calloc(*n, double);
+    workarray wwork;
+    workarray *work = &wwork;
+    work->work_x = work_x;
+//    work->work_y = work_y;
+
+    // determine lwork and allocate work_lapack: dgeqrf (used in inverse_qr)
     int lwork = -1, info;
     F77_CALL(dgeqrf)(n, p, x, n, work_x, work_y, &lwork, &info);
     lwork = (int) work_y[0];
-    double *work = (double*) Calloc(lwork, double);
+    double* restrict work_lapack = (double*) Calloc(lwork, double);
+    work->work_lapack = work_lapack;
 
-    // function ptrs
+    // psi-function: function ptrs
     double (*f_psi)(double, double);
     double (*f_psiprime)(double, double);
     switch (*psi) {
@@ -456,6 +470,27 @@ void cov_rwlslm(double *resid, double *x, double *xwgt, double *robwgt,
         f_psi = huber_psi;
         f_psiprime = huber_psi_prime;
     }
+
+#if 0
+    // type of estimator
+    switch (*type) {
+    case 0: // M-estimator
+        status = cov_m_est();
+        break;
+    case 1: // Mallows GM-estimator
+        break;
+    case 2: // Schweppe GM-estimator
+        break;
+    default:
+    }
+
+    if (status != ROBSURVEY_ERROR_OK) {
+        *ok = 0;
+        PRINT_OUT("Error: %s\n", robsurvey_error(status));
+        goto clean_up;
+    }
+
+#endif
 
     // Schweppe GM-est. --------------------------------------------------------
     if (*type == 2) {
@@ -493,7 +528,7 @@ void cov_rwlslm(double *resid, double *x, double *xwgt, double *robwgt,
         Memcpy(work_y, work_x, *n);             // temporarily store s_2 / s_1
 
         // QR factorization: Q -> x; R^{-1} -> work_x[1..(p * p)]
-        status = inverse_qr(x, work_x, work, n, p, &lwork, 1);
+        status = inverse_qr(work, x, n, p, 1);
         if (status != ROBSURVEY_ERROR_OK) {
             *ok = 0;
             PRINT_OUT("Error: %s\n", robsurvey_error(status));
@@ -520,6 +555,8 @@ void cov_rwlslm(double *resid, double *x, double *xwgt, double *robwgt,
     // M-est. and Mallows GM-est. ----------------------------------------------
     } else {
 
+        //FIXME: this part of the Mallows estimator
+
         double Epsi_prime = 0.0, Epsi_prime2 = 0.0;
         for (int i = 0; i < *n; i++) {
             tmp = f_psiprime(resid[i] / *scale, *k);
@@ -540,31 +577,17 @@ void cov_rwlslm(double *resid, double *x, double *xwgt, double *robwgt,
 
         // M-est. -----------------------------------------------------
         if (*type == 0) {
-
-            // correction factor (see Huber, 1981, p. 172-174)
-            double kappa = 1.0 + (double)*p / sum_w * (Epsi_prime2 /
-                _POWER2(Epsi_prime) - 1.0) * (double)*n / (double)(*n - 1);
-            *scale2 *= _POWER2(kappa);
-
-            // QR factorization of x (R^{-1} * R^{-T} =: inverse of x^T * x)
-            for (int i = 0; i < *n; i++) {
-                tmp = sqrt(w[i]);               // pre-multiply by weight
-                for (int j = 0; j < *p; j++)
-                    x[*n * j + i] *= tmp;
-            }
-
-            status = inverse_qr(x, work_x, work, n, p, &lwork, 0);
+            status = cov_m_est(work, resid, x, robwgt, w, k, scale, scale2, n, p, f_psiprime);
             if (status != ROBSURVEY_ERROR_OK) {
                 *ok = 0;
                 PRINT_OUT("Error: %s\n", robsurvey_error(status));
                 goto clean_up;
             }
 
-            F77_CALL(dtrmm)("R", "U", "T", "N", p, p, scale2, work_x, p,
-                work_x, p);
-
         // Mallows GM-est. --------------------------------------------
         } else {
+
+            // this is part of the Mallows estimator
 
             for (int i = 0; i < *n; i++) {
                 tmp = sqrt(w[i] * xwgt[i]);
@@ -573,7 +596,7 @@ void cov_rwlslm(double *resid, double *x, double *xwgt, double *robwgt,
             }
 
             // QR factorization: Q -> x; R^{-1} -> work_x[1..(p * p)]
-            status = inverse_qr(x, work_x, work, n, p, &lwork, 1);
+            status = inverse_qr(work, x, n, p, 1);
             if (status != ROBSURVEY_ERROR_OK) {
                 *ok = 0;
                 PRINT_OUT("Error: %s\n", robsurvey_error(status));
@@ -599,44 +622,108 @@ void cov_rwlslm(double *resid, double *x, double *xwgt, double *robwgt,
     Memcpy(x, work_x, *p * *p);                     // store in x[1..(p * p)]
 
 clean_up:
-    Free(work); Free(work_x); Free(work_y);
+    Free(work_lapack); Free(work_x); Free(work_y);
+}
+
+/******************************************************************************\
+|* Asymptotic covariance matrix of the M-estimator                            *|
+|*                                                                            *|
+|* data       typedef struct regdata                                          *|
+|* work       typedef struct workarray                                        *|
+|* resid      residuals, array[n]                                             *|
+|* k          robustness tuning constant                                      *|
+|* scale      weighted mad                                                    *|
+|* scale2     on return: estimate of regression scale                         *|
+|* f_psiprime function ptr to the psi-prime function                          *|
+\******************************************************************************/
+//FIXME: add regata structure
+robsurvey_error_type cov_m_est(workarray *work, double *resid,
+    double *x, double *robwgt,
+    double *w, double *k, double *scale, double *scale2, int *n, int *p,
+    double (*f_psiprime)(double, const double))
+{
+    // E(psi') and E(psi')^2
+    double tmp, Epsi_prime = 0.0, Epsi_prime2 = 0.0, sum_w = 0.0;
+    for (int i = 0; i < *n; i++) {
+        tmp = (*f_psiprime)(resid[i] / *scale, *k);
+        Epsi_prime += w[i] * tmp;
+        Epsi_prime2 += w[i] * _POWER2(tmp);
+        sum_w += w[i];
+    }
+    Epsi_prime /= sum_w;
+    Epsi_prime2 /= sum_w;
+
+    // scale estimate
+    *scale2 = 0.0;
+    for (int i = 0; i < *n; i++)
+        *scale2 += w[i] * _POWER2(robwgt[i] * resid[i]);
+
+    *scale2 /= (sum_w - (double)*p) * _POWER2(Epsi_prime);
+
+    // correction factor (see Huber, 1981, p. 172-174)
+    double kappa = 1.0 + (double)*p / sum_w * (Epsi_prime2 /
+        _POWER2(Epsi_prime) - 1.0) * (double)*n / (double)(*n - 1);
+    *scale2 *= _POWER2(kappa);
+
+    if (*scale2 < DBL_EPSILON)
+        return ROBSURVEY_ERROR_SCALE_ZERO;
+
+    // pre-multiply x by sqrt(weight)
+    for (int i = 0; i < *n; i++) {
+        tmp = sqrt(w[i]);
+        for (int j = 0; j < *p; j++)
+            x[*n * j + i] *= tmp;
+    }
+
+    // inverse of x^T * x (using QR factorization of)
+    robsurvey_error_type status = inverse_qr(work, x, n, p, 0);
+    if (status != ROBSURVEY_ERROR_OK)
+        return status;
+
+    double* restrict work_x = work->work_x;
+    F77_CALL(dtrmm)("R", "U", "T", "N", p, p, scale2, work_x, p, work_x, p);
+
+    return ROBSURVEY_ERROR_OK;
 }
 
 /******************************************************************************\
 |* Inverse of R matrix and Q matrix of the QR factorization                   *|
 |*                                                                            *|
-|* x           on return; Q matrix, array[n * p]                              *|
-|* work_x      on return: inv. R is on work_x[1..(p * p)], array[n * p]       *|
-|* work        work array used for QR factorization, array[lwork]             *|
-|* n, p, lwork dimensions                                                     *|
-|* qmatrix     toggle whether Q matrix is computed : 0 = no; 1 = yes          *|
+|* x        on return; Q matrix, array[n * p]                                 *|
+|* work     typedef struct workarray                                          *|
+|* n, p     dimensions                                                        *|
+|* qmatrix  toggle whether Q matrix is computed : 0 = no; 1 = yes             *|
 |*                                                                            *|
 |* NOTE: array x will be overwritten                                          *|
 \******************************************************************************/
-robsurvey_error_type inverse_qr(double *x, double *work_x, double *work,
-    int *n, int *p, int *lwork, int qmatrix)
+robsurvey_error_type inverse_qr(workarray *work, double *x, int *n, int *p,
+    int qmatrix)
 {
-    int info = 1;                                       // QR factoriz. of x
+    int lwork = work->lwork;
+    int info = 1;
     int offset = _POWER2(*p);
+    double* restrict R = work->work_x;                  // R matrix of QR
+    double* restrict work_dgeqrf = work->work_lapack;
 
-    F77_CALL(dgeqrf)(n, p, x, n, work_x + offset, work, lwork, &info);
+    // QR factorization
+    F77_CALL(dgeqrf)(n, p, x, n, R + offset, work_dgeqrf, &lwork, &info);
     if (info != 0)
         return ROBSURVEY_ERROR_QR_DGEQRF;
 
     for (int i = 0; i < *p * *p; i++)                   // prepare matrix R
-        work_x[i] = 0.0;
+        R[i] = 0.0;
 
     for (int i = 0; i < *p; i++)                        // extract matrix R
         for (int j = 0; j < i + 1; j++)
-            work_x[j + i * *p] = x[j + i * *n];
+            R[j + i * *p] = x[j + i * *n];
 
-    F77_CALL(dtrtri)("U", "N", p, work_x, p, &info);    // inverse of R
+    F77_CALL(dtrtri)("U", "N", p, R, p, &info);         // inverse of R
     if (info != 0)
         return ROBSURVEY_ERROR_QR_DTRTRI;
 
     if (qmatrix) {
-        F77_CALL(dorgqr)(n, p, p, x, n, work_x + offset, // extract matrix Q
-            work, lwork, &info);
+        F77_CALL(dorgqr)(n, p, p, x, n, R + offset,     // extract matrix Q
+            work_dgeqrf, &lwork, &info);
         if (info != 0)
             return ROBSURVEY_ERROR_QR_DORGQR;
     }
