@@ -14,6 +14,8 @@
 // prototypes for the functions
 void rwlslm(double*, double*, double*, double*, double*, double*, int*, int*,
     double*, double*, double*, double*, int*, int*, int*, int*, int*);
-void cov_rwlslm(double*, double*, double*, double*, double*, double*, double*,
-    double*, int*, int*, int*, int*, int*);
+void cov_reg_model(double*, double*, double*, double*, double*, double*,
+    double*, double*, int*, int*, int*, int*, int*);
+void cov_reg_design(double*, double*, double*, double*, double*, double*, int*,
+    int*, int*, int*, int*, double*);
 #endif

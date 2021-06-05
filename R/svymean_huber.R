@@ -24,7 +24,7 @@ svymean_huber <- function(x, design, k, type = "rwm", asym = FALSE,
 svytotal_huber <- function(x, design, k, type = "rwm", asym = FALSE,
     na.rm = FALSE, verbose = TRUE, ...)
 {
-    dat <- robsurvey:::.checkformula(x, design)
+    dat <- .checkformula(x, design)
     res <- weighted_total_huber(dat$y, dat$w, k, type, asym, info = TRUE,
         na.rm, verbose, ...)
     # compute variance

@@ -24,8 +24,8 @@ print.svyreg_rob <- function(x, digits = max(3L, getOption("digits") - 3L), ...)
     invisible(x)
 }
 # summary method for robust regression object
-summary.svyreg_rob <- function(object, digits = max(3L, getOption("digits")
-    - 3L), ...)
+summary.svyreg_rob <- function(object, var = c("design", "model", "compound"),
+    digits = max(3L, getOption("digits") - 3L), ...)
 {
     converged <- object$optim$converged
     if (is.null(converged) || converged) {
@@ -39,22 +39,17 @@ summary.svyreg_rob <- function(object, digits = max(3L, getOption("digits")
         cat("\nCoefficients:\n")
 
         # covariance matrix
-        tmp <- .C("cov_rwlslm", resid = as.double(r),
-            x = as.double(object$model$x), xwgt = as.double(object$model$xwgt),
-            robwgt = as.double(object$robust$robweights),
-            w = as.double(object$model$w),
-            k = as.double(object$estimator$k), scale = as.double(object$scale),
-            scale2 = as.double(numeric(1)),
-            n = as.integer(n), p = as.integer(p),
-            psi = as.integer(object$estimator$psi),
-            type = as.integer(object$estimator$type), ok = as.integer(0))
+        tmp <- switch(match.arg(var),
+            "model" = .cov_reg_model(object),
+            "design" = .cov_reg_design(object),
+            "compound" = .cov_reg_compound(object))
         if (tmp$ok == 0)
-            stop("Covariance estimation failed\n", call. = FALSE)
+            stop("\nCovariance estimation failed\n", call. = FALSE)
 
-        res <- list(stddev = sqrt(tmp$scale2), covmat = matrix(tmp$x[1:(p * p)],
-            ncol = p), n = n, p = p, N = N)
-        colnames(res$covmat) <- colnames(object$model$x)
-        rownames(res$covmat) <- colnames(object$model$x)
+        res <- list(stddev = sqrt(tmp$scale2), covmat = tmp$cov, n = n,
+            p = p, N = N)
+        ns <- colnames(object$model$x)
+        dimnames(res$covmat) <- list(ns, ns)
 
         # print out
         est <- object$estimate
@@ -73,41 +68,118 @@ summary.svyreg_rob <- function(object, digits = max(3L, getOption("digits")
 
         invisible(res)
     } else {
-        cat("\nIRWLS not converged in", object$optim$niter,
-            "iterations (with tol =", object$optim$tol, ")\n")
+        warning(" covariance is not avaliable because",
+            "\n regression algorithm did not converge\n", call. = FALSE)
     }
 }
+# extract variance from robust regression object
+vcov.svyreg_rob <- function(object, var = c("design", "model", "compound"),
+    ...)
+{
+    converged <- object$optim$converged
+    if (is.null(converged) || converged) {
+        mat <- switch(match.arg(var),
+            "model" = .cov_reg_model(object)$cov,
+            "design" = .cov_reg_design(object)$cov,
+            "compound" = .cov_reg_compound(object)$cov)
+    } else {
+        warning(" covariance is not avaliable because",
+            "\n regression algorithm did not converge\n", call. = FALSE)
+        mat <- matrix(NA, object$model$p, object$model$p)
+    }
+    ns <- colnames(object$model$x)
+    dimnames(mat) <- list(ns, ns)
+    mat
+}
+
+# model-based covariance matrix of M- and GM-regression estimators
+.cov_reg_model <- function(object)
+{
+    tmp <- .C("cov_reg_model", resid = as.double(object$residuals),
+        x = as.double(object$model$x), xwgt = as.double(object$model$xwgt),
+        robwgt = as.double(object$robust$robweights),
+        w = as.double(object$model$w), k = as.double(object$estimator$k),
+        scale = as.double(object$scale), scale2 = as.double(numeric(1)),
+        n = as.integer(object$model$n), p = as.integer(object$model$p),
+        psi = as.integer(object$estimator$psi),
+        type = as.integer(object$estimator$type), ok = as.integer(0),
+        PACKAGE = "robsurvey")
+    p <- object$model$p
+    if (tmp$ok == 0) {
+        warning("Covariance estimation failed", call. = FALSE)
+        cov_mat <- matrix(NA, p, p)
+    } else {
+        cov_mat <- matrix(tmp$x[1:(p * p)], ncol = p)
+    }
+    list(ok = tmp$ok, cov = cov_mat, scale2 = tmp$scale2)
+}
+
+# design-based covariance matrix of M- and GM-regression estimators
+.cov_reg_design <- function(object)
+{
+    x <- object$model$x
+    r <- object$residuals
+    n <- NROW(x); p <- NCOL(x)
+
+    # weights in the model's design space
+    xwgt <- object$model$xwgt
+    if (is.null(xwgt))
+        xwgt <- rep(1, n)
+
+    # account for heteroscedasticity
+    if (!is.null(object$modelvar))
+        x <- x / sqrt(object$model$var)
+
+    # scale the weights (prevent overflow)
+    w <- object$model$w / sum(object$model$w)
+
+    # Q matrix
+    Q <- survey::svyrecvar(w * xwgt * x * object$robust$robweights * r,
+        object$design$cluster, object$design$strata, object$design$fpc)
+
+    # covariance matrix
+    tmp <- .C("cov_reg_design", x = as.double(x), w = as.double(w),
+        xwgt = as.double(xwgt), resid = as.double(r),
+        scale = as.double(object$scale), k = as.double(object$estimator$k),
+        psi = as.integer(object$estimator$psi),
+        type = as.integer(object$estimator$type), n = as.integer(n),
+        p = as.integer(p), ok = as.integer(0), mat = as.double(Q),
+        PACKAGE = "robsurvey")
+
+    if (tmp$ok == 0) {
+        warning("Covariance estimation failed", call. = FALSE)
+        cov_mat <- matrix(NA, p, p)
+    } else {
+        cov_mat <- matrix(tmp$mat, ncol = p, nrow = p)
+    }
+    list(ok = 1, cov = cov_mat, scale2 = object$scale)
+}
+
+# compound design-model-based covariance matrix of M- and GM-regression est.
+.cov_reg_compound <- function(object)
+{
+    .NotYetImplemented()
+    # # design-based covariance
+    # tmp <- robsurvey:::.cov_reg_design(object)
+    # cov_mat <- tmp$cov
+    # # model-based contribution
+    # x <- object$model$x
+    # w <- object$model$w
+    # k <- object$robust$k
+    #
+    # #FIXME: only Huber M
+    # kappa <- ifelse(k < 10, 1 - 2 * (k * dnorm(k) + (1 - k * k) * pnorm(k,
+    #     lower = FALSE)), 1)
+    # cov_mat <- cov_mat + crossprod(sqrt(w) * x) / kappa
+    # list(ok = 1, cov = cov_mat, scale2 = tmp$scale)
+}
+
 # extract coefficients from robust regression object
 coef.svyreg_rob <- function(object, ...)
 {
     object$estimate
 }
-# extract variance from robust regression object
-vcov.svyreg_rob <- function(object, ...)
-{
-    converged <- object$optim$converged
-    if (is.null(converged) || converged) {
-        n <- object$model$n; p <- object$model$p
-        tmp <- .C("cov_rwlslm", resid = as.double(object$residuals),
-            x = as.double(object$model$x), xwgt = as.double(object$model$xwgt),
-            robwgt = as.double(object$robust$robweights),
-            w = as.double(object$model$w), k = as.double(object$estimator$k),
-            scale = as.double(object$scale), scale2 = as.double(numeric(1)),
-            n = as.integer(n), p = as.integer(p),
-            psi = as.integer(object$estimator$psi),
-            type = as.integer(object$estimator$type), ok = as.integer(0))
-        if (tmp$ok == 0)
-            stop("Covariance estimation failed\n", call. = FALSE)
 
-        mat <- matrix(tmp$x[1:(p * p)], ncol = p)
-        colnames(mat) <- colnames(object$model$x)
-        rownames(mat) <- colnames(object$model$x)
-        mat
-    } else {
-        warning("\nnot avaliable (algorithm did not converge)\n")
-        NA
-    }
-}
 # extract residuals from robust regression object
 residuals.svyreg_rob <- function(object, ...)
 {
@@ -125,25 +197,12 @@ robweights.svyreg_rob <- function(object)
     if (is.null(tmp)) {
         warning("not available (for this estimator)\n")
         NA
-    } else
+    } else {
         tmp
+    }
 }
 # plot method for robust regression object
 plot.svyreg_rob <- function (x, which = 1:5, ...)
 {
+    .NotYetImplemented()
 }
-
-
-# b <- lm(Petal.Width ~ Sepal.Width + Sepal.Length, iris, x = TRUE, y = TRUE)
-# m <- list(coefficients = b$coefficients,
-#    model = list(x = b$x, y = b$y, w = rep(1, 150), var = rep(1, 150)),
-#    robust = list(robweights = rep(1, 150), scale = 1),
-#    fitted.values = fitted.values(b),
-#    residuals = residuals(b),
-#    qr = b$qr,
-#    call = "a"
-# )
-#
-# plot.svyreg(m)
-#
-#

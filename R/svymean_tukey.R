@@ -3,7 +3,7 @@ svymean_tukey <- function(x, design, k, type = "rwm", na.rm = FALSE,
     verbose = TRUE, ...)
 {
     dat <- .checkformula(x, design)
-    res <- weighted_mean_tukey(dat$y, dat$w, k, type, asym, info = TRUE,
+    res <- weighted_mean_tukey(dat$y, dat$w, k, type, info = TRUE,
         na.rm, verbose, ...)
     # modify residuals for type 'rht' (only for variance estimation)
     r <- if (type == "rht")
@@ -24,8 +24,8 @@ svymean_tukey <- function(x, design, k, type = "rwm", na.rm = FALSE,
 svytotal_tukey <- function(x, design, k, type = "rwm", na.rm = FALSE,
         verbose = TRUE, ...)
 {
-    dat <- robsurvey:::.checkformula(x, design)
-    res <- weighted_total_tukey(dat$y, dat$w, k, type, asym, info = TRUE,
+    dat <- .checkformula(x, design)
+    res <- weighted_total_tukey(dat$y, dat$w, k, type, info = TRUE,
         na.rm, verbose, ...)
     # compute variance
     infl <- res$robust$robweights * dat$y * dat$w

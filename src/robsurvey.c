@@ -188,7 +188,7 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
 
         // update estimate of scale
         if (*type == 1) {                       // Mallows GM
-            double* restrict dummy_resid = robwgt;
+            double* restrict dummy_resid = work_x;
             for (int i = 0; i < *n; i++)
                 dummy_resid[i] = resid[i] * sqrt(xwgt[i]);
             status = wmad(dat, work, dummy_resid, mad_center, mad_const,
@@ -213,7 +213,7 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
     }
     *maxit = (converged) ? iterations : 0;
 
-    // robustness weights
+    // final robustness weights
     for (int i = 0; i < *n; i++)
         robwgt[i] /= w[i];
 
@@ -432,7 +432,7 @@ static inline double norm(const double *x, const double *y, const int p)
 }
 
 /******************************************************************************\
-|* cov_rwlslm: covariance matrix of the esimated regression coefficients      *|
+|* model-based covariance matrix of the esimated regression coefficients      *|
 |*                                                                            *|
 |* resid   residuals, array[n]                                                *|
 |* x       design matrix, array[n * p]; on return: the p * p cov              *|
@@ -448,7 +448,7 @@ static inline double norm(const double *x, const double *y, const int p)
 |* type    0 = M-est., 1 = Mallows GM-est., 2 = Schweppe GM-est.              *|
 |* ok      on return: 1 = ok; 0 = failure                                     *|
 \******************************************************************************/
-void cov_rwlslm(double *resid, double *x, double *xwgt, double *robwgt,
+void cov_reg_model(double *resid, double *x, double *xwgt, double *robwgt,
     double *w, double *k, double *scale, double *scale2, int *n, int *p,
     int *psi, int *type, int *ok)
 {
@@ -508,14 +508,14 @@ void cov_rwlslm(double *resid, double *x, double *xwgt, double *robwgt,
             f_psiprime);
         break;
     case 1: // Mallows GM-estimator
-        status = cov_mallows_gm_est(dat, work, resid, robwgt, k, scale, scale2,
-            f_psiprime);
+        status = cov_mallows_gm_est(dat, work, resid, robwgt, k, scale,
+            scale2, f_psiprime);
         break;
     case 2: // Schweppe GM-estimator
-        status = cov_schweppe_gm_est(dat, work, resid, robwgt, k, scale, scale2,
-            f_psiprime, f_psi);
+        status = cov_schweppe_gm_est(dat, work, resid, robwgt, k, scale,
+            scale2, f_psiprime, f_psi);
         break;
-    default:
+    default: // M-estimator
         status = cov_m_est(dat, work, resid, robwgt, k, scale, scale2,
             f_psiprime);
     }
@@ -817,6 +817,131 @@ robsurvey_error_type inverse_qr(workarray *work, double* restrict x, int *n,
             return ROBSURVEY_ERROR_QR_DORGQR;
     }
     return ROBSURVEY_ERROR_OK;
+}
+
+/******************************************************************************\
+|* design-based estimate of the regression covariance matrix                  *|
+|*                                                                            *|
+|* x      model design matrix, array[n, p]                                    *|
+|* w      weights, array[n]                                                   *|
+|* xwgt   weight in the model's design space                                  *|
+|* resid  residual, array[n]                                                  *|
+|* scale  estimate of regressions scale                                       *|
+|* k      robustness tuning constant                                          *|
+|* psi    type of psi-function                                                *|
+|* type   0: M-estimator, 1: Mallows GM-, and 2: Schweppe GM-estimator        *|
+|* n, p   dimensions                                                          *|
+|* ok     on return: 1 = computation is ok; 0 = failure                       *|
+|* mat    on return: covariance matrix; on entry: covariance matrix of the    *|
+|*        estimated total                                                     *|
+|*                                                                            *|
+|* NOTE: matrix x will be overwritten                                         *|
+\******************************************************************************/
+void cov_reg_design(double *x, double *w, double *xwgt, double *resid,
+    double *scale, double *k, int *psi, int *type, int *n, int *p, int *ok,
+    double *mat)
+{
+    *ok = 1;
+    double* Q = (double*) Calloc(*p * *p, double);
+    double* work_pp = (double*) Calloc(*p * *p, double);
+
+    // determine size of the work_dgeqrf array and allocate it
+    int info, lwork = -1;
+    F77_CALL(dgeqrf)(n, p, x, n, mat, work_pp, &lwork, &info);
+    lwork = (int)work_pp[0];
+    double* restrict work_dgeqrf = (double*) Calloc(lwork, double);
+
+    // GM-estimators
+    if (*type == 1) {                   // Mallows GM-estimator
+        for (int i = 0; i < *n; i++)
+            w[i] *= xwgt[i];
+    }
+    if (*type == 2) {                   // Schweppe GM-estimator
+        for (int i = 0; i < *n; i++) {
+            if (fabs(xwgt[i]) < DBL_EPSILON)
+                resid[i] = 0.0;
+            else
+                resid[i] /= xwgt[i];
+        }
+    }
+
+    // switch psi'-function: function ptrs
+    double (*f_psiprime)(double, double);
+    switch (*psi) {
+    case 0: // Huber psi
+        f_psiprime = huber_psi_prime;
+        break;
+    case 1: // asymmetric Huber psi
+        f_psiprime = huber_psi_prime_asym;
+        break;
+    case 2: // Tukey biweight psi
+        f_psiprime = tukey_psi_prime;
+        break;
+    default:
+        f_psiprime = huber_psi_prime;
+    }
+
+    //--------------------------------------------
+    // Q matrix (on entry)
+    Memcpy(Q, mat, *p * *p);
+    // Cholesky factorization
+    F77_CALL(dpotrf)("L", p, Q, p, &info);
+    if (info != 0) {
+        PRINT_OUT("Error in dpotrf (Q matrix)\n");
+        *ok = 0;
+        goto clean_up;
+    }
+    // set upper triangular matrix of Q to zero
+    for (int i = 1; i < *p; i++)
+        for (int j = 0; j < i; j++)
+            Q[*p * i + j] = 0.0;
+
+    //--------------------------------------------
+    // M matrix
+    // pre-multiply x[i, j] by square root of (weight[i] * psi[i]')
+    double tmp;
+    double *R = work_pp; // alias
+
+    for (int i = 0; i < *n; i++) {
+        tmp = sqrt(w[i] * (*f_psiprime)(resid[i] / *scale, *k));
+        for (int j = 0; j < *p; j++)
+            x[i + *n * j] *= tmp;
+    }
+    // QR factorization
+    F77_CALL(dgeqrf)(n, p, x, n, R, work_dgeqrf, &lwork, &info);
+    if (info != 0) {
+        PRINT_OUT("Error in dgeqrf (M matrix)\n");
+        *ok = 0;
+        goto clean_up;
+    }
+    // extract the upper triangular matrix R
+    for (int i = 0; i < *p; i++) {
+        for (int j = 0; j <= i; j++)
+            R[*p * i + j] = x[*n * i + j];
+        for (int j = i + 1; j < *p; j++)
+            R[*p * i + j] = 0.0;
+    }
+
+    // inverse of the R matrix
+    F77_CALL(dtrtri)("U", "N", p, R, p, &info);
+    if (info != 0) {
+        PRINT_OUT("Error in dtrtri (M matrix)\n");
+        *ok = 0;
+        goto clean_up;
+    }
+    // Q := R^{-T} * Q
+    const double d_one = 1.0;
+    F77_CALL(dtrmm)("L", "U", "T", "N", p, p, &d_one, R, p, Q, p);
+    // Q := R^{-1} * Q
+    F77_CALL(dtrmm)("L", "U", "N", "N", p, p, &d_one, R, p, Q, p);
+
+    //--------------------------------------------
+    // covariance matrix
+    double d_zero = 0.0;
+    F77_CALL(dgemm)("N", "T", p, p, p, &d_one, Q, p, Q, p, &d_zero, mat, p);
+
+clean_up:
+    Free(Q); Free(work_pp); Free(work_dgeqrf);
 }
 #undef _POWER2
 #undef PRINT_OUT

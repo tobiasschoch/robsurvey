@@ -12,13 +12,13 @@ svyreg_tukey <- function(formula, design, k, var = NULL, na.rm = FALSE,
     res
 }
 # robust Tukey biweight GM-estimator of regression (depends on pkg survey)
-svyreg_tukeyGM <- function(formula, design, k, type, xwgt, var = NULL,
-    na.rm = FALSE, verbose = TRUE, ...)
+svyreg_tukeyGM <- function(formula, design, k, type = c("Mallows", "Schweppe"),
+    xwgt, var = NULL, na.rm = FALSE, verbose = TRUE, ...)
 {
-    type_int <- switch(toupper(type), "MALLOWS" = 1, "SCHWEPPE" = 2)
-    if (is.null(type_int))
-        stop("Type '", type,"' is not defined\n", call. = FALSE)
-
+    if (missing(xwgt))
+        stop("Argument 'xwgt' is missing\n", call. = FALSE)
+    type <- match.arg(type)
+    type_int <- switch(type, "Mallows" = 1L, "Schweppe" = 2L)
     dat <- .checkreg(formula, design, var, na.rm)
 
     if (NCOL(xwgt) > 1) {

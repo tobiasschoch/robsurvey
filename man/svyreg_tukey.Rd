@@ -5,8 +5,8 @@
 \usage{
 svyreg_tukey(formula, design, k, var = NULL, na.rm = FALSE, verbose = TRUE,
     ...)
-svyreg_tukeyGM(formula, design, k, type, xwgt, var = NULL, na.rm = FALSE,
-    verbose = TRUE, ...)
+svyreg_tukeyGM(formula, design, k, type = c("Mallows", "Schweppe"),
+    xwgt, var = NULL, na.rm = FALSE, verbose = TRUE, ...)
 }
 \arguments{
 \item{formula}{a \code{[formula]} object (i.e., symbolic description of the

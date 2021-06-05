@@ -21,7 +21,7 @@ expect_equal(coef(est),
 ref <- matrix(c(36075.4946, -540.54394, -540.5439, 49.04239), ncol = 2)
 colnames(ref) <- c("(Intercept)", "employment")
 rownames(ref) <- c("(Intercept)", "employment")
-expect_equal(vcov(est), ref, tolerance = 1e-4,
+expect_equal(vcov(est, "model"), ref, tolerance = 1e-4,
     label = "Huber regression M-est: cov")
 
 #-------------------------------------------------------------------------------
@@ -34,7 +34,7 @@ expect_equal(coef(est),
 ref <- matrix(c(27846.8367, -417.24830, -417.24830, 37.85604), ncol = 2)
 colnames(ref) <- c("(Intercept)", "employment")
 rownames(ref) <- c("(Intercept)", "employment")
-expect_equal(vcov(est), ref, tolerance = 1e-4,
+expect_equal(vcov(est, "model"), ref, tolerance = 1e-4,
     label = "Tukey regression M-est: cov")
 
 #-------------------------------------------------------------------------------
@@ -47,8 +47,11 @@ expect_equal(coef(est),
     c("(Intercept)" = 7843.4909, employment = 14425.3658),
     tolerance = 1e-4, label = "Huber Mallows regression GM-est")
 # covariance matrix
-#FIXME:
-#vcov(est)
+ref <- matrix(c(35768.4163, -572.71408, -572.71408, 52.40226), ncol = 2)
+colnames(ref) <- c("(Intercept)", "employment")
+rownames(ref) <- c("(Intercept)", "employment")
+expect_equal(vcov(est, "model"), ref, tolerance = 1e-4,
+    label = "Huber Mallows regression GM-est: cov")
 
 #-------------------------------------------------------------------------------
 # Schweppe regression GM-estimator: Huber psi
@@ -63,7 +66,7 @@ expect_equal(coef(est),
 ref <- matrix(c(35697.6180, -620.1554, -620.1554, 57.4449), ncol = 2)
 colnames(ref) <- c("(Intercept)", "employment")
 rownames(ref) <- c("(Intercept)", "employment")
-expect_equal(vcov(est), ref, tolerance = 1e-4,
+expect_equal(vcov(est, "model"), ref, tolerance = 1e-4,
     label = "Huber Schweppe regression GM-est: cov")
 
 # planned to fail...
