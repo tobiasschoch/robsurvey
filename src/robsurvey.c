@@ -21,7 +21,11 @@
 
 // some macros
 #define _POWER2(_x) ((_x) * (_x))
-#define PRINT_OUT(_f, ...) Rprintf((_f), ##__VA_ARGS__)
+
+// variadic arguments in macros are supported by gcc (>=3.0), clang (all
+// versions), visual studio (>=2005); the version with ##__VA_ARGS__ (which
+// will silently eliminate the trailing comma) is not portable (clang complains)
+#define PRINT_OUT(...) Rprintf(__VA_ARGS__)
 
 // structure: regression data
 typedef struct regdata_struct {

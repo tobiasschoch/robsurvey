@@ -7,21 +7,17 @@ Authors@R:
       given = "Beat",
       family = "Hulliger",
       email = "beat.hulliger@fhnw.ch",
-      role = c("aut", "cph")),
+      role = "aut"),
     person(
       given ="Tobias",
       family = "Schoch",
       email = "tobias.schoch@fhnw.ch",
-      role = c("aut","cre", "cph")),
+      role = c("aut","cre")),
     person(
       given = "Martin",
       family = "Sterchi",
       email = "martin.sterchi@fhnw.ch",
-      role = c("aut")))
-Author: Beat Hulliger [aut, cph],
-  Tobias Schoch [aut, cre, cph],
-  Martin Sterchi [aut]
-Maintainer: Tobias Schoch <tobias.schoch@fhnw.ch>
+      role = "aut"))
 Description: Functions to compute robust (outlier-resistant) estimates of finite
    population characteristics. The package supports the computations of robust
    means, totals, ratios, etc. Available methods are regression M- and

@@ -3,10 +3,10 @@ print.svyreg_rob <- function(x, digits = max(3L, getOption("digits") - 3L), ...)
 {
     converged <- x$optim$converged
     if (is.null(converged) || converged) {
-        cat("\n", x$estimator$string, "\n")
+        cat(paste0("\n", x$estimator$string, "\n"))
         cat("\nCall:\n", paste(deparse(x$call), sep = "\n", collapse = "\n"),
             "\n", sep = "")
-        if (!is.null(x$optim))
+        if (is.finite(x$estimator$k))
             cat("\nIRWLS converged in", x$optim$niter, "iterations\n\n")
         else
             cat("\n")
@@ -62,10 +62,10 @@ summary.svyreg_rob <- function(object, var = c("design", "model", "compound"),
         cat("\nResidual standard error:", format(signif(res$stddev, digits)),
             "on", N - p, "degrees of freedom\n")
 
-        if (!is.null(object$robust))
+        if (is.finite(object$estimator$k)) {
             cat("\nRobustness weights:\n")
-        print(summary(object$robust$robweights))
-
+            print(summary(object$robust$robweights))
+        }
         invisible(res)
     } else {
         warning(" covariance is not avaliable because",
@@ -95,10 +95,14 @@ vcov.svyreg_rob <- function(object, var = c("design", "model", "compound"),
 # model-based covariance matrix of M- and GM-regression estimators
 .cov_reg_model <- function(object)
 {
+    k <- object$estimator$k
+    if (is.infinite(k))
+        k <- svyreg_control()$k
+
     tmp <- .C("cov_reg_model", resid = as.double(object$residuals),
         x = as.double(object$model$x), xwgt = as.double(object$model$xwgt),
         robwgt = as.double(object$robust$robweights),
-        w = as.double(object$model$w), k = as.double(object$estimator$k),
+        w = as.double(object$model$w), k = as.double(k),
         scale = as.double(object$scale), scale2 = as.double(numeric(1)),
         n = as.integer(object$model$n), p = as.integer(object$model$p),
         psi = as.integer(object$estimator$psi),
@@ -117,6 +121,10 @@ vcov.svyreg_rob <- function(object, var = c("design", "model", "compound"),
 # design-based covariance matrix of M- and GM-regression estimators
 .cov_reg_design <- function(object)
 {
+    k <- object$estimator$k
+    if (is.infinite(k))
+        k <- svyreg_control()$k
+
     x <- object$model$x
     r <- object$residuals
     n <- NROW(x); p <- NCOL(x)
@@ -140,7 +148,7 @@ vcov.svyreg_rob <- function(object, var = c("design", "model", "compound"),
     # covariance matrix
     tmp <- .C("cov_reg_design", x = as.double(x), w = as.double(w),
         xwgt = as.double(xwgt), resid = as.double(r),
-        scale = as.double(object$scale), k = as.double(object$estimator$k),
+        scale = as.double(object$scale), k = as.double(k),
         psi = as.integer(object$estimator$psi),
         type = as.integer(object$estimator$type), n = as.integer(n),
         p = as.integer(p), ok = as.integer(0), mat = as.double(Q),

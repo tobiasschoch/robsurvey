@@ -9,7 +9,8 @@ if (length(args) == 0) {
         full    = "full",
         tar     = "tar",
         h       = "help",
-        help    = "help")
+        help    = "help",
+        pdf     = "pdf")
 }
 
 if (mode == "help") {

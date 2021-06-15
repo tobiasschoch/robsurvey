@@ -5,6 +5,8 @@ svyreg_huber <- function(formula, design, k, var = NULL, na.rm = FALSE,
     dat <- .checkreg(formula, design, var, na.rm)
     res <- robsvyreg(dat$x, dat$y, dat$w, k, ifelse(asym, 1, 0), 0, NULL,
         dat$var, verbose, ...)
+    # add a 'reduced' survey.design2 object
+    design$variables <- NULL
     res$design <- design
     res$call <- match.call()
     res$model$intercept <- dat$intercept
@@ -32,6 +34,8 @@ svyreg_huberGM <- function(formula, design, k, type = c("Mallows", "Schweppe"),
 
     res <- robsvyreg(dat$x, dat$y, dat$w, k, ifelse(asym, 1, 0), type_int,
         xwgt, dat$var, verbose, ...)
+    # add a 'reduced' survey.design2 object
+    design$variables <- NULL
     res$design <- design
     res$call <- match.call()
     res$model$intercept <- dat$intercept
