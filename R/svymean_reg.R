@@ -1,5 +1,5 @@
 # Regression estimator of the mean (depends on pkg survey)
-svymean_reg <- function(object, auxiliary, k = NULL, check.names = TRUE)
+svymean_reg <- function(object, auxiliary, check.names = TRUE)
 {
     if (!inherits(object, "svyreg_rob"))
         stop("svymean_reg is not defined for this object\n", call. = FALSE)
@@ -49,6 +49,8 @@ svymean_reg <- function(object, auxiliary, k = NULL, check.names = TRUE)
 
    # GREG correction
     w <- object$model$w; sum_w <- sum(w)
+#FIXME
+k <- 1000
     if (intercept == 0) {
         est <- if (is.null(k))
             est +  sum(w * object$residuals) / sum_w
@@ -68,6 +70,11 @@ svymean_reg <- function(object, auxiliary, k = NULL, check.names = TRUE)
     object$call <- match.call()
     class(object) <- "svystat_rob"
     object
+}
+
+svytotal_reg <- function()
+{
+
 }
 
 

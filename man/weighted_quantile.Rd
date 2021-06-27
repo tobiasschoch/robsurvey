@@ -1,11 +1,11 @@
 \name{weighted_quantile}
 \alias{weighted_quantile}
-\title{Weighted Sample Quantiles}
+\title{Weighted Quantile}
 \usage{
 weighted_quantile(x, w, probs, na.rm = FALSE)
 }
 \arguments{
-\item{x}{\code{[numeric vector]} observations.}
+\item{x}{\code{[numeric vector]} data.}
 \item{w}{\code{[numeric vector]} weights (same length as vector \code{x}).}
 \item{probs}{\code{[numeric vector]} vector of probabilities with values in
     \code{[0,1]}.}
@@ -16,7 +16,7 @@ weighted_quantile(x, w, probs, na.rm = FALSE)
 Weighted estimate of the population quantiles
 }
 \description{
-\code{weighted_quantile} computes the weighted sample quantiles
+\code{weighted_quantile} computes weighted population quantiles.
 }
 \details{
 \describe{

@@ -1,10 +1,10 @@
-\name{svymean_reg_huber}
-\alias{svymean_reg_huber}
-\alias{svytotal_reg_huber}
+\name{svymean_reg_tukey}
+\alias{svymean_reg_tukey}
+\alias{svytotal_reg_tukey}
 \title{Robust Regression Predictor of the Mean}
 \usage{
-svymean_reg_huber(object, mean_auxiliary, k)
-svytotal_reg_huber()
+svymean_reg_tukey(object, mean_auxiliary, k)
+svytotal_reg_tukey()
 }
 \arguments{
 \item{object}{fitted regression model (object of class \code{svyreg}).}
@@ -23,4 +23,5 @@ regression estimator of the mean
 Details
 }
 \examples{
+
 }

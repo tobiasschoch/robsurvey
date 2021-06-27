@@ -30,7 +30,8 @@ Weighted Tukey biweight M-estimator of the population mean and total
 \details{
 \describe{
     \item{Overview.}{}
-    \item{Methods.}{\code{type = "rht"} anad \code{type = "rwm"}}
+    \item{Methods.}{\code{type = "rht"} anad \code{type = "rwm"}; see
+        \code{\link{weighted_mean_tukey}} for more details.}
     \item{Variance estimation.}{Taylor linearization (residual variance
         estimator).}
     \item{Utility functions.}{\code{\link[=svystat_rob]{summary}},
@@ -65,8 +66,8 @@ svytotal_tukey(~employment, dn, k = 9, type = "rht")
 svymean_tukey(~employment, dn, k = 12, type = "rwm")
 }
 \references{
-Hulliger, B. (1995). Outlier Robust Horvitz-Thompson Estimators,
-\emph{Surv. Methodol.} 21, pp. 79-87.
+Hulliger, B. (1995). Outlier Robust Horvitz-Thompson Estimators.
+\emph{Survey Methodology} 21, pp. 79-87.
 }
 \seealso{
 \code{\link{svymean_huber}} and \code{\link{svytotal_huber}}

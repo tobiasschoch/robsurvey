@@ -9,14 +9,14 @@ weighted_total_dalen( x, w, censoring, na.rm = FALSE, verbose = TRUE,
     info = FALSE)
 }
 \arguments{
-\item{x}{\code{[numeric vector]} observations.}
+\item{x}{\code{[numeric vector]} data.}
 \item{w}{\code{[numeric vector]} weights (same length as vector \code{x}).}
 \item{censoring}{\code{[double]} threshold above which all observations are
-    censored (i.e., set equal to the threshold).}
+    censored.}
 \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should be
     removed before the computation proceeds (default: \code{FALSE}).}
 \item{verbose}{\code{[logical]} indicating whether additional information
-    should be \emph{printed} to the console (default: \code{FALSE}).}
+    should be printed to the console (default: \code{FALSE}).}
 \item{info}{\code{[logical]} indicating whether additional information
     should be returned (default: \code{FALSE}).}
 }
@@ -40,7 +40,8 @@ The return value depends on \code{info}:
 }
 }
 \description{
-Dalén's estimator of the mean and total.
+Dalén's estimator of the mean and total (bare-bone functions with limited
+functionality).
 }
 \details{
 Weight reduction

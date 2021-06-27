@@ -36,8 +36,7 @@ adjusted for nonresponse.
 
 \subsection{Remarks by Fuller (2009, p. 365)}{The original weights of WES
 were about 2200 for the stratum of small workplaces, about 750 for
-medium-sized, and about 35 for large workspaces.
-}
+medium-sized, and about 35 for large workspaces.}
 }
 
 \source{
@@ -48,17 +47,11 @@ The data \code{workplace} is from Table 6.3 in Fuller (2009, pp. 366--367).
 Fuller, W.A. (2009). Sampling Statistics, Jown Wiley & Sons, Hoboken (NJ).
 
 Patak, Z., M. Hidiroglou, and P. Lavallée (1998). The methodology of the
-    Workplace and Employee Survey, \emph{Proceedings of the Survey
+    Workplace and Employee Survey. \emph{Proceedings of the Survey
     Research Methods Section, American Statistical Association}, pp. 83--91.
 }
 
 \examples{
 data(workplace)
-\dontrun{
-# load package survey and defined the survey.design2 object dn
-library(survey)
-dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
-    data = workplace)
-}
 }
 \keyword{datasets}

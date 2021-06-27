@@ -30,7 +30,7 @@
 
 static inline void swap2(double*, double*, int, int)
     __attribute__((always_inline));
-static inline double med3(double*, int, int, int)
+static inline int med3(double*, int, int, int)
     __attribute__((always_inline));
 static inline int min(int, int) __attribute__((always_inline));
 static inline int choose_pivot(double*, int, int)
@@ -317,7 +317,7 @@ static inline int is_equal(double a, double b)
 /******************************************************************************\
 |* median-of-three (but without swaps)                                        *|
 \******************************************************************************/
-static inline double med3(double *array, int i, int j, int k)
+static inline int med3(double *array, int i, int j, int k)
 {
     return array[i] < array[j] ?
         (array[j] < array[k] ? j : array[i] < array[k] ? k : i)

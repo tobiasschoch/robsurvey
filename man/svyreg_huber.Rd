@@ -26,7 +26,7 @@ svyreg_huberGM(formula, design, k, type = c("Mallows", "Schweppe"),
     maxit number of iterations, etc.).}
 \item{type}{\code{[character]} \code{"Mallows"} or \code{"Schweppe"}.}
 \item{xwgt}{\code{[numerical vector]} of weights in the design space
-    (default: \code{NULL}); \code{xwgt} is only relevant if
+    (default: \code{NULL}); \code{xwgt} is only relevant for
     \code{type = "Mallows"} or \code{type = "Schweppe"}.}
 }
 \value{

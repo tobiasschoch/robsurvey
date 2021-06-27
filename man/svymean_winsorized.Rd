@@ -15,9 +15,9 @@ svytotal_k_winsorized(x, design, k, na.rm = FALSE, simple_var = FALSE)
 \arguments{
 \item{x}{a one-sided \code{[formula]}, e.g., \code{~myVariable}.}
 \item{design}{an object of class \code{survey.design} or \code{survey.design2}.}
-\item{LB}{\code{[double]} lower bound of winsorization, such that
+\item{LB}{\code{[double]} lower bound of winsorization such that
     \eqn{0 \leq} \code{LB} \eqn{<} \code{UB} \eqn{\leq 1}.}
-\item{UB}{\code{[double]} upper bound of winsorization, such that
+\item{UB}{\code{[double]} upper bound of winsorization such that
     \eqn{0 \leq} \code{LB} \eqn{<} \code{UB} \eqn{\leq 1}.}
 \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should
     be removed before the computation proceeds (default: \code{FALSE}).}
@@ -36,8 +36,9 @@ Weighted winsorized mean and total
 \describe{
     \item{Characteristic.}{Population mean or total. Let \eqn{\mu} denote
         the estimated winsorized population mean; then, the estimated
-        winsorized total is given by \eqn{N \mu} with \eqn{N =\sum w_i},
-        where summation is over all observations in the sample.}
+        winsorized total is given by \eqn{\hat{N} \mu}{Nhat \mu} with
+        \eqn{\hat{N} =\sum w_i}{Nhat = sum(w[i])}, where
+        summation is over all observations in the sample.}
     \item{Modes of winsorization.}{The amount of winsorization can be
         specified in relative or absolute terms:
     \itemize{
@@ -47,7 +48,8 @@ Weighted winsorized mean and total
             (1 - \code{UB})\eqn{~\cdot 100\%} percentage of the largest
             observations from the data.
         \item \emph{absolute:} By specifying argument \code{k} in the
-            functions with the "infix" \code{_k_} in their name, the
+            functions with the "infix" \code{_k_} in their name (e.g.,
+            \code{svymean_k_winsorized}), the
             largest \eqn{k} observations are winsorized, \eqn{0<k<n},
             where \eqn{n} denotes the sample size.}
     }
@@ -77,6 +79,11 @@ Weighted winsorized mean and total
             \item \code{\link{weighted_total_k_winsorized}}.}
     }
 }
+}
+\references{
+Huber, P.J. (1981). \emph{Robust Statistics}, New York: John Wiley and Sons.
+Shao, J. (1994). L-Statistics in Complex Survey Problems.
+\emph{Annals of Statistics} 22, pp. 976-967.
 }
 \examples{
 data(workplace)

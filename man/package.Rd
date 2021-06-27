@@ -3,7 +3,7 @@
 \alias{robsurvey-package}
 \title{Package Overview}
 \description{
-A key \emph{design pattern} of the package robsurvey is that the majority
+A key \emph{design pattern} of the package is that the majority
 of the estimating methods is available in two "flavors":
 \itemize{
     \item bare-bone methods
@@ -46,7 +46,8 @@ on the \pkg{\link{survey}} package.
     }
     \subsection{Weight reduction methods}{
             \code{\link{weighted_mean_dalen}} and
-                \code{\link{weighted_total_dalen}}
+                \code{\link{weighted_total_dalen}} (only bare-bone methods
+                are available)
     }
     \subsection{M-estimators}{
         \itemize{
@@ -70,6 +71,9 @@ on the \pkg{\link{survey}} package.
         }
     }
 }
+\section{Survey Regression (weighted)}{
+    \code{\link{svyreg}}
+}
 \section{Robust Survey Regression (weighted)}{
     \itemize{
         \item Regression M-estimators: \code{\link{svyreg_huber}} and
@@ -79,9 +83,21 @@ on the \pkg{\link{survey}} package.
     }
 }
 \section{Robust Ratio and Generalized Regression Estimation}{
-    \code{\link{svymean_reg}} and \code{\link{svymean_reg_huber}}
+    \itemize{
+        \item Classical (not robust)
+        \itemize{
+            \item \code{\link{svymean_reg}}
+            \item \code{\link{svytotal_reg}}
+        }
+        \item Robust
+        \itemize{
+            \item \code{\link{svymean_reg_huber}} and
+                \code{\link{svytotal_reg_huber}}
+            \item \code{\link{svymean_reg_tukey}} and
+                \code{\link{svytotal_reg_tukey}}
+        }
+    }
 }
-
 \section{Utility functions}{
     \itemize{
         \item \code{\link{weighted_quantile}} and \code{\link{weighted_median}}

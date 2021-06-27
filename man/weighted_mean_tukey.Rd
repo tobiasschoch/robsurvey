@@ -9,7 +9,7 @@ weighted_total_tukey(x, w, k, type = "rwm", info = FALSE, na.rm = FALSE,
     verbose = TRUE, ...)
 }
 \arguments{
-\item{x}{\code{[numeric vector]} observations.}
+\item{x}{\code{[numeric vector]} data.}
 \item{w}{\code{[numeric vector]} weights (same length as vector \code{x}).}
 \item{k}{\code{[double]} robustness tuning constant
     (\eqn{0 < k \leq \infty}{0 < k <= Inf}).}
@@ -44,16 +44,17 @@ The return value depends on \code{info}:
 }
 }
 \description{
-Weighted Tukey biweight mean and total (bare-bone functions with limited
-functionality; see \code{\link{svymean_tukey}} and
+Weighted Tukey biweight M-estimator of the mean and total (bare-bone
+functions with limited functionality; see \code{\link{svymean_tukey}} and
 \code{\link{svytotal_tukey}} for more capable methods)
 }
 \details{
 \describe{
     \item{Characteristic.}{Population mean or total. Let \eqn{\mu} denote
-        the estimated population mean; then, the estimated total is given
-        by \eqn{N \mu} with \eqn{N =\sum w_i}, where summation is over
-        all observations in the sample.}
+        the estimated population mean; then, the estimated total is
+        given by \eqn{\hat{N} \mu}{Nhat \mu} with
+        \eqn{\hat{N} =\sum w_i}{Nhat = sum(w[i])}, where
+        summation is over all observations in the sample.}
     \item{Type.}{Two methods/types are available for estimating the
         location \eqn{\mu} (and the scale \eqn{\sigma}; see models, below):
         \describe{
@@ -61,7 +62,7 @@ functionality; see \code{\link{svymean_tukey}} and
             \item{\code{type = "rmw"}:}{a}
         }
     }
-    \item{Variance estimation.}{See the related but more capable functions:
+    \item{Variance estimation.}{See survey methods:
         \itemize{
             \item \code{\link{svymean_tukey}},
             \item \code{\link{svytotal_tukey}}.
@@ -92,8 +93,8 @@ weighted_mean_tukey(workplace$employment, workplace$weight, k = 12,
     type = "rwm")
 }
 \references{
-Hulliger, B. (1995). Outlier Robust Horvitz-Thompson Estimators,
-\emph{Surv. Methodol.} 21, pp. 79-87.
+Hulliger, B. (1995). Outlier Robust Horvitz-Thompson Estimators.
+\emph{Survey Methodology} 21, pp. 79-87.
 }
 \seealso{
 \code{\link{weighted_mean_huber}} and \code{\link{weighted_total_huber}}

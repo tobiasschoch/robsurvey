@@ -32,14 +32,15 @@ robweights(object)
 \item{x}{object of class \code{svystat_rob}.}
 }
 \description{
-Methods and utility functions for objects of class \code{svystat_rob}
+Methods and utility functions for objects of class \code{svystat_rob} (e.g.,
+\code{\link{weighted_mean_huber}}).
 }
 \details{
 Utility functions:
 \itemize{
     \item \code{summary} gives a summary of the estimation properties
     \item \code{robweights} extracts the robustness weights
-    \item \code{coef} extracts the estimates
+    \item \code{coef} extracts the estimate of location
     \item \code{SE} extracts the (estimated) standard error
     \item \code{vcov} extracts the (estimated) covariance matrix
     \item \code{residuals} extracts the residuals

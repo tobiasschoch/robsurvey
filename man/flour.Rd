@@ -7,11 +7,11 @@ Measurement of copper content in wholemeal flour (measured in parts per million)
 }
 \usage{data(flour)}
 \format{
-    A \code{data.frame} with 24 measurements (sorted in ascending order)
+    A \code{data.frame} with 24 observations (sorted in ascending order)
     on the following variables:
     \describe{
         \item{\code{copper}}{copper content \code{[double]}.}
-        \item{\code{weight}}{weight\code{[double]}.}
+        \item{\code{weight}}{weight \code{[double]}.}
     }
 }
 \details{

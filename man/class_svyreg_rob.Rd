@@ -34,14 +34,15 @@
 \item{\dots}{additional arguments passed to the method.}
 \item{object}{object of class \code{svyreg_rob}.}
 \item{var}{type of variance estimator: \code{"design"}, \code{"model"} or
-    \code{"compound"}, default: \code{"design"}.}
+    \code{"compound"} (default: \code{"design"}).}
 \item{which}{indicating which plots to be drawn; if a subset of the plots
     is required, you can specify a subset of the numbers \code{1:5}.}
 }
 \description{
 Methods and utility functions for objects of class \code{svyreg_rob}.
 
-Variance estimation (\code{summary} and \code{vcov}):
+For variance estimation (\code{summary} and \code{vcov}), three modes are
+available:
 \itemize{
     \item \code{"design"}: design-based variance estimator using
         linearization; see Binder (1983)
@@ -55,8 +56,8 @@ Variance estimation (\code{summary} and \code{vcov}):
 Utility functions
 \itemize{
    \item \code{summary} gives a summary of the estimation properties
-   \item \code{robweights} extracts the robustness weights
-   \item \code{coef} extracts the estimates
+   \item \code{robweights} extracts the robustness weights (if available)
+   \item \code{coef} extracts the estimated regression coefficients
    \item \code{SE} extracts the (estimated) standard error
    \item \code{vcov} extracts the (estimated) covariance matrix
    \item \code{residuals} extracts the residuals
@@ -65,7 +66,7 @@ Utility functions
 }
 \references{
 Binder, D.A. (1983).  On the Variances of Asymptotically Normal Estimators
-from Complex Surveys, \emph{International Statistical Review} 51, pp. 279-292.
+from Complex Surveys. \emph{International Statistical Review} 51, pp. 279-292.
 
 Godambe, V.P. and M.E. Thompson (2009). Estimating Functions and Survey
 Sampling, in: D. Pfeffermann and C.R. Rao (eds.),

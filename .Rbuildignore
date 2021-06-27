@@ -3,6 +3,7 @@
 ^\.gitattributes$
 ^\.gitignore$
 ^README\.md$
+^inst/TODO$
 # documentation
 ^inst/doc/doc\.tex
 ^inst/doc/GM\.R

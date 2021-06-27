@@ -13,11 +13,11 @@ weighted_total_winsorized(x, w, LB = 0.05, UB = 1 - LB, info = FALSE,
 weighted_total_k_winsorized(x, w, k, info = FALSE, na.rm = FALSE)
 }
 \arguments{
-\item{x}{\code{[numeric vector]} observations.}
+\item{x}{\code{[numeric vector]} data.}
 \item{w}{\code{[numeric vector]} weights (same length as vector \code{x}).}
-\item{LB}{\code{[double]} lower bound of winsorization, such that
+\item{LB}{\code{[double]} lower bound of winsorization such that
     \eqn{0 \leq} \code{LB} \eqn{<} \code{UB} \eqn{\leq 1}.}
-\item{UB}{\code{[double]} upper bound of winsorization, such that
+\item{UB}{\code{[double]} upper bound of winsorization such that
     \eqn{0 \leq} \code{LB} \eqn{<} \code{UB} \eqn{\leq 1}.}
 \item{info}{\code{[logical]} indicating whether additional information
     should be returned (default: \code{FALSE}).}
@@ -54,8 +54,9 @@ functionality; see \code{\link{svymean_winsorized}} and
 \describe{
     \item{Characteristic.}{Population mean or total. Let \eqn{\mu} denote
         the estimated winsorized population mean; then, the estimated
-        winsorized total is given by \eqn{N \mu} with \eqn{N =\sum w_i},
-        where summation is over all observations in the sample.}
+        population total is given by \eqn{\hat{N} \mu}{Nhat \mu} with
+        \eqn{\hat{N} =\sum w_i}{Nhat = sum(w[i])}, where
+        summation is over all observations in the sample.}
     \item{Modes of winsorization.}{The amount of winsorization can be
         specified in relative or absolute terms:
         \itemize{
@@ -70,7 +71,7 @@ functionality; see \code{\link{svymean_winsorized}} and
                 where \eqn{n} denotes the sample size.
         }
     }
-    \item{Variance estimation.}{See the related but more capable functions:
+    \item{Variance estimation.}{See survey methods:
         \itemize{
             \item \code{\link{svymean_winsorized}},
             \item \code{\link{svytotal_winsorized}},

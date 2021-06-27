@@ -95,11 +95,18 @@ vcov.svyreg_rob <- function(object, var = c("design", "model", "compound"),
 # model-based covariance matrix of M- and GM-regression estimators
 .cov_reg_model <- function(object)
 {
+    # robustness tuning constant
     k <- object$estimator$k
     if (is.infinite(k))
         k <- svyreg_control()$k
 
-    tmp <- .C("cov_reg_model", resid = as.double(object$residuals),
+    # account for heteroscedasticity
+    r <- object$residuals
+    v <- object$model$var
+    if (!is.null(v))
+        r <- r / sqrt(v)
+
+    tmp <- .C("cov_reg_model", resid = as.double(r),
         x = as.double(object$model$x), xwgt = as.double(object$model$xwgt),
         robwgt = as.double(object$robust$robweights),
         w = as.double(object$model$w), k = as.double(k),
@@ -121,6 +128,7 @@ vcov.svyreg_rob <- function(object, var = c("design", "model", "compound"),
 # design-based covariance matrix of M- and GM-regression estimators
 .cov_reg_design <- function(object)
 {
+    # robustness tuning constant
     k <- object$estimator$k
     if (is.infinite(k))
         k <- svyreg_control()$k
@@ -128,6 +136,11 @@ vcov.svyreg_rob <- function(object, var = c("design", "model", "compound"),
     x <- object$model$x
     r <- object$residuals
     n <- NROW(x); p <- NCOL(x)
+
+    # account for heteroscedasticity
+    v <- object$model$var
+    if (!is.null(v))
+        r <- r / sqrt(v)
 
     # weights in the model's design space
     xwgt <- object$model$xwgt
@@ -167,19 +180,6 @@ vcov.svyreg_rob <- function(object, var = c("design", "model", "compound"),
 .cov_reg_compound <- function(object)
 {
     .NotYetImplemented()
-    # # design-based covariance
-    # tmp <- robsurvey:::.cov_reg_design(object)
-    # cov_mat <- tmp$cov
-    # # model-based contribution
-    # x <- object$model$x
-    # w <- object$model$w
-    # k <- object$robust$k
-    #
-    # #FIXME: only Huber M
-    # kappa <- ifelse(k < 10, 1 - 2 * (k * dnorm(k) + (1 - k * k) * pnorm(k,
-    #     lower = FALSE)), 1)
-    # cov_mat <- cov_mat + crossprod(sqrt(w) * x) / kappa
-    # list(ok = 1, cov = cov_mat, scale2 = tmp$scale)
 }
 
 # extract coefficients from robust regression object

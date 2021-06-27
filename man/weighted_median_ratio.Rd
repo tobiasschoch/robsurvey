@@ -12,7 +12,7 @@ weighted_median_ratio(x, y = NULL, w, na.rm = FALSE)
 removed before the computation proceeds (default: \code{FALSE}).}
 }
 \value{
-a vector with two components: intercept and slope
+A vector with two components: intercept and slope
 }
 \description{
 A weighted median of the ratios y/x determines the slope of a regression

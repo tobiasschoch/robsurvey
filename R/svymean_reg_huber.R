@@ -22,3 +22,6 @@ svymean_reg_huber <- function(object, mean_auxiliary, k)
     class(res) <- "svystat.rob"
     res
 }
+svytotal_reg_huber <- function()
+{
+}

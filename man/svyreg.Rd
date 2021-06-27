@@ -18,6 +18,6 @@ object of class \code{svyreg}
 }
 \description{
 Weighted regression estimator
-
+%FIXME
 Details
 }

@@ -7,7 +7,7 @@ A simple random sample of 70 patients in inpatient hospital treatment.
 }
 \usage{data(workplace)}
 \format{
-    A \code{data.frame} with data on 70 patients
+    A \code{data.frame} with data on 70 patients.
     \describe{
         \item{\code{los}}{length of stay (days) \code{[integer]}.}
         \item{\code{weight}}{sampling weight \code{[double]}.}
@@ -16,7 +16,7 @@ A simple random sample of 70 patients in inpatient hospital treatment.
 }
 \details{
 The \code{losdata} are a simple random sample without replacement (SRSWOR)
-of \eqn{n = 70} patients from the (fictive) population of \eqn{N = 2479}
+of size \eqn{n = 70} patients from the (fictive) population of \eqn{N = 2479}
 patients in inpatient hospital treatment. We have constructed the
 \code{losdata} as a showcase; though, the LOS measurements are real
 data that we have taken from the 201 observations in Ruffieux et al.
@@ -33,7 +33,7 @@ package \pkg{robustbase}.
 
 \references{
 Ruffieux, C., F. Paccaud, and A. Marazzi (2000). Comparing rules for
-truncating hospital length of stay, \emph{Casemix Quarterly} 2.
+truncating hospital length of stay. \emph{Casemix Quarterly} 2.
 }
 
 \examples{

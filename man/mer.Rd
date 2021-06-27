@@ -18,14 +18,14 @@ The tuning constant that minimizes the estimated mean square error of the
 estimator
 }
 \description{
-\code{mer} is an adaptive M-estimator of the weighted mean or the total. It
-is defined as the estimator that minimizes the estimates mean square error
+\code{mer} is an adaptive M-estimator of the weighted mean or total. It
+is defined as the estimator that minimizes the estimated mean square error
 of the estimator under consideration.
 }
 \details{
 MER-estimators are available for the methods \code{\link{svymean_huber}},
 \code{\link{svytotal_huber}}, \code{\link{svymean_tukey}} and
-\code{\link{svytotal_tukey}}
+\code{\link{svytotal_tukey}}.
 }
 \examples{
 library(survey)
@@ -39,7 +39,6 @@ m <- svymean_huber(~los, dn, type = "rwm", k = 8)
 mer(m)
 }
 \references{
-Hulliger, B. (1995). Outlier Robust Horvitz-Thompson Estimators,
-\emph{Surv. Methodol.} 21, pp. 79-87.
+Hulliger, B. (1995). Outlier Robust Horvitz-Thompson Estimators.
+\emph{Survey Methodology} 21, pp. 79-87.
 }
-

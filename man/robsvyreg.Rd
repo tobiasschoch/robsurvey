@@ -8,17 +8,18 @@ svyreg_control(tol = 1e-5, maxit = 100, k_Inf = 1e5, init = NULL,
     mad_center = TRUE, ...)
 }
 \arguments{
-\item{x}{\code{[array]} design matrix (no \code{NA}'s allowed).}
-\item{y}{\code{[numeric vector]} dependent variable (no \code{NA}'s allowed).}
+\item{x}{\code{[numeric matrix]} design matrix (\code{NA} values not allowed).}
+\item{y}{\code{[numeric vector]} dependent variable (\code{NA} values not
+    allowed).}
 \item{w}{\code{[numeric vector]} weights (no \code{NA}'s allowed).}
 \item{k}{\code{[double]} robustness tuning constant
     (\eqn{0 < k \leq \infty}{0 < k <= Inf}).}
 \item{psi}{\code{[integer]} psi-functions: \code{0}: Huber, \code{1}:
-    asymmetric Huber, \code{2}: Tukey biweight.}
+    asymmetric Huber, and \code{2}: Tukey biweight.}
 \item{type}{\code{[integer]} type of estimator; \code{0}: M-estimator;
     \code{1}: Mallows and \code{2}: Schweppe type GM-estimator.}
 \item{xwgt}{\code{[numeric vector]} weights for design space used in
-    GM-estimators (default: \code{NULL}, (no \code{NA}'s allowed).}
+    GM-estimators (default: \code{NULL}, \code{NA} values not allowed).}
 \item{var}{\code{[numeric vector]} heteroscedastic variance
     (default: \code{NULL}).}
 \item{verbose}{\code{[logical]} indicating whether additional information
@@ -44,7 +45,7 @@ svyreg_control(tol = 1e-5, maxit = 100, k_Inf = 1e5, init = NULL,
 \code{[list]}
 }
 \description{
-\strong{Internal} function for robust survey regression GM-estimator;
+\strong{Internal} function for the robust survey regression GM-estimator;
 this function is \strong{only} intended for internal use. The function
 does \strong{not} check or validate the arguments. In particular,
 missing values in the data may make the function crash.

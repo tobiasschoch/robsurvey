@@ -8,26 +8,27 @@ weighted_median_line(x, y = NULL, w, type = "slopes", na.rm = FALSE)
 \item{x}{\code{[numeric vector]} explanatory variable.}
 \item{y}{\code{[numeric vector]} response variable (default: \code{NULL}).}
 \item{w}{\code{[numeric vector]} weights (same length as vector \code{x}).}
-\item{type}{\code{[character]} either \code{slopes} or \code{products}
-    (default: \code{slopes}).}
+\item{type}{\code{[character]} \code{"slopes"} or \code{"products"}
+    (default: \code{"slopes"}).}
 \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should
     be removed before the computation proceeds (default: \code{FALSE}).}
 }
 \value{
-a vector with two components: intercept and slope
+A vector with two components: intercept and slope
 }
 \description{
-Robust simple linear regression based on medians: two methods are available.
+Robust simple linear regression based on medians: two methods are available:
+\code{"slopes"} and \code{"product"}.
 }
 \details{
 \describe{
     \item{Overview.}{Robust simple linear regression based on medians}
-    \item{Type.}{Two methods/ types are available (let \eqn{m(x,w)} denote
-        the weighted median of variable \code{x} with weights \code{w}):
+    \item{Type.}{Two methods/ types are available. Let \eqn{m(x,w)} denote
+        the weighted median of variable \code{x} with weights \code{w}:
         \describe{
             \item{\code{type = "slopes"}:}{The slope is computed as
-                \deqn{b1 = m\left( \frac{y - m(y,w)}{x - m(x,w)}, w\right).}
-                {m[(y - m[y, w]) / (x - m[x, w]), w].}
+                \deqn{b1 = m\left( \frac{y - m(y,w)}{x - m(x,w)}, w\right).
+                    }{m[(y - m[y, w]) / (x - m[x, w]), w].}
             }
             \item{\code{type = "products"}:}{The slope is computed as
                 \deqn{b1 = \frac{m\big([y - m(y,w)][x - m(x,w)], w\big)}

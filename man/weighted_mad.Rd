@@ -5,7 +5,7 @@
 weighted_mad(x, w, na.rm = FALSE, constant = 1.482602)
 }
 \arguments{
-\item{x}{\code{[numeric vector]} observations.}
+\item{x}{\code{[numeric vector]} data.}
 \item{w}{\code{[numeric vector]} weights (same length as vector \code{x}).}
 \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should be
     removed before the computation proceeds (default: \code{FALSE}).}
