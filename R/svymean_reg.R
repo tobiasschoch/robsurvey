@@ -4,59 +4,19 @@ svymean_reg <- function(object, auxiliary, check.names = TRUE)
     if (!inherits(object, "svyreg_rob"))
         stop("svymean_reg is not defined for this object\n", call. = FALSE)
 
-    beta <- object$estimate
-    p <- object$model$p
+    w <- object$model$w
+    sum_w <- sum(w)
 
-    if (is.data.frame(auxiliary))
-        auxiliary <- as.matrix(auxiliary)
+    # FIXME: argument N
+    x <- .checkauxiliary(object, auxiliary, "mean", N = NULL,
+        check.names, na.action = na.omit)
 
-    if (is.matrix(auxiliary)) {                     # why this if?
-        if (NCOL(auxiliary) < NROW(auxiliary))
-	        auxiliary <- t(auxiliary)
-
-        if (NROW(auxiliary) > 1)
-            stop("Dimension of argument 'auxiliary' is wrong\n", call. = FALSE)
-
-        cnames <- colnames(auxiliary)
-        auxiliary <- c(auxiliary)
-        names(auxiliary) <- cnames
-    }
-
-    if (length(auxiliary) != p)
-        stop("Dim. of 'auxiliary' is wrong; it should be of dim. ", p, " not ",
-            length(auxiliary), "\n", call. = FALSE)
-
-    cnames <- names(auxiliary)
-    intercept <- object$model$intercept
-    if (check.names && !is.null(cnames)) {
-        at <- ifelse(intercept, 2, 1)
-        m <- match(cnames[at:p], names(beta)[at:p])
-
-        if (is.na(any(m))) {
-	        warning("Names of 'auxiliary' do not match (check.names = TRUE)\n",
-	            immediate. = TRUE, call. = FALSE)
-        } else {
-	        auxiliary <- if (at == 1)
-	            auxiliary[m]
-	        else
-	            auxiliary[c(1, m + 1)]
-        }
-   }
-
-    # estimate
-    est <- sum(auxiliary * beta)
+    # GREG estimate
+    est <- sum(x * object$estimate)
     names(est) <- object$model$yname
-
-   # GREG correction
-    w <- object$model$w; sum_w <- sum(w)
-#FIXME
-k <- 1000
-    if (intercept == 0) {
-        est <- if (is.null(k))
-            est +  sum(w * object$residuals) / sum_w
-        else
-	        est	#FIXME:
-    }
+    # FIXME: more general GREG condition
+    if (object$model$intercept == 0)
+        est <- est +  sum(w * object$residuals) / sum_w
 
     # variance estimate  # NOTE:: check
     infl <- object$robust$robweights * object$residuals * w / sum_w
@@ -78,17 +38,13 @@ svytotal_reg <- function()
 }
 
 
-# auxiliary <- c(100, 200)
 #
-# auxiliary <- matrix(c(100, 200), nrow = 2)
-# rownames(auxiliary) <- c("(Intercept)", "employment")
+# library(robsurvey)
+# data(workplace)
+# library(survey)
+# dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
+#     data = workplace)
+# m <- svyreg_huber(payroll ~ employment, dn, k = 8)
+# svymean_reg(m, workplace, check.names = TRUE)
 #
 #
-#
-# auxiliary <- matrix(c(100, 200), ncol = 2)
-# colnames(auxiliary) <- c("", "employment")
-#
-# svymean_reg(object, auxiliary)
-#
-#setwd("C:/My/code/robsurvey/R")
-#source("svymean_reg.R")

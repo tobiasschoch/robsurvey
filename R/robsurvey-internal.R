@@ -35,7 +35,6 @@
     }
     list(x = x, w = w, n = n)
 }
-
 # check and extract data from survey.design object (for regression)
 .checkreg <- function(formula, design, var = NULL, na.rm = FALSE)
 {
@@ -89,7 +88,6 @@
     list(x = x, y = as.numeric(y), yname = yname, var = var, w = w,
         intercept = attr(mt, "intercept"))
 }
-
 # check and extract data from survey.design object
 .checkformula <- function(f, design)
 {
@@ -115,12 +113,53 @@
 	            stop("Variable '", f,"' does not exist\n", call. = FALSE)
             }
         } else {
-	        stop("Type of argument '", f, "' is not supported\n", call. = FALSE)
+	        stop("Type of argument '", f, "' is not supported\n",
+                call. = FALSE)
         }
     }
     list(yname = yname, y = as.numeric(y), w = as.numeric(1 / design$prob))
 }
+# check auxiliary totals and means
+.checkauxiliary <- function(object, data, est = "mean", N = NULL,
+    check.names = TRUE, na.action = na.omit)
+{
+    p <- object$model$p
+    beta <- object$estimate
+    names_beta <- names(beta)
 
+    if (is.vector(data))
+        if (NCOL(data) < NROW(data))
+	        data <- t(data)
+
+    if (NROW(data) == 1) {
+        if (object$model$intercept) {
+#FIXME:
+            names_data <- names(data)[-1]
+            names_beta <- names_beta[-1]
+            if (is.null(N)) {
+                N <- 1
+            } else {
+
+            }
+        } else {
+            names_data <- names(data)
+        }
+        if (length(data) != p)
+            stop("Length of 'data' does not match\n", call. = FALSE)
+
+        if (check.names && !is.null(names_data)) {
+            if (!all(names_data == names_beta))
+                stop("Names do not match (check.names = TRUE)", call. = FALSE)
+        }
+        x <- data
+    } else {
+        mf <- stats::model.frame(object$call$formula, data,
+            na.action = na.action)
+        xmat <- stats::model.matrix(stats::terms(mf), mf)
+        x <- switch(est, "mean" = colMeans(xmat), "total" = colSums(xmat))
+    }
+    unname(x)
+}
 # onAttach function
 .onAttach <- function(libname, pkgname)
 {
