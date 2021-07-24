@@ -26,6 +26,7 @@ ADD
 
 NEW FEATURES
 - robust calibration
+- Dalen survey method
 
 CHECK
 - return list of classes: regression vs. location stats:

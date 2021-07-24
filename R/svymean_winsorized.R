@@ -1,6 +1,6 @@
 # weighted winsorized mean (depends on pkg survey)
 svymean_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
-    na.rm = FALSE, simple_var = FALSE)
+    na.rm = FALSE, trim_var = FALSE)
 {
     if (!is.language(x))
         stop("Argument 'x' must be a formula object\n", call. = FALSE)
@@ -8,7 +8,7 @@ svymean_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
     dat <- .checkformula(x, design)
     res <- weighted_mean_winsorized(dat$y, dat$w, LB, UB, info = TRUE, na.rm)
     # influence function
-    infl <- if (simple_var)
+    infl <- if (trim_var)
         .infl_trimmed(dat$y, dat$w, LB, UB, res$estimate)
     else
         .infl_winsorized(dat$y, dat$w, LB, UB, res$estimate)
@@ -24,13 +24,13 @@ svymean_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
 }
 # weighted one-sided k winsorized mean (depends on pkg survey)
 svymean_k_winsorized <- function(x, design, k, na.rm = FALSE,
-    simple_var = FALSE)
+    trim_var = FALSE)
 {
     dat <- .checkformula(x, design)
     res <- weighted_mean_k_winsorized(dat$y, dat$w, k, info = TRUE, na.rm)
     w <- res$model$w; x <- res$model$y
     # influence function
-    infl <- if (simple_var)
+    infl <- if (trim_var)
         .infl_trimmed(dat$y, dat$w, 0, res$robust$UB, res$estimate)
     else
         .infl_winsorized(dat$y, dat$w, 0, res$robust$UB, res$estimate)
@@ -46,9 +46,9 @@ svymean_k_winsorized <- function(x, design, k, na.rm = FALSE,
 }
 # weighted winsorized total (depends on pkg survey)
 svytotal_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
-    na.rm = FALSE, simple_var = FALSE)
+    na.rm = FALSE, trim_var = FALSE)
 {
-    res <- svymean_winsorized(x, design, LB, UB, na.rm, simple_var)
+    res <- svymean_winsorized(x, design, LB, UB, na.rm, trim_var)
     sum_w <- sum(res$model$w)
     res$estimate <- res$estimate * sum_w
     res$variance <- res$variance * sum_w^2
@@ -58,9 +58,9 @@ svytotal_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
 }
 # weighted one-sided k winsorized total (depends on pkg survey)
 svytotal_k_winsorized <- function(x, design, k, na.rm = FALSE,
-    simple_var = FALSE)
+    trim_var = FALSE)
 {
-    res <- svymean_k_winsorized(x, design, k, na.rm, simple_var)
+    res <- svymean_k_winsorized(x, design, k, na.rm, trim_var)
     sum_w <- sum(res$model$w)
     res$estimate <- res$estimate * sum_w
     res$variance <- res$variance * sum_w^2

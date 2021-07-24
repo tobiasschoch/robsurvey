@@ -13,12 +13,12 @@
 \usage{
 \method{print}{svyreg_rob}(x, digits = max(3L, getOption("digits") - 3L), ...)
 
-\method{summary}{svyreg_rob}(object, var = c("design", "model", "compound"),
+\method{summary}{svyreg_rob}(object, mode = c("design", "model", "compound"),
     digits = max(3L, getOption("digits") - 3L), ...)
 
 \method{coef}{svyreg_rob}(object, ...)
 
-\method{vcov}{svyreg_rob}(object, var = c("design", "model", "compound"), ...)
+\method{vcov}{svyreg_rob}(object, mode = c("design", "model", "compound"), ...)
 
 \method{residuals}{svyreg_rob}(object, ...)
 
@@ -33,7 +33,7 @@
 \item{digits}{\code{[integer]} minimal number of significant digits.}
 \item{\dots}{additional arguments passed to the method.}
 \item{object}{object of class \code{svyreg_rob}.}
-\item{var}{type of variance estimator: \code{"design"}, \code{"model"} or
+\item{mode}{mode of variance estimator: \code{"design"}, \code{"model"} or
     \code{"compound"} (default: \code{"design"}).}
 \item{which}{indicating which plots to be drawn; if a subset of the plots
     is required, you can specify a subset of the numbers \code{1:5}.}
@@ -58,7 +58,6 @@ Utility functions
    \item \code{summary} gives a summary of the estimation properties
    \item \code{robweights} extracts the robustness weights (if available)
    \item \code{coef} extracts the estimated regression coefficients
-   \item \code{SE} extracts the (estimated) standard error
    \item \code{vcov} extracts the (estimated) covariance matrix
    \item \code{residuals} extracts the residuals
    \item \code{fitted} extracts the fitted values

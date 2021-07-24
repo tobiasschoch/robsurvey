@@ -9,7 +9,7 @@ svymean_reg <- function(object, auxiliary, check.names = TRUE)
 
     # FIXME: argument N
     x <- .checkauxiliary(object, auxiliary, "mean", N = NULL,
-        check.names, na.action = na.omit)
+        check.names, na.action = stats::na.omit)
 
     # GREG estimate
     est <- sum(x * object$estimate)

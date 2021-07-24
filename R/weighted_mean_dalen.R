@@ -1,6 +1,6 @@
 # Dalén's weight reduction estimating method of the weighted mean
-weighted_mean_dalen <- function(x, w, censoring, na.rm = FALSE,
-    verbose = TRUE, info = FALSE)
+weighted_mean_dalen <- function(x, w, censoring, verbose = TRUE, info = FALSE,
+    na.rm = FALSE)
 {
     res <- robsurvey::weighted_total_dalen(x, w, censoring, na.rm, verbose,
         info = TRUE)
@@ -13,8 +13,8 @@ weighted_mean_dalen <- function(x, w, censoring, na.rm = FALSE,
         return(res$estimate)
 }
 # Dalén's weight reduction estimating method of the weighted total
-weighted_total_dalen <- function(x, w, censoring, na.rm = FALSE,
-    verbose = TRUE, info = FALSE)
+weighted_total_dalen <- function(x, w, censoring, verbose = TRUE, info = FALSE,
+    na.rm = FALSE)
 {
     stopifnot(censoring > 0)
     dat <- .check(x, w, na.rm)

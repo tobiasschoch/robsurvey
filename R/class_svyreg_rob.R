@@ -24,7 +24,7 @@ print.svyreg_rob <- function(x, digits = max(3L, getOption("digits") - 3L), ...)
     invisible(x)
 }
 # summary method for robust regression object
-summary.svyreg_rob <- function(object, var = c("design", "model", "compound"),
+summary.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
     digits = max(3L, getOption("digits") - 3L), ...)
 {
     converged <- object$optim$converged
@@ -39,7 +39,7 @@ summary.svyreg_rob <- function(object, var = c("design", "model", "compound"),
         cat("\nCoefficients:\n")
 
         # covariance matrix
-        tmp <- switch(match.arg(var),
+        tmp <- switch(match.arg(mode),
             "model" = .cov_reg_model(object),
             "design" = .cov_reg_design(object),
             "compound" = .cov_reg_compound(object))
@@ -73,12 +73,12 @@ summary.svyreg_rob <- function(object, var = c("design", "model", "compound"),
     }
 }
 # extract variance from robust regression object
-vcov.svyreg_rob <- function(object, var = c("design", "model", "compound"),
+vcov.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
     ...)
 {
     converged <- object$optim$converged
     if (is.null(converged) || converged) {
-        mat <- switch(match.arg(var),
+        mat <- switch(match.arg(mode),
             "model" = .cov_reg_model(object)$cov,
             "design" = .cov_reg_design(object)$cov,
             "compound" = .cov_reg_compound(object)$cov)

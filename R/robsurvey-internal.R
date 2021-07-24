@@ -121,7 +121,7 @@
 }
 # check auxiliary totals and means
 .checkauxiliary <- function(object, data, est = "mean", N = NULL,
-    check.names = TRUE, na.action = na.omit)
+    check.names = TRUE, na.action = stats::na.omit)
 {
     p <- object$model$p
     beta <- object$estimate

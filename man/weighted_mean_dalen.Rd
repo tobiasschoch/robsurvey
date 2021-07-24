@@ -3,22 +3,22 @@
 \alias{weighted_total_dalen}
 \title{Dalen Estimator of the Mean and Total}
 \usage{
-weighted_mean_dalen(x, w, censoring, na.rm = FALSE, verbose = TRUE,
-    info = FALSE)
-weighted_total_dalen( x, w, censoring, na.rm = FALSE, verbose = TRUE,
-    info = FALSE)
+weighted_mean_dalen(x, w, censoring, verbose = TRUE, info = FALSE,
+    na.rm = FALSE)
+weighted_total_dalen( x, w, censoring, verbose = TRUE, info = FALSE,
+    na.rm = FALSE)
 }
 \arguments{
 \item{x}{\code{[numeric vector]} data.}
 \item{w}{\code{[numeric vector]} weights (same length as vector \code{x}).}
 \item{censoring}{\code{[double]} threshold above which all observations are
     censored.}
-\item{na.rm}{\code{[logical]} indicating whether \code{NA} values should be
-    removed before the computation proceeds (default: \code{FALSE}).}
 \item{verbose}{\code{[logical]} indicating whether additional information
     should be printed to the console (default: \code{FALSE}).}
 \item{info}{\code{[logical]} indicating whether additional information
     should be returned (default: \code{FALSE}).}
+\item{na.rm}{\code{[logical]} indicating whether \code{NA} values should be
+    removed before the computation proceeds (default: \code{FALSE}).}
 }
 \value{
 The return value depends on \code{info}:

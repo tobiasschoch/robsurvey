@@ -6,11 +6,11 @@
 \title{Weighted Winsorized Mean and Total}
 \usage{
 svymean_winsorized(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE,
-    simple_var = FALSE)
-svymean_k_winsorized(x, design, k, na.rm = FALSE, simple_var = FALSE)
+    trim_var = FALSE)
+svymean_k_winsorized(x, design, k, na.rm = FALSE, trim_var = FALSE)
 svytotal_winsorized(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE,
-    simple_var = FALSE)
-svytotal_k_winsorized(x, design, k, na.rm = FALSE, simple_var = FALSE)
+    trim_var = FALSE)
+svytotal_k_winsorized(x, design, k, na.rm = FALSE, trim_var = FALSE)
 }
 \arguments{
 \item{x}{a one-sided \code{[formula]}, e.g., \code{~myVariable}.}
@@ -21,8 +21,9 @@ svytotal_k_winsorized(x, design, k, na.rm = FALSE, simple_var = FALSE)
     \eqn{0 \leq} \code{LB} \eqn{<} \code{UB} \eqn{\leq 1}.}
 \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should
     be removed before the computation proceeds (default: \code{FALSE}).}
-\item{simple_var}{\code{[logical]} indicating whether a simplified variance
-    estimator should be used (default: \code{FALSE}).}
+\item{trim_var}{\code{[logical]} logical indicating whether the variance
+    should be approximated by the variance estimator of the trimmed mean/
+    total (default: \code{FALSE}).}
 \item{k}{\code{[integer]} number of observations to be winsorized at the
     top of the distribution.}
 }
