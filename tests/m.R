@@ -21,6 +21,9 @@ expect_equal(coef(est), coef(ref), label = "Survey weighted regression")
 expect_equal(vcov(est, "design"), vcov(ref),
     label = "Survey weighted regression: design-based cov")
 # design-based covariance matrix
+
+#BUG:
+
 ref <- lm(payroll ~ employment, weights = weights(dn), data = dn$variables)
 expect_equal(vcov(est, "model"), vcov(ref),
     label = "Survey weighted regression: model-based cov")
@@ -58,6 +61,8 @@ rownames(ref) <- c("(Intercept)", "employment")
 expect_equal(vcov(est, "model"), ref, tolerance = 1e-4,
     label = "Tukey regression M-est: model-based cov")
 
+#FIXME:
+
 #-------------------------------------------------------------------------------
 # Mallows regression GM-estimator: Huber psi
 xwgt <- simpsonWgt(employment / weighted_median(employment, weight), a = 1,
@@ -74,6 +79,8 @@ rownames(ref) <- c("(Intercept)", "employment")
 expect_equal(vcov(est, "model"), ref, tolerance = 1e-4,
     label = "Huber Mallows regression GM-est: model-based cov")
 
+#FIXME:
+
 #-------------------------------------------------------------------------------
 # Schweppe regression GM-estimator: Huber psi
 xwgt <- simpsonWgt(employment / weighted_median(employment, weight), a = 1,
@@ -89,6 +96,9 @@ colnames(ref) <- c("(Intercept)", "employment")
 rownames(ref) <- c("(Intercept)", "employment")
 expect_equal(vcov(est, "model"), ref, tolerance = 1e-4,
     label = "Huber Schweppe regression GM-est: model-based cov")
+
+#FIXME:
+
 
 # planned to fail...
 expect_equal(1, 2, label = "not a real test")

@@ -25,10 +25,9 @@ weighted_mean_trimmed <- function(x, w, LB = 0.05, UB = 1 - LB, info = FALSE,
     if (info) {
         resid <- dat$x - tmp$loc
         res <- list(characteristic = "mean",
-	        estimator = paste0("Weighted trimmed estimator (", LB, ", ",
-                UB, ")"),
+	        estimator = list(string = paste0("Weighted trimmed estimator (",
+                LB, ", ", UB, ")"), LB = LB, UB = UB),
 	        estimate = tmp$loc, variance = NA,
-	        robust = list(UB = UB, LB = LB),
 	        residuals = resid,
 	        model = list(y = dat$x, w = dat$w),
 	        design = NA, call = match.call())

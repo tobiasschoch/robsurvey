@@ -31,9 +31,9 @@ svymean_k_winsorized <- function(x, design, k, na.rm = FALSE,
     w <- res$model$w; x <- res$model$y
     # influence function
     infl <- if (trim_var)
-        .infl_trimmed(dat$y, dat$w, 0, res$robust$UB, res$estimate)
+        .infl_trimmed(dat$y, dat$w, 0, res$estimator$UB, res$estimate)
     else
-        .infl_winsorized(dat$y, dat$w, 0, res$robust$UB, res$estimate)
+        .infl_winsorized(dat$y, dat$w, 0, res$estimator$UB, res$estimate)
     # variance
     infl <- infl * w / sum(w)
     res$variance <- survey::svyrecvar(infl, design$cluster, design$strata,

@@ -1,5 +1,4 @@
 library(testthat)
-
 library(robsurvey, quietly = TRUE)
 attach(workplace)
 

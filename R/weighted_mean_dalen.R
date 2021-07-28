@@ -34,9 +34,10 @@ weighted_total_dalen <- function(x, w, censoring, verbose = TRUE, info = FALSE,
     }
     if (info) {
         res <- list(characteristic <- "total",
-            estimator = paste0("Dalen estimator (censored at ", censoring, ")"),
+            estimator = list(string = paste0("Dalen estimator (censored at ",
+                censoring, ")"), censoring = censoring),
 	        estimate = sum(xw), variance = NA,
-	        robust = list(censoring = censoring, weightsmod = weightsmod),
+	        robust = list(weightsmod = weightsmod),
 	        residuals = NA,
 	        model = list(y = dat$x, w = dat$w),
 	        design = NA, call = match.call())

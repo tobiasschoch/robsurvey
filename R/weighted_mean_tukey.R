@@ -31,8 +31,9 @@ weighted_mean_tukey <- function(x, w, k, type = "rwm", info = FALSE,
         if (type == "rwm")
             res$model$x <- NULL
         res$characteristic <- "mean"
-        res$estimator = paste0("Tukey biweight M-estimator (type = ", type, ")")
-        res$robust[c("Epsi2", "Epsiprime")] <- NULL
+        res$estimator$string = paste0("Tukey M-estimator (type = ",
+            type, ")")
+        res$estimator$type <- type
         res$call <- match.call()
         return(res)
     } else {

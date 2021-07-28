@@ -19,10 +19,9 @@ weighted_mean_winsorized <- function(x, w, LB = 0.05, UB = 1 - LB,
     if (info) {
         resid <- dat$x - tmp$loc
         res <- list(characteristic = "mean",
-	        estimator = paste0("Weighted winsorized estimator (", LB, ", ",
-                UB, ")"),
+	        estimator = list(string = paste0("Weighted winsorized estimator (",
+                LB, ", ", UB, ")"), LB = LB, UB = UB),
 	        estimate = tmp$loc, variance = NA,
-	        robust = list(UB = UB, LB = LB),
 	        residuals = resid,
 	        model = list(y = dat$x, w = dat$w),
 	        design = NA, call = match.call())
@@ -53,10 +52,11 @@ weighted_mean_k_winsorized <- function(x, w, k, info = FALSE, na.rm = FALSE)
 
     if (info) {
         res <- list(characteristic = "mean",
-	        estimator = paste0("weighted k winsorized estimator (k = ", k, ")"),
+	        estimator = list(string =
+                paste0("weighted k winsorized estimator (k = ", k, ")"),
+                k = k, UB = tmp$prob),
 	        estimate = tmp$loc,
 	        variance = NA,
-	        robust = list(k = k, UB = tmp$prob),
 	        residuals = dat$x - tmp$loc,
 	        model = list(y = x, w = w),
 	        design = NA, call = match.call())

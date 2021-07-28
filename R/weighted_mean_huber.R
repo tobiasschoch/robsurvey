@@ -33,9 +33,9 @@ weighted_mean_huber <- function(x, w, k, type = "rwm", asym = FALSE,
         if (type == "rwm")
             res$model$x <- NULL
         res$characteristic <- "mean"
-        res$estimator = paste0("Huber M-estimator (type = ", type,
-            ifelse(asym, "; asym. psi", ""), ")")
-        res$robust[c("Epsi2", "Epsiprime")] <- NULL
+        res$estimator$string = paste0("Huber M-estimator (type = ",
+            type, ifelse(asym, "; asym. psi", ""), ")")
+        res$estimator$type <- type
         res$call <- match.call()
         return(res)
     } else {
