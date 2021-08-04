@@ -46,9 +46,9 @@ defined as \eqn{\min \{1, (b/d_i)^{a/2}\}}{min[1, (b/d[i])^(a/2)]}, where
 }
 }
 \references{
-Simpson, D.G., Ruppert, D., and Carroll, R.J. (1992). On One-Step GM
+Simpson, D. G., Ruppert, D. and Carroll, R.J. (1992). On One-Step GM
     Estimates and Stability of Inferences in Linear Regression.
-    \emph{Journal of the American Statistical Association} 87, pp. 439-450.
+    \emph{Journal of the American Statistical Association}, \bold{87}, 439--450.
 }
 \seealso{
 \code{\link{svyreg_huber}}, \code{\link{svyreg_huberGM}},

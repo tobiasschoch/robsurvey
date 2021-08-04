@@ -40,5 +40,5 @@ mer(m)
 }
 \references{
 Hulliger, B. (1995). Outlier Robust Horvitz-Thompson Estimators.
-\emph{Survey Methodology} 21, pp. 79-87.
+\emph{Survey Methodology}, \bold{21}, 79--87.
 }

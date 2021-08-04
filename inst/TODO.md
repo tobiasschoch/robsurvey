@@ -38,10 +38,6 @@
     - description
     - details
     - examples
-* svymean_trimmed (+ _winsorized, + _total_)
-    - variance estimation => Shao (1994) + Huber (1981)
-* weighted_mean_dalen (+ _total)
-    - description
 * svyreg
     - description
     - details

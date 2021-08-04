@@ -44,11 +44,12 @@ The data \code{workplace} is from Table 6.3 in Fuller (2009, pp. 366--367).
 }
 
 \references{
-Fuller, W.A. (2009). Sampling Statistics, Jown Wiley & Sons, Hoboken (NJ).
+Fuller, W. A. (2009). \emph{Sampling Statistics},
+    Hoboken (NJ): Jown Wiley & Sons.
 
-Patak, Z., M. Hidiroglou, and P. Lavallée (1998). The methodology of the
+Patak, Z., Hidiroglou, M. and Lavallée, P. (1998). The methodology of the
     Workplace and Employee Survey. \emph{Proceedings of the Survey
-    Research Methods Section, American Statistical Association}, pp. 83--91.
+    Research Methods Section, American Statistical Association}, 83--91.
 }
 
 \examples{

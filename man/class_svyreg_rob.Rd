@@ -64,11 +64,12 @@ Utility functions
 }
 }
 \references{
-Binder, D.A. (1983).  On the Variances of Asymptotically Normal Estimators
-from Complex Surveys. \emph{International Statistical Review} 51, pp. 279-292.
+Binder, D. A. (1983).  On the Variances of Asymptotically Normal Estimators
+from Complex Surveys. \emph{International Statistical Review}, \bold{51},
+279--292.
 
-Godambe, V.P. and M.E. Thompson (2009). Estimating Functions and Survey
+Godambe, V.P. and Thompson, M.E. (2009). Estimating Functions and Survey
 Sampling, in: D. Pfeffermann and C.R. Rao (eds.),
-\emph{Handbook of Statistics}, vol. 29B, Sample Surveys: Inference and
-Analysis, Chapter 26, pp. 83-101, Amsterdam: Elsevier.
+\emph{Handbook of Statistics}, \bold{vol. 29B}, Sample Surveys: Inference and
+Analysis, Chapter 26, 83--101, Amsterdam: Elsevier.
 }

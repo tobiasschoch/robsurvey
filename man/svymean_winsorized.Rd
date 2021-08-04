@@ -54,8 +54,9 @@ Weighted winsorized mean and total
             largest \eqn{k} observations are winsorized, \eqn{0<k<n},
             where \eqn{n} denotes the sample size.}
     }
-    \item{Variance estimation.}{Taylor linearization; two estimators are
-        available:
+    \item{Variance estimation.}{Large-sample approximation based on the
+        influence function; see Huber (1981, Chap. 3.3) and Shao (1994).
+        Two estimators are available:
         \describe{
             \item{\code{simple_var = FALSE}:}{Variance estimator of the
                 winsorized mean/ total. The estimator depends on the estimated
@@ -82,9 +83,10 @@ Weighted winsorized mean and total
 }
 }
 \references{
-Huber, P.J. (1981). \emph{Robust Statistics}, New York: John Wiley and Sons.
+Huber, P. J. (1981). \emph{Robust Statistics}, New York: John Wiley and Sons.
+
 Shao, J. (1994). L-Statistics in Complex Survey Problems.
-\emph{Annals of Statistics} 22, pp. 976-967.
+\emph{The Annals of Statistics}, \bold{22}, 976--967.
 }
 \examples{
 data(workplace)

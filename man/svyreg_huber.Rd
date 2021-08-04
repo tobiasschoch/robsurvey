@@ -46,3 +46,6 @@ iterations and a numerical tolerance criterion to stop the iterations of
 the default values by specifying the arguments \code{maxit} and/or
 \code{tol} in the function call; see also \code{\link{svyreg_control}}.
 }
+\seealso{
+\code{\link{svyreg}}
+}

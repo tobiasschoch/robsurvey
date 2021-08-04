@@ -33,7 +33,8 @@ Weighted trimmed population mean and total.
         percentage of the smallest observations and the
         (1 - \code{UB})\eqn{~\cdot 100\%} percentage of the largest
         observations from the data.}
-    \item{Variance estimation.}{Taylor linearization.}
+    \item{Variance estimation.}{Large-sample approximation based on the
+        influence function; see Huber (1981, Chap. 3.3) and Shao (1994).}
     \item{Utility functions.}{\code{\link[=svystat_rob]{summary}},
         \code{\link[=svystat_rob]{coef}}, \code{\link[=svystat_rob]{SE}},
         \code{\link[=svystat_rob]{vcov}}, \code{\link[=svystat_rob]{residuals}},
@@ -44,9 +45,10 @@ Weighted trimmed population mean and total.
 }
 }
 \references{
-Huber, P.J. (1981). \emph{Robust Statistics}, New York: John Wiley and Sons.
+Huber, P. J. (1981). \emph{Robust Statistics}, New York: John Wiley and Sons.
+
 Shao, J. (1994). L-Statistics in Complex Survey Problems.
-\emph{Annals of Statistics} 22, pp. 976-967.
+\emph{The Annals of Statistics}, \bold{22}, 976--967.
 }
 \examples{
 data(workplace)

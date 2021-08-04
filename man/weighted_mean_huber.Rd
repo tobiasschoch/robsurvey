@@ -96,7 +96,7 @@ weighted_mean_huber(workplace$employment, workplace$weight, k = 12,
 }
 \references{
 Hulliger, B. (1995). Outlier Robust Horvitz-Thompson Estimators.
-\emph{Survey Methodology} 21, pp. 79-87.
+\emph{Survey Methodology}, \bold{21}, 79--87.
 }
 \seealso{
 \code{\link{weighted_mean_tukey}} and \code{\link{weighted_total_tukey}}

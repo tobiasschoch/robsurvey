@@ -41,10 +41,15 @@ The return value depends on \code{info}:
 }
 \description{
 Dalén's estimator of the mean and total (bare-bone functions with limited
-functionality).
+functionality)
 }
 \details{
-Weight reduction
+Let \eqn{sum_{i \in s} w_i x_i}{sum(w[i]x[i])} denote the estimator of
+the \eqn{x}-total (summation is over all elements \eqn{i} in sample \eqn{s}).
+The estimator of Dalén (1987) sums over \eqn{\min(c, w_ix_i)}{min(c, w[i]x[i]};
+hence, it censors the products \eqn{w_ix_i}{w[i]x[i]} to the censoring
+constant \eqn{c} (\code{censoring}). The estimator of the population
+\eqn{x}-mean is is defined similarly.
 }
 \examples{
 data(workplace)

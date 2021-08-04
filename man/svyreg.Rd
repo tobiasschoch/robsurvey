@@ -14,10 +14,32 @@ svyreg(formula, design, var = NULL, na.rm = FALSE)
     removed before the computation proceeds (default: \code{FALSE}).}
 }
 \value{
-object of class \code{svyreg}
+Object of class \code{\link[=svyreg_rob]{svyreg_rob}}
 }
 \description{
-Weighted regression estimator
-%FIXME
-Details
+Weighted survey regression estimator
+}
+\details{
+\code{\link[=svyreg_rob]{residuals}}
+\code{\link[=svyreg_rob]{coef}}
+\code{\link[=svyreg_rob]{summary}}
+\code{\link[=svyreg_rob]{vcov}}
+\code{\link[=svyreg_rob]{fitted}}
+\code{\link[=svyreg_rob]{plot}}
+}
+\examples{
+data(workplace)
+
+library(survey)
+# Survey design for simple random sampling without replacement
+dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
+    data = workplace)
+# Compute the regression estimate
+m <- svyreg(payroll ~ employment, dn)
+# Regression inference
+summary(m)
+}
+\seealso{
+\code{\link{svyreg_huber}}, \code{\link{svyreg_huberGM}},
+\code{\link{svyreg_tukey}}, and \code{\link{svyreg_tukeyGM}}
 }
