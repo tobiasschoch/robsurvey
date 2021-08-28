@@ -1,5 +1,5 @@
 # Huber M-estimator of the weighted mean
-weighted_mean_huber <- function(x, w, k, type = "rwm", asym = FALSE,
+weighted_mean_huber <- function(x, w, k, type = "rhj", asym = FALSE,
     info = FALSE, na.rm = FALSE, verbose = TRUE, ...)
 {
     dat <- .check(x, w, na.rm)
@@ -7,8 +7,15 @@ weighted_mean_huber <- function(x, w, k, type = "rwm", asym = FALSE,
         return(NA)
     psi <- ifelse(asym, 1, 0)
 
-    # select method
+    # NOTE:
     if (type == "rwm") {
+        warning("The 'rwm' argument is deprecated; please use 'rhj' instead",
+            call. = FALSE)
+        type <- "rhj"
+    }
+
+    # select method
+    if (type == "rhj") {
         res <- robsvyreg(rep(1, dat$n), dat$x, dat$w, k, psi, 0, NULL, NULL,
             verbose, ...)
     } else if (type == "rht") {
@@ -30,7 +37,7 @@ weighted_mean_huber <- function(x, w, k, type = "rwm", asym = FALSE,
 
     if (info) {
         res$model[c("n", "p")] <- NULL
-        if (type == "rwm")
+        if (type == "rhj")
             res$model$x <- NULL
         res$characteristic <- "mean"
         res$estimator$string = paste0("Huber M-estimator (type = ",
@@ -43,7 +50,7 @@ weighted_mean_huber <- function(x, w, k, type = "rwm", asym = FALSE,
     }
 }
 # Huber M-estimator of the weighted total
-weighted_total_huber <- function(x, w, k, type = "rwm", asym = FALSE,
+weighted_total_huber <- function(x, w, k, type = "rhj", asym = FALSE,
     info = FALSE, na.rm = FALSE, verbose = TRUE, ...)
 {
     res <- weighted_mean_huber(x, w, k, type, asym, info, na.rm, verbose, ...)

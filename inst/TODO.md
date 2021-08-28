@@ -2,7 +2,7 @@
 ## ADD FEATURE
 * vignette: robust regression
 * model-assisted estimation
-    - variance estiamtor
+    - variance estimator
     - vignette
 * tests
 * svymean_reg_huber (+ _tukey, + _total_)
@@ -32,7 +32,7 @@
 ## DOCUMENTATION
 * svymean_huber and weighted_mean_huber (+ _tukey, + _total_)
     - RHT vs Hajek
-    - rwm vs. rht => discuss in weighted_mean_huber (+ _tukey); set a pointer
+    - rhj vs. rht => discuss in weighted_mean_huber (+ _tukey); set a pointer
       from svymean_huber
 * svymean_reg + svymean_reg_huber + svymean_reg_tukey (+ _total_)
     - description

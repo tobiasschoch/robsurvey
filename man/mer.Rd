@@ -33,7 +33,7 @@ data(losdata)
 dn <- svydesign(ids = ~1, fpc = ~fpc, weights = ~weight, data = losdata)
 
 # M-estimator of the total with tuning constant k = 8
-m <- svymean_huber(~los, dn, type = "rwm", k = 8)
+m <- svymean_huber(~los, dn, type = "rhj", k = 8)
 
 # mer-estimator
 mer(m)

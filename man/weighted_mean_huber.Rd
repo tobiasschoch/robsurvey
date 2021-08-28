@@ -3,9 +3,9 @@
 \alias{weighted_total_huber}
 \title{Weighted Huber Mean and Total (bare-bone functions)}
 \usage{
-weighted_mean_huber(x, w, k, type = "rwm", asym = FALSE, info = FALSE,
+weighted_mean_huber(x, w, k, type = "rhj", asym = FALSE, info = FALSE,
     na.rm = FALSE, verbose = TRUE, ...)
-weighted_total_huber(x, w, k, type = "rwm", asym = FALSE, info = FALSE,
+weighted_total_huber(x, w, k, type = "rhj", asym = FALSE, info = FALSE,
     na.rm = FALSE, verbose = TRUE, ...)
 }
 \arguments{
@@ -13,8 +13,8 @@ weighted_total_huber(x, w, k, type = "rwm", asym = FALSE, info = FALSE,
 \item{w}{\code{[numeric vector]} weights (same length as vector \code{x}).}
 \item{k}{\code{[double]} robustness tuning constant
     (\eqn{0 < k \leq \infty}{0 < k <= Inf}).}
-\item{type}{\code{[character]} type of method: \code{"rwm"} or \code{"rht"};
-    see below (default: \code{"rwm"}).}
+\item{type}{\code{[character]} type of method: \code{"rhj"} or \code{"rht"};
+    see below (default: \code{"rhj"}).}
 \item{asym}{\code{[logical]} toggle for asymmetric Huber psi-function
     (default: \code{FALSE}).}
 \item{info}{\code{[logical]} indicating whether additional information
@@ -92,7 +92,7 @@ weighted_total_huber(workplace$employment, workplace$weight, k = 9,
 
 # Robust weighted M-estimator of the population mean
 weighted_mean_huber(workplace$employment, workplace$weight, k = 12,
-    type = "rwm")
+    type = "rhj")
 }
 \references{
 Hulliger, B. (1995). Outlier Robust Horvitz-Thompson Estimators.

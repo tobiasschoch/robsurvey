@@ -3,9 +3,9 @@
 \alias{weighted_total_tukey}
 \title{Weighted Tukey Biweight Mean and Total (bare-bone functions)}
 \usage{
-weighted_mean_tukey(x, w, k, type = "rwm", info = FALSE, na.rm = FALSE,
+weighted_mean_tukey(x, w, k, type = "rhj", info = FALSE, na.rm = FALSE,
     verbose = TRUE, ...)
-weighted_total_tukey(x, w, k, type = "rwm", info = FALSE, na.rm = FALSE,
+weighted_total_tukey(x, w, k, type = "rhj", info = FALSE, na.rm = FALSE,
     verbose = TRUE, ...)
 }
 \arguments{
@@ -13,8 +13,8 @@ weighted_total_tukey(x, w, k, type = "rwm", info = FALSE, na.rm = FALSE,
 \item{w}{\code{[numeric vector]} weights (same length as vector \code{x}).}
 \item{k}{\code{[double]} robustness tuning constant
     (\eqn{0 < k \leq \infty}{0 < k <= Inf}).}
-\item{type}{\code{[character]} type of method: \code{"rwm"} or \code{"rht"};
-    see below (default: \code{"rwm"}).}
+\item{type}{\code{[character]} type of method: \code{"rhj"} or \code{"rht"};
+    see below (default: \code{"rhj"}).}
 \item{info}{\code{[logical]} indicating whether additional information
     should be returned (default: \code{FALSE}).}
 \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should
@@ -90,7 +90,7 @@ weighted_total_tukey(workplace$employment, workplace$weight, k = 9,
 
 # Robust weighted M-estimator of the population mean
 weighted_mean_tukey(workplace$employment, workplace$weight, k = 12,
-    type = "rwm")
+    type = "rhj")
 }
 \references{
 Hulliger, B. (1995). Outlier Robust Horvitz-Thompson Estimators.
