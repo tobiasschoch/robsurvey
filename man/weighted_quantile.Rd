@@ -12,9 +12,6 @@ weighted_quantile(x, w, probs, na.rm = FALSE)
 \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should be
     removed before the computation proceeds (default: \code{FALSE}).}
 }
-\value{
-Weighted estimate of the population quantiles
-}
 \description{
 \code{weighted_quantile} computes weighted population quantiles.
 }
@@ -30,6 +27,9 @@ Weighted estimate of the population quantiles
         that are identical with \code{type = 2} in \code{stats::quantile};
         see also Hyndman and Fan (1996).}
 }
+}
+\value{
+Weighted estimate of the population quantiles
 }
 \examples{
 data(workplace)

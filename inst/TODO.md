@@ -5,7 +5,7 @@
     - variance estimator
     - vignette
 * tests
-* svymean_reg_huber (+ _tukey, + _total_)
+* svymean_reg (+ _total_)
     - functionality
     - types:
         - projective
@@ -14,44 +14,26 @@
         - Lee
         - Duchesne
     - summary + variance
-* .cov_reg_compund: regression: variance: compound design-model distribution
-* plot.svyreg_rob
-* svymean_: examples add:
-    - scale()
-    - summary()
-    - coef()
-    - SE()
-    - residuals()
-* svyreg
-    - predict
+* .cov_reg_compound: regression: variance: compound design-model distribution
 
 ## FIX
 * makefile
 * survey weighted regression: model-based cov: BUG
 
 ## DOCUMENTATION
-* svymean_huber and weighted_mean_huber (+ _tukey, + _total_)
+* weighted_mean_huber (+ _tukey)
     - RHT vs Hajek
-    - rhj vs. rht => discuss in weighted_mean_huber (+ _tukey); set a pointer
-      from svymean_huber
-* svymean_reg + svymean_reg_huber + svymean_reg_tukey (+ _total_)
+* svymean_reg (+ _total_)
     - description
-    - details
-    - examples
-* svyreg
-    - description
-    - details
-    - examples
-* svyreg_huber (+ _tukey)
     - details
     - examples
 
 # MILESTONE R 0.3
+* svyreg: predict method
+* plot.svyreg_rob: diagnostic plots
 
 ## DOCUMENTATION
 * weighted_line + weighted_median_lines
-    - check if "cars" data example is usable
-
 
 # UNSCHEDULED
 

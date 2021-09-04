@@ -84,18 +84,8 @@ on the \pkg{\link{survey}} package.
 }
 \section{Robust Ratio and Generalized Regression Estimation}{
     \itemize{
-        \item Classical (not robust)
-        \itemize{
-            \item \code{\link{svymean_reg}}
-            \item \code{\link{svytotal_reg}}
-        }
-        \item Robust
-        \itemize{
-            \item \code{\link{svymean_reg_huber}} and
-                \code{\link{svytotal_reg_huber}}
-            \item \code{\link{svymean_reg_tukey}} and
-                \code{\link{svytotal_reg_tukey}}
-        }
+        \item \code{\link{svymean_reg}}
+        \item \code{\link{svytotal_reg}}
     }
 }
 \section{Utility functions}{

@@ -9,7 +9,8 @@ svytotal_tukey(x, design, k, type = "rhj", na.rm = FALSE, verbose = TRUE, ...)
 }
 \arguments{
 \item{x}{a one-sided \code{[formula]}, e.g., \code{~myVariable}.}
-\item{design}{an object of class \code{survey.design} or \code{survey.design2}.}
+\item{design}{an object of class \code{survey.design}; see
+    \code{\link[survey]{svydesign}}.}
 \item{k}{\code{[double]} robustness tuning constant
     (\eqn{0 < k \leq \infty}{0 < k <= Inf}).}
 \item{type}{\code{[character]} type of method: \code{"rhj"} or \code{"rht"}.}
@@ -18,10 +19,7 @@ svytotal_tukey(x, design, k, type = "rhj", na.rm = FALSE, verbose = TRUE, ...)
 \item{verbose}{\code{[logical]} indicating whether additional information
 		is printed to the console (default: \code{TRUE}).}
 \item{\dots}{additional arguments passed to the method (e.g., \code{maxit}:
-    maxit number of iterations, etc.).}
-}
-\value{
-object of class \code{\link{svystat_rob}}
+    maxit number of iterations, etc.; see \code{\link{svyreg_control}}).}
 }
 \description{
 Weighted Tukey biweight M-estimator of the population mean and total
@@ -29,17 +27,16 @@ Weighted Tukey biweight M-estimator of the population mean and total
 }
 \details{
 \describe{
-    \item{Overview.}{}
-    \item{Methods.}{\code{type = "rht"} anad \code{type = "rhj"}; see
+    \item{Methods/ types}{\code{type = "rht"} or \code{type = "rhj"}; see
         \code{\link{weighted_mean_tukey}} for more details.}
     \item{Variance estimation.}{Taylor linearization (residual variance
         estimator).}
-    \item{Utility functions.}{\code{\link[=svystat_rob]{summary}},
+    \item{Utility functions}{\code{\link[=svystat_rob]{summary}},
         \code{\link[=svystat_rob]{coef}}, \code{\link[=svystat_rob]{SE}},
         \code{\link[=svystat_rob]{vcov}}, \code{\link[=svystat_rob]{residuals}},
         \code{\link[=svystat_rob]{fitted}}, and
         \code{\link[=svystat_rob]{robweights}}.}
-   \item{Bare-bone functions.}{See \code{\link{weighted_mean_tukey}} and
+   \item{Bare-bone functions}{See \code{\link{weighted_mean_tukey}} and
         \code{\link{weighted_total_tukey}}.}
 }
 }
@@ -50,7 +47,9 @@ iterations and a numerical tolerance criterion to stop the iterations of
 the default values by specifying the arguments \code{maxit} and/or
 \code{tol} in the function call; see also \code{\link{svyreg_control}}.
 }
-
+\value{
+Object of class \code{\link{svystat_rob}}
+}
 \examples{
 data(workplace)
 
@@ -63,7 +62,19 @@ dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
 svytotal_tukey(~employment, dn, k = 9, type = "rht")
 
 # Robust weighted M-estimator of the population mean
-svymean_tukey(~employment, dn, k = 12, type = "rhj")
+m <- svymean_tukey(~employment, dn, k = 12, type = "rhj")
+
+# Summarize
+summary(m)
+
+# Extract estimate
+coef(m)
+
+# Extract estimate of scale
+scale(m)
+
+# Extract estimated standard error
+SE(m)
 }
 \references{
 Hulliger, B. (1995). Outlier Robust Horvitz-Thompson Estimators.

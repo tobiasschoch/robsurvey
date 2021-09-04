@@ -13,10 +13,6 @@ mer(object, verbose = TRUE, max_k = 1000, optim_args = list())
     search interval (default: \code{max_k = 1000})}
 \item{optim_args}{\code{[list]}: arguments passed on to \code{\link{optim}}.}
 }
-\value{
-The tuning constant that minimizes the estimated mean square error of the
-estimator
-}
 \description{
 \code{mer} is an adaptive M-estimator of the weighted mean or total. It
 is defined as the estimator that minimizes the estimated mean square error
@@ -26,6 +22,10 @@ of the estimator under consideration.
 MER-estimators are available for the methods \code{\link{svymean_huber}},
 \code{\link{svytotal_huber}}, \code{\link{svymean_tukey}} and
 \code{\link{svytotal_tukey}}.
+}
+\value{
+The tuning constant that minimizes the estimated mean square error of the
+estimator
 }
 \examples{
 library(survey)

@@ -8,16 +8,14 @@ svytotal_trimmed(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE)
 }
 \arguments{
 \item{x}{a one-sided \code{[formula]}, e.g., \code{~myVariable}.}
-\item{design}{an object of class \code{survey.design} or \code{survey.design2}.}
+\item{design}{an object of class \code{survey.design}; see
+    \code{\link[survey]{svydesign}}.}
 \item{LB}{\code{[double]} lower bound of trimming such that
     \eqn{0 \leq} \code{LB} \eqn{<} \code{UB} \eqn{\leq 1}.}
 \item{UB}{\code{[double]} upper bound of trimming such that
     \eqn{0 \leq} \code{LB} \eqn{<} \code{UB} \eqn{\leq 1}.}
 \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should
     be removed before the computation proceeds (default: \code{FALSE}).}
-}
-\value{
-object of class \code{\link{svystat_rob}}
 }
 \description{
 Weighted trimmed population mean and total.
@@ -43,6 +41,9 @@ Weighted trimmed population mean and total.
     \item{Bare-bone functions.}{See \code{\link{weighted_mean_trimmed}} and
         \code{\link{weighted_total_trimmed}}.}
 }
+}
+\value{
+Object of class \code{\link{svystat_rob}}
 }
 \references{
 Huber, P. J. (1981). \emph{Robust Statistics}, New York: John Wiley and Sons.

@@ -160,6 +160,27 @@
     }
     unname(x)
 }
+# psi functions
+.psi_function <- function(x, k, psi = c("Huber", "Huberasym", "Tukey"))
+{
+    stopifnot(is.numeric(x), k > 0)
+    if (is.infinite(k))
+        return(x)
+
+    n <- length(x)
+    type <- switch(match.arg(psi),
+        "Huber" = 0,
+        "Huberasym" = 1,
+        "Tukey" = 2)
+    if (any(is.na(x))) {
+        rep(NA, n)
+    } else {
+        tmp <- .C("psi_function", x = as.double(x), k = as.double(k),
+            n = as.integer(n), psi = as.integer(type),
+            res = as.double(numeric(n)), PACKAGE = "robsurvey")
+        tmp$res
+    }
+}
 # onAttach function
 .onAttach <- function(libname, pkgname)
 {

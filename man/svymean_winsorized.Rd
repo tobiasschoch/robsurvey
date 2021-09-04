@@ -14,7 +14,8 @@ svytotal_k_winsorized(x, design, k, na.rm = FALSE, trim_var = FALSE)
 }
 \arguments{
 \item{x}{a one-sided \code{[formula]}, e.g., \code{~myVariable}.}
-\item{design}{an object of class \code{survey.design} or \code{survey.design2}.}
+\item{design}{an object of class \code{survey.design}; see
+    \code{\link[survey]{svydesign}}.}
 \item{LB}{\code{[double]} lower bound of winsorization such that
     \eqn{0 \leq} \code{LB} \eqn{<} \code{UB} \eqn{\leq 1}.}
 \item{UB}{\code{[double]} upper bound of winsorization such that
@@ -26,9 +27,6 @@ svytotal_k_winsorized(x, design, k, na.rm = FALSE, trim_var = FALSE)
     total (default: \code{FALSE}).}
 \item{k}{\code{[integer]} number of observations to be winsorized at the
     top of the distribution.}
-}
-\value{
-object of class \code{\link{svystat_rob}}
 }
 \description{
 Weighted winsorized mean and total
@@ -81,6 +79,9 @@ Weighted winsorized mean and total
             \item \code{\link{weighted_total_k_winsorized}}.}
     }
 }
+}
+\value{
+Object of class \code{\link{svystat_rob}}
 }
 \references{
 Huber, P. J. (1981). \emph{Robust Statistics}, New York: John Wiley and Sons.

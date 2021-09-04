@@ -115,4 +115,27 @@ double tukey_wgt(double x, const double k)
         return _POWER2(z);
     }
 }
+/******************************************************************************\
+|* psi-function callable from R                                               *|
+|* argument psi: 0 = Huber, 1 = asymmetric Huber, 2 = Tukey biweight          *|
+\******************************************************************************/
+void psi_function(double *x, double *k, int *n, int *psi, double *res)
+{
+    double (*f_psi)(double, double);
+    switch (*psi) {
+    case 0: // Huber psi-function
+        f_psi = huber_psi;
+        break;
+    case 1: // Huber asymmetric psi-function
+        f_psi = huber_psi_asym;
+        break;
+    case 2: // Tukey biweight psi-function
+        f_psi = tukey_psi;
+        break;
+    default:
+        f_psi = huber_psi;
+    }
+    for (int i = 0; i < *n; i++)
+        res[i] = f_psi(x[i], *k);
+}
 #undef _POWER2

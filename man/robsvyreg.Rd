@@ -41,9 +41,6 @@ svyreg_control(tol = 1e-5, maxit = 100, k_Inf = 1e5, init = NULL,
     centered about the (weighted) median (\code{TRUE}) or about zero
     (default: \code{TRUE}).}
 }
-\value{
-\code{[list]}
-}
 \description{
 \strong{Internal} function for the robust survey regression GM-estimator;
 this function is \strong{only} intended for internal use. The function
@@ -52,4 +49,7 @@ missing values in the data may make the function crash.
 }
 \details{
 Not documented
+}
+\value{
+\code{[list]}
 }

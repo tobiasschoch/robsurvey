@@ -26,25 +26,6 @@ weighted_total_huber(x, w, k, type = "rhj", asym = FALSE, info = FALSE,
 \item{\dots}{additional arguments passed to the method (e.g., \code{maxit}:
     maxit number of iterations, etc.).}
 }
-\value{
-The return value depends on \code{info}:
-\describe{
-    \item{\code{info = FALSE}:}{estimate of mean or total \code{[double]}}
-    \item{\code{info = TRUE}:}{a \code{[list]} with items:
-        \itemize{
-            \item \code{characteristic} \code{[character]},
-            \item \code{estimator} \code{[character]},
-            \item \code{estimate} \code{[double]},
-            \item \code{variance} (default: \code{NA}),
-            \item \code{robust} \code{[list]},
-            \item \code{residuals} \code{[numeric vector]},
-            \item \code{model} \code{[list]},
-            \item \code{design} (default: \code{NA}),
-            \item \code{[call]}
-        }
-    }
-}
-}
 \description{
 Weighted Huber M-estimator of the mean and total (bare-bone functions with
 limited functionality; see \code{\link{svymean_huber}} and
@@ -82,7 +63,25 @@ iterations and a numerical tolerance criterion to stop the iterations of
 the default values by specifying the arguments \code{maxit} and/or
 \code{tol} in the function call; see also \code{\link{svyreg_control}}.
 }
-
+\value{
+The return value depends on \code{info}:
+\describe{
+    \item{\code{info = FALSE}:}{estimate of mean or total \code{[double]}}
+    \item{\code{info = TRUE}:}{a \code{[list]} with items:
+        \itemize{
+            \item \code{characteristic} \code{[character]},
+            \item \code{estimator} \code{[character]},
+            \item \code{estimate} \code{[double]},
+            \item \code{variance} (default: \code{NA}),
+            \item \code{robust} \code{[list]},
+            \item \code{residuals} \code{[numeric vector]},
+            \item \code{model} \code{[list]},
+            \item \code{design} (default: \code{NA}),
+            \item \code{[call]}
+        }
+    }
+}
+}
 \examples{
 data(workplace)
 

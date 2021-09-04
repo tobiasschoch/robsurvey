@@ -41,27 +41,34 @@
 \description{
 Methods and utility functions for objects of class \code{svyreg_rob}.
 
-For variance estimation (\code{summary} and \code{vcov}), three modes are
-available:
-\itemize{
-    \item \code{"design"}: design-based variance estimator using
-        linearization; see Binder (1983)
-    \item \code{"model"}: model-based weighted variance estimator (the
-        sampling design is ignored)
-    \item \code{"compound"}: design-model-based variance estimator; see
-        Godambe and Thompson (2009)
-}
 }
 \details{
-Utility functions
-\itemize{
-   \item \code{summary} gives a summary of the estimation properties
-   \item \code{robweights} extracts the robustness weights (if available)
-   \item \code{coef} extracts the estimated regression coefficients
-   \item \code{vcov} extracts the (estimated) covariance matrix
-   \item \code{residuals} extracts the residuals
-   \item \code{fitted} extracts the fitted values
-}
+    \describe{
+        \item{Variance}{
+            For variance estimation (\code{summary} and \code{vcov}),
+            three modes are available:
+            \itemize{
+                \item \code{"design"}: design-based variance estimator using
+                    linearization; see Binder (1983)
+                \item \code{"model"}: model-based weighted variance estimator
+                    (the sampling design is ignored)
+                \item \code{"compound"}: design-model-based variance
+                    estimator; see Godambe and Thompson (2009)
+            }
+        }
+        \item{Utility functions}{
+            \itemize{
+               \item \code{summary} gives a summary of the estimation
+                    properties
+               \item \code{robweights} extracts the robustness weights
+                    (if available)
+               \item \code{coef} extracts the estimated regression coefficients
+               \item \code{vcov} extracts the (estimated) covariance matrix
+               \item \code{residuals} extracts the residuals
+               \item \code{fitted} extracts the fitted values
+            }
+        }
+    }
 }
 \references{
 Binder, D. A. (1983).  On the Variances of Asymptotically Normal Estimators

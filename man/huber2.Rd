@@ -23,24 +23,6 @@ huber2(x, w, k = 1.5, na.rm = FALSE, maxit = 50, tol = 1e-04, info = FALSE,
 \item{df_cor}{\code{[logical]} toggle for the adjustment of the degrees of
     freedom for the estimate of scale (default: \code{TRUE}).}
 }
-\value{
-The return value depends on \code{info}: \describe{
-    \item{\code{info = FALSE}:}{estimate of mean or total \code{[double]}}
-    \item{\code{info = TRUE}:}{a \code{[list]} with items:
-        \itemize{
-            \item \code{characteristic} \code{[character]},
-            \item \code{estimator} \code{[character]},
-            \item \code{estimate} \code{[double]},
-            \item \code{variance} (default: \code{NA}),
-            \item \code{robust} \code{[list]},
-            \item \code{residuals} \code{[numeric vector]},
-            \item \code{model} \code{[list]},
-            \item \code{design} (default: \code{NA}),
-            \item \code{[call]}
-        }
-    }
-}
-}
 \description{
 Weighted Huber Proposal 2 estimator of location and scatter.
 }
@@ -59,6 +41,24 @@ which is initialized by \code{\link{mad}}.
 
 The difference between the estimators is usually negligible (for sufficiently
 small values of \code{tol}). See examples.
+}
+\value{
+The return value depends on \code{info}: \describe{
+    \item{\code{info = FALSE}:}{estimate of mean or total \code{[double]}}
+    \item{\code{info = TRUE}:}{a \code{[list]} with items:
+        \itemize{
+            \item \code{characteristic} \code{[character]},
+            \item \code{estimator} \code{[character]},
+            \item \code{estimate} \code{[double]},
+            \item \code{variance} (default: \code{NA}),
+            \item \code{robust} \code{[list]},
+            \item \code{residuals} \code{[numeric vector]},
+            \item \code{model} \code{[list]},
+            \item \code{design} (default: \code{NA}),
+            \item \code{[call]}
+        }
+    }
+}
 }
 \examples{
 data(workplace)

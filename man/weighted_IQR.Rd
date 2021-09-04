@@ -12,9 +12,6 @@ weighted_IQR(x, w, na.rm = FALSE, constant = 0.7413)
 \item{constant}{\code{[double]} constant scaling factor to make the
     weighted IQR a consistent estimator of the scale (default: \code{0.7413}).}
 }
-\value{
-Weighted IQR
-}
 \description{
 \code{weighted_IQR} computes weighted (normalized) interquartile range
 }
@@ -22,6 +19,9 @@ Weighted IQR
 By default, the weighted IQR is normalized to be an unbiased estimate of
 scale at the Gaussian core model. If normalization is not wanted, put
 \code{constant = 1}.
+}
+\value{
+Weighted IQR
 }
 \examples{
 data(workplace)

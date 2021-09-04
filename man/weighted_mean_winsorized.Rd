@@ -26,25 +26,6 @@ weighted_total_k_winsorized(x, w, k, info = FALSE, na.rm = FALSE)
 \item{k}{\code{[integer]} number of observations to be winsorized at the
     top of the distribution.}
 }
-\value{
-The return value depends on \code{info}:
-\describe{
-    \item{\code{info = FALSE}:}{estimate of mean or total \code{[double]}}
-    \item{\code{info = TRUE}:}{a \code{[list]} with items:
-        \itemize{
-            \item \code{characteristic} \code{[character]},
-            \item \code{estimator} \code{[character]},
-            \item \code{estimate} \code{[double]},
-            \item \code{variance} (default: \code{NA}),
-            \item \code{robust} \code{[list]},
-            \item \code{residuals} \code{[numeric vector]},
-            \item \code{model} \code{[list]},
-            \item \code{design} (default: \code{NA}),
-            \item \code{[call]}
-        }
-    }
-}
-}
 \description{
 Weighted winsorized mean and total (bare-bone functions with limited
 functionality; see \code{\link{svymean_winsorized}} and
@@ -77,6 +58,25 @@ functionality; see \code{\link{svymean_winsorized}} and
             \item \code{\link{svytotal_winsorized}},
             \item \code{\link{svymean_k_winsorized}},
             \item \code{\link{svytotal_k_winsorized}}.
+        }
+    }
+}
+}
+\value{
+The return value depends on \code{info}:
+\describe{
+    \item{\code{info = FALSE}:}{estimate of mean or total \code{[double]}}
+    \item{\code{info = TRUE}:}{a \code{[list]} with items:
+        \itemize{
+            \item \code{characteristic} \code{[character]},
+            \item \code{estimator} \code{[character]},
+            \item \code{estimate} \code{[double]},
+            \item \code{variance} (default: \code{NA}),
+            \item \code{robust} \code{[list]},
+            \item \code{residuals} \code{[numeric vector]},
+            \item \code{model} \code{[list]},
+            \item \code{design} (default: \code{NA}),
+            \item \code{[call]}
         }
     }
 }

@@ -13,9 +13,6 @@ weighted_median_line(x, y = NULL, w, type = "slopes", na.rm = FALSE)
 \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should
     be removed before the computation proceeds (default: \code{FALSE}).}
 }
-\value{
-A vector with two components: intercept and slope
-}
 \description{
 Robust simple linear regression based on medians: two methods are available:
 \code{"slopes"} and \code{"product"}.
@@ -38,6 +35,9 @@ Robust simple linear regression based on medians: two methods are available:
         }
     }
 }
+}
+\value{
+A vector with two components: intercept and slope
 }
 \examples{
 x <- c(1, 2, 4, 5)

@@ -3,6 +3,7 @@
 #include "robsurvey.h"
 #include "trimmedwinsorized.h"
 #include "huberm.h"
+#include "psifunctions.h"
 
 // create arrays describing each C routine
 static const R_CMethodDef cMethods[]  = {
@@ -14,6 +15,7 @@ static const R_CMethodDef cMethods[]  = {
     {"wkwinsorizedmean", (DL_FUNC) &wkwinsorizedmean, 6},
     {"cov_reg_model", (DL_FUNC) &cov_reg_model, 13},
     {"cov_reg_design", (DL_FUNC) &cov_reg_design, 12},
+    {"psi_function", (DL_FUNC) &psi_function, 5},
     {NULL, NULL, 0}
 };
 

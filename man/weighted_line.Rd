@@ -12,15 +12,15 @@ weighted_line(x, y = NULL, w, na.rm = FALSE, iter = 1)
     removed before the computation proceeds (default: \code{FALSE}).}
 \item{iter}{\code{[integer]} number of iterations to use (default: \code{1}).}
 }
-\value{
-intercept and slope of the fitted line
-}
 \description{
 \code{weighted_line} fits a robust line and allows weights.
 }
 \details{
 \code{weighted_line} uses different quantiles for splitting the sample than
 \code{stats::line()}.
+}
+\value{
+intercept and slope of the fitted line
 }
 \examples{
 data(cars)

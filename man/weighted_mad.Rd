@@ -12,9 +12,6 @@ weighted_mad(x, w, na.rm = FALSE, constant = 1.482602)
 \item{constant}{\code{[double]} constant scaling factor to make the MAD a
     consistent estimator of the scale (default: \code{1.4826}).}
 }
-\value{
-Weighted median absolute deviation from the (weighted) median
-}
 \description{
 \code{weighted_mad} computes weighted median of the absolute deviations
 from the weighted median
@@ -24,6 +21,9 @@ The weighted MAD is computed as the (normalized) weighted median of the
 absolute deviation from the weighted median; see \code{\link{weighted_median}}.
 The weighted MAD is normalized to be an unbiased estimate of scale at the
 Gaussian core model. If normalization is not wanted, put \code{constant = 1}.
+}
+\value{
+Weighted median absolute deviation from the (weighted) median
 }
 \examples{
 data(workplace)

@@ -12,15 +12,15 @@ weighted_total(x, w, na.rm = FALSE)
 \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should be
     removed before the computation proceeds (default: \code{FALSE}).}
 }
-\value{
-Estimated population mean or total
-}
 \description{
 Weighted total and mean (Horvitz-Thompson and Hajek estimators)
 }
 \details{
 \code{weighted_total} and \code{weighted_mean} compute, respectively, the
 Horvitz-Thompson estimator of the total and the Hajek estimator of the mean.
+}
+\value{
+Estimated population mean or total
 }
 \examples{
 data(workplace)

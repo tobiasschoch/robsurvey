@@ -10,12 +10,12 @@
     \item M- and GM-estimator of regression with Tukey biweight
     psi-function (\code{svyreg_tukey} and \code{svyreg_tukeyGM})
     \item (Robust) generalized regression estimation (GREG and robust GREG)
-    \item Weighted BACON algorithm (robust multivariate estimation of
-    location and scatter; \code{wBACON})
     \item Weighted \code{k} winsorized mean and total (e.g.,
     \code{weighted_mean_k_winsorized})
     \item Dalen's weight reduction estimator of the mean and total (e.g.,
     \code{weighted_mean_dalen})
+    \item Weighted M-estimator of the mean and total with Tukey biweight
+    psi-function
     \item Weighted Huber Proposal 2 estimator (\code{huber2})
     \item Data sets \code{flour} and \code{losdata}
 }
@@ -26,6 +26,12 @@
     implications for \code{weighted_quantile} and also the iterative
     re-weighted least squares algorithm). The new C implementation of
     of \code{wquantile} is sound.
+}
+}
+\subsection{CHANGES}{
+\itemize{
+    \item Argument \code{type = "rwm"} of \code{weighted_mean_huber} is not
+    used anymore (deprecated); instead, the type is now called \code{"rhj"}.
 }
 }
 \subsection{CHANGE of LICENSE and MAINTAINER}{
