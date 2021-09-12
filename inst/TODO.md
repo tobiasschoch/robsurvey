@@ -17,7 +17,6 @@
 * .cov_reg_compound: regression: variance: compound design-model distribution
 
 ## FIX
-* makefile
 * survey weighted regression: model-based cov: BUG
 
 ## DOCUMENTATION
