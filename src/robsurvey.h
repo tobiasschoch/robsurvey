@@ -1,7 +1,16 @@
-#include <R.h>
-#include <Rmath.h>
-#include <R_ext/Lapack.h>
+// define before any R headers
+#ifndef USE_FC_LEN_T
+    #define USE_FC_LEN_T
+#endif
+// include Rconfig.h (possibly via R.h)
+#include <Rconfig.h>
 #include <R_ext/BLAS.h>
+#include <R_ext/Lapack.h>
+#ifndef FCONE
+    #define FCONE
+#endif
+
+#include <Rmath.h>
 #include "robsurvey_error.h"
 #include "wquantile.h"
 #include "psifunctions.h"

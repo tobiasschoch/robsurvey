@@ -254,7 +254,7 @@ robsurvey_error_type initialize(regdata *dat, workarray *work,
     const double double_minus1 = -1.0, double_1 = 1.0;
     Memcpy(resid, dat->y, n);
     F77_CALL(dgemv)("N", &n, &p, &double_minus1, dat->x, &n, beta0, &int_1,
-        &double_1, resid, &int_1);
+        &double_1, resid, &int_1 FCONE);
 
     // compute 'scale' by the weighted mad
     status = wmad(dat, work, resid, mad_center, mad_NORM_CONSTANT, scale);
@@ -325,7 +325,7 @@ robsurvey_error_type rfitwls(regdata *dat, workarray *work, double* restrict w,
     if (lwork < 0) {
         double dummy_work_dgels;
         F77_CALL(dgels)("N", &n, &p, &int_1, x, &n, y, &n, &dummy_work_dgels,
-            &lwork, &info_dgels);
+            &lwork, &info_dgels FCONE);
         work->lwork = (int) dummy_work_dgels;
         return ROBSURVEY_ERROR_OK;
 
@@ -348,7 +348,7 @@ robsurvey_error_type rfitwls(regdata *dat, workarray *work, double* restrict w,
         // compute the (weighted) least squares estimate (LAPACK::dgels),
         // solves minimize |B - A*X| for X (using QR factorization)
         F77_CALL(dgels)("N", &n, &p, &int_1, work_x, &n, work_y, &n,
-            work_dgels, &lwork, &info_dgels);
+            work_dgels, &lwork, &info_dgels FCONE);
 
         // dgels is not well suited as a rank-revealing procedure; i.e., INFO<0
         // iff a diagonal element of the R matrix is exactly 0. This is not
@@ -365,7 +365,7 @@ robsurvey_error_type rfitwls(regdata *dat, workarray *work, double* restrict w,
         const double double_minus1 = -1.0, double_1 = 1.0;
         Memcpy(resid, y, n);
         F77_CALL(dgemv)("N", &n, &p, &double_minus1, x, &n, beta, &int_1,
-            &double_1, resid, &int_1);
+            &double_1, resid, &int_1 FCONE);
         return ROBSURVEY_ERROR_OK;
     }
 }
@@ -579,7 +579,8 @@ robsurvey_error_type cov_m_est(regdata *dat, workarray *work,
         return status;
 
     double* restrict work_x = work->work_x;
-    F77_CALL(dtrmm)("R", "U", "T", "N", &p, &p, scale2, work_x, &p, work_x, &p);
+    F77_CALL(dtrmm)("R", "U", "T", "N", &p, &p, scale2, work_x, &p, work_x,
+        &p FCONE FCONE FCONE FCONE);
 
     return ROBSURVEY_ERROR_OK;
 }
@@ -706,7 +707,8 @@ robsurvey_error_type cov_schweppe_gm_est(regdata *dat, workarray *work,
 
     // B  := Q * R^{-T} (result -> x)
     double done = 1.0, dzero = 0.0;
-    F77_CALL(dtrmm)("R", "U", "T", "N", &n, &p, &done, work_x, &p, x, &n);
+    F77_CALL(dtrmm)("R", "U", "T", "N", &n, &p, &done, work_x, &p, x,
+        &n FCONE FCONE FCONE FCONE);
 
     // compute B^T * B := (x^T * W * W * x)^{-1}
     *scale2 = _POWER2(*scale) / (1.0 - (double)p / sum_w);
@@ -714,7 +716,7 @@ robsurvey_error_type cov_schweppe_gm_est(regdata *dat, workarray *work,
         return ROBSURVEY_ERROR_SCALE_ZERO;
 
     F77_CALL(dgemm)("T", "N", &p, &p, &n, scale2, x, &n, x, &n, &dzero,
-        work_x, &p);
+        work_x, &p FCONE FCONE);
     *scale2 = *scale;
 
     return ROBSURVEY_ERROR_OK;
@@ -770,11 +772,12 @@ robsurvey_error_type cov_mallows_gm_est(regdata *dat, workarray *work,
 
     // B := Q * R^{-T} (result -> x)
     double done = 1.0, dzero = 0.0;
-    F77_CALL(dtrmm)("R", "U", "T", "N", &n, &p, &done, work_x, &p, x, &n);
+    F77_CALL(dtrmm)("R", "U", "T", "N", &n, &p, &done, work_x, &p, x,
+        &n FCONE FCONE FCONE FCONE);
 
     // compute B^T * B := (x^T * W * W * x)^{-1}
     F77_CALL(dgemm)("T", "N", &p, &p, &n, scale2, x, &n, x, &n, &dzero,
-        work_x, &p);
+        work_x, &p FCONE FCONE);
 
     return ROBSURVEY_ERROR_OK;
 }
@@ -810,7 +813,7 @@ robsurvey_error_type inverse_qr(workarray *work, double* restrict x, int *n,
         for (int j = 0; j < i + 1; j++)
             R[j + i * *p] = x[j + i * *n];
 
-    F77_CALL(dtrtri)("U", "N", p, R, p, &info);         // inverse of R
+    F77_CALL(dtrtri)("U", "N", p, R, p, &info FCONE FCONE); // inverse of R
     if (info != 0)
         return ROBSURVEY_ERROR_QR_DTRTRI;
 
@@ -889,7 +892,7 @@ void cov_reg_design(double *x, double *w, double *xwgt, double *resid,
     // Q matrix (on entry)
     Memcpy(Q, mat, *p * *p);
     // Cholesky factorization
-    F77_CALL(dpotrf)("L", p, Q, p, &info);
+    F77_CALL(dpotrf)("L", p, Q, p, &info FCONE);
     if (info != 0) {
         PRINT_OUT("Error in dpotrf (Q matrix)\n");
         *ok = 0;
@@ -927,7 +930,7 @@ void cov_reg_design(double *x, double *w, double *xwgt, double *resid,
     }
 
     // inverse of the R matrix
-    F77_CALL(dtrtri)("U", "N", p, R, p, &info);
+    F77_CALL(dtrtri)("U", "N", p, R, p, &info FCONE FCONE);
     if (info != 0) {
         PRINT_OUT("Error in dtrtri (M matrix)\n");
         *ok = 0;
@@ -935,14 +938,17 @@ void cov_reg_design(double *x, double *w, double *xwgt, double *resid,
     }
     // Q := R^{-T} * Q
     const double d_one = 1.0;
-    F77_CALL(dtrmm)("L", "U", "T", "N", p, p, &d_one, R, p, Q, p);
+    F77_CALL(dtrmm)("L", "U", "T", "N", p, p, &d_one, R, p, Q,
+        p FCONE FCONE FCONE FCONE);
     // Q := R^{-1} * Q
-    F77_CALL(dtrmm)("L", "U", "N", "N", p, p, &d_one, R, p, Q, p);
+    F77_CALL(dtrmm)("L", "U", "N", "N", p, p, &d_one, R, p, Q,
+        p FCONE FCONE FCONE FCONE);
 
     //--------------------------------------------
     // covariance matrix
     double d_zero = 0.0;
-    F77_CALL(dgemm)("N", "T", p, p, p, &d_one, Q, p, Q, p, &d_zero, mat, p);
+    F77_CALL(dgemm)("N", "T", p, p, p, &d_one, Q, p, Q, p, &d_zero, mat,
+        p FCONE FCONE);
 
 clean_up:
     Free(Q); Free(work_pp); Free(work_dgeqrf);

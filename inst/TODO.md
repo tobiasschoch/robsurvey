@@ -18,7 +18,6 @@
 
 ## FIX
 * survey weighted regression: model-based cov: BUG
-* calls to BLAS and LAPACK (FCONE; see wbacon)
 
 ## DOCUMENTATION
 * svymean_reg (+ _total_)
@@ -35,5 +34,4 @@
 
 # UNSCHEDULED
 * robust calibration
-* Dalen survey method
 
