@@ -2,19 +2,29 @@
 svymean_reg <- function(object, auxiliary, k = Inf,
     psi = c("Huber", "Huberasym", "Tukey"), check.names = TRUE)
 {
+    model <- object$model
     stopifnot(k > 0)
-    w <- object$model$w; sum_w <- sum(w)
+    w <- model$w
     # check whether auxiliary matches with the regression estimate
-    x <- .checkauxiliary(object, auxiliary, "mean", N = NULL,
-        check.names, na.action = stats::na.omit)
+    x <- .checkauxiliary(object, auxiliary, "mean", check.names,
+        na.action = stats::na.omit)
+
     # greg estimate
-    resid_winsorized <- .psi_function(object$residuals, k, psi)
-    est <- sum(auxiliary * object$estimate) +
-        sum(w * resid_winsorized) / sum_w
-    names(est) <- object$model$yname
+    mod_resid <- w * .psi_function(object$residuals, k, psi) / sum(w)
+    est <- sum(x * object$estimate)
+    # bias-correction term
+    if (!is.null(model$var)) {
+
+        qr(cbind(model$x, model$var))$rank
+        est <- est + sum(mod_resid)
+    } else if (model$intercept) {
+
+    }
+    names(est) <- model$yname
+
     # compute variance
     design <- object$design
-    v <- survey::svyrecvar(resid_winsorized * w / sum_w, design$cluster,
+    v <- survey::svyrecvar(mod_resid, design$cluster,
         design$strata, design$fpc, postStrata = design$postStrata)
     res <- list(characteristic = "mean", estimator = "GREG M-estimator",
         estimate = est, variance = v, design = design, call = match.call())
@@ -24,22 +34,26 @@ svymean_reg <- function(object, auxiliary, k = Inf,
 
 svytotal_reg <- function()
 {
-
+    # mean * N_hat?
 }
 
-
-
-
+if(0){
 #
-# library(robsurvey)
-# data(workplace)
-# library(survey)
-# dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
-#     data = workplace)
-# m <- svyreg_huber(payroll ~ employment, dn, k = 8)
-# svymean_reg(m, workplace)
-#
+library(robsurvey)
+data(workplace)
+library(survey)
+dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
+    data = workplace)
+m <- svyreg_huber(payroll ~ employment, dn, k = Inf)
+m0 <- svyreg(payroll ~ -1 + employment, dn)
 
+svymean_reg(m, workplace)
+
+Xmean <- coef(svymean(~employment, dn))
+Xmean <- mean(workplace$employment)
+svymean_reg(m, c(1, Xmean))
+
+}
 
     # if (!inherits(object, "svyreg_rob"))
     #     stop("svymean_reg is not defined for this object\n", call. = FALSE)

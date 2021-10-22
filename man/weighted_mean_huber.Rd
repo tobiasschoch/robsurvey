@@ -41,8 +41,15 @@ limited functionality; see \code{\link{svymean_huber}} and
     \item{Type.}{Two methods/types are available for estimating the location
         \eqn{\mu} (and the scale \eqn{\sigma}; see models, below):
         \describe{
-            \item{\code{type = "rht"}:}{a}
-            \item{\code{type = "rmw"}:}{a}
+            \item{\code{type = "rhj" (default)}:}{robust Hajek
+                \emph{M}-estimator of the population mean and total,
+                respectively.  This estimator is recommended for sampling
+                designs the inclusion probabilities of which are \emph{not}
+                proportional to some measure of size.}
+            \item{\code{type = "rht"}:}{robust Horvitz-Thompson
+                \emph{M}-estimator of the population mean and total,
+                respectively. This estimator is recommended for
+                proportional-to-size designs.}
         }
     }
     \item{Variance estimation.}{See the related but more capable functions:

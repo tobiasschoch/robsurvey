@@ -120,38 +120,32 @@
     list(yname = yname, y = as.numeric(y), w = as.numeric(1 / design$prob))
 }
 # check auxiliary totals and means
-.checkauxiliary <- function(object, data, est = "mean", N = NULL,
-    check.names = TRUE, na.action = stats::na.omit)
+.checkauxiliary <- function(object, data, est = "mean", check.names = TRUE,
+    na.action = stats::na.omit) #FIXME: default: na.fail
 {
-    p <- object$model$p
-    beta <- object$estimate
-    names_beta <- names(beta)
-
+    names_beta <- names(object$estimate)
+    names_data <- names(data)
     if (is.vector(data))
         if (NCOL(data) < NROW(data))
 	        data <- t(data)
 
+    # vector of population x-means or -totals
     if (NROW(data) == 1) {
+        # drop intercept (if there is one)
         if (object$model$intercept) {
-#FIXME:
-            names_data <- names(data)[-1]
+            names_data <- names_data[-1]
             names_beta <- names_beta[-1]
-            if (is.null(N)) {
-                N <- 1
-            } else {
-
-            }
-        } else {
-            names_data <- names(data)
         }
-        if (length(data) != p)
-            stop("Length of 'data' does not match\n", call. = FALSE)
+        if (length(data) != object$model$p)
+            stop("Length of auxiliary data does not match\n", call. = FALSE)
 
         if (check.names && !is.null(names_data)) {
             if (!all(names_data == names_beta))
-                stop("Names do not match (check.names = TRUE)", call. = FALSE)
+                stop("Variable names do not match (check.names = TRUE)",
+                    call. = FALSE)
         }
         x <- data
+    # compute mean/total based on design matrix
     } else {
         mf <- stats::model.frame(object$call$formula, data,
             na.action = na.action)

@@ -34,7 +34,7 @@ Weighted estimate of the population quantiles
 \examples{
 data(workplace)
 
-# Weighted 25\% quantile
+# Weighted 25\% quantile (1st quartile)
 weighted_quantile(workplace$employment, workplace$weight, 0.25)
 }
 \references{

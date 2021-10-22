@@ -5,7 +5,7 @@ output:
     html_document:
         highlight: tango
 vignette: >
-  %\VignetteIndexEntry{Robust Horvitz-Thompson Estimator}
+  %\VignetteIndexEntry{Robust Survey Regression Estimator}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---

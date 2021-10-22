@@ -46,8 +46,7 @@ summary.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
         if (tmp$ok == 0)
             stop("\nCovariance estimation failed\n", call. = FALSE)
 
-        res <- list(stddev = sqrt(tmp$scale2), covmat = tmp$cov, n = n,
-            p = p, N = N)
+        res <- list(stddev = tmp$scale, covmat = tmp$cov, n = n, p = p, N = N)
         ns <- colnames(object$model$x)
         dimnames(res$covmat) <- list(ns, ns)
 
@@ -110,7 +109,7 @@ vcov.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
         x = as.double(object$model$x), xwgt = as.double(object$model$xwgt),
         robwgt = as.double(object$robust$robweights),
         w = as.double(object$model$w), k = as.double(k),
-        scale = as.double(object$scale), scale2 = as.double(numeric(1)),
+        scale = as.double(object$scale), scale = as.double(numeric(1)),
         n = as.integer(object$model$n), p = as.integer(object$model$p),
         psi = as.integer(object$estimator$psi),
         type = as.integer(object$estimator$type), ok = as.integer(0),
@@ -122,7 +121,7 @@ vcov.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
     } else {
         cov_mat <- matrix(tmp$x[1:(p * p)], ncol = p)
     }
-    list(ok = tmp$ok, cov = cov_mat, scale2 = tmp$scale2)
+    list(ok = tmp$ok, cov = cov_mat, scale = tmp$scale)
 }
 
 # design-based covariance matrix of M- and GM-regression estimators
@@ -173,7 +172,7 @@ vcov.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
     } else {
         cov_mat <- matrix(tmp$mat, ncol = p, nrow = p)
     }
-    list(ok = 1, cov = cov_mat, scale2 = object$scale)
+    list(ok = 1, cov = cov_mat, scale = object$scale)
 }
 
 # compound design-model-based covariance matrix of M- and GM-regression est.

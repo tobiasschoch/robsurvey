@@ -24,6 +24,8 @@ intercept and slope of the fitted line
 }
 \examples{
 data(cars)
+
+# compute weighted line
 weighted_line(cars$speed, cars$dist, w = rep(1, length(cars$speed)))
 weighted_line(cars$speed, cars$dist, w = rep(1:10, each = 5))
 }

@@ -68,20 +68,25 @@ huber2(workplace$employment, workplace$weight, k = 8)
 
 # More information on the estimate
 m <- huber2(workplace$employment, workplace$weight, k = 8, info = TRUE)
+
 # Estimate of scale
 m$scale
 
 # Comparison with MASS::hubers (without weights). We make a copy of MASS::hubers
 library(MASS)
 hubers_mod <- hubers
+
 # Then we replace mad by the (scaled) IQR as initial scale estimator
 body(hubers_mod)[[7]][[3]][[2]] <- substitute(s0 <- IQR(y, type = 2) * 0.7413)
+
 # Define the numerical tolerance
 TOLERANCE <- 1e-8
+
 # Comparison
 m1 <- huber2(workplace$payroll, rep(1, 142), tol = TOLERANCE)
 m2 <- hubers_mod(workplace$payroll, tol = TOLERANCE)$mu
 m1 / m2 - 1
+
 # The absolute relative difference is < 4.0-09 (smaller than TOLERANCE)
 }
 \references{

@@ -44,10 +44,13 @@ on the \pkg{\link{survey}} package.
             }
         }
     }
-    \subsection{Weight reduction methods}{
-            \code{\link{weighted_mean_dalen}} and
-                \code{\link{weighted_total_dalen}} (only bare-bone methods
-                are available)
+    \subsection{Dalen's estimators (weight reduction methods)}{
+        \itemize{
+            \item Bare-bone methods: \code{\link{weighted_mean_dalen}} and
+                \code{\link{weighted_total_dalen}}
+            \item Survey methods: \code{\link{svymean_dalen}} and
+                \code{\link{svytotal_dalen}}
+        }
     }
     \subsection{M-estimators}{
         \itemize{

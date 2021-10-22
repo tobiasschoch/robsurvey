@@ -18,10 +18,9 @@
 
 ## FIX
 * survey weighted regression: model-based cov: BUG
+* calls to BLAS and LAPACK (FCONE; see wbacon)
 
 ## DOCUMENTATION
-* weighted_mean_huber (+ _tukey)
-    - RHT vs Hajek
 * svymean_reg (+ _total_)
     - description
     - details
@@ -35,8 +34,6 @@
 * weighted_line + weighted_median_lines
 
 # UNSCHEDULED
-
-## NEW FEATURES
 * robust calibration
 * Dalen survey method
 
