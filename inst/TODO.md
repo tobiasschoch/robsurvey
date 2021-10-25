@@ -1,6 +1,20 @@
 # MILESTONE R 0.2
 ## ADD FEATURE
 * vignette: robust regression
+* model-design based variance: regression
+
+## FIX
+* survey weighted regression: model-based cov: BUG
+* .cov_reg_compound: regression: variance: compound design-model distribution
+
+# MILESTONE R 0.3
+## ADD FEATURE
+* svymean_reg (+ _total_)
+    - description
+    - details
+    - examples
+* svyreg: predict method
+* plot.svyreg_rob: diagnostic plots
 * model-assisted estimation
     - variance estimator
     - vignette
@@ -14,20 +28,6 @@
         - Lee
         - Duchesne
     - summary + variance
-* .cov_reg_compound: regression: variance: compound design-model distribution
-
-## FIX
-* survey weighted regression: model-based cov: BUG
-
-## DOCUMENTATION
-* svymean_reg (+ _total_)
-    - description
-    - details
-    - examples
-
-# MILESTONE R 0.3
-* svyreg: predict method
-* plot.svyreg_rob: diagnostic plots
 
 ## DOCUMENTATION
 * weighted_line + weighted_median_lines

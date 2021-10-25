@@ -1,6 +1,6 @@
 ---
 title: "Vignette: Robust Survey Regression Estimation"
-author: "Beat Hulliger and Tobias Schoch (package vers. 0.2)"
+author: "Beat Hulliger and Tobias Schoch"
 output:
     html_document:
         highlight: tango

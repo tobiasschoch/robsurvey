@@ -737,7 +737,7 @@ Representative outliers are extreme but correct values and are thought to repres
 </p>
 </div>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">weighted_mean_dalen</span>(los, weight, <span class="dt">censoring =</span> <span class="dv">1500</span>)</span>
-<span id="cb13-2"><a href="#cb13-2"></a>[<span class="dv">1</span>] <span class="fl">10.96551</span></span></code></pre></div>
+<span id="cb13-2"><a href="#cb13-2"></a>[<span class="dv">1</span>] <span class="fl">10.73129</span></span></code></pre></div>
 <p>By default, the functions to compute Dalén’s estimators are called with the argument <code>verbose = TRUE</code> to learn how many observations were censored.</p>
 </div>
 <div id="m-estimation" class="section level2">
@@ -821,7 +821,7 @@ The <span class="math inline">\(M\)</span>-estimators are computed by iterative 
 </div>
 <div id="adaptive-estimation" class="section level3">
 <h3>5.3 Adaptive estimation</h3>
-<p>An adaptive <span class="math inline">\(M\)</span>-estimator of the total (or mean) is defined by letting the data chose the tuning constant <span class="math inline">\(k\)</span>. Let <span class="math inline">\(\widehat{T}\)</span> denote the weighted total, and let <span class="math inline">\(\widehat{T}_k\)</span> be the Huber <span class="math inline">\(M\)</span>-estimator of the weighted total with robustness tuning constant <span class="math inline">\(k\)</span>. Under quite general regularity conditions, the estimated mean square error (MSE) of <span class="math inline">\(\widehat{T}_k\)</span> can be approximated by (see e.g., <a href="#biblio">Get and Rivest</a>, 1992; <a href="#biblio">Hulliger</a>, 1995)</p>
+<p>An adaptive <span class="math inline">\(M\)</span>-estimator of the total (or mean) is defined by letting the data chose the tuning constant <span class="math inline">\(k\)</span>. Let <span class="math inline">\(\widehat{T}\)</span> denote the weighted total, and let <span class="math inline">\(\widehat{T}_k\)</span> be the Huber <span class="math inline">\(M\)</span>-estimator of the weighted total with robustness tuning constant <span class="math inline">\(k\)</span>. Under quite general regularity conditions, the estimated mean square error (MSE) of <span class="math inline">\(\widehat{T}_k\)</span> can be approximated by (see e.g., <a href="#biblio">Gwet and Rivest</a>, 1992; <a href="#biblio">Hulliger</a>, 1995)</p>
 <p><span class="math display">\[\widehat{\mathrm{mse}}\big(\widehat{T}_{k}\big) \approx \mathrm{var}\big(\widehat{T}_{k}\big) +\big(\widehat{T} - \widehat{T}_{k}\big)^2.\]</span></p>
 <p>The minimum estimated risk (MER) estimator (<a href="#biblio">Hulliger</a>, 1995) selects <span class="math inline">\(k\)</span> such that <span class="math inline">\(\widehat{\mathrm{mse}}\big(\widehat{T}_{k}\big)\)</span> is minimal (among all candidate estimators).</p>
 <p>Now, suppose that we have been working on the <span class="math inline">\(M\)</span>-estimator with <span class="math inline">\(k=8\)</span>.</p>
@@ -868,19 +868,10 @@ The <span class="math inline">\(M\)</span>-estimators are computed by iterative 
 <div id="bibliographical-notes" class="section level2">
 <h2>Bibliographical Notes</h2>
 <p>The paper of <a href="#biblio">Chambers</a> (1986) is the landmark paper about outliers in finite population sampling. <a href="#biblio">Lee</a> (1995) and <a href="#biblio">Beaumont and Rivest</a> (2009) are a good starting point to learn about robustness in finite population sampling.</p>
-<div id="trimming-and-winsorization" class="section level4">
-<h4>Trimming and winsorization</h4>
 <p>Trimming and winsorization are discussed in <a href="#biblio">Lee</a> (1995) and <a href="#biblio">Beaumont and Rivest</a> (2009).The variance estimators are straightforward adaptions of the classical estimators; see <a href="#biblio">Huber</a> (1981) or <a href="#biblio">Serfling</a> (1980). A rigorous treatment in the context of finite population sampling can be found in <a href="#biblio">Shao</a> (1994).</p>
-</div>
-<div id="weight-reduction-methods-1" class="section level4">
-<h4>Weight reduction methods</h4>
 <p><a href="#biblio">Rao</a> (1971) was among the first to propose weight reduction. Consider a sample of size <span class="math inline">\(n\)</span>, and suppose that the <span class="math inline">\(i\)</span>th observation is an outlier. He suggested to reduce the outlier’s sampling weight <span class="math inline">\(w_i\)</span> to one, and redistribute the weight difference <span class="math inline">\(w_i−1\)</span> among the remaining observations. As a result, observation <span class="math inline">\(i\)</span> does not represent other values like it. Dalén’s estimator offers a more general notion of weight reducution; see <a href="#biblio">Dalén</a> (1987) and also <a href="#biblio">Chen et al.</a> (2017).</p>
-</div>
-<div id="m-estimators" class="section level4">
-<h4>M-estimators</h4>
 <p>In the context of finite population sampling, M-estimators were first studied by <a href="#biblio">Chambers</a> (1986). He investigated robust methods in the model- or prediction based framework of <a href="#biblio">Royall and Cumberland</a> (1981). Model-assisted estimators were introduced (for ratio estimation) by <a href="#biblio">Gwet and Rivest</a> (1992) and studied by <a href="#biblio">Lee</a> (1995), and <a href="#biblio">Hulliger</a> (1995, 1999, 2005). A recent comprehensive treatment can be found in <a href="#biblio">Beaumont and Rivest</a> (2009).</p>
 <hr />
-</div>
 </div>
 <div id="biblio" class="section level2">
 <h2>References</h2>

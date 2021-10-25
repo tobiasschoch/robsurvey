@@ -85,12 +85,6 @@ on the \pkg{\link{survey}} package.
             \code{\link{svyreg_huberGM}} and \code{\link{svyreg_tukeyGM}}
     }
 }
-\section{Robust Ratio and Generalized Regression Estimation}{
-    \itemize{
-        \item \code{\link{svymean_reg}}
-        \item \code{\link{svytotal_reg}}
-    }
-}
 \section{Utility functions}{
     \itemize{
         \item \code{\link{weighted_quantile}} and \code{\link{weighted_median}}

@@ -1,6 +1,6 @@
 ---
 title: "Vignette: Basic Robust Estimators"
-author: "Beat Hulliger and Tobias Schoch (package vers. 0.2)"
+author: "Beat Hulliger and Tobias Schoch"
 output:
     html_document:
         highlight: tango
@@ -387,7 +387,7 @@ plot(residuals(m), robweights(m))
 
 ### 5.3 Adaptive estimation
 
-An adaptive $M$-estimator of the total (or mean) is defined by letting the data chose the tuning constant $k$. Let $\widehat{T}$ denote the weighted total, and let $\widehat{T}_k$ be the Huber $M$-estimator of the weighted total with robustness tuning constant $k$. Under quite general regularity conditions, the estimated mean square error (MSE) of $\widehat{T}_k$ can be approximated by (see e.g., [Get and Rivest](#biblio), 1992; [Hulliger](#biblio), 1995)
+An adaptive $M$-estimator of the total (or mean) is defined by letting the data chose the tuning constant $k$. Let $\widehat{T}$ denote the weighted total, and let $\widehat{T}_k$ be the Huber $M$-estimator of the weighted total with robustness tuning constant $k$. Under quite general regularity conditions, the estimated mean square error (MSE) of $\widehat{T}_k$ can be approximated by (see e.g., [Gwet and Rivest](#biblio), 1992; [Hulliger](#biblio), 1995)
 
 $$\widehat{\mathrm{mse}}\big(\widehat{T}_{k}\big) \approx \mathrm{var}\big(\widehat{T}_{k}\big) +\big(\widehat{T} - \widehat{T}_{k}\big)^2.$$
 
@@ -445,16 +445,10 @@ By default, the normalization constant to make the weighted IQR an unbiased esti
 
 The paper of [Chambers](#biblio) (1986) is the landmark paper about outliers in finite population sampling. [Lee](#biblio) (1995) and [Beaumont and Rivest](#biblio) (2009) are a good starting point to learn about robustness in finite population sampling.
 
-#### Trimming and winsorization
-
 Trimming and winsorization are discussed in [Lee](#biblio) (1995) and [Beaumont and Rivest](#biblio) (2009).The variance estimators are straightforward adaptions of the classical estimators; see [Huber](#biblio) (1981) or [Serfling](#biblio) (1980). A rigorous treatment in the context of finite population sampling can be found in [Shao](#biblio) (1994).
-
-#### Weight reduction methods
 
 [Rao](#biblio) (1971) was among the first to propose weight reduction. Consider a sample of size $n$, and suppose that the $i$th observation is an outlier. He suggested to reduce the outlier’s sampling weight $w_i$ to one, and redistribute the weight difference $w_i−1$ among the remaining
 observations. As a result, observation $i$ does not represent other values like it. Dalén's estimator offers a more general notion of weight reducution; see [Dalén](#biblio) (1987) and also [Chen et al.](#biblio) (2017).
-
-#### M-estimators
 
 In the context of finite population sampling, M-estimators were first studied by [Chambers](#biblio) (1986). He investigated robust methods in the model- or prediction based framework of [Royall and Cumberland](#biblio) (1981). Model-assisted estimators were introduced (for ratio estimation) by [Gwet and Rivest](#biblio) (1992) and studied by [Lee](#biblio) (1995), and [Hulliger](#biblio) (1995, 1999, 2005). A recent comprehensive treatment can be found in [Beaumont and Rivest](#biblio) (2009).
 

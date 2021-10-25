@@ -34,7 +34,6 @@ export(huberWgt)
 
 export(svymean_huber)
 export(svymean_k_winsorized)
-export(svymean_reg)
 export(svymean_trimmed)
 export(svymean_tukey)
 export(svymean_winsorized)

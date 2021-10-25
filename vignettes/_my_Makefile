@@ -1,6 +1,6 @@
 # make DOCUMENT=basic
 
-DOCUMENT=regression
+DOCUMENT=basic
 EDIT=gvim.exe
 BROWSER=firefox.exe
 RSCRIPT=Rscript.exe

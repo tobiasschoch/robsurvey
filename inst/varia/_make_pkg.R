@@ -46,7 +46,7 @@ file.copy(pkg_files, paste0(PKG_ROOT, "/", PKG), recursive = TRUE)
 f_R_build_ignore <- paste0(PKG_SOURCE, "/", PKG, "/.Rbuildignore")
 if (file.exists(f_R_build_ignore))
     file.copy(f_R_build_ignore, paste0(PKG_ROOT, "/", PKG))
-f_R_inst_ignore <- paste0(PKG_SOURCE, "/", PKG, "/.Rbuildignore")
+f_R_inst_ignore <- paste0(PKG_SOURCE, "/", PKG, "/.Rinstignore")
 if (file.exists(f_R_inst_ignore))
     file.copy(f_R_inst_ignore, paste0(PKG_ROOT, "/", PKG))
 
