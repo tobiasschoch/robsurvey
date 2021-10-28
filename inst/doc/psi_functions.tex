@@ -99,11 +99,11 @@ existing code.
 \end{leftbar}
 
 \noindent The method dispatch takes place in the functions (see
-\code{src/robsurvey.c}):
+\code{src/psifunctions.c}):
 \begin{itemize}
-    \item \code{rwlslm} ($\rightarrow$ regression coefficients and scale);
-    \item \code{cov\_rwlslm} ($\rightarrow$ asymptotic covariance
-        matrix)
+    \item \code{get\_wgt\_function}
+    \item \code{get\_psi\_function}
+    \item \code{get\_psi\_prime\_function}
 \end{itemize}
 \noindent and is implemented with function pointers.
 
@@ -112,13 +112,11 @@ In order to add support for additional $\psi$-functions (which comply with
 the above signature), follow these steps:
 
 \begin{enumerate}[1]
-    \item add the \code{C} code of the \code{psi}-, \code{weight}, and
-        \code{psi-prime}-functions to the package source;
-    \item add an entry in the \code{switch} statement of the function
-        \code{rwlslm}; it is recommended to refer the new
-        function to the integers \code{psi = 3, 4, ...};
-    \item add an entry in the \code{switch} statement of the function
-        \code{cov\_rwlslm} referring to the same integer;
+    \item add the \code{C} code of the new \code{psi}-, \code{weight}, and
+        \code{psi-prime}-functions to the source;
+    \item add an entry in the \code{switch} statement of the functions
+    \code{get\_wgt\_function}, \code{get\_psi\_function}, and
+    \code{get\_psi\_prime\_function};
     \item add/ modify the \code{R}-functions.
 \end{enumerate}
 

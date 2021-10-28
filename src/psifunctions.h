@@ -4,18 +4,14 @@
 #ifndef _PSIFUNCTIONS_H
 #define _PSIFUNCTIONS_H
 
-// prototypes for the functions
-double huber_wgt(double, const double);
-double huber_psi(double, double);
-double huber_psi_prime(double, const double);
+// return type for wgt, psi, and psi-prime functions
+typedef double (*f_ptr)(double, const double);
 
-double huber_wgt_asym(double, const double);
-double huber_psi_asym(double, const double);
-double huber_psi_prime_asym(double, const double);
+// prototypes for functions whose return value is a function pointer
+f_ptr get_wgt_function(int);
+f_ptr get_psi_function(int);
+f_ptr get_psi_prime_function(int);
 
-double tukey_wgt(double, const double);
-double tukey_psi(double, const double);
-double tukey_psi_prime(double, const double);
-
+// prototypes for function callable from R
 void psi_function(double*, double*, int*, int*, double*);
 #endif

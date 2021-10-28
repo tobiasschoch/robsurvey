@@ -20,10 +20,8 @@ expect_equal(coef(est), coef(ref), label = "Survey weighted regression")
 # design-based covariance matrix
 expect_equal(vcov(est, "design"), vcov(ref),
     label = "Survey weighted regression: design-based cov")
-# design-based covariance matrix
-
+# model-based covariance matrix
 #BUG:
-
 ref <- lm(payroll ~ employment, weights = weights(dn), data = dn$variables)
 expect_equal(vcov(est, "model"), vcov(ref),
     label = "Survey weighted regression: model-based cov")
@@ -34,6 +32,9 @@ est <- svyreg_huber(payroll ~ employment, dn, k = 1.345)
 expect_equal(coef(est),
     c("(Intercept)" = 8915.9505, employment = 14214.2246),
     tolerance = 1e-4, label = "Huber regression M-est")
+
+# FIXME: check against MASS
+
 # model-based covariance matrix
 ref <- matrix(c(36075.4946, -540.54394, -540.5439, 49.04239), ncol = 2)
 colnames(ref) <- c("(Intercept)", "employment")
@@ -102,3 +103,24 @@ expect_equal(vcov(est, "model"), ref, tolerance = 1e-4,
 
 # planned to fail...
 expect_equal(1, 2, label = "not a real test")
+
+
+
+
+
+# test covariance
+if (FALSE) {
+    library(robsurvey, quietly = TRUE)
+    library(survey)
+    data(workplace)
+    dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
+        data = workplace)
+    # regression estimate
+    ref <- lm(payroll ~ employment, weights = weights(dn), data = dn$variables)
+    est <- svyreg(payroll ~ employment, dn)
+
+    # modification of denominator of variance estimator (N - p vs. n - p)
+    w <- est$model$w
+    expect_equal(vcov(est, "model") * (sum(w) - est$model$p) /
+        (est$model$n - est$model$p), vcov(ref))
+}

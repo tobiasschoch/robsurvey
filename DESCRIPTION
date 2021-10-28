@@ -17,7 +17,7 @@ Authors@R:
       given = "Martin",
       family = "Sterchi",
       email = "martin.sterchi@fhnw.ch",
-      role = "aut"))
+      role = c("ctr", "com")))
 Description: Functions to compute robust (outlier-resistant) estimates of finite
    population characteristics. The package supports the computations of robust
    means, totals, ratios, etc. Available methods are regression M- and

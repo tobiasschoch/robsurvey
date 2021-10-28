@@ -1,4 +1,5 @@
-/* Functions to compute weighted (generalized) regression M-estimators
+/* Functions to compute the covariance matrix of weighted (generalized)
+   regression M-estimators
 
    Copyright (C) 2020-21 Tobias Schoch (e-mail: tobias.schoch@gmail.com)
 
@@ -17,7 +18,7 @@
    https://www.gnu.org/licenses/
 */
 
-#include "robsurvey.h"
+#include "regression_cov.h"
 
 // some macros
 #define _POWER2(_x) ((_x) * (_x))
@@ -59,381 +60,6 @@ robsurvey_error_type cov_schweppe_gm_est(regdata*, workarray*,
     double (*)(double, const double), double (*)(double,
     const double));
 robsurvey_error_type inverse_qr(workarray*, double* restrict, int*, int*, int);
-robsurvey_error_type wmad(regdata*, workarray*, double* restrict, int*,
-    double, double*);
-robsurvey_error_type rfitwls(regdata*, workarray*, double* restrict,
-    double* restrict, double* restrict);
-static inline double norm(const double*, const double*, const int)
-    __attribute__((always_inline));
-static inline void weighting_scheme(regdata*, double (*f_wgt_psi)(double,
-    const double), double* restrict, double*, double*, int*, int*,
-    double* restrict);
-robsurvey_error_type initialize(regdata*, workarray*, double* restrict,
-    double* restrict, double*, int*, int*);
-
-/******************************************************************************\
-|* rwlslm: regression M- and GM-estimator and estimate of scale (w MAD)       *|
-|*                                                                            *|
-|* x          design matrix, array[n * p];                                    *|
-|* y          response vector, array[n]                                       *|
-|* w          sampling weight, array[n]                                       *|
-|* resid      residuals, array[n]                                             *|
-|* robwgt     robustness weight, array[n]                                     *|
-|* xwgt       weights in design space, array[n]                               *|
-|* n, p       dimensions                                                      *|
-|* k          robustness tuning constant                                      *|
-|* beta0      on return: regression coefficients                              *|
-|* scale      estimate of scale (weighted MAD)                                *|
-|* scale      estimate of scale (weighted MAD)                                *|
-|* tol        numerical tolerance criterion to stop the iterations            *|
-|* maxit      maximum number of iterations to use                             *|
-|* psi        0 = Huber, 1 = asymmetric Huber, 2 = Tukey biweight             *|
-|* type       0 = M-est., 1 = Mallows GM-est., 2 = Schweppe GM-est.           *|
-|* init       1 = method is initialized by weighted least squares; 0 = beta0  *|
-|*            is taken as initial estimate of regression                      *|
-|* mad_center 1 = mad is centered about the median, 0 = centered about zero   *|
-\******************************************************************************/
-void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
-    double *xwgt, int *n, int *p, double *k, double *beta0, double *scale,
-    double *tol, int *maxit, int *psi, int *type, int *init, int *mad_center)
-{
-    // STEP 0: general preparations
-    robsurvey_error_type status;
-    double* restrict beta1 = (double*) Calloc(*p, double);
-
-    // initialize and populate structure with regression-specific data
-    regdata data;
-    regdata *dat = &data;
-    dat->n = *n;
-    dat->p = *p;
-    dat->x = x;
-    dat->y = y;
-    dat->w = w;
-
-    // initialize and populate structure with work arrays
-    double* restrict work_x = (double*) Calloc(*n * *p, double);
-    double* restrict work_y = (double*) Calloc(*n, double);
-    double* restrict work_2n = (double*) Calloc(2 * *n, double);
-    workarray wwork;
-    workarray *work = &wwork;
-    work->work_x = work_x;
-    work->work_y = work_y;
-    work->work_2n = work_2n;
-
-    // determine work array for 'dgels' (and allocate 'work_lapack')
-    work->lwork = -1;
-    status = rfitwls(dat, work, w, beta0, resid);
-    double* restrict work_lapack = (double*) Calloc(work->lwork, double);
-    work->work_lapack = work_lapack;
-
-    // STEP 1: estimator type-specific preparations
-    double (*f_wgt_psi)(double, double);
-
-    switch (*psi) {
-    case 0: // weight of Huber psi-function
-        f_wgt_psi = huber_wgt;
-        break;
-    case 1: // weight of Huber asymmetric psi-function
-        f_wgt_psi = huber_wgt_asym;
-        break;
-    case 2: // weight of Tukey biweight psi-function
-        f_wgt_psi = tukey_wgt;
-        break;
-    default:
-        f_wgt_psi = huber_wgt;
-    }
-
-    double mad_const = mad_NORM_CONSTANT;       // mad consistency correction
-
-    switch (*type) {
-    case 1:                                     // Mallows GM-estimator
-        // consistency correction for mad
-        status = mallows_mad_normalization(xwgt, n, &mad_const);
-        if (status != ROBSURVEY_ERROR_OK) {
-            PRINT_OUT("Error: %s\n", robsurvey_error(status));
-            *maxit = 0;
-            goto clean_up;
-        }
-        dat->xwgt = xwgt;
-        break;
-    case 2:                                     // Schweppe GM-estimator
-        // turn xgwt into a multiplicative weight
-        for (int i = 0; i < *n; i++) {
-            if (fabs(xwgt[i]) < DBL_EPSILON)
-                xwgt[i] = 0.0;
-            else
-                xwgt[i] = 1.0 / xwgt[i];
-        }
-        dat->xwgt = xwgt;
-        break;
-    }
-
-    // STEP 2: initialize
-    status = initialize(dat, work, resid, beta0, scale, init, mad_center);
-    if (status != ROBSURVEY_ERROR_OK) {
-        PRINT_OUT("Error: %s\n", robsurvey_error(status));
-        *maxit = 0;
-        goto clean_up;
-    }
-
-     // STEP 3: irwls updating
-    int iterations = 0, converged = 0;
-    while (iterations++ < *maxit) {
-        // robustness weights: robwgt
-        weighting_scheme(dat, f_wgt_psi, resid, scale, k, psi, type, robwgt);
-
-        // update beta and residuals
-        status = rfitwls(dat, work, robwgt, beta1, resid);
-        if (status != ROBSURVEY_ERROR_OK) {
-            PRINT_OUT("Error: %s\n", robsurvey_error(status));
-            *maxit = 0;
-            goto clean_up;
-        }
-
-        // update estimate of scale
-        if (*type == 1) {                       // Mallows GM
-            double* restrict dummy_resid = work_x;
-            for (int i = 0; i < *n; i++)
-                dummy_resid[i] = resid[i] * sqrt(xwgt[i]);
-            status = wmad(dat, work, dummy_resid, mad_center, mad_const,
-                scale);
-
-        } else {                                // otherwise
-            status = wmad(dat, work, resid, mad_center, mad_const, scale);
-        }
-        if (status != ROBSURVEY_ERROR_OK) {
-            PRINT_OUT("Error: %s\n", robsurvey_error(status));
-            *maxit = 0;
-            goto clean_up;
-        }
-
-        // check for convergence
-        converged = (norm(beta0, beta1, *p) < *tol * *scale) ? 1: 0;
-        if (converged)
-            break;
-
-        // prepare the next while run
-        Memcpy(beta0, beta1, *p);
-    }
-    *maxit = (converged) ? iterations : 0;
-
-    // final robustness weights
-    for (int i = 0; i < *n; i++)
-        robwgt[i] /= w[i];
-
-clean_up:
-    Free(beta1); Free(work_x); Free(work_y); Free(work_2n); Free(work_lapack);
-}
-
-/******************************************************************************\
-|* initialization of the regression estimator (beta0 and scale)               *|
-|*                                                                            *|
-|* data       typedef struct regdata                                          *|
-|* work       typedef struct workarray                                        *|
-|* resid      on return: residuals, array[n]                                  *|
-|* beta0      on return: weighted least squares estimates, array[p]           *|
-|* scale      on return: weighted mad                                         *|
-|* init       type of initialization                                          *|
-|* mad_center mad centered about the median (1) or about zero (0)             *|
-\******************************************************************************/
-robsurvey_error_type initialize(regdata *dat, workarray *work,
-    double* restrict resid, double* restrict beta0, double *scale, int *init,
-    int *mad_center)
-{
-    robsurvey_error_type status;
-    if (*init) {
-        // compute least squares estimate of 'beta'
-        status = rfitwls(dat, work, dat->w, beta0, resid);
-        if (status != ROBSURVEY_ERROR_OK)
-            return status;
-    }
-    // compute the residuals (BLAS::dgemv)
-    const int n = dat->n;
-    const int p = dat->p;
-    const int int_1 = 1;
-    const double double_minus1 = -1.0, double_1 = 1.0;
-    Memcpy(resid, dat->y, n);
-    F77_CALL(dgemv)("N", &n, &p, &double_minus1, dat->x, &n, beta0, &int_1,
-        &double_1, resid, &int_1 FCONE);
-
-    // compute 'scale' by the weighted mad
-    status = wmad(dat, work, resid, mad_center, mad_NORM_CONSTANT, scale);
-    return status;
-}
-
-/******************************************************************************\
-|* Weighting scheme for iteratively reweighted least squares; weighting with  *|
-|* respect to sampling, residual and design space outlyingness                *|
-|*                                                                            *|
-|* dat       typedef struct regdata                                           *|
-|* f_wgt_psi function pointer to the wgt/psi-function                         *|
-|* resid     residuals, array[n]                                              *|
-|* k         tuning constant of the psi-function                              *|
-|* type      type of estimator                                                *|
-|* robwgt    on return: combined robustness (and sampling) weight             *|
-\******************************************************************************/
-static inline void weighting_scheme(regdata *dat,
-    double (*f_wgt_psi)(double, const double), double* restrict resid,
-    double *scale, double *k, int *psi, int *type, double* restrict robwgt)
-{
-    const int n = dat->n;
-    double dummy_resid;
-    double* restrict w = dat->w;
-    double* restrict xwgt = dat->xwgt;
-
-    switch (*type) {
-    case 0: // M-estimator
-        for (int i = 0; i < n; i++)
-            robwgt[i] = w[i] * f_wgt_psi(resid[i] / *scale, *k);
-        break;
-    case 1: // Mallows GM-estimator
-        for (int i = 0; i < n; i++)
-            robwgt[i] = w[i] * xwgt[i] * f_wgt_psi(resid[i] / *scale, *k);
-        break;
-    case 2: // Schweppe GM-estimator
-        for (int i = 0; i < n; i++) {
-            dummy_resid = resid[i] * xwgt[i];
-            robwgt[i] = w[i] * f_wgt_psi(dummy_resid / *scale, *k);
-        }
-        break;
-    }
-}
-
-/******************************************************************************\
-|* Weighted least squares estimate (coefficients and residuals)               *|
-|*                                                                            *|
-|* dat    typedef struct regdata                                              *|
-|* work   typedef struct work array                                           *|
-|* w      weights vector, array[n]                                            *|
-|* beta0  on return: coefficient vector, array[p]                             *|
-|* resid  on return: residuals vector, array[n]                               *|
-\******************************************************************************/
-robsurvey_error_type rfitwls(regdata *dat, workarray *work, double* restrict w,
-    double* restrict beta, double* restrict resid)
-{
-    const int n = dat->n;
-    const int p = dat->p;
-    int lwork = work->lwork;
-    double* restrict x = dat->x;
-    double* restrict y = dat->y;
-
-    // define constants for the call of 'dgels'
-    const int int_1 = 1;
-    int info_dgels = 1;
-
-    // STEP 0: determine the optimal size of array 'work_dgels'
-    if (lwork < 0) {
-        double dummy_work_dgels;
-        F77_CALL(dgels)("N", &n, &p, &int_1, x, &n, y, &n, &dummy_work_dgels,
-            &lwork, &info_dgels FCONE);
-        work->lwork = (int) dummy_work_dgels;
-        return ROBSURVEY_ERROR_OK;
-
-	// STEP 1: compute least squares fit
-	} else {
-        double* restrict work_x = work->work_x;
-        double* restrict work_y = work->work_y;
-        double* restrict work_dgels = work->work_lapack;
-
-        // pre-multiply the design matrix and the response vector by sqrt(w)
-        double tmp;
-        for (int i = 0; i < n; i++) {
-            tmp = sqrt(w[i]);
-            work_y[i] = y[i] * tmp;
-
-            for (int j = 0; j < p; j++)
-                work_x[n * j + i] = x[n * j + i] * tmp;
-        }
-
-        // compute the (weighted) least squares estimate (LAPACK::dgels),
-        // solves minimize |B - A*X| for X (using QR factorization)
-        F77_CALL(dgels)("N", &n, &p, &int_1, work_x, &n, work_y, &n,
-            work_dgels, &lwork, &info_dgels FCONE);
-
-        // dgels is not well suited as a rank-revealing procedure; i.e., INFO<0
-        // iff a diagonal element of the R matrix is exactly 0. This is not
-        // helpful; hence, we check the diagonal elements of R separately and
-        // issue and error flag if any(abs(diag(R))) is close to zero
-        for (int i = 0; i < p; i++)
-            if (fabs(work_x[(n + 1) * i]) < sqrt(DBL_EPSILON))
-                return ROBSURVEY_ERROR_RANK_DEFICIENT;
-
-        // retrieve 'betacoefficients'
-        Memcpy(beta, work_y, p);
-
-        // compute the residuals (BLAS::dgemv)
-        const double double_minus1 = -1.0, double_1 = 1.0;
-        Memcpy(resid, y, n);
-        F77_CALL(dgemv)("N", &n, &p, &double_minus1, x, &n, beta, &int_1,
-            &double_1, resid, &int_1 FCONE);
-        return ROBSURVEY_ERROR_OK;
-    }
-}
-
-/******************************************************************************\
-|* Weighted median of the absolute deviation about zero or about the weighted *|
-|* median                                                                     *|
-|*                                                                            *|
-|* dat      typedef struct regdata                                            *|
-|* work     typedef struct workarray                                          *|
-|* resid    residuals, array[n]                                               *|
-|* median   mad centered about the median (1) or about zero (0)               *|
-|* constant normalization constant of the mad                                 *|
-|* mad      on return: weighted mad                                           *|
-\******************************************************************************/
-robsurvey_error_type wmad(regdata *dat, workarray *work, double* restrict resid,
-    int* median, double constant, double *mad)
-{
-    int n = dat->n;
-    double* restrict w = dat->w;
-    double* restrict work_y = work->work_y;
-    double* restrict work_2n = work->work_2n;
-
-    // center the absolute deviations about the weighted median or about zero
-    double med, prob = 0.5;
-    if (*median) {          // centered about the weighted median
-        wquantile_noalloc(resid, w, work_2n, &n, &prob, &med);
-        for (int i = 0; i < n; i++)
-            work_y[i] = fabs(resid[i] - med);
-    } else {                // centered about zero
-         for (int i = 0; i < n; i++)
-            work_y[i] = fabs(resid[i]);
-    }
-
-    // compute mad
-    wquantile_noalloc(work_y, w, work_2n, &n, &prob, mad);
-    *mad *= constant;
-
-    if (*mad < DBL_EPSILON)
-        return ROBSURVEY_ERROR_SCALE_ZERO;
-    else
-        return ROBSURVEY_ERROR_OK;
-}
-
-/******************************************************************************\
-|* euclidean norm                                                             *|
-|*                                                                            *|
-|* x   array[p]                                                               *|
-|* y   array[p]                                                               *|
-|* p   dimension                                                              *|
-|* NOTE: the algorithm follows S. Hammarling's implementaion of LAPACK:dnorm2 *|
-\******************************************************************************/
-static inline double norm(const double *x, const double *y, const int p)
-{
-    double abs, scale = 0.0, ssq = 1.0;
-    for (int i = 0; i < p; i++) {
-        abs = fabs(x[i] - y[i]);
-        if (abs < DBL_EPSILON)
-            continue;
-        if (scale <= abs) {
-            ssq = 1.0 + ssq * _POWER2(scale / abs);
-            scale = abs;
-        } else {
-            ssq += _POWER2(abs / scale);
-        }
-    }
-    return scale * sqrt(ssq);
-}
 
 /******************************************************************************\
 |* model-based covariance matrix of the esimated regression coefficients      *|
@@ -481,27 +107,12 @@ void cov_reg_model(double *resid, double *x, double *xwgt, double *robwgt,
     double* restrict work_lapack = (double*) Calloc(lwork, double);
     work->work_lapack = work_lapack;
 
-    // psi-function: function ptrs
+    // psi and psi-prime functions
     double (*f_psi)(double, double);
-    double (*f_psiprime)(double, double);
+    f_psi = get_psi_function(*psi);
 
-    switch (*psi) {
-    case 0: // Huber psi
-        f_psi = huber_psi;
-        f_psiprime = huber_psi_prime;
-        break;
-    case 1: // asymmetric Huber psi
-        f_psi = huber_psi_asym;
-        f_psiprime = huber_psi_prime_asym;
-        break;
-    case 2: // Tukey biweight psi
-        f_psi = tukey_psi;
-        f_psiprime = tukey_psi_prime;
-        break;
-    default:
-        f_psi = huber_psi;
-        f_psiprime = huber_psi_prime;
-    }
+    double (*f_psiprime)(double, double);
+    f_psiprime = get_psi_prime_function(*psi);
 
     // type of estimator
     robsurvey_error_type status;
@@ -574,11 +185,11 @@ robsurvey_error_type cov_m_est(regdata *dat, workarray *work,
     }
 
     // inverse of x^T * x (using QR factorization)
-    status = inverse_qr(work, x, &n, &p, 0);
+    status = inverse_qr(work, x, &n, &p, 0);    // inverse of R matrix
     if (status != ROBSURVEY_ERROR_OK)
         return status;
 
-    double* restrict work_x = work->work_x;
+    double* restrict work_x = work->work_x;     // R^{-1} * R^{-T}
     F77_CALL(dtrmm)("R", "U", "T", "N", &p, &p, scale2, work_x, &p, work_x,
         &p FCONE FCONE FCONE FCONE);
 
@@ -872,21 +483,9 @@ void cov_reg_design(double *x, double *w, double *xwgt, double *resid,
         }
     }
 
-    // switch psi'-function: function ptrs
+    // psi-prime function
     double (*f_psiprime)(double, double);
-    switch (*psi) {
-    case 0: // Huber psi
-        f_psiprime = huber_psi_prime;
-        break;
-    case 1: // asymmetric Huber psi
-        f_psiprime = huber_psi_prime_asym;
-        break;
-    case 2: // Tukey biweight psi
-        f_psiprime = tukey_psi_prime;
-        break;
-    default:
-        f_psiprime = huber_psi_prime;
-    }
+    f_psiprime = get_psi_prime_function(*psi);
 
     //--------------------------------------------
     // Q matrix (on entry)

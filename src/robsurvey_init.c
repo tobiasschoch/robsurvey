@@ -1,6 +1,7 @@
 // RegisteringDynamic Symbols
 #include <R_ext/Rdynload.h>
-#include "robsurvey.h"
+#include "regression.h"
+#include "regression_cov.h"
 #include "trimmedwinsorized.h"
 #include "huberm.h"
 #include "psifunctions.h"

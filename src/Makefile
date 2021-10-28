@@ -9,7 +9,7 @@ DLL_R      = $(R_DIR)/bin/x64/R.dll
 
 # Link
 OBJ = wquantile.o mallows.o zeroin.o huberm.o trimmedwinsorized.o \
-		psifunctions.o robsurvey_error.o robsurvey.o
+		psifunctions.o robsurvey_error.o regression.o regression_cov.o
 
 robsurvey.dll : $(OBJ)
 	$(CC) -shared -o $@ $(DLL_BLAS) $(DLL_LAPACK) $(DLL_R) $(OBJ)
@@ -21,4 +21,4 @@ robsurvey.dll : $(OBJ)
 # Housekeeping
 .PHONY: clean
 clean:
-	rm $(OBJ)
+	rm $(OBJ) robsurvey.dll

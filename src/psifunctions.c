@@ -17,15 +17,14 @@
    https://www.gnu.org/licenses/
 
    Notes:
-    + Currently, the following psi-functions (and their respective weight-
-      and psi-prime functions) are implemented:
+    Currently, the following psi-functions (and their respective weight-
+    and psi-prime functions) are implemented:
        - psi = 0: Huber psi-function (see Huber, 1981)
        - psi = 1: asymmetric Huber psi-function (see Hulliger, 1995)
        - psi = 2: Tukey biweight psi-function (see Huber, 1981)
-    + Additional psi-functions can be added if required. The method
-      dispatch takes place in the functions 'rwlslm' and 'cov_rwlslm'
-      (see file 'robsurvey.c'). You must add the psi-, psi-prime-, and
-      weight-functions in the switch statement in the mentioned functions.
+    If you want to add other psi-functions, you must include them in the
+    switch case statements of the functions 'get_wgt_function',
+    'get_psi_function', and 'get_psi_prime_function'; see below.
 
   References:
     - Huber, P.J. (1981). Robust Statistics, New York: John Wiley & Sons.
@@ -35,6 +34,79 @@
 
 #include "psifunctions.h"
 #define _POWER2(_x) ((_x) * (_x))
+
+double huber_wgt(double, const double);
+double huber_psi(double, double);
+double huber_psi_prime(double, const double);
+
+double huber_wgt_asym(double, const double);
+double huber_psi_asym(double, const double);
+double huber_psi_prime_asym(double, const double);
+
+double tukey_wgt(double, const double);
+double tukey_psi(double, const double);
+double tukey_psi_prime(double, const double);
+
+/******************************************************************************\
+|* Obtain the weight (wgt), psi- or psi-prime function associated with a      *|
+|* psi-function; this wrapper function has its own return type 'f_ptr'        *|
+\******************************************************************************/
+f_ptr get_wgt_function(int psi)
+{
+    switch (psi) {
+    case 0: // weight of Huber psi-function
+        return huber_wgt;
+    case 1: // weight of Huber asymmetric psi-function
+        return huber_wgt_asym;
+    case 2: // weight of Tukey biweight psi-function
+        return tukey_wgt;
+    default:
+        return huber_wgt;
+    }
+}
+f_ptr get_psi_function(int psi)
+{
+    switch (psi) {
+    case 0: // Huber psi-function
+        return huber_psi;
+    case 1: // Huber asymmetric psi-function
+        return huber_psi_asym;
+    case 2: // Tukey biweight psi-function
+        return tukey_psi;
+    default:
+        return huber_psi;
+    }
+}
+f_ptr get_psi_prime_function(int psi)
+{
+    switch (psi) {
+    case 0: // Huber psi-function
+        return huber_psi_prime;
+    case 1: // Huber asymmetric psi-function
+        return huber_psi_prime_asym;
+    case 2: // Tukey biweight psi-function
+        return tukey_psi_prime;
+    default:
+        return huber_psi_prime;
+    }
+}
+
+/******************************************************************************\
+|* psi-function callable from R                                               *|
+|*                                                                            *|
+|* x     vector, array[n]                                                     *|
+|* k     tuning constant                                                      *|
+|* n     dimension                                                            *|
+|* psi   0 = Huber, 1 = asymmetric Huber, 2 = Tukey biweight                  *|
+|* res   on return: psi(x), array[n]                                          *|
+\******************************************************************************/
+void psi_function(double *x, double *k, int *n, int *psi, double *res)
+{
+    double (*f_psi)(double, const double);
+    f_psi = get_psi_function(*psi);
+    for (int i = 0; i < *n; i++)
+        res[i] = (*f_psi)(x[i], *k);
+}
 
 /******************************************************************************\
 |* Huber psi-, psi-prime- and wgt-functions                                   *|
@@ -114,28 +186,5 @@ double tukey_wgt(double x, const double k)
         z = (1.0 - z) * (1.0 + z);
         return _POWER2(z);
     }
-}
-/******************************************************************************\
-|* psi-function callable from R                                               *|
-|* argument psi: 0 = Huber, 1 = asymmetric Huber, 2 = Tukey biweight          *|
-\******************************************************************************/
-void psi_function(double *x, double *k, int *n, int *psi, double *res)
-{
-    double (*f_psi)(double, double);
-    switch (*psi) {
-    case 0: // Huber psi-function
-        f_psi = huber_psi;
-        break;
-    case 1: // Huber asymmetric psi-function
-        f_psi = huber_psi_asym;
-        break;
-    case 2: // Tukey biweight psi-function
-        f_psi = tukey_psi;
-        break;
-    default:
-        f_psi = huber_psi;
-    }
-    for (int i = 0; i < *n; i++)
-        res[i] = f_psi(x[i], *k);
 }
 #undef _POWER2

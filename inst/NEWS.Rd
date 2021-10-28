@@ -9,11 +9,10 @@
     \code{svyreg_huberGM})
     \item M- and GM-estimator of regression with Tukey biweight
     psi-function (\code{svyreg_tukey} and \code{svyreg_tukeyGM})
-    \item (Robust) generalized regression estimation (GREG and robust GREG)
     \item Weighted \code{k} winsorized mean and total (e.g.,
     \code{weighted_mean_k_winsorized})
     \item Dalen's weight reduction estimator of the mean and total (e.g.,
-    \code{weighted_mean_dalen})
+    \code{weighted_mean_dalen} and \code{svymean_dalen})
     \item Weighted M-estimator of the mean and total with Tukey biweight
     psi-function
     \item Weighted Huber Proposal 2 estimator (\code{huber2})
