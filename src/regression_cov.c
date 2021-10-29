@@ -48,7 +48,7 @@ typedef struct workarray_struct {
 } workarray;
 
 // declaration
-robsurvey_error_type scale_est(regdata*, double*restrict, double* restrict,
+robsurvey_error_type variance_est(regdata*, double*restrict, double* restrict,
     double*, double*, double*, double (*)(double, const double));
 robsurvey_error_type cov_m_est(regdata*, workarray*, double* restrict,
     double* restrict, double*, double*, double*, double (*)(double,
@@ -72,7 +72,7 @@ robsurvey_error_type inverse_qr(workarray*, double* restrict, int*, int*, int);
 |* w       sampling weight, array[n]                                          *|
 |* k       robustness tuning constant                                         *|
 |* scale   estimate of scale                                                  *|
-|* scale2  on return: estimate of scale (proposal 2)                          *|
+|* scale2  on return: estimate of regression variance (proposal 2)            *|
 |* n, p    dimensions                                                         *|
 |* psi     0 = Huber, 1 = asymmetric Huber, 2 = Tukey biweight                *|
 |* type    0 = M-est., 1 = Mallows GM-est., 2 = Schweppe GM-est.              *|
@@ -159,7 +159,7 @@ clean_up:
 |* robwgt     robustness weight, array[n]                                     *|
 |* k          robustness tuning constant                                      *|
 |* scale      weighted mad                                                    *|
-|* scale2     on return: estimate of regression scale                         *|
+|* scale2     on return: estimate of regression variance                      *|
 |* f_psiprime function ptr to the psi-prime function                          *|
 \******************************************************************************/
 robsurvey_error_type cov_m_est(regdata *dat, workarray *work,
@@ -171,8 +171,8 @@ robsurvey_error_type cov_m_est(regdata *dat, workarray *work,
     double* restrict w = dat->w;
     robsurvey_error_type status;
 
-    // estimate of scale
-    status = scale_est(dat, resid, robwgt, scale, scale2, k, f_psiprime);
+    // estimate of variance
+    status = variance_est(dat, resid, robwgt, scale, scale2, k, f_psiprime);
     if (status != ROBSURVEY_ERROR_OK)
         return status;
 
@@ -189,7 +189,7 @@ robsurvey_error_type cov_m_est(regdata *dat, workarray *work,
     if (status != ROBSURVEY_ERROR_OK)
         return status;
 
-    double* restrict work_x = work->work_x;     // R^{-1} * R^{-T}
+    double* restrict work_x = work->work_x;     // scale2 * R^{-1} * R^{-T}
     F77_CALL(dtrmm)("R", "U", "T", "N", &p, &p, scale2, work_x, &p, work_x,
         &p FCONE FCONE FCONE FCONE);
 
@@ -197,21 +197,22 @@ robsurvey_error_type cov_m_est(regdata *dat, workarray *work,
 }
 
 /******************************************************************************\
-|* Regression estimate of scale                                               *|
+|* Estimate of regression variance                                            *|
 |*                                                                            *|
 |* dat        typedef struct regdata                                          *|
 |* resid      residuals, array[n]                                             *|
 |* robwgt     robustness weight, array[n]                                     *|
 |* scale      weighted mad                                                    *|
-|* scale2     on return: estimate of regression scale                         *|
+|* scale2     on return: estimate of regression variance                      *|
 |* k          robustness tuning constant                                      *|
 |* f_psiprime function ptr to the psi-prime function                          *|
 \******************************************************************************/
-robsurvey_error_type scale_est(regdata *dat, double* restrict resid,
+robsurvey_error_type variance_est(regdata *dat, double* restrict resid,
     double* restrict robwgt, double *scale, double *scale2, double *k,
     double (*f_psiprime)(double, const double))
 {
     int n = dat->n, p = dat->p;
+    double dbl_p = (double)p;
     double* restrict w = dat->w;
 
     // E(psi') and E(psi')^2
@@ -225,16 +226,16 @@ robsurvey_error_type scale_est(regdata *dat, double* restrict resid,
     Epsi_prime /= sum_w;
     Epsi_prime2 /= sum_w;
 
-    // scale estimate
+    // variance estimate
     *scale2 = 0.0;
     for (int i = 0; i < n; i++)
         *scale2 += w[i] * _POWER2(robwgt[i] * resid[i]);
+    *scale2 /= (sum_w - dbl_p) * _POWER2(Epsi_prime);
 
-    *scale2 /= (sum_w - (double)p) * _POWER2(Epsi_prime);
-
-    // correction factor (see Huber, 1981, p. 172-174)
-    double kappa = 1.0 + (double)p / sum_w * (Epsi_prime2 /
-        _POWER2(Epsi_prime) - 1.0) * (double)n / (double)(n - 1);
+    // correction factor (see Huber, 1981, p. 172-174); with modification:
+    // numerator is (N-1) not N; viz. MASS::rlm
+    double kappa = 1.0 + dbl_p / (sum_w - 1.0) * (Epsi_prime2 /
+        _POWER2(Epsi_prime) - 1.0);
     *scale2 *= _POWER2(kappa);
 
     if (*scale2 < DBL_EPSILON)
@@ -252,7 +253,7 @@ robsurvey_error_type scale_est(regdata *dat, double* restrict resid,
 |* robwgt     robustness weight, array[n]                                     *|
 |* k          robustness tuning constant                                      *|
 |* scale      weighted mad                                                    *|
-|* scale2     on return: estimate of regression scale                         *|
+|* scale2     on return: estimate of regression variance                      *|
 |* f_psiprime function ptr to the psi-prime function                          *|
 |* f_psi      function ptr to the psi-function                                *|
 \******************************************************************************/
@@ -342,7 +343,7 @@ robsurvey_error_type cov_schweppe_gm_est(regdata *dat, workarray *work,
 |* robwgt     robustness weight, array[n]                                     *|
 |* k          robustness tuning constant                                      *|
 |* scale      weighted mad                                                    *|
-|* scale2     on return: estimate of regression scale                         *|
+|* scale2     on return: estimate of regression variance                      *|
 |* f_psiprime function ptr to the psi-prime function                          *|
 \******************************************************************************/
 robsurvey_error_type cov_mallows_gm_est(regdata *dat, workarray *work,
@@ -356,8 +357,8 @@ robsurvey_error_type cov_mallows_gm_est(regdata *dat, workarray *work,
     double* restrict work_x = work->work_x;
     robsurvey_error_type status;
 
-    // estimate of scale
-    status = scale_est(dat, resid, robwgt, scale, scale2, k, f_psiprime);
+    // estimate of variance
+    status = variance_est(dat, resid, robwgt, scale, scale2, k, f_psiprime);
     if (status != ROBSURVEY_ERROR_OK)
         return status;
 
@@ -460,7 +461,7 @@ void cov_reg_design(double *x, double *w, double *xwgt, double *resid,
     double *mat)
 {
     *ok = 1;
-    double* Q = (double*) Calloc(*p * *p, double);
+    double* L = (double*) Calloc(*p * *p, double);
     double* work_pp = (double*) Calloc(*p * *p, double);
 
     // determine size of the work_dgeqrf array and allocate it
@@ -488,32 +489,35 @@ void cov_reg_design(double *x, double *w, double *xwgt, double *resid,
     f_psiprime = get_psi_prime_function(*psi);
 
     //--------------------------------------------
-    // Q matrix (on entry)
-    Memcpy(Q, mat, *p * *p);
+    // cov of total estimator is decomposed into Cholesky factors L * L^T
+    Memcpy(L, mat, *p * *p);
     // Cholesky factorization
-    F77_CALL(dpotrf)("L", p, Q, p, &info FCONE);
+    F77_CALL(dpotrf)("L", p, L, p, &info FCONE);
     if (info != 0) {
-        PRINT_OUT("Error in dpotrf (Q matrix)\n");
+        PRINT_OUT("Error in dpotrf (L matrix)\n");
         *ok = 0;
         goto clean_up;
     }
-    // set upper triangular matrix of Q to zero
+    // set upper triangular matrix of L to zero
     for (int i = 1; i < *p; i++)
         for (int j = 0; j < i; j++)
-            Q[*p * i + j] = 0.0;
+            L[*p * i + j] = 0.0;
 
     //--------------------------------------------
-    // M matrix
+    // M matrix of the M-estimator
     // pre-multiply x[i, j] by square root of (weight[i] * psi[i]')
     double tmp;
     double *R = work_pp; // alias
+
+    //FIXME: psi-prime can be negative for Tukey biweight
 
     for (int i = 0; i < *n; i++) {
         tmp = sqrt(w[i] * (*f_psiprime)(resid[i] / *scale, *k));
         for (int j = 0; j < *p; j++)
             x[i + *n * j] *= tmp;
     }
-    // QR factorization
+
+    // QR factorization of (modified) x matrix
     F77_CALL(dgeqrf)(n, p, x, n, R, work_dgeqrf, &lwork, &info);
     if (info != 0) {
         PRINT_OUT("Error in dgeqrf (M matrix)\n");
@@ -535,22 +539,22 @@ void cov_reg_design(double *x, double *w, double *xwgt, double *resid,
         *ok = 0;
         goto clean_up;
     }
-    // Q := R^{-T} * Q
+    // L is modified (from the left and the right)
+    // L := R^{-T} * L
     const double d_one = 1.0;
-    F77_CALL(dtrmm)("L", "U", "T", "N", p, p, &d_one, R, p, Q,
+    F77_CALL(dtrmm)("L", "U", "T", "N", p, p, &d_one, R, p, L,
         p FCONE FCONE FCONE FCONE);
-    // Q := R^{-1} * Q
-    F77_CALL(dtrmm)("L", "U", "N", "N", p, p, &d_one, R, p, Q,
+    // L := R^{-1} * L
+    F77_CALL(dtrmm)("L", "U", "N", "N", p, p, &d_one, R, p, L,
         p FCONE FCONE FCONE FCONE);
 
-    //--------------------------------------------
     // covariance matrix
     double d_zero = 0.0;
-    F77_CALL(dgemm)("N", "T", p, p, p, &d_one, Q, p, Q, p, &d_zero, mat,
+    F77_CALL(dgemm)("N", "T", p, p, p, &d_one, L, p, L, p, &d_zero, mat,
         p FCONE FCONE);
 
 clean_up:
-    Free(Q); Free(work_pp); Free(work_dgeqrf);
+    Free(L); Free(work_pp); Free(work_dgeqrf);
 }
 #undef _POWER2
 #undef PRINT_OUT

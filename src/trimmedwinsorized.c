@@ -1,4 +1,4 @@
-/* Functions to winsorized and trimmed estimators of location
+/* Functions for winsorized and trimmed estimators of location
 
    Copyright (C) 2020-21 Tobias Schoch (e-mail: tobias.schoch@gmail.com)
 

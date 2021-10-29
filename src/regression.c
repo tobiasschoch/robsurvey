@@ -54,8 +54,7 @@ robsurvey_error_type rfitwls(regdata*, workarray*, double* restrict,
 static inline double norm(const double*, const double*, const int)
     __attribute__((always_inline));
 static inline void weighting_scheme(regdata*, double (*f_wgt_psi)(double,
-    const double), double* restrict, double*, double*, int*, int*,
-    double* restrict);
+    const double), double* restrict, double*, double*, int*, double* restrict);
 robsurvey_error_type initialize(regdata*, workarray*, double* restrict,
     double* restrict, double*, int*, int*);
 
@@ -155,7 +154,7 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
     int iterations = 0, converged = 0;
     while (iterations++ < *maxit) {
         // robustness weights: robwgt
-        weighting_scheme(dat, f_wgt_psi, resid, scale, k, psi, type, robwgt);
+        weighting_scheme(dat, f_wgt_psi, resid, scale, k, type, robwgt);
 
         // update beta and residuals
         status = rfitwls(dat, work, robwgt, beta1, resid);
@@ -243,15 +242,15 @@ robsurvey_error_type initialize(regdata *dat, workarray *work,
 |* dat       typedef struct regdata                                           *|
 |* f_wgt_psi function pointer to the wgt/psi-function                         *|
 |* resid     residuals, array[n]                                              *|
+|* scale     scale                                                            *|
 |* k         tuning constant of the psi-function                              *|
 |* type      type of estimator                                                *|
 |* robwgt    on return: combined robustness (and sampling) weight             *|
 \******************************************************************************/
 static inline void weighting_scheme(regdata *dat,
     double (*f_wgt_psi)(double, const double), double* restrict resid,
-    double *scale, double *k, int *psi, int *type, double* restrict robwgt)
+    double *scale, double *k, int *type, double* restrict robwgt)
 {
-//FIXME: *psi is not needed
     const int n = dat->n;
     double dummy_resid;
     double* restrict w = dat->w;
