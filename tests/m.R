@@ -62,11 +62,11 @@ expect_equal(coef(est), coef(ref), tolerance = 1e-7,
 expect_equal(vcov(est, "model"), vcov(ref), tolerance = 1e-7,
     label = "Tukey regression M-est: model-based cov")
 # design-based covariance matrix (test against fixed values)
-# ref <- matrix(c(), ncol = 2)
-# colnames(ref) <- rownames(ref) <- c("(Intercept)", "employment")
-# expect_equal(vcov(est), ref,
-#     label = "Tukey regression M-est: design-based cov")
-#
+ref <- matrix(c(43513457.824988, -1421272.808406, -1421272.808406,
+    589121.583227), ncol = 2)
+colnames(ref) <- rownames(ref) <- c("(Intercept)", "employment")
+expect_equal(vcov(est), ref,
+    label = "Tukey regression M-est: design-based cov")
 
 #-------------------------------------------------------------------------------
 # Mallows regression GM-estimator: Huber psi
@@ -105,8 +105,6 @@ expect_equal(vcov(est, "model"), vcov(ref), tolerance = 1e-7,
 
 # planned to fail...
 expect_equal(1, 2, label = "not a real test")
-
-
 
 
 

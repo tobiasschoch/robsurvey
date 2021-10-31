@@ -460,15 +460,13 @@ void cov_reg_design(double *x, double *w, double *xwgt, double *resid,
     double *scale, double *k, int *psi, int *type, int *n, int *p, int *ok,
     double *mat)
 {
+    int info = 1;
+    double d_one = 1.0, d_zero = 0.0;
     *ok = 1;
-    double* L = (double*) Calloc(*p * *p, double);
+    // allocate memory
+    double* M = (double*) Calloc(*p * *p, double);
     double* work_pp = (double*) Calloc(*p * *p, double);
-
-    // determine size of the work_dgeqrf array and allocate it
-    int info, lwork = -1;
-    F77_CALL(dgeqrf)(n, p, x, n, mat, work_pp, &lwork, &info);
-    lwork = (int)work_pp[0];
-    double* restrict work_dgeqrf = (double*) Calloc(lwork, double);
+    double* work_np = (double*) Calloc(*n * *p, double);
 
     // GM-estimators
     if (*type == 1) {                   // Mallows GM-estimator
@@ -489,72 +487,47 @@ void cov_reg_design(double *x, double *w, double *xwgt, double *resid,
     f_psiprime = get_psi_prime_function(*psi);
 
     //--------------------------------------------
-    // cov of total estimator is decomposed into Cholesky factors L * L^T
-    Memcpy(L, mat, *p * *p);
-    // Cholesky factorization
-    F77_CALL(dpotrf)("L", p, L, p, &info FCONE);
-    if (info != 0) {
-        PRINT_OUT("Error in dpotrf (L matrix)\n");
-        *ok = 0;
-        goto clean_up;
-    }
-    // set upper triangular matrix of L to zero
-    for (int i = 1; i < *p; i++)
-        for (int j = 0; j < i; j++)
-            L[*p * i + j] = 0.0;
-
-    //--------------------------------------------
-    // M matrix of the M-estimator
-    // pre-multiply x[i, j] by square root of (weight[i] * psi[i]')
+    // compute matrix M (i.e., sum w[i] * psi_prime[i] * x[i] * x[i]^T)
     double tmp;
-    double *R = work_pp; // alias
-
-    //FIXME: psi-prime can be negative for Tukey biweight
-
     for (int i = 0; i < *n; i++) {
-        tmp = sqrt(w[i] * (*f_psiprime)(resid[i] / *scale, *k));
+        tmp = w[i] * (*f_psiprime)(resid[i] / *scale, *k);
         for (int j = 0; j < *p; j++)
-            x[i + *n * j] *= tmp;
+            work_np[i + *n * j] = x[i + *n * j] * tmp;
     }
+    F77_CALL(dgemm)("T", "N", p, p, n, &d_one, work_np, n, x, n, &d_zero,
+        M, p FCONE FCONE);
 
-    // QR factorization of (modified) x matrix
-    F77_CALL(dgeqrf)(n, p, x, n, R, work_dgeqrf, &lwork, &info);
+    // overwrite M with Cholesky factor of M such that M = U * U^T, where
+    // U is upper triangular
+    F77_CALL(dpotrf)("U", p, M, p, &info FCONE);
     if (info != 0) {
-        PRINT_OUT("Error in dgeqrf (M matrix)\n");
+        PRINT_OUT("Error in dpotrf (M matrix)\n");
         *ok = 0;
         goto clean_up;
     }
-    // extract the upper triangular matrix R
-    for (int i = 0; i < *p; i++) {
-        for (int j = 0; j <= i; j++)
-            R[*p * i + j] = x[*n * i + j];
-        for (int j = i + 1; j < *p; j++)
-            R[*p * i + j] = 0.0;
-    }
 
-    // inverse of the R matrix
-    F77_CALL(dtrtri)("U", "N", p, R, p, &info FCONE FCONE);
+    // overwrite M with upper triangular matrix of the inverse of M (using
+    // Cholesky factor of M)
+    F77_CALL(dpotri)("U", p, M, p, &info FCONE);
     if (info != 0) {
-        PRINT_OUT("Error in dtrtri (M matrix)\n");
+        PRINT_OUT("Error in dpotri (M matrix)\n");
         *ok = 0;
         goto clean_up;
     }
-    // L is modified (from the left and the right)
-    // L := R^{-T} * L
-    const double d_one = 1.0;
-    F77_CALL(dtrmm)("L", "U", "T", "N", p, p, &d_one, R, p, L,
-        p FCONE FCONE FCONE FCONE);
-    // L := R^{-1} * L
-    F77_CALL(dtrmm)("L", "U", "N", "N", p, p, &d_one, R, p, L,
-        p FCONE FCONE FCONE FCONE);
 
-    // covariance matrix
-    double d_zero = 0.0;
-    F77_CALL(dgemm)("N", "T", p, p, p, &d_one, L, p, L, p, &d_zero, mat,
+    // compute B := M^{-1} * mat
+    F77_CALL(dsymm)("L", "U", p, p, &d_one, M, p, mat, p, &d_zero, work_pp,
         p FCONE FCONE);
 
+    // compute B * M^{-1} := covariance
+    F77_CALL(dsymm)("R", "U", p, p, &d_one, M, p, work_pp, p, &d_zero, mat,
+        p FCONE FCONE);
+
+    //--------------------------------------------
+    // covariance matrix
+
 clean_up:
-    Free(L); Free(work_pp); Free(work_dgeqrf);
+    Free(work_pp); Free(work_np); Free(M);
 }
 #undef _POWER2
 #undef PRINT_OUT

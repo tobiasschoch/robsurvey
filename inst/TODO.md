@@ -2,9 +2,6 @@
 ## ADD FEATURE
 * vignette: robust regression
 * model-design based variance: regression
-
-## FIX
-* survey weighted regression: model-based cov: BUG
 * .cov_reg_compound: regression: variance: compound design-model distribution
 
 # MILESTONE R 0.3
