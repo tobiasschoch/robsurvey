@@ -16,7 +16,8 @@
     \item Weighted M-estimator of the mean and total with Tukey biweight
     psi-function
     \item Weighted Huber Proposal 2 estimator (\code{huber2})
-    \item Data sets \code{flour} and \code{losdata}
+    \item Data sets \code{counties}, \code{flour}, \code{losdata}, and
+    \code{MU284strat}
 }
 }
 \subsection{BUG FIXES}{
