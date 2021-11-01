@@ -45,7 +45,7 @@ The data \code{workplace} is from Table 6.3 in Fuller (2009, pp. 366--367).
 
 \references{
 Fuller, W. A. (2009). \emph{Sampling Statistics},
-    Hoboken (NJ): Jown Wiley & Sons.
+    Hoboken (NJ): John Wiley & Sons.
 
 Patak, Z., Hidiroglou, M. and Lavallée, P. (1998). The methodology of the
     Workplace and Employee Survey. \emph{Proceedings of the Survey

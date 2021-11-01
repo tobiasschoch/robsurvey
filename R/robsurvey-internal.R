@@ -85,6 +85,11 @@
     if (chk)
         stop("Some observations are not finite\n", call. = FALSE)
 
+#FIXME: return design, but drop variables
+# design = subset(design, cc)
+#
+# NOTE: we need another function for the univariate estimators
+
     list(x = x, y = as.numeric(y), yname = yname, var = var, w = w,
         intercept = attr(mt, "intercept"))
 }
