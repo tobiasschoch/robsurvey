@@ -1,5 +1,6 @@
 # MILESTONE R 0.2
 ## ADD FEATURE
+* NA handling of survey.design
 * vignette: robust regression
 * model-design based variance: regression
 * .cov_reg_compound: regression: variance: compound design-model distribution

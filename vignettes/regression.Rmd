@@ -65,6 +65,39 @@ library(robsurvey, quietly = TRUE)
 suppressPackageStartupMessages(library(survey))
 ```
 
+## 1. Counties data
+
+
+```{r}
+data(counties)
+head(counties, 3)
+```
+where
+
+* `state`: state,
+* `county`: county,
+* `landarea`: land area, 1990 (square miles),
+* `totpop`: population total, 1992,
+* `unemp`: number of unemployed persons, 1991,
+* `farmpop`: farm population, 1990,
+* `numfarm`: number of farms, 1987,
+* `farmacre`: acreage in farms, 1987,
+* `weights`: sampling weight,
+* `fpc`: finite population corretion.
+
+The goal is to regress `farmpop` on a set of explanatory variables.
+
+The data are from a simple random sample (without replacement) of $n = 100$ of the $N=3141$ counties in the United Stated (U.S. Bureau of the Census, 1994). We restrict attention to the subset of 98 counties with `farmpop > 0`.
+
+```{r}
+dn <- svydesign(ids = ~1, fpc = ~fpc, weights = ~weights,
+    data = counties[counties$farmpop > 0, ])
+```
+
+```{r}
+m <- svyreg(farmpop ~ numfarm + farmacre, dn, na.rm = TRUE)
+summary(m)
+```
 
 ## 1. Workplace Data
 The `workplace` sample consists of payroll data on $n=142$ workplaces or business establishments (with paid employees) in the retail sector of a Canadian province.

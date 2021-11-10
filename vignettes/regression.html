@@ -526,6 +526,55 @@ summary {
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">library</span>(robsurvey, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)</span>
 <span id="cb1-2"><a href="#cb1-2"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">library</span>(survey)</span></code></pre></div>
 </div>
+<div id="counties-data" class="section level2">
+<h2>1. Counties data</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">data</span>(counties)</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">head</span>(counties, <span class="dv">3</span>)</span>
+<span id="cb2-3"><a href="#cb2-3"></a>  state          county landarea totpop unemp farmpop numfarm farmacre weights</span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="dv">1</span>    AL        Escambia      <span class="dv">948</span>  <span class="dv">36023</span>  <span class="dv">1339</span>     <span class="dv">531</span>     <span class="dv">414</span>    <span class="dv">90646</span>   <span class="fl">31.41</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="dv">2</span>    AL        Marshall      <span class="dv">567</span>  <span class="dv">73524</span>  <span class="dv">3189</span>    <span class="dv">1592</span>    <span class="dv">1582</span>   <span class="dv">136599</span>   <span class="fl">31.41</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="dv">3</span>    AK Prince of Wales     <span class="dv">7325</span>   <span class="dv">6408</span>   <span class="dv">383</span>      <span class="dv">71</span>       <span class="dv">2</span>      <span class="dv">214</span>   <span class="fl">31.41</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a>   fpc</span>
+<span id="cb2-8"><a href="#cb2-8"></a><span class="dv">1</span> <span class="dv">3141</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a><span class="dv">2</span> <span class="dv">3141</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a><span class="dv">3</span> <span class="dv">3141</span></span></code></pre></div>
+<p>where</p>
+<ul>
+<li><code>state</code>: state,</li>
+<li><code>county</code>: county,</li>
+<li><code>landarea</code>: land area, 1990 (square miles),</li>
+<li><code>totpop</code>: population total, 1992,</li>
+<li><code>unemp</code>: number of unemployed persons, 1991,</li>
+<li><code>farmpop</code>: farm population, 1990,</li>
+<li><code>numfarm</code>: number of farms, 1987,</li>
+<li><code>farmacre</code>: acreage in farms, 1987,</li>
+<li><code>weights</code>: sampling weight,</li>
+<li><code>fpc</code>: finite population corretion.</li>
+</ul>
+<p>The goal is to regress <code>farmpop</code> on a set of explanatory variables.</p>
+<p>The data are from a simple random sample (without replacement) of <span class="math inline">\(n = 100\)</span> of the <span class="math inline">\(N=3141\)</span> counties in the United Stated (U.S. Bureau of the Census, 1994). We restrict attention to the subset of 98 counties with <code>farmpop &gt; 0</code>.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="op">&gt;</span><span class="st"> </span>dn &lt;-<span class="st"> </span><span class="kw">svydesign</span>(<span class="dt">ids =</span> <span class="op">~</span><span class="dv">1</span>, <span class="dt">fpc =</span> <span class="op">~</span>fpc, <span class="dt">weights =</span> <span class="op">~</span>weights,</span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="op">+</span><span class="st">     </span><span class="dt">data =</span> counties[counties<span class="op">$</span>farmpop <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>, ])</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="op">&gt;</span><span class="st"> </span>m &lt;-<span class="st"> </span><span class="kw">svyreg</span>(farmpop <span class="op">~</span><span class="st"> </span>numfarm <span class="op">+</span><span class="st"> </span>landarea, dn, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">summary</span>(m)</span>
+<span id="cb4-3"><a href="#cb4-3"></a></span>
+<span id="cb4-4"><a href="#cb4-4"></a>Call<span class="op">:</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="kw">svyreg</span>(<span class="dt">formula =</span> farmpop <span class="op">~</span><span class="st"> </span>numfarm <span class="op">+</span><span class="st"> </span>landarea, <span class="dt">design =</span> dn, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb4-6"><a href="#cb4-6"></a></span>
+<span id="cb4-7"><a href="#cb4-7"></a>Residuals<span class="op">:</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a><span class="st">    </span>Min.  1st Qu.   Median     Mean  3rd Qu.     Max. </span>
+<span id="cb4-9"><a href="#cb4-9"></a><span class="fl">-1382.49</span>  <span class="fl">-311.61</span>   <span class="fl">-22.42</span>     <span class="fl">0.00</span>   <span class="fl">185.50</span>  <span class="fl">2634.37</span> </span>
+<span id="cb4-10"><a href="#cb4-10"></a></span>
+<span id="cb4-11"><a href="#cb4-11"></a>Coefficients<span class="op">:</span></span>
+<span id="cb4-12"><a href="#cb4-12"></a><span class="st">              </span>Estimate Std. Error t value <span class="kw">Pr</span>(<span class="op">&gt;</span><span class="er">|</span>t<span class="op">|</span>)    </span>
+<span id="cb4-13"><a href="#cb4-13"></a>(Intercept) <span class="fl">-105.85552</span>  <span class="fl">106.96311</span>  <span class="fl">-0.990</span>    <span class="fl">0.322</span>    </span>
+<span id="cb4-14"><a href="#cb4-14"></a>numfarm        <span class="fl">1.91891</span>    <span class="fl">0.19471</span>   <span class="fl">9.855</span>   <span class="op">&lt;</span><span class="fl">2e-16</span> <span class="op">**</span><span class="er">*</span></span>
+<span id="cb4-15"><a href="#cb4-15"></a>landarea      <span class="fl">-0.01425</span>    <span class="fl">0.03846</span>  <span class="fl">-0.371</span>    <span class="fl">0.711</span>    </span>
+<span id="cb4-16"><a href="#cb4-16"></a><span class="op">---</span></span>
+<span id="cb4-17"><a href="#cb4-17"></a>Signif. codes<span class="op">:</span><span class="st">  </span><span class="dv">0</span> <span class="st">&#39;***&#39;</span> <span class="fl">0.001</span> <span class="st">&#39;**&#39;</span> <span class="fl">0.01</span> <span class="st">&#39;*&#39;</span> <span class="fl">0.05</span> <span class="st">&#39;.&#39;</span> <span class="fl">0.1</span> <span class="st">&#39; &#39;</span> <span class="dv">1</span></span>
+<span id="cb4-18"><a href="#cb4-18"></a></span>
+<span id="cb4-19"><a href="#cb4-19"></a>Residual standard error<span class="op">:</span><span class="st"> </span><span class="fl">414.5</span> on <span class="fl">3075.18</span> degrees of freedom</span></code></pre></div>
+</div>
 <div id="workplace-data" class="section level2">
 <h2>1. Workplace Data</h2>
 <p>The <code>workplace</code> sample consists of payroll data on <span class="math inline">\(n=142\)</span> workplaces or business establishments (with paid employees) in the retail sector of a Canadian province.</p>
@@ -534,12 +583,12 @@ summary {
 <li>The sampling design is stratified by industry, geographic region, and size (size is defined using estimated employment). A sample of workplaces was then drawn independently in each stratum using simple random sample without replacement (sample size is determined by Neyman allocation).</li>
 </ul>
 <p>The original weights of WES were about 2200 for the stratum of small workplaces, about 750 for medium-sized, and about 35 for large workspaces. Several strata containing very large workplaces were sampled exhaustively; see <a href="#biblio">Patak et al</a> (1998). The first 3 rows of the <code>workplace</code> data.frame are</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">attach</span>(workplace)</span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">head</span>(workplace, <span class="dv">3</span>)</span>
-<span id="cb2-3"><a href="#cb2-3"></a>  ID weight employment payroll strat   fpc</span>
-<span id="cb2-4"><a href="#cb2-4"></a><span class="dv">1</span>  <span class="dv">1</span>    <span class="dv">786</span>         <span class="dv">17</span>  <span class="dv">260000</span>     <span class="dv">2</span> <span class="dv">10718</span></span>
-<span id="cb2-5"><a href="#cb2-5"></a><span class="dv">2</span>  <span class="dv">2</span>     <span class="dv">32</span>        <span class="dv">661</span> <span class="dv">6873000</span>     <span class="dv">1</span>  <span class="dv">3432</span></span>
-<span id="cb2-6"><a href="#cb2-6"></a><span class="dv">3</span>  <span class="dv">3</span>     <span class="dv">36</span>          <span class="dv">3</span>  <span class="dv">366000</span>     <span class="dv">1</span>  <span class="dv">3432</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">attach</span>(workplace)</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">head</span>(workplace, <span class="dv">3</span>)</span>
+<span id="cb5-3"><a href="#cb5-3"></a>  ID weight employment payroll strat   fpc</span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="dv">1</span>  <span class="dv">1</span>    <span class="dv">786</span>         <span class="dv">17</span>  <span class="dv">260000</span>     <span class="dv">2</span> <span class="dv">10718</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="dv">2</span>  <span class="dv">2</span>     <span class="dv">32</span>        <span class="dv">661</span> <span class="dv">6873000</span>     <span class="dv">1</span>  <span class="dv">3432</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a><span class="dv">3</span>  <span class="dv">3</span>     <span class="dv">36</span>          <span class="dv">3</span>  <span class="dv">366000</span>     <span class="dv">1</span>  <span class="dv">3432</span></span></code></pre></div>
 <p>where</p>
 <ul>
 <li><code>ID</code>: workplace identifier,</li>
@@ -567,7 +616,7 @@ summary {
 <div id="survey-design-object" class="section level3">
 <h3>1.2 Survey design object</h3>
 <p>We specify a <code>survey.design</code> object</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="op">&gt;</span><span class="st"> </span>dn &lt;-<span class="st"> </span><span class="kw">svydesign</span>(<span class="dt">ids =</span> <span class="op">~</span>ID, <span class="dt">strata =</span> <span class="op">~</span>strat, <span class="dt">fpc =</span> <span class="op">~</span>fpc, <span class="dt">weights =</span> <span class="op">~</span>weight, <span class="dt">data =</span> workplace)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="op">&gt;</span><span class="st"> </span>dn &lt;-<span class="st"> </span><span class="kw">svydesign</span>(<span class="dt">ids =</span> <span class="op">~</span>ID, <span class="dt">strata =</span> <span class="op">~</span>strat, <span class="dt">fpc =</span> <span class="op">~</span>fpc, <span class="dt">weights =</span> <span class="op">~</span>weight, <span class="dt">data =</span> workplace)</span></code></pre></div>
 <p>which appears (on print) with the following output in the console</p>
 <pre><code>Stratified Independent Sampling design
 svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight, 
@@ -590,60 +639,49 @@ svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
 The weighted least squares estimator is <strong>not robust</strong>; outliers can <strong>heavily</strong> influence the estimates.
 </p>
 </div>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="op">&gt;</span><span class="st"> </span>workplace_log &lt;-<span class="st"> </span><span class="kw">transform</span>(workplace,</span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="op">+</span><span class="st">     </span><span class="dt">log_payroll =</span> <span class="kw">log</span>(payroll),</span>
-<span id="cb5-3"><a href="#cb5-3"></a><span class="op">+</span><span class="st">     </span><span class="dt">log_employment_centered =</span> <span class="kw">log</span>(employment) <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(<span class="kw">log</span>(employment)))</span>
-<span id="cb5-4"><a href="#cb5-4"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">lm</span>(log_payroll <span class="op">~</span><span class="st"> </span>log_employment_centered, workplace_log)</span>
-<span id="cb5-5"><a href="#cb5-5"></a></span>
-<span id="cb5-6"><a href="#cb5-6"></a>Call<span class="op">:</span></span>
-<span id="cb5-7"><a href="#cb5-7"></a><span class="kw">lm</span>(<span class="dt">formula =</span> log_payroll <span class="op">~</span><span class="st"> </span>log_employment_centered, <span class="dt">data =</span> workplace_log)</span>
-<span id="cb5-8"><a href="#cb5-8"></a></span>
-<span id="cb5-9"><a href="#cb5-9"></a>Coefficients<span class="op">:</span></span>
-<span id="cb5-10"><a href="#cb5-10"></a><span class="st">            </span>(Intercept)  log_employment_centered  </span>
-<span id="cb5-11"><a href="#cb5-11"></a>                <span class="fl">13.0822</span>                   <span class="fl">0.9071</span>  </span>
-<span id="cb5-12"><a href="#cb5-12"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">lm</span>(log_payroll <span class="op">~</span><span class="st"> </span>log_employment_centered, workplace_log, <span class="dt">weights =</span> <span class="kw">weights</span>(dn))</span>
-<span id="cb5-13"><a href="#cb5-13"></a></span>
-<span id="cb5-14"><a href="#cb5-14"></a>Call<span class="op">:</span></span>
-<span id="cb5-15"><a href="#cb5-15"></a><span class="kw">lm</span>(<span class="dt">formula =</span> log_payroll <span class="op">~</span><span class="st"> </span>log_employment_centered, <span class="dt">data =</span> workplace_log, </span>
-<span id="cb5-16"><a href="#cb5-16"></a>    <span class="dt">weights =</span> <span class="kw">weights</span>(dn))</span>
-<span id="cb5-17"><a href="#cb5-17"></a></span>
-<span id="cb5-18"><a href="#cb5-18"></a>Coefficients<span class="op">:</span></span>
-<span id="cb5-19"><a href="#cb5-19"></a><span class="st">            </span>(Intercept)  log_employment_centered  </span>
-<span id="cb5-20"><a href="#cb5-20"></a>                <span class="fl">12.8895</span>                   <span class="fl">0.9312</span>  </span>
-<span id="cb5-21"><a href="#cb5-21"></a><span class="op">&gt;</span><span class="st"> </span></span>
-<span id="cb5-22"><a href="#cb5-22"></a><span class="er">&gt;</span><span class="st"> </span>dn_log &lt;-<span class="st"> </span>dn</span>
-<span id="cb5-23"><a href="#cb5-23"></a><span class="op">&gt;</span><span class="st"> </span>dn<span class="op">$</span>variables &lt;-<span class="st"> </span>workplace_log</span>
-<span id="cb5-24"><a href="#cb5-24"></a><span class="op">&gt;</span><span class="st"> </span>m &lt;-<span class="st"> </span><span class="kw">svyreg</span>(log_payroll <span class="op">~</span><span class="st"> </span>log_employment_centered, dn)</span>
-<span id="cb5-25"><a href="#cb5-25"></a><span class="op">&gt;</span><span class="st"> </span>m</span>
-<span id="cb5-26"><a href="#cb5-26"></a></span>
-<span id="cb5-27"><a href="#cb5-27"></a>Survey regression estimator</span>
-<span id="cb5-28"><a href="#cb5-28"></a></span>
-<span id="cb5-29"><a href="#cb5-29"></a>Call<span class="op">:</span></span>
-<span id="cb5-30"><a href="#cb5-30"></a><span class="kw">svyreg</span>(<span class="dt">formula =</span> log_payroll <span class="op">~</span><span class="st"> </span>log_employment_centered, <span class="dt">design =</span> dn)</span>
-<span id="cb5-31"><a href="#cb5-31"></a></span>
-<span id="cb5-32"><a href="#cb5-32"></a>Coefficients<span class="op">:</span></span>
-<span id="cb5-33"><a href="#cb5-33"></a><span class="st">            </span>(Intercept)  log_employment_centered  </span>
-<span id="cb5-34"><a href="#cb5-34"></a>                <span class="fl">12.8895</span>                   <span class="fl">0.9312</span>  </span>
-<span id="cb5-35"><a href="#cb5-35"></a></span>
-<span id="cb5-36"><a href="#cb5-36"></a>Scale estimate<span class="op">:</span><span class="st"> </span><span class="fl">0.5204</span> </span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="op">&gt;</span><span class="st"> </span>workplace_log &lt;-<span class="st"> </span><span class="kw">transform</span>(workplace,</span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="op">+</span><span class="st">     </span><span class="dt">log_payroll =</span> <span class="kw">log</span>(payroll),</span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="op">+</span><span class="st">     </span><span class="dt">log_employment =</span> <span class="kw">log</span>(employment),</span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="op">+</span><span class="st">     </span><span class="dt">log_employment_centered =</span> <span class="kw">log</span>(employment) <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(<span class="kw">log</span>(employment)))</span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">lm</span>(log_payroll <span class="op">~</span><span class="st"> </span>log_employment_centered, workplace_log)</span>
+<span id="cb8-6"><a href="#cb8-6"></a></span>
+<span id="cb8-7"><a href="#cb8-7"></a>Call<span class="op">:</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a><span class="kw">lm</span>(<span class="dt">formula =</span> log_payroll <span class="op">~</span><span class="st"> </span>log_employment_centered, <span class="dt">data =</span> workplace_log)</span>
+<span id="cb8-9"><a href="#cb8-9"></a></span>
+<span id="cb8-10"><a href="#cb8-10"></a>Coefficients<span class="op">:</span></span>
+<span id="cb8-11"><a href="#cb8-11"></a><span class="st">            </span>(Intercept)  log_employment_centered  </span>
+<span id="cb8-12"><a href="#cb8-12"></a>                <span class="fl">13.0822</span>                   <span class="fl">0.9071</span>  </span>
+<span id="cb8-13"><a href="#cb8-13"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">lm</span>(log_payroll <span class="op">~</span><span class="st"> </span>log_employment_centered, workplace_log, <span class="dt">weights =</span> <span class="kw">weights</span>(dn))</span>
+<span id="cb8-14"><a href="#cb8-14"></a></span>
+<span id="cb8-15"><a href="#cb8-15"></a>Call<span class="op">:</span></span>
+<span id="cb8-16"><a href="#cb8-16"></a><span class="kw">lm</span>(<span class="dt">formula =</span> log_payroll <span class="op">~</span><span class="st"> </span>log_employment_centered, <span class="dt">data =</span> workplace_log, </span>
+<span id="cb8-17"><a href="#cb8-17"></a>    <span class="dt">weights =</span> <span class="kw">weights</span>(dn))</span>
+<span id="cb8-18"><a href="#cb8-18"></a></span>
+<span id="cb8-19"><a href="#cb8-19"></a>Coefficients<span class="op">:</span></span>
+<span id="cb8-20"><a href="#cb8-20"></a><span class="st">            </span>(Intercept)  log_employment_centered  </span>
+<span id="cb8-21"><a href="#cb8-21"></a>                <span class="fl">12.8895</span>                   <span class="fl">0.9312</span>  </span>
+<span id="cb8-22"><a href="#cb8-22"></a><span class="op">&gt;</span><span class="st"> </span></span>
+<span id="cb8-23"><a href="#cb8-23"></a><span class="er">&gt;</span><span class="st"> </span>dn_log &lt;-<span class="st"> </span>dn</span>
+<span id="cb8-24"><a href="#cb8-24"></a><span class="op">&gt;</span><span class="st"> </span>dn<span class="op">$</span>variables &lt;-<span class="st"> </span>workplace_log</span>
+<span id="cb8-25"><a href="#cb8-25"></a><span class="op">&gt;</span><span class="st"> </span>m &lt;-<span class="st"> </span><span class="kw">svyreg</span>(log_payroll <span class="op">~</span><span class="st"> </span>log_employment_centered, dn)</span></code></pre></div>
 <p>The <code>summary()</code> method can be used to extract inferential statistics.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">summary</span>(m)</span>
-<span id="cb6-2"><a href="#cb6-2"></a></span>
-<span id="cb6-3"><a href="#cb6-3"></a>Call<span class="op">:</span></span>
-<span id="cb6-4"><a href="#cb6-4"></a><span class="kw">svyreg</span>(<span class="dt">formula =</span> log_payroll <span class="op">~</span><span class="st"> </span>log_employment_centered, <span class="dt">design =</span> dn)</span>
-<span id="cb6-5"><a href="#cb6-5"></a></span>
-<span id="cb6-6"><a href="#cb6-6"></a>Residuals<span class="op">:</span></span>
-<span id="cb6-7"><a href="#cb6-7"></a><span class="st">   </span>Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span>
-<span id="cb6-8"><a href="#cb6-8"></a><span class="fl">-1.3061</span> <span class="fl">-0.1179</span>  <span class="fl">0.1650</span>  <span class="fl">0.1927</span>  <span class="fl">0.5632</span>  <span class="fl">2.0420</span> </span>
-<span id="cb6-9"><a href="#cb6-9"></a></span>
-<span id="cb6-10"><a href="#cb6-10"></a>Coefficients<span class="op">:</span></span>
-<span id="cb6-11"><a href="#cb6-11"></a><span class="st">                        </span>Estimate Std. Error t value <span class="kw">Pr</span>(<span class="op">&gt;</span><span class="er">|</span>t<span class="op">|</span>)    </span>
-<span id="cb6-12"><a href="#cb6-12"></a>(Intercept)             <span class="fl">12.88948</span>    <span class="fl">0.11296</span>  <span class="fl">114.11</span>   <span class="op">&lt;</span><span class="fl">2e-16</span> <span class="op">**</span><span class="er">*</span></span>
-<span id="cb6-13"><a href="#cb6-13"></a>log_employment_centered  <span class="fl">0.93125</span>    <span class="fl">0.05252</span>   <span class="fl">17.73</span>   <span class="op">&lt;</span><span class="fl">2e-16</span> <span class="op">**</span><span class="er">*</span></span>
-<span id="cb6-14"><a href="#cb6-14"></a><span class="op">---</span></span>
-<span id="cb6-15"><a href="#cb6-15"></a>Signif. codes<span class="op">:</span><span class="st">  </span><span class="dv">0</span> <span class="st">&#39;***&#39;</span> <span class="fl">0.001</span> <span class="st">&#39;**&#39;</span> <span class="fl">0.01</span> <span class="st">&#39;*&#39;</span> <span class="fl">0.05</span> <span class="st">&#39;.&#39;</span> <span class="fl">0.1</span> <span class="st">&#39; &#39;</span> <span class="dv">1</span></span>
-<span id="cb6-16"><a href="#cb6-16"></a></span>
-<span id="cb6-17"><a href="#cb6-17"></a>Residual standard error<span class="op">:</span><span class="st"> </span><span class="fl">0.5204</span> on <span class="dv">86512</span> degrees of freedom</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">summary</span>(m)</span>
+<span id="cb9-2"><a href="#cb9-2"></a></span>
+<span id="cb9-3"><a href="#cb9-3"></a>Call<span class="op">:</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="kw">svyreg</span>(<span class="dt">formula =</span> log_payroll <span class="op">~</span><span class="st"> </span>log_employment_centered, <span class="dt">design =</span> dn)</span>
+<span id="cb9-5"><a href="#cb9-5"></a></span>
+<span id="cb9-6"><a href="#cb9-6"></a>Residuals<span class="op">:</span></span>
+<span id="cb9-7"><a href="#cb9-7"></a><span class="st">   </span>Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span>
+<span id="cb9-8"><a href="#cb9-8"></a><span class="fl">-1.3061</span> <span class="fl">-0.1179</span>  <span class="fl">0.1650</span>  <span class="fl">0.1927</span>  <span class="fl">0.5632</span>  <span class="fl">2.0420</span> </span>
+<span id="cb9-9"><a href="#cb9-9"></a></span>
+<span id="cb9-10"><a href="#cb9-10"></a>Coefficients<span class="op">:</span></span>
+<span id="cb9-11"><a href="#cb9-11"></a><span class="st">                        </span>Estimate Std. Error t value <span class="kw">Pr</span>(<span class="op">&gt;</span><span class="er">|</span>t<span class="op">|</span>)    </span>
+<span id="cb9-12"><a href="#cb9-12"></a>(Intercept)             <span class="fl">12.88948</span>    <span class="fl">0.11296</span>  <span class="fl">114.11</span>   <span class="op">&lt;</span><span class="fl">2e-16</span> <span class="op">**</span><span class="er">*</span></span>
+<span id="cb9-13"><a href="#cb9-13"></a>log_employment_centered  <span class="fl">0.93125</span>    <span class="fl">0.05252</span>   <span class="fl">17.73</span>   <span class="op">&lt;</span><span class="fl">2e-16</span> <span class="op">**</span><span class="er">*</span></span>
+<span id="cb9-14"><a href="#cb9-14"></a><span class="op">---</span></span>
+<span id="cb9-15"><a href="#cb9-15"></a>Signif. codes<span class="op">:</span><span class="st">  </span><span class="dv">0</span> <span class="st">&#39;***&#39;</span> <span class="fl">0.001</span> <span class="st">&#39;**&#39;</span> <span class="fl">0.01</span> <span class="st">&#39;*&#39;</span> <span class="fl">0.05</span> <span class="st">&#39;.&#39;</span> <span class="fl">0.1</span> <span class="st">&#39; &#39;</span> <span class="dv">1</span></span>
+<span id="cb9-16"><a href="#cb9-16"></a></span>
+<span id="cb9-17"><a href="#cb9-17"></a>Residual standard error<span class="op">:</span><span class="st"> </span><span class="fl">0.5204</span> on <span class="dv">86512</span> degrees of freedom</span></code></pre></div>
 <p>Other useful methods and utility functions</p>
 <ul>
 <li><code>coef()</code> extracts the estimated coefficients</li>
@@ -669,28 +707,28 @@ Alternatively, linear models can be fitted by weighted least squares with the <c
 <li>asymmetric Huber <span class="math inline">\(\psi\)</span>-function</li>
 <li>Tukey biweight <span class="math inline">\(\psi\)</span>-function (redescending)</li>
 </ul>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="op">&gt;</span><span class="st"> </span>m &lt;-<span class="st"> </span><span class="kw">svyreg_huber</span>(payroll <span class="op">~</span><span class="st"> </span>employment, dn, <span class="dt">k =</span> <span class="dv">13</span>, <span class="dt">asym=</span>T)</span>
-<span id="cb7-2"><a href="#cb7-2"></a><span class="op">&gt;</span><span class="st"> </span>m</span>
-<span id="cb7-3"><a href="#cb7-3"></a></span>
-<span id="cb7-4"><a href="#cb7-4"></a>Survey regression M<span class="op">-</span><span class="kw">estimator</span> (asymHuber psi, <span class="dt">k =</span> <span class="dv">13</span>)</span>
-<span id="cb7-5"><a href="#cb7-5"></a></span>
-<span id="cb7-6"><a href="#cb7-6"></a>Call<span class="op">:</span></span>
-<span id="cb7-7"><a href="#cb7-7"></a><span class="kw">svyreg_huber</span>(<span class="dt">formula =</span> payroll <span class="op">~</span><span class="st"> </span>employment, <span class="dt">design =</span> dn, <span class="dt">k =</span> <span class="dv">13</span>, </span>
-<span id="cb7-8"><a href="#cb7-8"></a>    <span class="dt">asym =</span> T)</span>
-<span id="cb7-9"><a href="#cb7-9"></a></span>
-<span id="cb7-10"><a href="#cb7-10"></a>IRWLS converged <span class="cf">in</span> <span class="dv">8</span> iterations</span>
-<span id="cb7-11"><a href="#cb7-11"></a></span>
-<span id="cb7-12"><a href="#cb7-12"></a>Coefficients<span class="op">:</span></span>
-<span id="cb7-13"><a href="#cb7-13"></a>(Intercept)   employment  </span>
-<span id="cb7-14"><a href="#cb7-14"></a>      <span class="dv">36138</span>        <span class="dv">11991</span>  </span>
-<span id="cb7-15"><a href="#cb7-15"></a></span>
-<span id="cb7-16"><a href="#cb7-16"></a>Scale estimate<span class="op">:</span><span class="st"> </span><span class="dv">31110</span> </span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="op">&gt;</span><span class="st"> </span>m &lt;-<span class="st"> </span><span class="kw">svyreg_huber</span>(payroll <span class="op">~</span><span class="st"> </span>employment, dn, <span class="dt">k =</span> <span class="dv">13</span>, <span class="dt">asym=</span>T)</span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="op">&gt;</span><span class="st"> </span>m</span>
+<span id="cb10-3"><a href="#cb10-3"></a></span>
+<span id="cb10-4"><a href="#cb10-4"></a>Survey regression M<span class="op">-</span><span class="kw">estimator</span> (asymHuber psi, <span class="dt">k =</span> <span class="dv">13</span>)</span>
+<span id="cb10-5"><a href="#cb10-5"></a></span>
+<span id="cb10-6"><a href="#cb10-6"></a>Call<span class="op">:</span></span>
+<span id="cb10-7"><a href="#cb10-7"></a><span class="kw">svyreg_huber</span>(<span class="dt">formula =</span> payroll <span class="op">~</span><span class="st"> </span>employment, <span class="dt">design =</span> dn, <span class="dt">k =</span> <span class="dv">13</span>, </span>
+<span id="cb10-8"><a href="#cb10-8"></a>    <span class="dt">asym =</span> T)</span>
+<span id="cb10-9"><a href="#cb10-9"></a></span>
+<span id="cb10-10"><a href="#cb10-10"></a>IRWLS converged <span class="cf">in</span> <span class="dv">8</span> iterations</span>
+<span id="cb10-11"><a href="#cb10-11"></a></span>
+<span id="cb10-12"><a href="#cb10-12"></a>Coefficients<span class="op">:</span></span>
+<span id="cb10-13"><a href="#cb10-13"></a>(Intercept)   employment  </span>
+<span id="cb10-14"><a href="#cb10-14"></a>      <span class="dv">36138</span>        <span class="dv">11991</span>  </span>
+<span id="cb10-15"><a href="#cb10-15"></a></span>
+<span id="cb10-16"><a href="#cb10-16"></a>Scale estimate<span class="op">:</span><span class="st"> </span><span class="dv">31110</span> </span></code></pre></div>
 <ul>
 <li>tuning constant</li>
 <li>other arguments: failure of convergence</li>
 <li>asymmetric</li>
 </ul>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">plot</span>(<span class="kw">residuals</span>(m), <span class="kw">robweights</span>(m))</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">plot</span>(<span class="kw">residuals</span>(m), <span class="kw">robweights</span>(m))</span></code></pre></div>
 <p><img src="data:image/png;base64,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" width="672" /></p>
 <div class="my-sidebar-blue">
 <p style="color: #1f618d;">
@@ -703,28 +741,28 @@ MASS <code>rlm(..., method = &quot;M&quot;, wt.method = &quot;case&quot;)</code>
 <p>Redescending <span class="math inline">\(\psi\)</span>-function: Tukey biweight <code>svyreg_tukey()</code></p>
 <div id="regression-inference" class="section level2">
 <h2>3.2 Regression inference</h2>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">summary</span>(m)</span>
-<span id="cb9-2"><a href="#cb9-2"></a></span>
-<span id="cb9-3"><a href="#cb9-3"></a>Call<span class="op">:</span></span>
-<span id="cb9-4"><a href="#cb9-4"></a><span class="kw">svyreg_huber</span>(<span class="dt">formula =</span> payroll <span class="op">~</span><span class="st"> </span>employment, <span class="dt">design =</span> dn, <span class="dt">k =</span> <span class="dv">13</span>, </span>
-<span id="cb9-5"><a href="#cb9-5"></a>    <span class="dt">asym =</span> T)</span>
-<span id="cb9-6"><a href="#cb9-6"></a></span>
-<span id="cb9-7"><a href="#cb9-7"></a>Residuals<span class="op">:</span></span>
-<span id="cb9-8"><a href="#cb9-8"></a><span class="st">    </span>Min.  1st Qu.   Median     Mean  3rd Qu.     Max. </span>
-<span id="cb9-9"><a href="#cb9-9"></a><span class="dv">-1511599</span>   <span class="dv">-36375</span>    <span class="dv">34624</span>   <span class="dv">240761</span>   <span class="dv">351341</span>  <span class="dv">4176822</span> </span>
-<span id="cb9-10"><a href="#cb9-10"></a></span>
-<span id="cb9-11"><a href="#cb9-11"></a>Coefficients<span class="op">:</span></span>
-<span id="cb9-12"><a href="#cb9-12"></a><span class="st">            </span>Estimate Std. Error t value <span class="kw">Pr</span>(<span class="op">&gt;</span><span class="er">|</span>t<span class="op">|</span>)    </span>
-<span id="cb9-13"><a href="#cb9-13"></a>(Intercept)  <span class="fl">36138.2</span>    <span class="fl">12079.7</span>   <span class="fl">2.992</span>  <span class="fl">0.00278</span> <span class="op">**</span><span class="st"> </span></span>
-<span id="cb9-14"><a href="#cb9-14"></a>employment   <span class="fl">11991.1</span>      <span class="fl">750.9</span>  <span class="fl">15.970</span>  <span class="op">&lt;</span><span class="st"> </span><span class="fl">2e-16</span> <span class="op">**</span><span class="er">*</span></span>
-<span id="cb9-15"><a href="#cb9-15"></a><span class="op">---</span></span>
-<span id="cb9-16"><a href="#cb9-16"></a>Signif. codes<span class="op">:</span><span class="st">  </span><span class="dv">0</span> <span class="st">&#39;***&#39;</span> <span class="fl">0.001</span> <span class="st">&#39;**&#39;</span> <span class="fl">0.01</span> <span class="st">&#39;*&#39;</span> <span class="fl">0.05</span> <span class="st">&#39;.&#39;</span> <span class="fl">0.1</span> <span class="st">&#39; &#39;</span> <span class="dv">1</span></span>
-<span id="cb9-17"><a href="#cb9-17"></a></span>
-<span id="cb9-18"><a href="#cb9-18"></a>Residual standard error<span class="op">:</span><span class="st"> </span><span class="dv">31110</span> on <span class="dv">86512</span> degrees of freedom</span>
-<span id="cb9-19"><a href="#cb9-19"></a></span>
-<span id="cb9-20"><a href="#cb9-20"></a>Robustness weights<span class="op">:</span></span>
-<span id="cb9-21"><a href="#cb9-21"></a><span class="st">   </span>Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span>
-<span id="cb9-22"><a href="#cb9-22"></a><span class="fl">0.09682</span> <span class="fl">1.00000</span> <span class="fl">1.00000</span> <span class="fl">0.87933</span> <span class="fl">1.00000</span> <span class="fl">1.00000</span> </span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">summary</span>(m)</span>
+<span id="cb12-2"><a href="#cb12-2"></a></span>
+<span id="cb12-3"><a href="#cb12-3"></a>Call<span class="op">:</span></span>
+<span id="cb12-4"><a href="#cb12-4"></a><span class="kw">svyreg_huber</span>(<span class="dt">formula =</span> payroll <span class="op">~</span><span class="st"> </span>employment, <span class="dt">design =</span> dn, <span class="dt">k =</span> <span class="dv">13</span>, </span>
+<span id="cb12-5"><a href="#cb12-5"></a>    <span class="dt">asym =</span> T)</span>
+<span id="cb12-6"><a href="#cb12-6"></a></span>
+<span id="cb12-7"><a href="#cb12-7"></a>Residuals<span class="op">:</span></span>
+<span id="cb12-8"><a href="#cb12-8"></a><span class="st">    </span>Min.  1st Qu.   Median     Mean  3rd Qu.     Max. </span>
+<span id="cb12-9"><a href="#cb12-9"></a><span class="dv">-1511599</span>   <span class="dv">-36375</span>    <span class="dv">34624</span>   <span class="dv">240761</span>   <span class="dv">351341</span>  <span class="dv">4176822</span> </span>
+<span id="cb12-10"><a href="#cb12-10"></a></span>
+<span id="cb12-11"><a href="#cb12-11"></a>Coefficients<span class="op">:</span></span>
+<span id="cb12-12"><a href="#cb12-12"></a><span class="st">            </span>Estimate Std. Error t value <span class="kw">Pr</span>(<span class="op">&gt;</span><span class="er">|</span>t<span class="op">|</span>)    </span>
+<span id="cb12-13"><a href="#cb12-13"></a>(Intercept)  <span class="fl">36138.2</span>    <span class="fl">12079.7</span>   <span class="fl">2.992</span>  <span class="fl">0.00278</span> <span class="op">**</span><span class="st"> </span></span>
+<span id="cb12-14"><a href="#cb12-14"></a>employment   <span class="fl">11991.1</span>      <span class="fl">750.9</span>  <span class="fl">15.970</span>  <span class="op">&lt;</span><span class="st"> </span><span class="fl">2e-16</span> <span class="op">**</span><span class="er">*</span></span>
+<span id="cb12-15"><a href="#cb12-15"></a><span class="op">---</span></span>
+<span id="cb12-16"><a href="#cb12-16"></a>Signif. codes<span class="op">:</span><span class="st">  </span><span class="dv">0</span> <span class="st">&#39;***&#39;</span> <span class="fl">0.001</span> <span class="st">&#39;**&#39;</span> <span class="fl">0.01</span> <span class="st">&#39;*&#39;</span> <span class="fl">0.05</span> <span class="st">&#39;.&#39;</span> <span class="fl">0.1</span> <span class="st">&#39; &#39;</span> <span class="dv">1</span></span>
+<span id="cb12-17"><a href="#cb12-17"></a></span>
+<span id="cb12-18"><a href="#cb12-18"></a>Residual standard error<span class="op">:</span><span class="st"> </span><span class="dv">31110</span> on <span class="dv">86512</span> degrees of freedom</span>
+<span id="cb12-19"><a href="#cb12-19"></a></span>
+<span id="cb12-20"><a href="#cb12-20"></a>Robustness weights<span class="op">:</span></span>
+<span id="cb12-21"><a href="#cb12-21"></a><span class="st">   </span>Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span>
+<span id="cb12-22"><a href="#cb12-22"></a><span class="fl">0.09682</span> <span class="fl">1.00000</span> <span class="fl">1.00000</span> <span class="fl">0.87933</span> <span class="fl">1.00000</span> <span class="fl">1.00000</span> </span></code></pre></div>
 <ul>
 <li>design-based</li>
 <li>model-based</li>
