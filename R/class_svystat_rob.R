@@ -2,7 +2,7 @@
 summary.svystat_rob <- function(object, digits = max(3L, getOption("digits") -
     3L), ...)
 {
-    cat(object$estimator$string, " of the sample ", object$characteristic,
+    cat(object$estimator$string, "of the sample", object$characteristic,
         "\n")
     cat("\n")
     est <- cbind(object$estimate, sqrt(object$variance))
@@ -12,7 +12,7 @@ summary.svystat_rob <- function(object, digits = max(3L, getOption("digits") -
     if (!is.null(object$optim)) {
         cat("Robustness:\n")
         cat("  Psi-function:", object$robust$psifunction, "with k =",
-	        object$robust$k, "\n")
+	        object$estimator$k, "\n")
         cat("  mean of robustness weights:",
 	        round(mean(object$robust$robweights), digits), "\n")
         cat("\n")

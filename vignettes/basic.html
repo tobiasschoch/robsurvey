@@ -9,7 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Beat Hulliger and Tobias Schoch (package vers. 0.2)" />
+<meta name="author" content="Beat Hulliger and Tobias Schoch" />
 
 
 <title>Vignette: Basic Robust Estimators</title>
@@ -484,7 +484,7 @@ summary {
 
 
 <h1 class="title toc-ignore">Vignette: Basic Robust Estimators</h1>
-<h4 class="author">Beat Hulliger and Tobias Schoch (package vers. 0.2)</h4>
+<h4 class="author">Beat Hulliger and Tobias Schoch</h4>
 
 </div>
 
@@ -737,7 +737,8 @@ Representative outliers are extreme but correct values and are thought to repres
 </p>
 </div>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">weighted_mean_dalen</span>(los, weight, <span class="dt">censoring =</span> <span class="dv">1500</span>)</span>
-<span id="cb13-2"><a href="#cb13-2"></a>[<span class="dv">1</span>] <span class="fl">10.73129</span></span></code></pre></div>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="dv">2</span> of <span class="dv">71</span> observations censored</span>
+<span id="cb13-3"><a href="#cb13-3"></a>[<span class="dv">1</span>] <span class="fl">10.73129</span></span></code></pre></div>
 <p>By default, the functions to compute Dalén’s estimators are called with the argument <code>verbose = TRUE</code> to learn how many observations were censored.</p>
 </div>
 <div id="m-estimation" class="section level2">

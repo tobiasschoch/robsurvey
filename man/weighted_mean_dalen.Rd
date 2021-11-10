@@ -3,10 +3,10 @@
 \alias{weighted_total_dalen}
 \title{Dalen Estimators of the Mean and Total}
 \usage{
-weighted_mean_dalen(x, w, censoring, type = "Z2", verbose = TRUE,
-    info = FALSE, na.rm = FALSE)
-weighted_total_dalen( x, w, censoring, type = "Z2", verbose = TRUE,
-    info = FALSE, na.rm = FALSE)
+weighted_mean_dalen(x, w, censoring, type = "Z2", info = FALSE,
+    na.rm = FALSE, verbose = TRUE)
+weighted_total_dalen( x, w, censoring, type = "Z2", info = FALSE,
+    na.rm = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{x}{\code{[numeric vector]} data.}
@@ -15,12 +15,12 @@ weighted_total_dalen( x, w, censoring, type = "Z2", verbose = TRUE,
     are censored.}
 \item{type}{\code{[character]} type of estimator; either \code{"Z2"} or
     \code{"Z3"} (default: \code{"Z2"}).}
-\item{verbose}{\code{[logical]} indicating whether additional information
-    should be printed to the console (default: \code{FALSE}).}
 \item{info}{\code{[logical]} indicating whether additional information
     should be returned (default: \code{FALSE}).}
 \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should be
     removed before the computation proceeds (default: \code{FALSE}).}
+\item{verbose}{\code{[logical]} indicating whether additional information
+    should be printed to the console (default: \code{FALSE}).}
 }
 \description{
 Dalén's estimators of the mean and total (bare-bone functions with limited

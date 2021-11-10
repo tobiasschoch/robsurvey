@@ -94,10 +94,6 @@ dn <- svydesign(ids = ~1, fpc = ~fpc, weights = ~weights,
     data = counties[counties$farmpop > 0, ])
 ```
 
-```{r}
-m <- svyreg(farmpop ~ numfarm + farmacre, dn, na.rm = TRUE)
-summary(m)
-```
 
 ## 1. Workplace Data
 The `workplace` sample consists of payroll data on $n=142$ workplaces or business establishments (with paid employees) in the retail sector of a Canadian province.

@@ -1,5 +1,4 @@
-# some sanity checks (univariate)
-.check <- function(x, w, na.rm)
+.check <- function(x, w, na.rm = FALSE, check_NA = TRUE)
 {
     if (missing(w))
         stop("Argument 'w' is missing\n", call. = FALSE)
@@ -16,15 +15,19 @@
         return(NULL)
 
     # check for missing values
-    cc <- stats::complete.cases(x, w)
-    if (sum(cc) != n) {
-        if (na.rm) {
-	        x <- x[cc]
-            w <- w[cc]
-        } else {
-	        return(NULL)
+    if (check_NA) {
+        cc <- stats::complete.cases(x, w)
+        if (sum(cc) != n) {
+            if (na.rm) {
+                x <- x[cc]
+                w <- w[cc]
+            } else {
+                return(NULL)
+            }
         }
     }
+
+    # number of observations (having removed possible NA's)
     n <- length(x)
 
     # check if data vector and weights are finite
@@ -35,13 +38,54 @@
     }
     list(x = x, w = w, n = n)
 }
+# check and extract data from survey.design object
+.checkformula <- function(f, design, na.rm = FALSE)
+{
+    if (inherits(f, "formula")) {
+        if (length(all.vars(f)) > 1)
+            stop("Formula must refer to one variable only\n", call. = FALSE)
+        tf <- stats::terms.formula(f)
+        if(attr(tf, "response") != 0)
+            stop("The LHS of the formula must not be defined\n", call. = FALSE)
+        yname <- attr(tf, "term.labels")
+        y <- stats::model.frame(f, design$variables,
+            na.action = stats::na.pass)[, 1]
+    } else {
+        if (is.character(f[1]) && length(f) == 1) {
+	        if (f %in% names(design$variables)) {
+	            y <- design$variables[, f]
+	            yname <- f
+	        } else {
+	            stop("Variable '", f,"' does not exist\n", call. = FALSE)
+            }
+        } else {
+	        stop("Type of argument '", f, "' is not supported\n",
+                call. = FALSE)
+        }
+    }
+    w <- as.numeric(1 / design$prob)
+    # check for missing values
+    failure <- FALSE
+    cc <- stats::complete.cases(y, w)
+    if (sum(cc) != length(y)) {
+        if (na.rm) {
+            y <- y[cc]
+            w <- w[cc]
+            # drop missing values from survey.design object
+            design <- subset(design, cc)
+        } else {
+            failure <- TRUE
+        }
+    }
+    list(failure = failure, yname = yname, y = y, w = w, design = design)
+}
 # check and extract data from survey.design object (for regression)
 .checkreg <- function(formula, design, var = NULL, na.rm = FALSE)
 {
     if (!inherits(formula, "formula"))
         stop("Argument '", formula, "' must be a formula\n", call. = FALSE)
 
-    # heteroscedasticity
+    # heteroscedasticity (only one variable)
     if (!is.null(var))
         var <- .checkformula(var, design)$y
 
@@ -85,44 +129,8 @@
     if (chk)
         stop("Some observations are not finite\n", call. = FALSE)
 
-#FIXME: return design, but drop variables
-# design = subset(design, cc)
-#
-# NOTE: we need another function for the univariate estimators
-
     list(x = x, y = as.numeric(y), yname = yname, var = var, w = w,
         intercept = attr(mt, "intercept"))
-}
-# check and extract data from survey.design object
-.checkformula <- function(f, design)
-{
-    if (inherits(f, "formula")) {
-        mf <- stats::model.frame(f, design$variables,
-            na.action = stats::na.pass)
-        mt <- stats::terms(mf)
-        if (attr(mt, "response") != 0)
-	        stop("The LHS of the formula must not be defined\n", call. = FALSE)
-        yname <- names(mf)[1]
-        if (ncol(mf) > 1)
-	        warning("No. of variables > 1; hence, only variable '", yname,
-	            "' is considered\n", call. = FALSE)
-        y <- mf[[1]]
-        x <- NULL
-    } else {
-        if (is.character(f[1]) && length(f) == 1) {
-	        if (f %in% names(design$variables)) {
-	            y <- design$variables[, f]
-	            x <- NULL
-	            yname <- f
-	        } else {
-	            stop("Variable '", f,"' does not exist\n", call. = FALSE)
-            }
-        } else {
-	        stop("Type of argument '", f, "' is not supported\n",
-                call. = FALSE)
-        }
-    }
-    list(yname = yname, y = as.numeric(y), w = as.numeric(1 / design$prob))
 }
 # check auxiliary totals and means
 .checkauxiliary <- function(object, data, est = "mean", check.names = TRUE,
