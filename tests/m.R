@@ -1,3 +1,4 @@
+library(MASS)
 library(testthat)
 suppressPackageStartupMessages(library(survey))
 library(robsurvey, quietly = TRUE)
@@ -104,7 +105,7 @@ expect_equal(vcov(est), ref,
 
 
 # planned to fail...
-expect_equal(1, 2, label = "not a real test")
+#expect_equal(1, 2, label = "not a real test")
 
 
 

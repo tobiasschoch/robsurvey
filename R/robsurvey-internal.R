@@ -39,7 +39,7 @@
     list(x = x, w = w, n = n)
 }
 # check and extract data from survey.design object
-.checkformula <- function(f, design, na.rm = FALSE)
+.checkformula <- function(f, design, na.rm = FALSE, check_NA = TRUE)
 {
     if (inherits(f, "formula")) {
         if (length(all.vars(f)) > 1)
@@ -66,28 +66,31 @@
     w <- as.numeric(1 / design$prob)
     # check for missing values
     failure <- FALSE
-    cc <- stats::complete.cases(y, w)
-    if (sum(cc) != length(y)) {
-        if (na.rm) {
-            y <- y[cc]
-            w <- w[cc]
-            # drop missing values from survey.design object
-            design <- subset(design, cc)
-        } else {
-            failure <- TRUE
+    if (check_NA) {
+        is_not_NA <- stats::complete.cases(y, w)
+        if (sum(is_not_NA) != length(y)) {
+            if (na.rm) {
+                y <- y[is_not_NA]
+                w <- w[is_not_NA]
+                # drop missing values from survey.design object
+                design <- subset(design, is_not_NA)
+            } else {
+                failure <- TRUE
+            }
         }
     }
     list(failure = failure, yname = yname, y = y, w = w, design = design)
 }
 # check and extract data from survey.design object (for regression)
-.checkreg <- function(formula, design, var = NULL, na.rm = FALSE)
+.checkreg <- function(formula, design, var = NULL, xwgt = NULL, na.rm = FALSE)
 {
     if (!inherits(formula, "formula"))
         stop("Argument '", formula, "' must be a formula\n", call. = FALSE)
 
-    # heteroscedasticity (only one variable)
+    # heteroscedasticity (only one variable); without NA handling; we will
+    # deal with this together with x, y, etc.
     if (!is.null(var))
-        var <- .checkformula(var, design)$y
+        var <- .checkformula(var, design, FALSE, FALSE)$y
 
     # extract the variables
     mf <- stats::model.frame(formula, design$variables,
@@ -97,40 +100,45 @@
     if (response == 0)
         stop("The LHS of formula is not defined\n", call. = FALSE)
     yname <- names(mf)[response]
-    y <- stats::model.response(mf)
+    y <- as.numeric(stats::model.response(mf))
     x <- stats::model.matrix(mt, mf)
     w <- as.numeric(1 / design$prob)
+    n <- length(y)
+
+    if (is.null(xwgt))
+        xwgt <- rep(1, n)
 
     # NA treatment
-    cc <- stats::complete.cases(y, x, w, var)
-    if (sum(cc) != length(y)) {
+    failure <- FALSE
+    is_not_NA <- stats::complete.cases(y, x, w, var, xwgt)
+    if (sum(is_not_NA) != n) {
         if (na.rm) {
-	        x <- x[cc, ]
-	        y <- y[cc]
-	        w <- w[cc]
+	        x <- x[is_not_NA, ]
+	        y <- y[is_not_NA]
+	        w <- w[is_not_NA]
+            xwgt <- xwgt[is_not_NA]
+            n <- NROW(x)
+            p <- NCOL(x)
 	        if (!is.null(var))
-	            var <- var[cc]
+	            var <- var[is_not_NA]
+            # drop missing values from survey.design object
+            design <- subset(design, is_not_NA)
+            # check if any element is not finite
+            if (!is.null(var)) {
+                chk <- sum(is.finite(c(x, y, w, var, xwgt))) != (4 + p) * n
+                if (any(var <= 0))
+                    stop("Some of the variances are <= 0\n", call. = FALSE)
+            } else {
+                chk <- sum(is.finite(c(x, y, w, xwgt))) != (3 + p) * n
+            }
+            if (chk)
+                stop("Some observations are not finite\n", call. = FALSE)
         } else {
-            stop("Data must not contain missing values; see argument 'na.rm'\n",
-	            call. = FALSE)
+            failure <- TRUE
         }
     }
-    n <- nrow(x); p <- ncol(x)
-
-    # check if any element is not finite
-    if (!is.null(var)) {
-        chk <- sum(is.finite(c(x, y, w, var))) != (3 + p) * n
-        if (any(var <= 0))
-	        stop("Some of the variances are <= 0\n", call. = FALSE)
-    } else {
-        chk <- sum(is.finite(c(x, y, w))) != (2 + p) * n
-    }
-
-    if (chk)
-        stop("Some observations are not finite\n", call. = FALSE)
-
-    list(x = x, y = as.numeric(y), yname = yname, var = var, w = w,
-        intercept = attr(mt, "intercept"))
+    list(failure = failure, x = x, y = y, var = var, w = w, terms = mt,
+        design = design, xwgt = xwgt)
 }
 # check auxiliary totals and means
 .checkauxiliary <- function(object, data, est = "mean", check.names = TRUE,

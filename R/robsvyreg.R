@@ -2,7 +2,7 @@
 # FIXME:
 #   terms and mf object for regression
 #   see predict.lm
-robsvyreg <- function(x, y, w, k, psi, type, xwgt = NULL, var = NULL,
+robsvyreg <- function(x, y, w, k, psi, type, xwgt, var = NULL,
     verbose = TRUE, ...)
 {
     ctrl <- svyreg_control(...)
@@ -11,9 +11,6 @@ robsvyreg <- function(x, y, w, k, psi, type, xwgt = NULL, var = NULL,
     if (k == Inf)
         k <- ctrl$k_Inf
     n <- length(y); p <- NCOL(x)
-
-    if (is.null(xwgt))
-        xwgt <- rep(1, n)
 
     # account for heteroscedasticity
     if (!is.null(var)) {
@@ -65,7 +62,7 @@ robsvyreg <- function(x, y, w, k, psi, type, xwgt = NULL, var = NULL,
         residuals = tmp$resid,
         model = list(x = x, y = y, w = w, var = var, xwgt = xwgt, n = n, p = p),
         design = NA,
-        call = NA)
+        call = match.call())
 }
 # control function for robust regression
 svyreg_control <- function(tol = 1e-5, maxit = 100, k_Inf = 1e5, init = NULL,

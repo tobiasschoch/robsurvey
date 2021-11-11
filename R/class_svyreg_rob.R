@@ -1,6 +1,16 @@
 # print method for robust regression object
 print.svyreg_rob <- function(x, digits = max(3L, getOption("digits") - 3L), ...)
 {
+    if (any(is.na(x$estimate))) {
+        cat(paste0("\n", x$estimator$string, "\n"))
+        cat("\nCall:\n", paste(deparse(x$call), sep = "\n", collapse = "\n"),
+            "\n", sep = "")
+        cat("\nCoefficients:\n")
+        print.default(format(x$estimate, digits = digits), print.gap = 2L,
+            quote = FALSE)
+        cat("\nScale estimate:", NA, "\n")
+        return(invisible(x))
+    }
     converged <- x$optim$converged
     if (is.null(converged) || converged) {
         cat(paste0("\n", x$estimator$string, "\n"))
@@ -27,6 +37,18 @@ print.svyreg_rob <- function(x, digits = max(3L, getOption("digits") - 3L), ...)
 summary.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
     digits = max(3L, getOption("digits") - 3L), ...)
 {
+    if (any(is.na(object$estimate))) {
+        cat("\nCall:\n")
+        print(object$call)
+        cat("\nResiduals:\n")
+        print(NA)
+        cat("\nCoefficients:\n")
+        NAs <- object$estimate
+        stats::printCoefmat(cbind(Estimate = NAs, 'Std. Error' = NAs,
+            't value' = NAs, 'Pr(>|t|)' = NAs), digits = digits)
+        cat("\nResidual standard error:", NA, "on", NA, "degrees of freedom\n")
+        return(invisible(object))
+    }
     converged <- object$optim$converged
     if (is.null(converged) || converged) {
         n <- object$model$n; p <- object$model$p
@@ -147,7 +169,7 @@ vcov.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
         xwgt <- rep(1, n)
 
     # account for heteroscedasticity
-    if (!is.null(object$modelvar))
+    if (!is.null(object$model$var))
         x <- x / sqrt(object$model$var)
 
     # scale the weights (prevent overflow)
