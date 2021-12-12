@@ -67,94 +67,55 @@ suppressPackageStartupMessages(library(survey))
 
 ## 1. Counties data
 
+([Lohr](#biblio), 1999, Appendix C)
 
 ```{r}
 data(counties)
 head(counties, 3)
 ```
+with the following variables
+
+|   |     |   |     |
+| - | --- | - | --- |
+| *state* | state | *county* | county |
+| *landarea* | land area, 1990 (square miles) | *totpop* | population total, 1992 |
+| *unemp* | number of unemployed persons, 1991 | *farmpop* | farm population, 1990 |
+| *numfarm* | number of farms, 1987 | *farmacre* | acreage in farms, 1987 |
+| *weights* | sampling weight | *fpc* | finite population correction
+
+### 1.1 Goal
+
+The goal is to regress the county-specific farm population in 1990 (variable `farmpop`) on a set of explanatory variables. The simplest *population* regression model is
+
+$$\begin{equation}
+\xi: \qquad \mathrm{farmpop}_i = a + b \cdot \mathrm{numfarm}_i + \sqrt{v_i} E_i, \qquad i \in U,
+\end{equation}$$
+
 where
 
-* `state`: state,
-* `county`: county,
-* `landarea`: land area, 1990 (square miles),
-* `totpop`: population total, 1992,
-* `unemp`: number of unemployed persons, 1991,
-* `farmpop`: farm population, 1990,
-* `numfarm`: number of farms, 1987,
-* `farmacre`: acreage in farms, 1987,
-* `weights`: sampling weight,
-* `fpc`: finite population corretion.
+* $U = \{1, 2, \ldots, N\}$ is the set of labels of all workplaces in the population,
+* $a,b \in \mathbb{R}$ are unknown regression coefficients (subject to estimation),
+* $v_i$ are known constants (i.e., known up to a constant multiplicative factor),
+* $E_i$ are regression errors (random variables) with mean zero and unit variance such that $E_i$ and $E_j$ are conditionally independent given $\mathrm{numfarm}_i$, $i \in U$.
 
-The goal is to regress `farmpop` on a set of explanatory variables.
+Another candidate model is
 
-The data are from a simple random sample (without replacement) of $n = 100$ of the $N=3141$ counties in the United Stated (U.S. Bureau of the Census, 1994). We restrict attention to the subset of 98 counties with `farmpop > 0`.
+$$\begin{equation}
+\xi_{log}: \qquad \log(\mathrm{farmpop}_i) = a + b \cdot \log(\mathrm{numfarm}_i) + \sqrt{v_i} E_i, \qquad i \in U.
+\end{equation}$$
+
+### 1.2 Sampling design
+
+The `counties` data are from a simple random sample (without replacement) of $n = 100$ of the $N=3141$ counties in the United Stated (compilation by [Lohr](#biblio), 1999 based on data of the U.S. Bureau of the Census, 1994). We restrict attention to the subset of 98 counties with `farmpop > 0`.
 
 ```{r}
 dn <- svydesign(ids = ~1, fpc = ~fpc, weights = ~weights,
     data = counties[counties$farmpop > 0, ])
 ```
 
+### 1.3 Exploring the data
 
-```{r, echo=FALSE, out.width="50%"}
-plot(farmpop ~ numfarm, dn$variables, xlab = "numfarm", ylab = "farmpop",
-    cex.axis = 1.2, cex.lab = 1.4)
-```
-
-
-### Weighted least squares
-
-```{r}
-m <- svyreg(farmpop ~ numfarm, dn, na.rm = TRUE)
-m
-```
-
-```{r}
-summary(m)
-```
-
-<div class="my-sidebar-blue">
-<p style="color: #1f618d;">
-**Good to know.**
-</p>
-<p>Alternatively, linear models can be fitted by weighted least squares with the `svyglm()` function in the `survey` package. The `summary()` method for `svyglm` differs from ours insofar that it does not compute `Pr(>|t|)` but the probability under the assumption of the Gaussian distribution.
-</p>
-</div>
-
-### Heteroscedasticity
-
-We conjecture that the heteroscedastic variance of the model error is proportional to the square root of the variable `numfarm`; thus, we add variable `vi` to the design object `dn`.
-
-```{r}
-dn <- update(dn, vi = sqrt(numfarm))
-```
-
-The argument `var` is used to specify the heteroscedastic variance (it can be defined as a `formula`, i.e. `~vi`, or the variable name in quotation marks, `"vi"`).
-
-```{r}
-svyreg(farmpop ~ -1 + numfarm, dn, var = ~vi, na.rm = TRUE)
-```
-
-Note: We have dropped the regression intercept.
-
-
-### Regression M-estimator
-
-We continue to assume a heteroscedastic model, but this time we estimate a regression *M*-estimator with Huber $\psi$-function (and tuning constant `k`).
-
-```{r}
-m <- svyreg_huber(farmpop ~ -1 + numfarm, dn, var = ~vi, k = 1.3, na.rm = TRUE)
-m
-```
-The `summary` method gives the following output.
-```{r}
-summary(m)
-```
-
-The `svyreg_tukey`
-
-
-
-
+The figures below show scatterplots of `farmpop` plotted against `numfarm` (in raw and log scale) that refer to the models $\xi$ and $\xi_{log}$. If the sampling weights were not all equal, it may be helpful to show a bubble plot with circles whose area is proportional to the sampling weight; see `svyplot` in the `survey` package.
 
 ```{r, echo=FALSE, fig.show="hold", out.width="50%"}
 plot(farmpop ~ numfarm, dn$variables, xlab = "numfarm", ylab = "farmpop",
@@ -164,118 +125,18 @@ plot(farmpop ~ numfarm, dn$variables, xlab = "numfarm (log)",
 points(farmpop ~ numfarm, dn$variables[3, ], pch = 19, col = 2)
 ```
 
+The scatterplot in the left panel, indicates that the variance of `farmpop` increases with larger values of `numfarm` (heteroscedasticity). The same graph but this time in log-log scale (see right panel) shows an outlier, which is located far from the bulk of the data.
 
+## 2. Design-based inference
 
-
-```{r}
-m <- svyreg(log(farmpop) ~ log(numfarm) + log(farmacre) +  log(totpop),
-    dn, na.rm = TRUE)
-summary(m)
-```
+The **weighted least squares** fit under model $\xi$ (under the assumption of homoscedasticity, i.e., $v_i \equiv 1$) is
 
 ```{r}
-m <- svyreg_tukey(log(farmpop) ~ log(numfarm) + log(farmacre) + log(totpop),
-    dn, k = 4.6, na.rm = TRUE)
-summary(m)
+m <- svyreg(farmpop ~ numfarm, dn, na.rm = TRUE)
+m
 ```
 
-
-## 1. Workplace Data
-The `workplace` sample consists of payroll data on $n=142$ workplaces or business establishments (with paid employees) in the retail sector of a Canadian province.
-
- - The data display similar characteristics to the original 1999 Canadian Workplace and Employee Survey (WES), however, the `workplace` data are not those collected by Statistics Canada but have been generated by [Fuller](#biblio) (2009, Example 3.1.1, Table 6.3).
- - The sampling design is stratified by industry, geographic region, and size (size is defined using estimated employment). A sample of workplaces was then drawn independently in each stratum using simple random sample without replacement (sample size is determined by Neyman allocation).
-
-The original weights of WES were about 2200 for the stratum of small workplaces, about 750 for medium-sized, and about 35 for large workspaces. Several strata containing very large workplaces were sampled exhaustively; see [Patak et al](#biblio) (1998). The first 3 rows of the `workplace` data.frame are
-
-```{r}
-attach(workplace)
-head(workplace, 3)
-```
-
-where
-
-* `ID`: workplace identifier,
-* `weight`: sampling weight,
-* `employment`: number of employees,
-* `payroll`: payroll (Canadian dollars),
-* `strat`: stratification,
-* `fpc`: finite-population correction.
-
-### 1.1 Goal
-
-The variable of interest is `payroll`, and the goal is to estimate the **population regression model** $\xi$, which is defined as
-$$\begin{equation}
-\xi: \quad \mathrm{payroll}_i = a + b \cdot \mathrm{employment}_i + \sqrt{v_i} e_i, \qquad i \in U,
-\end{equation}$$
-where
-
-* $U = \{1, 2, \ldots, N\}$ is the set of labels of all workplaces in the population,
-* $a,b \in \mathbb{R}$ are unknown regression coefficients (subject to estimation),
-* $v_i$ are known constants (i.e., known up to a constant multiplicative factor),
-* $E_i$ are regression errors (random variables) with mean zero and unit variance such that $E_i$ and $E_j$ are conditionally independent given $\mathrm{employment}_i$, $i \in U$.
-
-
-$$\begin{equation}
-\xi_{log}: \quad \log (\mathrm{payroll}_i) = a + b \cdot \log(\mathrm{employment}_i) + \sqrt{v_i} e_i, \qquad i \in U,
-\end{equation}$$
-
-
-### 1.2 Survey design object
-We specify a `survey.design` object
-
-```{r}
-dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight, data = workplace)
-```
-
-which appears (on print) with the following output in the console
-```{r, echo = FALSE}
-dn
-```
-
-### 1.3 Exploring the data
-
-`svyplot(payroll ~ employment, dn)` of the `survey` package
-
-Bubble plots are scatterplots with circles whose area is proportional to the sampling weight
-
-
-```{r, echo = FALSE}
-layout(matrix(c(1:2), ncol = 2), heights = c(1, 1), widths = c(3, 3))
-svyplot(payroll ~ employment, dn, inches = 0.2, xlab = "employment", ylab = "payroll")
-svyplot(log(payroll) ~ log(employment), dn, inches = 0.2, xlab = "log(employment)", ylab = "log(payroll)")
-```
-
-
-
-# 2 Weighted Least Squares Regression
-
-<div class="my-sidebar-orange">
-<p style="color: #ce5b00;">
-**IMPORTANT**
-</p>
-<p>
-The weighted least squares estimator is **not robust**; outliers can **heavily** influence the estimates.
-</p>
-</div>
-
-
-```{r}
-workplace_log <- transform(workplace,
-    log_payroll = log(payroll),
-    log_employment = log(employment),
-    log_employment_centered = log(employment) - mean(log(employment)))
-lm(log_payroll ~ log_employment_centered, workplace_log)
-lm(log_payroll ~ log_employment_centered, workplace_log, weights = weights(dn))
-
-dn_log <- dn
-dn$variables <- workplace_log
-m <- svyreg(log_payroll ~ log_employment_centered, dn)
-```
-
-
-
-The `summary()` method can be used to extract inferential statistics.
+and the estimated model can be summarized using
 
 ```{r}
 summary(m)
@@ -288,72 +149,200 @@ Other useful methods and utility functions
 * `fitted()` extracts the fitted values
 * `vcov()` extracts the variance-covariance matrix of the estimated coefficients
 
-
-
-# 3 Regression *M*-estimator
-In the presence of residual outliers, the weighted least squares estimator can be biased and/or inefficient as an estimator of the population regression coefficients.
-
-*M*-Estimator with
-
-* Huber $\psi$-function
-* asymmetric Huber $\psi$-function
-* Tukey biweight $\psi$-function (redescending)
-
-```{r}
-m <- svyreg_huber(payroll ~ employment, dn, k = 13, asym=T)
-m
-```
-
-* tuning constant
-* other arguments: failure of convergence
-* asymmetric
-
-```{r}
-plot(residuals(m), robweights(m))
-```
-
 <div class="my-sidebar-blue">
 <p style="color: #1f618d;">
 **Good to know.**
 </p>
-<p>MASS `rlm(..., method = "M", wt.method = "case")`
+<p>Alternatively, linear models can be fitted by weighted least squares with the `svyglm()` function in the `survey` package. The `summary()` method for `svyglm` differs from ours insofar that it does not compute `Pr(>|t|)` but the probability under the assumption of the Gaussian distribution.
+</p>
+</div>
+
+### 2.1 Heteroscedasticity
+
+In the above scatterplot, we observe that the variance of `farmpop` increases with larger values of `numfarm` (heteroscedasticity). We conjecture that the $v_i$'s in model $\xi$ are proportional to the square root of the variable `numfarm`. Thus, we add variable `vi` to the design object `dn` with the `update` command
+
+```{r}
+dn <- update(dn, vi = sqrt(numfarm))
+```
+
+The argument `var` of `svyreg` is now used to specify the heteroscedastic variance (it can be defined as a `formula`, i.e. `~vi`, or the variable name in quotation marks, `"vi"`).
+
+```{r}
+svyreg(farmpop ~ -1 + numfarm, dn, var = ~vi, na.rm = TRUE)
+```
+
+Note that we have dropped the regression intercept.
+
+### 2.2 Regression *M*-estimator
+
+We continue to assume a heteroscedastic model $\xi$, but now we compute a survey weighed regression *M*-estimator. Two types of estimators are available:
+
+* `svyreg_huber()` Huber and asymmetric Huber $\psi$-function (argument `asym = TRUE`)
+* `svyreg_tukey()` Tukey biweight (redescending) $\psi$-function
+
+The tuning constant of both $\psi$-functions is called `k`. The Huber estimator is
+
+```{r}
+m <- svyreg_huber(farmpop ~ -1 + numfarm, dn, var = ~vi, k = 1.3, na.rm = TRUE)
+m
+```
+and the summary obtains by
+```{r}
+summary(m)
+```
+The output of the summary method is almost identical with the one of an `lm` call. The paragraph on *robustness weights* in the output is a numerical summary of the *M*-estimator's robustness weights, which can be extracted from the estimated model with `robweights()`. The subsequent figure shows the graph for `plot(residuals(m), robweights(m)`. From the graph, we can learn by how much the observations have been downweighted.
+
+```{r, echo=FALSE, fig.show="hold", out.width="50%"}
+plot(residuals(m), robweights(m), cex.axis = 1.2, cex.lab = 1.4)
+```
+
+<div class="my-sidebar-orange">
+<p style="color: #ce5b00;">
+**IMPORTANT (failure of convergence)**
+</p>
+<p>
+In the above example, the algorithm converged in 6 IRLWS (iteratively reweighted least squares) iterations. In case of convergence failure, the default settings of the IRWLS algorithm can be modified. The following settings can be specified/ changed (as function arguments) in the call of `svyreg_huber()` or `svyreg_tukey()`:
+
+* `maxit = 50`: maximum number of iterations to use
+* `tol = 1e-5`: numerical tolerance criterion to stop the iterations
+* `init = NULL`: initialization of the regression *M*-estimator; if `init = NULL` the regression estimator is initialized by weighted least squares; otherwise, `init` can be specified as a starting value, i.e. a $p$-vector.
+
+See also `svyreg_control()`.
 </p>
 </div>
 
 
-Redescending $\psi$-function: Tukey biweight `svyreg_tukey()`
+### 2.3 Regression *GM*-estimator
 
-
-## 3.2 Regression inference
 ```{r}
-summary(m)
+dn_exclude <- na.exclude(dn)
 ```
 
-* design-based
-* model-based
-* compound
+```{r}
+f <- log(farmpop) ~ log(numfarm) + log(farmacre) + log(totpop) + log(landarea)
+f <- log(farmpop) ~ log(numfarm) + log(totpop) + log(farmacre) + log(unemp)
 
-# 4 Regression *GM*-estimator
 
+m <- svyreg_tukey(f, dn_exclude, k = 4.6)
+summary(m)
+
+#extract the model design matrix and drop the column of ones (regression intercept)
+
+xmat <- model.matrix(f, dn_exclude$variables)[, -1]
+
+#Compute robust location and scatter matrix with the BACON algorithm, and extract the robust Mahalanobis distances
+
+#mv <- wBACON(xmat, weights = weights(dn_exclude))
+#dist <- distance(mv)
+
+#m <- svyreg_tukeyGM(f, dn_exclude, k = 4.6, xwgt = tukeyWgt(dist))
+#summary(m)
+```
+
+
+
+## 3 Model-based inference
+
+Define survey design object that *mimics* a sampling design for simple random sampling without replacement. Hence, we define
+
+```{r}
+dn0 <- svydesign(ids = ~1, weights = ~1,
+    data = counties[counties$farmpop > 0, ])
+```
+
+which differs from our original design `dn` in the following aspects:
+
+* `weights = ~1` (i.e., the sampling weights are set to 1.0);
+* the argument `fpc` (finite sampling correction) is not specified.
+
+*Note*. We could keep the specification `fpc = ~fpc` in the definition of `dn0` because `fpc` will be ignored anyway.
+
+We consider fitting model $\xi_{log}$ by the Huber regression $M$-estimator (based on the design object `dn0`)
+
+```{r}
+m <- svyreg_huber(log(farmpop) ~ log(numfarm), dn0, k = 1.3, na.rm = TRUE)
+```
+
+In the call of `summary()`, we specify the argument `mode = "model"` for model-based inference (default is `mode = "design"`) to obtain
+
+```{r}
+summary(m, mode = "model")
+```
+
+Likewise, we can call `vcov(m, mode = "model")` to extract the estimated *model-based* covariance matrix of the regression estimator.
+
+<div class="my-sidebar-blue">
+<p style="color: #1f618d;">
+**Good to know** (comparison with function `rlm` in package `MASS`).
+</p>
+<p>
+For the purpose of comparison, we have fitted the above model with the function `rlm` in package `MASS` ([Venables and Ripley](#biblio), 2002).
+```{r}
+library(MASS)
+summary(rlm(log(farmpop) ~ log(numfarm),
+    data = counties[counties$farmpop > 0, ],
+    k = 1.3, na.action = na.omit))
+```
+
+Note that
+</p>
+</div>
+
+
+## 4 Compound design- and model-based inference
+
+### 4.1 MU284 population
+
+The MU284 population of [Särndal et al.](#biblio) (1992, Appendix B) is a dataset with observations on the 284 municipalities in Sweden in the late 1970s and early 1980s. The MU284 population data are available in the `sampling` package of [Tillé and Matei](#biblio) (2021). The population is divided into two parts based on 1975 population size (`P75`):
+
+* the MU281 population, which consists of the 281 smallest municipalities;
+* the MU3 population of the three biggest municipalities/ cities in Sweden (Stockholm, Göteborg, and Malmö).
+
+The three biggest cities take exceedingly large values (representative outliers) on almost all of the variables. To account for this (at least to some extent), a stratified sample has been drawn from the MU284 population using a take-all stratum. The sample data, `MU284strat`, (of size $n=60$) consists of
+
+* a stratified simple random sample (without replacement) from the MU281 population, where stratification is by geographic region (REG) with proportional sample size allocation;
+* a take-all stratum that includes the three biggest cities/ municipalities (population M3).
+
+
+| | | | | | | | | | |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| *Stratum* | $S_1$ | $S_2$ | $S_3$ | $S_4$ | $S_5$ | $S_6$ | $S_7$ | $S_8$ | *take all* |
+| *Population stratum size* | 24 | 48 | 32 | 37 | 55 | 41 | 15 | 29 | 3 |
+| *Sample stratum size* | 5 | 10 | 6 | 8 | 11 | 8 | 3 | 6 | 3 |
+| | | | | | | | | | |
+
+The overall sampling fraction is $60/284 \approx 21\%$ (and thus not negligible). The data frame `MU284strat` contains 60 observations on the following variables.
+
+| | | |
+| - | ---- | - | ---- |
+*LABEL* | identifier variable | *P85* | 1985 population size (in 1E3) |
+*P75* | 1975 population size (in 1E3) | *RMT85* | revenues from the 1985 municipal taxation (in 1E6 kronor) |
+*CS82* | number of Conservative seats in municipal council | *SS82* | number of Social-Democrat seats in municipal council (1982) |
+*S82* | total number of seats in municipal council in 1982 | *ME84* | number of municipal employees in 1984 |
+*REV84* | real estate values in 1984 (in 1E6 kronor) | *CL* | cluster indicator |
+*REG* | geographic region indicator | *Stratum* | stratum indicator |
+*weights* | sampling weights | *fpc* | finite population correction |
+||||
+
+
+### 4.2 Goal
+
+This $\mathcal{O}(1/n)$ and $\mathcal{O}(1/N)$
 
 ---
-
-
-
 
 
 ## References {#biblio}
 
 Chambers, R. (1986). Outlier Robust Finite Population Estimation. *Journal of the American Statistical Association* 81, pp. 1063–1069.
 
-Fuller, W.A. (2009). *Sampling Statistics*, Jown Wiley & Sons, Hoboken (NJ).
-
-Hulliger B (2005). Horvitz-Thompson Estimators, Robustified, in: S. Kotz (ed.), *Encyclopedia of Statistical Sciences*, volume 5, 2nd edition. John Wiley and Sons, Hoboken (NJ).
-
-Hulliger, B (1999). Simple and robust estimators for sampling, in: *Proceedings of the Survey Research Methods Section, American Statistical Association*, pp. 54–63. American Statistical Association.
-
-Hulliger. B. (1995). Outlier Robust Horvitz–Thompson Estimators. *Survey Methodology* 21, pp. 79–87.
-
 Lumley, T (2021). survey: analysis of complex survey samples. R package version 4.0, URL https://CRAN.R-project.org/package=survey.
 
 Lumley, T. (2010). Complex Surveys: A Guide to Analysis Using R: *A Guide to Analysis Using R*. John Wiley and Sons, Hoboken, NJ.
+
+Lohr, S.L. (1999). *Sampling: Design and Analysis*. Pacific Grove (CA): Duxbury Press.
+
+Venables, W.N. and Ripley, B.D. (2002). *Modern Applied Statistics with S*. 4th Edition. Springer, New York.
+
+Tillé, T. and Matei, A. (2021). sampling: Survey Sampling. R package version 2.9.  https://CRAN.R-project.org/package=sampling.
+

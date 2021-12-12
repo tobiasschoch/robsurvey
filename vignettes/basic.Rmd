@@ -179,7 +179,7 @@ The following estimation methods are available:
  - `weighted_mean_trimmed()`
  - `weighted_total_trimmed()`
 
-We consider estimating the population one-sided trimmed *mean* of LOS. The lower end of the distribution is not trimmed (lower bound: `LB = 0`). The 5% largest observations are trimmed (upper bound: `UB = 0.95`). The range of values to be considered for estimation is thus defined as `UB - LB`.
+We consider estimating the population one-sided trimmed *mean* of LOS. The lower end of the distribution is not trimmed (lower bound: `LB = 0`). The 5% largest observations are trimmed (upper bound: `UB = 0.95`). The range of values to be considered for estimation is thus defined as $[0, 0.95]$
 
 ```{r}
 weighted_mean_trimmed(los, weight, LB = 0, UB = 0.95)
@@ -273,7 +273,11 @@ For the survey methods with postfix `_winsorized`, the implementation offers two
 
 ## 4 Weight Reduction Methods
 
-The weight reduction method is due to [Dalén](#biblio) (1987). Consider the weighted $x$-total $\sum_{i \in s} w_i x_i$, where summation is over the set of elements in the sample $s$. The estimator of Dalén censors $w_ix_i$ to a constant, $c$, if $w_ix_i > c$. Only bare-bone functions are available.
+The weight reduction method is due to [Dalén](#biblio) (1987). Consider the weighted $x$-total $\sum_{i \in s} w_i x_i$, where summation is over the set of elements in the sample $s$. The estimator of Dalén censors $w_ix_i$ to a constant, $c$, if $w_ix_i > c$.
+
+### 3.1 Bare-bone methods
+
+The bare-bone functions are:
 
  - `weighted_mean_dalen()`
  - `weighted_total_dalen()`
@@ -299,6 +303,9 @@ abline(h = 1500, lty = 3)
 weighted_mean_dalen(los, weight, censoring = 1500)
 ```
 By default, the functions to compute Dalén's estimators are called with the argument `verbose = TRUE` to learn how many observations were censored.
+
+### 4.2 Survey methods
+
 
 ## 5 *M*-Estimation
 

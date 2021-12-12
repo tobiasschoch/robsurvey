@@ -52,8 +52,6 @@ In this vignette, we discuss the robust Horvitz-Thompson (RHT) estimator of [Hul
  - 2 Robust Horvitz-Thompson estimator
  - References
 
-(See vignette "Basic Robust Estimators" for bibliographical notes on $M$-estimators in the context of finite population sampling.)
-
 <div class="my-sidebar-blue">
 <p style="color: #1f618d;">
 **Good to know.**
