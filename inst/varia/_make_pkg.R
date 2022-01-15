@@ -91,4 +91,4 @@ if (mode == "full") {
 }
 
 # render pdf manual
-#system("R CMD Rd2pdf PKG")
+#system("R CMD Rd2pdf robsurvey")

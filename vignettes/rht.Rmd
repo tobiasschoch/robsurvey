@@ -118,7 +118,7 @@ dn
 
 To get a first impression of the distribution of `payroll`, we examine two (design-weighted) boxplots of `payroll` (on raw and logarithmic scale). The boxplots are obtained using function `survey::svyboxplot`.
 
-```{r, echo = FALSE, fig.height = 2}
+```{r, echo = FALSE, fig.height = 2, fig.align = "center"}
 layout(matrix(1:2, ncol = 2))
 par(mar = c(4, 1, 1, 1))
 svyboxplot(payroll~ 1, dn, all.outliers = TRUE, xlab = "payroll", horizontal = TRUE)
@@ -136,7 +136,7 @@ The outliers visible in the boxplot refer to a few but rather large workplaces. 
 
 We plotted the sampling weights against the logarithm of `payroll`.
 
-```{r, echo = FALSE, fig.height = 4, fig.width = 6}
+```{r, echo = FALSE, fig.height=4, fig.width=5}
 par(mar = c(5, 4, 1, 0))
 plot(weights(dn), dn$variables$payroll, ylab = "payroll (log scale)", log = "y",
     panel.first = grid(col = "grey", lty = 2))
@@ -161,7 +161,7 @@ Although the designers did a great job, we are faced with the following problem:
 **IMPORTANT**
 </p>
 <p>
-The RHT estimator is the method of choice for pps designs (i.e., designs without replacement where the sample inclusion probabilities are proportional to some measure of size). For equal-probability designs, the $M$-estimator of `type = "rwm"` tends to be superior $\rightarrow$ see vignette <b><a style = "color:#ce5b00;">Basic Robust Estimators</a></b> to learn more.
+The RHT estimator is the method of choice for pps designs (i.e., designs without replacement where the sample inclusion probabilities are proportional to some measure of size). For equal-probability designs, the $M$-estimator of `type = "rhj"` (robust Hajek type estimator) tends to be superior $\rightarrow$ see vignette <b><a style = "color:#ce5b00;">Basic Robust Estimators</a></b> to learn more.
 </p>
 </div>
 
@@ -179,7 +179,7 @@ The functions with postfix `_tukey` are $M$-estimators with the Tukey biweight $
 ```{r}
 weighted_total_huber(payroll, weight, k = 8, type = "rht")
 ```
-Note that we must specify `type = "rht"` for the RHT [the case `type = "rwm"` is discussed in the vignette "Basic Robust Estimators"]. Here, we have chosen the robustness tuning constant $k = 8$.
+Note that we must specify `type = "rht"` for the RHT [the case `type = "rhj"` is discussed in the vignette "Basic Robust Estimators"]. Here, we have chosen the robustness tuning constant $k = 8$.
 
 <div class="my-sidebar-blue">
 <p style="color: #1f618d;">
@@ -240,11 +240,11 @@ Additional utility functions
 
 In the following figure, the robustness weights of object `m` are plotted against the residuals. The Huber RHT $M$-estimator downweights observations at both ends of the residuals' distribution.
 
-```{r, eval = FALSE}
+```{r, eval = FALSE, fig.align = "center"}
 plot(residuals(m), robweights(m))
 ```
 
-```{r, echo = FALSE, fig.height = 4, fig.width = 6}
+```{r, echo = FALSE, out.width="60%", fig.align = "center"}
 par(mar = c(5, 4, 1, 0))
 plot(residuals(m), robweights(m))
 ```

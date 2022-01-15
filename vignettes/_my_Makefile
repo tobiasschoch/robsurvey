@@ -1,14 +1,16 @@
 # make DOCUMENT=basic
 
-DOCUMENT=regression
+DOCUMENT=rht
 EDIT=gvim.exe
 BROWSER=firefox.exe
 RSCRIPT=Rscript.exe
+R_LIB='C:/Rpackages/win-library/4.0'
 
 all: knitr
 
 knitr: $(DOCUMENT).Rmd
-	$(RSCRIPT) -e "library(rmarkdown); rmarkdown::render('$(DOCUMENT).Rmd', 'html_document')"
+	$(RSCRIPT) -e ".libPaths($(R_LIB))" \
+	-e "library(rmarkdown); rmarkdown::render('$(DOCUMENT).Rmd', 'html_document')"
 
 view: $(DOCUMENT).html
 	$(BROWSER) $(DOCUMENT).html

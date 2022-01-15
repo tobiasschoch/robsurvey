@@ -2,6 +2,7 @@ DOCUMENT=comparison
 RSCRIPT=Rscript.exe
 PDFLATEX=pdflatex.exe
 PDFVIEWER=SumatraPDF.exe
+R_LIB='C:/Rpackages/win-library/4.0'
 
 all: sweave pdf1 pdf2
 
@@ -14,7 +15,7 @@ pdf2: $(DOCUMENT).tex
 
 # Sweave
 sweave: $(DOCUMENT).Rnw
-	$(RSCRIPT) -e "Sweave('$(DOCUMENT).Rnw')"
+	$(RSCRIPT) -e ".libPaths($(R_LIB))" -e "Sweave('$(DOCUMENT).Rnw')"
 
 # view pdf
 view: $(DOCUMENT).pdf

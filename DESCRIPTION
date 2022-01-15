@@ -39,5 +39,6 @@ Imports:
 Suggests:
     MASS,
     knitr,
-    rmarkdown
+    rmarkdown,
+    wbacon
 VignetteBuilder: knitr, rmarkdown

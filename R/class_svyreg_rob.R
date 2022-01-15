@@ -179,7 +179,7 @@ vcov.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
     Q <- survey::svyrecvar(w * xwgt * x * object$robust$robweights * r,
         object$design$cluster, object$design$strata, object$design$fpc)
 
-    # covariance matrix
+    # covariance matrix (takes Q matrix as one of its argument)
     tmp <- .C("cov_reg_design", x = as.double(x), w = as.double(w),
         xwgt = as.double(xwgt), resid = as.double(r),
         scale = as.double(object$scale), k = as.double(k),
@@ -200,7 +200,15 @@ vcov.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
 # compound design-model-based covariance matrix of M- and GM-regression est.
 .cov_reg_compound <- function(object)
 {
-    .NotYetImplemented()
+    gamma_m <- .cov_reg_model(object)
+    gamma_d <- .cov_reg_design(object)
+    # sampling fraction
+    f <- object$model$n / sum(object$model$w)
+    if (gamma_d$ok * gamma_m$ok == 0)
+        cov_mat <- matrix(NA, object$model$p, object$model$p)
+    else
+        cov_mat <- gamma_d$cov + f * gamma_m$cov
+    list(ok = 1, cov = cov_mat, scale = object$scale)
 }
 
 # extract coefficients from robust regression object

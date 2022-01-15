@@ -1,8 +1,4 @@
 # MILESTONE R 0.2
-## ADD FEATURE
-* vignette: robust regression
-* model-design based variance: regression
-* .cov_reg_compound: regression: variance: compound design-model distribution
 
 # MILESTONE R 0.3
 ## ADD FEATURE
