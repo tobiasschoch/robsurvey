@@ -6,6 +6,7 @@
 ^inst/TODO$
 # documentation
 ^inst/doc/doc\.tex
+^inst/doc/huber\.R
 ^inst/doc/GM\.R
 ^inst/doc/local_run\.R
 ^inst/doc/master\.bib

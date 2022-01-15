@@ -106,11 +106,15 @@ weighted_median_line <- function(x, y = NULL, w, type = "slopes",
     wmedx <- weighted_median(x, w, na.rm)
     wmedy <- weighted_median(y, w, na.rm)
 
-    # slope (remove NA created due to division by 0)
+    # slope
     slope <- switch(stype,
-        weighted_median((y - wmedy) / (x - wmedx), w, na.rm = TRUE),
+        {
+            tmp <- (y - wmedy) / (x - wmedx)
+            at <- is.finite(tmp)
+            weighted_median(tmp[at], w[at], na.rm = TRUE)
+        },
         weighted_median((y - wmedy) * (x - wmedx), w, na.rm = TRUE) /
-	    weighted_median((x - wmedx)^2, w, na.rm = TRUE)
+	        weighted_median((x - wmedx)^2, w, na.rm = TRUE)
    )
 
     # residuals
