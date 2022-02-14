@@ -5,7 +5,7 @@
 \description{
 A simple random sample of 70 patients in inpatient hospital treatment.
 }
-\usage{data(workplace)}
+\usage{data(losdata)}
 \format{
     A \code{data.frame} with data on 70 patients.
     \describe{
