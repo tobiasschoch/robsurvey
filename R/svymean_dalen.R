@@ -1,6 +1,6 @@
 # Dalen the weighted mean (depends on pkg survey)
 svymean_dalen <- function(x, design, censoring, type = "Z2", na.rm = FALSE,
-    verbose = FALSE)
+    verbose = TRUE)
 {
     dat <- .checkformula(x, design, na.rm)
     # in the presence of NA's
@@ -28,7 +28,7 @@ svymean_dalen <- function(x, design, censoring, type = "Z2", na.rm = FALSE,
 }
 # Dalen the weighted total (depends on pkg survey)
 svytotal_dalen <- function(x, design, censoring, type = "Z2", na.rm = FALSE,
-    verbose = FALSE)
+    verbose = TRUE)
 {
     dat <- .checkformula(x, design, na.rm)
     # in the presence of NA's

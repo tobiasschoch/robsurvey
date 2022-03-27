@@ -21,8 +21,8 @@ Authors@R:
 Description: Functions to compute robust (outlier-resistant) estimates of finite
    population characteristics. The package supports the computations of robust
    means, totals, ratios, etc. Available methods are regression M- and
-   GM-estimators, trimming, and winsorization. The package robsurvey
-   complements the survey.
+   GM-estimators, trimming, and winsorization. The package complements
+   the 'survey' (Lumley, 2004, <doi:10.18637/jss.v009.i08>) package.
 License: GPL (>= 2)
 Classification/MSC-2010: 62D05, 62F35
 URL: https://github.com/tobiasschoch/robsurvey

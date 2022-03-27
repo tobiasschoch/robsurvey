@@ -4,9 +4,9 @@
 \title{Dalen's Estimators of the Population Mean and Total}
 \usage{
 svymean_dalen(x, design, censoring, type = "Z2", na.rm = FALSE,
-    verbose = FALSE)
+    verbose = TRUE)
 svytotal_dalen(x, design, censoring, type = "Z2", na.rm = FALSE,
-    verbose = FALSE)
+    verbose = TRUE)
 }
 \arguments{
 \item{x}{a one-sided \code{[formula]}, e.g., \code{~myVariable}.}
