@@ -30,3 +30,4 @@
 ^vignettes/rht\.html$
 # license (github requries it in the base directory but CRAN complains)
 ^LICENSE$
+^CONTRIBUTING$
