@@ -19,6 +19,7 @@
 ^inst/comparison/Sweave\.sty$
 ^inst/comparison/Makefile$
 ^inst/comparison/R_functions\.R$
+^inst/comparison$
 # tests
 ^tests
 # src folder
@@ -30,4 +31,4 @@
 ^vignettes/rht\.html$
 # license (github requries it in the base directory but CRAN complains)
 ^LICENSE$
-^CONTRIBUTING$
+^CONTRIBUTING.md$

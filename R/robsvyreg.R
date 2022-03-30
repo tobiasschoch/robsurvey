@@ -5,6 +5,7 @@
 robsvyreg <- function(x, y, w, k, psi, type, xwgt, var = NULL,
     verbose = TRUE, ...)
 {
+    stopifnot(is.numeric(k))
     ctrl <- svyreg_control(...)
     if (k <= 0)
         stop("Argument 'k' must be > 0\n", call. = FALSE)
