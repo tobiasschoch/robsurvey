@@ -20,13 +20,13 @@ summary.svystat_rob <- function(object, digits = max(3L, getOption("digits") -
         if (object$optim$converged) {
             cat("  converged in", object$optim$niter, "iterations\n")
 	        cat("  with residual scale (weighted MAD):",
-	            format(object$scale, digits = digits), "\n")
+	            format(object$scale, digits = digits), "\n\n")
         } else {
 	        cat("  FAILURE of convergence in", object$optim$niter,
-	            " iterations\n")
+	            " iterations\n\n")
         }
     }
-    cat("\nSampling design:\n")
+    cat("Sampling design:\n")
     print(object$design)
 }
 # extract estimate from robust survey statistic object

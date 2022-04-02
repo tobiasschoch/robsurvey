@@ -26,17 +26,60 @@
 
 \method{robweights}{svyreg_rob}(object)
 
-\method{plot}{svyreg_rob}(x, which = 1:5, ...)
+\method{plot}{svyreg_rob}(x, which = 1L:4L,
+    hex = FALSE, caption = c("Standardized residuals vs. Fitted Values",
+    "Normal Q-Q", "Response vs. Fitted values",
+    "Sqrt of abs(Residuals) vs. Fitted Values"),
+	panel = if (add.smooth) function(x, y, ...) panel.smooth(x, y,
+    iter = iter.smooth, ...) else points, sub.caption = NULL, main = "",
+	ask = prod(par("mfcol")) < length(which) && dev.interactive(), ...,
+	id.n = 3, labels.id = names(residuals(x)), cex.id = 0.75, qqline = TRUE,
+	add.smooth = getOption("add.smooth"), iter.smooth = 3,
+	label.pos = c(4, 2), cex.caption = 1, cex.oma.main = 1.25)
 }
 \arguments{
-\item{x}{object of class \code{svyreg_rob}.}
-\item{digits}{\code{[integer]} minimal number of significant digits.}
-\item{\dots}{additional arguments passed to the method.}
-\item{object}{object of class \code{svyreg_rob}.}
-\item{mode}{mode of variance estimator: \code{"design"}, \code{"model"} or
-    \code{"compound"} (default: \code{"design"}).}
-\item{which}{indicating which plots to be drawn; if a subset of the plots
-    is required, you can specify a subset of the numbers \code{1:5}.}
+    \item{x}{object of class \code{svyreg_rob}.}
+    \item{digits}{\code{[integer]} minimal number of significant digits.}
+    \item{\dots}{additional arguments passed to the method.}
+    \item{object}{object of class \code{svyreg_rob}.}
+    \item{mode}{mode of variance estimator: \code{"design"}, \code{"model"} or
+        \code{"compound"} (default: \code{"design"}).}
+    \item{which}{indicating which plots to be drawn; if a subset of the plots
+        is required, you can specify a subset of the numbers \code{1:4}.}
+    \item{hex}{\code{[logical]} if \code{TRUE}, a hexagonally binned plot
+        is shown in place of a scatterplot.}
+    \item{caption}{captions to appear above the plots;
+		\code{[character]} vector of valid graphics annotations. It
+		can be set to \code{""} or \code{NA} to suppress all captions.}
+	\item{panel}{panel function. The useful alternative to
+		\code{\link{points}}, \code{\link{panel.smooth}} can be chosen
+		by \code{add.smooth = TRUE}.}
+	\item{sub.caption}{common title \code{[character]}---above the figures
+		if there are more than one; used as \code{sub} (s.\code{\link{title}})
+		otherwise. If \code{NULL}, as by default, a possible abbreviated
+		version of \code{deparse(x$call)} is used.}
+	\item{main}{title to each plot \code{[character]}---in addition
+		to \code{caption}.}
+	\item{ask}{\code{[logical]}; if \code{TRUE}, the user is \emph{ask}ed
+        before each plot, see \code{\link{par}(ask=.)}.}
+	\item{id.n}{number of points to be labelled in each plot, starting
+		with the most extreme, \code{[integer]}.}
+	\item{labels.id}{vector of labels \code{[character]}, from which the
+		labels for extreme points will be chosen. \code{NULL} uses
+		observation numbers.}
+	\item{cex.id}{magnification of point labels, \code{[numeric]}.}
+	\item{qqline}{\code{[logical]} indicating if a \code{\link{qqline}()}
+		should be added to the normal Q-Q plot.}
+	\item{add.smooth}{\code{[logical]} indicating if a smoother should be
+		added to most plots; see also \code{panel} above.}
+	\item{iter.smooth}{the number of robustness iterations \code{[integer]},
+		the argument \code{iter} in \code{\link{panel.smooth}()}.}
+	\item{label.pos}{positioning of labels \code{[numeric]}, for the left
+		half and right half of the graph respectively.}
+	\item{cex.caption}{controls the size of \code{caption}, \code{[numeric]}.}
+	\item{cex.oma.main}{controls the size of the \code{sub.caption} only if
+		that is \emph{above} the figures when there is more than one,
+		\code{[numeric]}.}
 }
 \description{
 Methods and utility functions for objects of class \code{svyreg_rob}.

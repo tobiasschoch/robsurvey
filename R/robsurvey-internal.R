@@ -153,7 +153,7 @@
     # vector of population x-means or -totals
     if (NROW(data) == 1) {
         # drop intercept (if there is one)
-        if (object$model$intercept) {
+        if (attr(object$terms, "intercept")) {
             names_data <- names_data[-1]
             names_beta <- names_beta[-1]
         }
@@ -195,6 +195,11 @@
             res = as.double(numeric(n)), PACKAGE = "robsurvey")
         tmp$res
     }
+}
+# weight function
+.psi_wgt_function <- function(x, k, psi = c("Huber", "Huberasym", "Tukey"))
+{
+    .psi_function(x, k, psi) / x
 }
 # onAttach function
 .onAttach <- function(libname, pkgname)
@@ -242,7 +247,7 @@
      88   Y8. .8P 88  dP  \\__ \\ |_| | |   \\ V /  __/ |_| |
      88    'Y8P'  88e8P'  |___/\\__,_|_|    \\_/ \\___|\\__, |
 						     __/ |
-					version 0.2 |___/\n\ntype: package?robsurvey to learn more
+					version 0.3 |___/\n\ntype: package?robsurvey to learn more
 use:  library(robsurvey, quietly = TRUE) to suppress the
       start-up message\n")
    }

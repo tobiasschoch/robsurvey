@@ -1,3 +1,9 @@
+importFrom("grDevices", "as.graphicsAnnot", "dev.flush", "dev.hold",
+    "dev.interactive", "devAskNewPage", "extendrange")
+importFrom("graphics", "abline", "mtext", "panel.smooth", "par", "points",
+    "strheight", "text", "title")
+importFrom("stats", "fitted", "qqnorm", "residuals")
+
 S3method(print,svystat_rob)
 S3method(print,svyreg_rob)
 
@@ -38,6 +44,7 @@ export(svymean_trimmed)
 export(svymean_tukey)
 export(svymean_winsorized)
 export(svymean_dalen)
+export(svymean_reg)
 
 export(svytotal_huber)
 export(svytotal_k_winsorized)

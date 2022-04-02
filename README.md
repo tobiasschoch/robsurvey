@@ -5,15 +5,15 @@
 <!-- badges: end -->
 
 
-The package **robsurvey** provides several functions to compute robust estimates of finite population characteristics  The package supports the computations of (among others) robust means, totals, and ratios. Available methods are Huber M-estimators, trimming, and winsorization. **robsurvey** complements the [survey package](https://cran.r-project.org/package=survey).
+The package **robsurvey** provides several functions to compute robust estimates of finite population characteristics  The package supports the computations of (among others) robust means, totals, and ratios. Available methods are Huber M-estimators, trimming, and winsorization. **robsurvey** complements the [survey](https://cran.r-project.org/package=survey) package.
 
 
 ## Installation
 
 You can install the package from CRAN
 
-`install.packages("robsurvey")`
+```r install.packages("robsurvey")```
 
 or github
 
-`devtools::install_github("tobiasschoch/robsurvey")?
+```r devtools::install_github("tobiasschoch/robsurvey")```
