@@ -6,12 +6,9 @@ svymean_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE)
     dat <- .checkformula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
-        return(structure(list(characteristic = "mean",
-            estimator = list(string = paste0("Weighted trimmed estimator (",
-                LB, ", ", UB, ")"), LB = LB, UB = UB),
-            estimate = stats::setNames(NA, dat$yname), variance = NA,
-            residuals = NA, model = NA, design = design, call = match.call()),
-            class = "svystat_rob"))
+        return(.empty_svystat_rob("mean", dat$yname,
+            paste0("Weighted trimmed estimator (", LB, ", ", UB, ")"),
+            match.call(), design, LB = LB, UB = UB))
     # otherwise
     design <- dat$design
     res <- weighted_mean_trimmed(dat$y, dat$w, LB, UB, TRUE, FALSE)
@@ -32,14 +29,12 @@ svytotal_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE)
 {
     res <- svymean_trimmed(x, design, LB, UB, na.rm)
     res$call <- match.call()
-    if (is.na(res$estimate)) {
-        res$characteristic <- "total"
-        return(res)
-    }
+    res$characteristic <- "total"
+    if (is.na(res$estimate))
+         return(res)
     sum_w <- sum(res$model$w)
     res$estimate <- res$estimate * sum_w
     res$variance <- res$variance * sum_w^2
-    res$characteristic <- "total"
     res
 }
 # influence function, Huber (1981, p. 58)

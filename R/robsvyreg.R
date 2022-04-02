@@ -1,7 +1,4 @@
 # workhorse function for robust regression
-# FIXME:
-#   terms and mf object for regression
-#   see predict.lm
 robsvyreg <- function(x, y, w, k, psi, type, xwgt, var = NULL,
     verbose = TRUE, ...)
 {

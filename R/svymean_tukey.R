@@ -2,15 +2,14 @@
 svymean_tukey <- function(x, design, k, type = "rhj", na.rm = FALSE,
     verbose = TRUE, ...)
 {
+    if (!is.language(x))
+        stop("Argument 'x' must be a formula object\n", call. = FALSE)
     dat <- .checkformula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
-        return(structure(list(characteristic = "mean",
-            estimator = list(string = paste0("Tukey M-estimator (type = ",
-                type, ")"), type = type, psi = 2, psi_fun = "Tukey", k = k),
-            estimate = stats::setNames(NA, dat$yname), variance = NA,
-            residuals = NA, model = NA, design = design, call = match.call()),
-            class = "svystat_rob"))
+        return(.empty_svystat_rob("mean", dat$yname,
+            paste0("Tukey M-estimator (type = ", type, ")"), match.call(),
+            design, type = type, psi = 2, psi_fun = "Tukey", k = k))
     # otherwise
     design <- dat$design
     res <- weighted_mean_tukey(dat$y, dat$w, k, type, TRUE, FALSE, verbose,
@@ -34,25 +33,13 @@ svymean_tukey <- function(x, design, k, type = "rhj", na.rm = FALSE,
 svytotal_tukey <- function(x, design, k, type = "rhj", na.rm = FALSE,
         verbose = TRUE, ...)
 {
-    dat <- .checkformula(x, design, na.rm)
-    # in the presence of NA's
-    if (dat$failure)
-        return(structure(list(characteristic = "mean",
-            estimator = list(string = paste0("Tukey M-estimator (type = ",
-                type, ")"), type = type, psi = 2, psi_fun = 2, k = k),
-            estimate = stats::setNames(NA, dat$yname), variance = NA,
-            residuals = NA, model = NA, design = design, call = match.call()),
-            class = "svystat_rob"))
-    design <- dat$design
-    res <- weighted_total_tukey(dat$y, dat$w, k, type, TRUE, FALSE, verbose,
-        ...)
-    # compute variance
-    infl <- res$robust$robweights * dat$y * dat$w
-    res$variance <- survey::svyrecvar(infl, design$cluster, design$strata,
-        design$fpc, postStrata = design$postStrata)
-    names(res$estimate) <- dat$yname
+    res <- svymean_tukey(x, design, k, type, na.rm, verbose, ...)
     res$call <- match.call()
-    res$design <- design
-    class(res) <- c("svystat_rob", "mer_capable")
+    res$characteristic <- "total"
+    if (is.na(res$estimate))
+        return(res)
+    sum_w <- sum(res$model$w)
+    res$estimate <- res$estimate * sum_w
+    res$variance <- res$variance * sum_w^2
     res
 }

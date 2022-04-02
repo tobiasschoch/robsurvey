@@ -1,3 +1,14 @@
+# return an empty object of class svystat_rob
+.empty_svystat_rob <- function(characteristic, yname, string, call,
+    design, ...)
+{
+    structure(list(characteristic = characteristic,
+        estimator = list(string = string, ...),
+        estimate = stats::setNames(NA, yname), variance = NA,
+        residuals = NA, model = NA, design = design, call = call),
+        class = "svystat_rob")
+}
+# check data and weight
 .check <- function(x, w, na.rm = FALSE, check_NA = TRUE)
 {
     if (missing(w))
@@ -11,6 +22,7 @@
     if (n != length(w))
         stop("Data vector and weights are not of the same dimension\n",
 	        call. = FALSE)
+    # empty data
     if (n == 0)
         return(NULL)
 
@@ -43,7 +55,8 @@
 {
     if (inherits(f, "formula")) {
         if (length(all.vars(f)) > 1)
-            stop("Formula must refer to one variable only\n", call. = FALSE)
+            stop("Formula must refer to one r.h.s. variable only\n",
+                call. = FALSE)
         tf <- stats::terms.formula(f)
         if(attr(tf, "response") != 0)
             stop("The LHS of the formula must not be defined\n", call. = FALSE)
@@ -64,6 +77,10 @@
         }
     }
     w <- as.numeric(1 / design$prob)
+    # special return for empty data
+    if (length(y) == 0)
+        return(list(failure = TRUE))
+
     # check for missing values
     failure <- FALSE
     if (check_NA) {

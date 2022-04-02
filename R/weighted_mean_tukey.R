@@ -2,11 +2,24 @@
 weighted_mean_tukey <- function(x, w, k, type = "rhj", info = FALSE,
     na.rm = FALSE, verbose = TRUE, ...)
 {
+    string <- paste0("Tukey M-estimator (type = ", type, ")")
     dat <- .check(x, w, na.rm)
     if (is.null(dat))
         return(NA)
-
-    # NOTE:
+    # only one observation
+    if (dat$n == 0)
+        return(dat$x)
+    # only one observation
+    if (dat$n == 1) {
+        if (info)
+            return(list(characteristic = "mean", estimator = list(string =
+                string, type = type, psi = 2, psi_fun = "Tukey", k = k),
+                estimate = dat$x, scale = NA, residuals = 0, model =
+                list(y = dat$x, w = dat$w), call = match.call()))
+        else
+            return(dat$x)
+    }
+    # otherwise
     if (type == "rwm") {
         warning("The 'rwm' argument is deprecated; please use 'rhj' instead",
             call. = FALSE)
@@ -24,9 +37,6 @@ weighted_mean_tukey <- function(x, w, k, type = "rhj", info = FALSE,
         stop(paste0("Method '", type, "' does not exist\n"), call. = FALSE)
     }
 
-    if (length(res) == 1)
-        return(NA)
-
     # check for failure of convergence
     if (!res$optim$converged) {
         res$estimate <- NA
@@ -38,8 +48,7 @@ weighted_mean_tukey <- function(x, w, k, type = "rhj", info = FALSE,
         if (type == "rhj")
             res$model$x <- NULL
         res$characteristic <- "mean"
-        res$estimator$string = paste0("Tukey M-estimator (type = ",
-            type, ")")
+        res$estimator$string <- string
         res$estimator$type <- type
         res$call <- match.call()
         return(res)

@@ -85,3 +85,9 @@ expect_identical(unname(vcov(svymean_trimmed(~payroll, dn, LB = 0))),
 expect_identical(unname(vcov(svymean_winsorized(~payroll, dn, LB = 0))),
     unname(vcov(svymean(~payroll, dn))))
 
+# standard error of totals
+expect_identical(as.numeric(SE(svytotal_trimmed(~payroll, dn, LB = 0))),
+    as.numeric(SE(svytotal(~payroll, dn))))
+
+expect_identical(as.numeric(SE(svytotal_winsorized(~payroll, dn, LB = 0))),
+    as.numeric(SE(svytotal(~payroll, dn))))

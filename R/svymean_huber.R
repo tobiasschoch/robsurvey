@@ -2,16 +2,16 @@
 svymean_huber <- function(x, design, k, type = "rhj", asym = FALSE,
     na.rm = FALSE, verbose = TRUE, ...)
 {
+    if (!is.language(x))
+        stop("Argument 'x' must be a formula object\n", call. = FALSE)
     dat <- .checkformula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
-        return(structure(list(characteristic = "mean",
-            estimator = list(string = paste0("Huber M-estimator (type = ",
-                type, ifelse(asym, "; asym. psi", ""), ")"), type = type,
-                psi = ifelse(asym, 1, 0), psi_fun = "Huber", k = k),
-            estimate = stats::setNames(NA, dat$yname), variance = NA,
-            residuals = NA, model = NA, design = design, call = match.call()),
-            class = "svystat_rob"))
+        return(.empty_svystat_rob("mean", dat$yname,
+            paste0("Huber M-estimator (type = ", type,
+            ifelse(asym, "; asym. psi", ""), ")"), match.call(),
+            design, type = type, psi = ifelse(asym, 1, 0), psi_fun = "Huber",
+            k = k))
     # otherwise
     design <- dat$design
     res <- weighted_mean_huber(dat$y, dat$w, k, type, asym, TRUE, FALSE,
@@ -35,27 +35,13 @@ svymean_huber <- function(x, design, k, type = "rhj", asym = FALSE,
 svytotal_huber <- function(x, design, k, type = "rhj", asym = FALSE,
     na.rm = FALSE, verbose = TRUE, ...)
 {
-    dat <- .checkformula(x, design, na.rm)
-    # in the presence of NA's
-    if (dat$failure)
-        return(structure(list(characteristic = "total",
-            estimator = list(string = paste0("Huber M-estimator (type = ",
-                type, ifelse(asym, "; asym. psi", ""), ")"), type = type,
-                psi = ifelse(asym, 1, 0), psi_fun = "Huber", k = k),
-            estimate = stats::setNames(NA, dat$yname), variance = NA,
-            residuals = NA, model = NA, design = design, call = match.call()),
-            class = "svystat_rob"))
-    # otherwise
-    design <- dat$design
-    res <- weighted_total_huber(dat$y, dat$w, k, type, asym, TRUE, FALSE,
-        verbose, ...)
-    # compute variance
-    infl <- res$robust$robweights * dat$y * dat$w
-    res$variance <- survey::svyrecvar(infl, design$cluster, design$strata,
-        design$fpc, postStrata = design$postStrata)
-    names(res$estimate) <- dat$yname
+    res <- svymean_huber(x, design, k, type, asym, na.rm, verbose, ...)
     res$call <- match.call()
-    res$design <- design
-    class(res) <- c("svystat_rob", "mer_capable")
+    res$characteristic <- "total"
+    if (is.na(res$estimate))
+        return(res)
+    sum_w <- sum(res$model$w)
+    res$estimate <- res$estimate * sum_w
+    res$variance <- res$variance * sum_w^2
     res
 }
