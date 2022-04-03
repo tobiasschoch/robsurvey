@@ -22,9 +22,9 @@
 
 // human readable errors
 const char* const ROBSURVEY_ERROR_STRINGS[] = {
-    "no errors",
-    "scale estimate is zero (or nearly so)",
-    "design matrix is rank deficient (or nearly so)",
+    "No errors",
+    "Scale estimate is zero (or nearly so)",
+    "Design matrix is rank deficient (or nearly so)",
     "Mallows normalization constant: Algorithm did not converge",
     "QR factorization: dgeqrf failed",
     "QR factorization: dtrtri failed",

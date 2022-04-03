@@ -22,5 +22,7 @@
 
 // prototypes for the functions
 void rwlslm(double*, double*, double*, double*, double*, double*, int*, int*,
-    double*, double*, double*, double*, int*, int*, int*, int*, int*);
+    double*, double*, double*, double*, int*, int*, int*, int*, int*, int*,
+    int*);
+void wlslm(double*, double*, double*, double*, int*, int*, double*, double*);
 #endif

@@ -8,7 +8,7 @@ DLL_LAPACK = $(R_DIR)/bin/x64/Rlapack.dll
 DLL_R      = $(R_DIR)/bin/x64/R.dll
 
 # Link
-OBJ = wquantile.o mallows.o zeroin.o huberm.o trimmedwinsorized.o \
+OBJ = wquantile.o mallows.o zeroin.o huber2.o trimmedwinsorized.o \
 		psifunctions.o robsurvey_error.o regression.o regression_cov.o
 
 robsurvey.dll : $(OBJ)

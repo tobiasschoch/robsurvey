@@ -1,7 +1,6 @@
 \name{NEWS}
 \title{News for \R Package \pkg{robsurvey}}
 \encoding{UTF-8}
-
 \section{CHANGES in robsurvey VERSION 0.3 (2022-04-02)}{
     \subsection{NEW FEATURES}{
         \itemize{
@@ -9,6 +8,9 @@
                 and total; see \code{svymean_reg} and \code{svytotal_reg}
             \item Diagnostic plots for regression, i.e., objects of class
                 \code{svyreg_rob}
+            \item Robust regression: If the estimated regression scale
+                (by default weighted MAD) is zero (or nearly so), the weighted
+                IQR is tried instead
         }
     }
 }

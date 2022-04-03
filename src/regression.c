@@ -49,6 +49,9 @@ typedef struct workarray_struct {
 // declaration
 robsurvey_error_type wmad(regdata*, workarray*, double* restrict, int*,
     double, double*);
+robsurvey_error_type compute_scale(regdata*, workarray*, double* restrict,
+    int*, double, double*, int*, int*);
+robsurvey_error_type wiqr(regdata*, workarray*, double* restrict, double*);
 robsurvey_error_type rfitwls(regdata*, workarray*, double* restrict,
     double* restrict, double* restrict);
 static inline double norm(const double*, const double*, const int)
@@ -56,8 +59,62 @@ static inline double norm(const double*, const double*, const int)
 static inline void weighting_scheme(regdata*, double (*f_wgt_psi)(double,
     const double), double* restrict, double*, double*, int*, double* restrict);
 robsurvey_error_type initialize(regdata*, workarray*, double* restrict,
-    double* restrict, double*, int*, int*);
+    double* restrict, double*, int*, int*, int*, int*);
 
+/******************************************************************************\
+|* wlslm: Weighted least squares                                              *|
+|*                                                                            *|
+|* x          design matrix, array[n * p];                                    *|
+|* y          response vector, array[n]                                       *|
+|* w          sampling weight, array[n]                                       *|
+|* resid      residuals, array[n]                                             *|
+|* n, p       dimensions                                                      *|
+|* beta0      on return: regression coefficients                              *|
+|* scale      estimate of scale                                               *|
+\******************************************************************************/
+void wlslm(double *x, double *y, double *w, double *resid, int *n, int *p,
+    double *beta0, double *scale)
+{
+    // initialize and populate structure with regression-specific data
+    regdata data;
+    regdata *dat = &data;
+    dat->n = *n;
+    dat->p = *p;
+    dat->x = x;
+    dat->y = y;
+    dat->w = w;
+
+    // initialize and populate structure with work arrays
+    double* restrict work_x = (double*) Calloc(*n * *p, double);
+    double* restrict work_y = (double*) Calloc(*n, double);
+    workarray wwork;
+    workarray *work = &wwork;
+    work->work_x = work_x;
+    work->work_y = work_y;
+
+    // determine work array for 'dgels' (and allocate 'work_lapack')
+    work->lwork = -1;
+    robsurvey_error_type status = rfitwls(dat, work, w, beta0, resid);
+    double* restrict work_lapack = (double*) Calloc(work->lwork, double);
+    work->work_lapack = work_lapack;
+
+    // compute least squares fit
+    status = rfitwls(dat, work, w, beta0, resid);
+    if (status != ROBSURVEY_ERROR_OK)
+        PRINT_OUT("Error: %s\n", robsurvey_error(status));
+
+    // compute scale
+    double sum_w = 0.0;
+    *scale = 0.0;
+    for (int i = 0; i < *n; i++) {
+        sum_w += w[i];
+        *scale += w[i] * _POWER2(resid[i]);
+    }
+    *scale /= sum_w - (double)*p;
+    *scale = sqrt(*scale);
+
+    Free(work_x); Free(work_y); Free(work_lapack);
+}
 /******************************************************************************\
 |* rwlslm: regression M- and GM-estimator and estimate of scale (w MAD)       *|
 |*                                                                            *|
@@ -71,7 +128,6 @@ robsurvey_error_type initialize(regdata*, workarray*, double* restrict,
 |* k          robustness tuning constant                                      *|
 |* beta0      on return: regression coefficients                              *|
 |* scale      estimate of scale (weighted MAD)                                *|
-|* scale      estimate of scale (weighted MAD)                                *|
 |* tol        numerical tolerance criterion to stop the iterations            *|
 |* maxit      maximum number of iterations to use                             *|
 |* psi        0 = Huber, 1 = asymmetric Huber, 2 = Tukey biweight             *|
@@ -79,12 +135,16 @@ robsurvey_error_type initialize(regdata*, workarray*, double* restrict,
 |* init       1 = method is initialized by weighted least squares; 0 = beta0  *|
 |*            is taken as initial estimate of regression                      *|
 |* mad_center 1 = mad is centered about the median, 0 = centered about zero   *|
+|* verbose    1 = verbose, 0 = quiet                                          *|
+|* used_iqr   on return: 1 = scale estimated by iqr, 0 = mad (default)        *|
 \******************************************************************************/
 void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
     double *xwgt, int *n, int *p, double *k, double *beta0, double *scale,
-    double *tol, int *maxit, int *psi, int *type, int *init, int *mad_center)
+    double *tol, int *maxit, int *psi, int *type, int *init, int *mad_center,
+    int *verbose, int *used_iqr)
 {
     // STEP 0: general preparations
+    *used_iqr = 0;
     robsurvey_error_type status;
     double* restrict beta1 = (double*) Calloc(*p, double);
 
@@ -143,7 +203,8 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
     }
 
     // STEP 2: initialize
-    status = initialize(dat, work, resid, beta0, scale, init, mad_center);
+    status = initialize(dat, work, resid, beta0, scale, init, mad_center,
+        verbose, used_iqr);
     if (status != ROBSURVEY_ERROR_OK) {
         PRINT_OUT("Error: %s\n", robsurvey_error(status));
         *maxit = 0;
@@ -169,12 +230,14 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
             double* restrict dummy_resid = work_x;
             for (int i = 0; i < *n; i++)
                 dummy_resid[i] = resid[i] * sqrt(xwgt[i]);
-            status = wmad(dat, work, dummy_resid, mad_center, mad_const,
-                scale);
+            status = compute_scale(dat, work, dummy_resid, mad_center,
+                mad_const, scale, verbose, used_iqr);
 
         } else {                                // otherwise
-            status = wmad(dat, work, resid, mad_center, mad_const, scale);
+            status = compute_scale(dat, work, resid, mad_center, mad_const,
+                scale, verbose, used_iqr);
         }
+
         if (status != ROBSURVEY_ERROR_OK) {
             PRINT_OUT("Error: %s\n", robsurvey_error(status));
             *maxit = 0;
@@ -209,10 +272,11 @@ clean_up:
 |* scale      on return: weighted mad                                         *|
 |* init       type of initialization                                          *|
 |* mad_center mad centered about the median (1) or about zero (0)             *|
+|* used_iqr   on return: 1 = scale estimated by iqr, 0 = mad (default)        *|
 \******************************************************************************/
 robsurvey_error_type initialize(regdata *dat, workarray *work,
     double* restrict resid, double* restrict beta0, double *scale, int *init,
-    int *mad_center)
+    int *mad_center, int *verbose, int *used_iqr)
 {
     robsurvey_error_type status;
     if (*init) {
@@ -230,8 +294,10 @@ robsurvey_error_type initialize(regdata *dat, workarray *work,
     F77_CALL(dgemv)("N", &n, &p, &double_minus1, dat->x, &n, beta0, &int_1,
         &double_1, resid, &int_1 FCONE);
 
-    // compute 'scale' by the weighted mad
-    status = wmad(dat, work, resid, mad_center, mad_NORM_CONSTANT, scale);
+    // compute 'scale' by the weighted mad (or iqr)
+    status = compute_scale(dat, work, resid, mad_center, mad_NORM_CONSTANT,
+        scale, verbose, used_iqr);
+
     return status;
 }
 
@@ -344,7 +410,62 @@ robsurvey_error_type rfitwls(regdata *dat, workarray *work, double* restrict w,
         return ROBSURVEY_ERROR_OK;
     }
 }
+/******************************************************************************\
+|* Scale estimator (mad or IQR)                                               *|
+|*                                                                            *|
+|* dat          typedef struct regdata                                        *|
+|* work         typedef struct workarray                                      *|
+|* resid        residuals, array[n]                                           *|
+|* mad_center   1 = center mad about median, 0 = center about zero            *|
+|* mad_constant normalization constant of the mad                             *|
+|* scale        on return: scale estimat                                      *|
+|* verbose      1 = verbose, 0 = quiet                                        *|
+|* used_iqr     on return: 1 = scale estimated by iqr, 0 = mad (default)      *|
+\******************************************************************************/
+robsurvey_error_type compute_scale(regdata *dat, workarray *work,
+    double* restrict resid, int *mad_center, double mad_constant,
+    double *scale, int *verbose, int *used_iqr)
+{
+    // compute mad
+    robsurvey_error_type status = wmad(dat, work, resid, mad_center,
+        mad_constant, scale);
+    // try IQR if mad is zero
+    if (status == ROBSURVEY_ERROR_SCALE_ZERO) {
+        if (*verbose)
+            PRINT_OUT("\nNote: Scale is computed by IQR because MAD is zero\n");
+        status = wiqr(dat, work, resid, scale);
+        *used_iqr = 1;
+        // make sure that the message is printed only once
+        *verbose = 0;
+    }
+    return(status);
+}
+/******************************************************************************\
+|* Weighted normalized IQR                                                    *|
+|*                                                                            *|
+|* dat          typedef struct regdata                                        *|
+|* work         typedef struct workarray                                      *|
+|* resid        residuals, array[n]                                           *|
+|* iqr          on return: iqr scale estimate                                 *|
+\******************************************************************************/
+robsurvey_error_type wiqr(regdata *dat, workarray *work, double* restrict resid,
+    double *iqr)
+{
+    int n = dat->n;
+    double p25 = 0.25, x25 = 0.0;
+    double p75 = 0.75, x75 = 0.0;
+    double* restrict w = dat->w;
+    double* restrict work_2n = work->work_2n;
 
+    wquantile_noalloc(resid, w, work_2n, &n, &p25, &x25);
+    wquantile_noalloc(resid, w, work_2n, &n, &p75, &x75);
+    *iqr = (x75 - x25) * iqr_NORM_CONSTANT;
+
+    if (*iqr < DBL_EPSILON)
+        return ROBSURVEY_ERROR_SCALE_ZERO;
+    else
+        return ROBSURVEY_ERROR_OK;
+}
 /******************************************************************************\
 |* Weighted median of the absolute deviation about zero or about the weighted *|
 |* median                                                                     *|
@@ -357,7 +478,7 @@ robsurvey_error_type rfitwls(regdata *dat, workarray *work, double* restrict w,
 |* mad      on return: weighted mad                                           *|
 \******************************************************************************/
 robsurvey_error_type wmad(regdata *dat, workarray *work, double* restrict resid,
-    int* median, double constant, double *mad)
+    int *median, double constant, double *mad)
 {
     int n = dat->n;
     double* restrict w = dat->w;
@@ -375,7 +496,7 @@ robsurvey_error_type wmad(regdata *dat, workarray *work, double* restrict resid,
             work_y[i] = fabs(resid[i]);
     }
 
-    // compute mad
+    // compute normalized mad
     wquantile_noalloc(work_y, w, work_2n, &n, &prob, mad);
     *mad *= constant;
 

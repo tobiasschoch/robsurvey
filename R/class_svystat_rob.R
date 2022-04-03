@@ -19,8 +19,9 @@ summary.svystat_rob <- function(object, digits = max(3L, getOption("digits") -
         cat("Algorithm performance:\n")
         if (object$optim$converged) {
             cat("  converged in", object$optim$niter, "iterations\n")
-	        cat("  with residual scale (weighted MAD):",
-	            format(object$scale, digits = digits), "\n\n")
+	        cat(paste0("  with residual scale ", ifelse(object$optim$used_iqr,
+                "(weighted IQR): ", "(weighted MAD): "),
+	            format(object$scale, digits = digits), "\n\n"))
         } else {
 	        cat("  FAILURE of convergence in", object$optim$niter,
 	            " iterations\n\n")

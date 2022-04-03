@@ -439,7 +439,7 @@ robsurvey_error_type inverse_qr(workarray *work, double* restrict x, int *n,
 }
 
 /******************************************************************************\
-|* design-based estimate of the regression covariance matrix                  *|
+|* Design-based estimate of the regression covariance matrix                  *|
 |*                                                                            *|
 |* x      model design matrix, array[n, p]                                    *|
 |* w      weights, array[n]                                                   *|

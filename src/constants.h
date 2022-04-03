@@ -2,10 +2,10 @@
 #define _CONSTANTS_H
 
 // consistency correction constant of the median absolute deviations about
-// the median at the Gaussian core model (see 'robsurvey.c')
+// the median at the Gaussian core model (see regression.c)
 #define mad_NORM_CONSTANT 1.482602
 // consistency correction constant interquartile range at the Gaussian core
-// model (see 'huberm.c')
+// model (see huber2.c and regresion.c)
 #define iqr_NORM_CONSTANT 0.741301
 
 // parameterization of Brent's root finding algorithm R_zeroin2 ('zeroin.c')

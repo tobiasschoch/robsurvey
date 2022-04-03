@@ -24,7 +24,7 @@
 */
 
 #include <R.h>
-#include "huberm.h"
+#include "huber2.h"
 
 // some macros
 #define _WGT_HUBER(_x, _k) ((fabs(_x) >= _k) ? _k / fabs(_x) : 1.0)

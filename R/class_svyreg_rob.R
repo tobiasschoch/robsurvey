@@ -15,6 +15,7 @@
 #     + converged: [logical]
 #     + niter: [int] number of IRWLS iterations
 #     + tol: [numeric] numerical tolerance criterion (IRLWS)
+#     + used_iqr: [int] 1 = scale estimated by IQR not MAD
 #  + residuals: [numeric]
 #  + model [list]
 #     + x: [matrix] design matrix
@@ -56,7 +57,8 @@ print.svyreg_rob <- function(x, digits = max(3L, getOption("digits") - 3L), ...)
             print.default(format(x$estimate, digits = digits), print.gap = 2L,
                 quote = FALSE)
         }
-        cat("\nScale estimate:", format(signif(x$scale, digits)), "\n")
+        cat("\nScale estimate:", format(signif(x$scale, digits)),
+            ifelse(x$optim$used_iqr, "(weighted IQR)", "(weighted MAD)"), "\n")
     } else {
         cat("\nIRWLS not converged in", x$optim$niter, "iterations (with tol =",
             x$optim$tol, ")\n")
