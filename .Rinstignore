@@ -5,14 +5,11 @@
 ^README\.md$
 ^inst/TODO$
 # documentation
-^inst/doc/doc\.tex
-^inst/doc/huber\.R
-^inst/doc/GM\.R
-^inst/doc/local_run\.R
-^inst/doc/master\.bib
-^inst/doc/sctmath\.tex
-^inst/doc/test_svyreg_huber\.R
-^inst/doc/psi_functions\.tex
+^inst/doc/huber\.R$
+^inst/doc/GM\.R$
+^inst/doc/test_svyreg_huber\.R$
+^inst/doc/regression_covariance\.md$
+^inst/doc/psi_functions\.md$
 ^inst/varia/$
 # comparison
 ^inst/comparison/comparison\.Rnw$
@@ -25,6 +22,7 @@
 # src folder
 ^src/Makefile$
 ^src/_checkout_wquantile\.bat$
+^src/cflow$
 # vignettes folder
 ^vignettes/Makefile$
 ^vignettes/basic\.html$

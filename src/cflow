@@ -1,0 +1,3 @@
+cflow --omit-arguments --depth=2 --no-main mallows.c psifunctions.c regression.c regression_cov.c trimmedwinsorized.c robsurvey_error.c | grep -Ev 'PRINT_OUT|Free|fabs|Calloc|sqrt|Memcpy|F77_CALL'
+
+#cflow --depth=2 --no-main mallows.c psifunctions.c regression.c regression_cov.c trimmedwinsorized.c robsurvey_error.c | grep -Ev 'PRINT_OUT|Free|fabs|Calloc|sqrt|Memcpy|F77_CALL'
