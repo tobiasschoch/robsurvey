@@ -159,10 +159,15 @@ vcov.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
     if (!is.null(v))
         r <- r / sqrt(v)
 
+    # robustness weights
+    ui <- if (is.null(object$robust))
+        rep(1, n)
+    else
+        object$robust$robweights
+
     tmp <- .C("cov_reg_model", resid = as.double(r),
         x = as.double(object$model$x), xwgt = as.double(object$model$xwgt),
-        robwgt = as.double(object$robust$robweights),
-        w = as.double(object$model$w), k = as.double(k),
+        robwgt = as.double(ui), w = as.double(object$model$w), k = as.double(k),
         scale = as.double(object$scale), scale = as.double(numeric(1)),
         n = as.integer(object$model$n), p = as.integer(object$model$p),
         psi = as.integer(object$estimator$psi),
@@ -207,9 +212,15 @@ vcov.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
     # scale the weights (prevent overflow)
     w <- object$model$w / sum(object$model$w)
 
+    # robustness weights
+    ui <- if (is.null(object$robust))
+        rep(1, n)
+    else
+        object$robust$robweights
+
     # Q matrix
-    Q <- survey::svyrecvar(w * xwgt * x * object$robust$robweights * r,
-        object$design$cluster, object$design$strata, object$design$fpc)
+    Q <- survey::svyrecvar(w * xwgt * x * ui * r, object$design$cluster,
+        object$design$strata, object$design$fpc)
 
     # covariance matrix (takes Q matrix as one of its argument)
     tmp <- .C("cov_reg_design", x = as.double(x), w = as.double(w),

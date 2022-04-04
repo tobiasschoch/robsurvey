@@ -1,0 +1,21 @@
+# https://www.jstatsoft.org/article/view/v094c01
+
+DOCUMENT = basic
+
+ifeq ($(OS),Windows_NT)
+	RSCRIPT = Rscript.exe
+	R_LIB = 'C:/Rpackages/win-library/4.0'
+else
+	RSCRIPT = Rscript
+endif
+
+RSCRIPT_OPTS = --vanilla
+RMD_HTML_OPTS = 'html_document'
+
+knitr: $(DOCUMENT).Rmd
+	$(RSCRIPT) $(RSCRIPT_OPTS) -e ".libPaths($(R_LIB))" \
+	-e "library('rmarkdown'); render('$<', $(RMD_HTML_OPTS))"
+
+.PHONY: clean
+clean:
+	rm *.html

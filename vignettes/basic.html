@@ -586,10 +586,9 @@ To avoid unnecessary repetition, we discuss the details of estimation <em>only</
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>     mean    SE</span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>los <span class="fl">9.324</span> <span class="fl">1.064</span></span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>Sampling design<span class="sc">:</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>Independent Sampling design</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span><span class="dv">1</span>, <span class="at">fpc =</span> <span class="sc">~</span>fpc, <span class="at">weights =</span> <span class="sc">~</span>weight, <span class="at">data =</span> losdata)</span></code></pre></div>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>Sampling design<span class="sc">:</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>Independent Sampling design</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span><span class="dv">1</span>, <span class="at">fpc =</span> <span class="sc">~</span>fpc, <span class="at">weights =</span> <span class="sc">~</span>weight, <span class="at">data =</span> losdata)</span></code></pre></div>
 <p>Additional utility functions are</p>
 <ul>
 <li><code>residuals()</code> to extract the residuals. [For the weighted trimmed mean, the residuals are not so interesting].</li>
@@ -691,8 +690,9 @@ To avoid unnecessary repetition, we discuss the details of estimation <em>only</
 <li><code>svytotal_dalen()</code></li>
 </ul>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">svymean_dalen</span>(<span class="sc">~</span>los, dn, <span class="at">censoring =</span> <span class="dv">1500</span>)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>     mean    SE</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>los <span class="fl">10.73</span> <span class="fl">1.129</span></span></code></pre></div>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span> of <span class="dv">71</span> observations censored</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>     mean    SE</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>los <span class="fl">10.73</span> <span class="fl">1.129</span></span></code></pre></div>
 <p>The utility functions <code>coef()</code>, <code>vcov()</code>, <code>SE()</code>, <code>summary()</code>, <code>residuals()</code>, <code>fitted()</code>, and <code>robweights()</code> are available.</p>
 </div>
 </div>
@@ -765,7 +765,7 @@ The <span class="math inline">\(M\)</span>-estimators are computed by iterative 
 <span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>Algorithm performance<span class="sc">:</span></span>
 <span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  converged <span class="cf">in</span> <span class="dv">4</span> iterations</span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  with residual <span class="fu">scale</span> (weighted MAD)<span class="sc">:</span> <span class="fl">5.93</span> </span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  with residual <span class="fu">scale</span> (weighted MAD)<span class="sc">:</span> <span class="fl">5.93</span></span>
 <span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>Sampling design<span class="sc">:</span></span>
 <span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>Independent Sampling design</span>

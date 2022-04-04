@@ -24,9 +24,7 @@
 ^src/_checkout_wquantile\.bat$
 ^src/cflow$
 # vignettes folder
-^vignettes/Makefile$
-^vignettes/basic\.html$
-^vignettes/rht\.html$
+^vignettes/my_Makefile$
 # license (github requries it in the base directory but CRAN complains)
 ^LICENSE$
 ^CONTRIBUTING.md$

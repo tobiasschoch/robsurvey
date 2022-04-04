@@ -101,14 +101,16 @@ Methods and utility functions for objects of class \code{svyreg_rob}.
         }
         \item{Utility functions}{
             \itemize{
-               \item \code{summary} gives a summary of the estimation
+                \item \code{summary} gives a summary of the estimation
                     properties
-               \item \code{robweights} extracts the robustness weights
+                \item \code{plot} shows diagnostic plots for the estimated
+                    regression model
+                \item \code{robweights} extracts the robustness weights
                     (if available)
-               \item \code{coef} extracts the estimated regression coefficients
-               \item \code{vcov} extracts the (estimated) covariance matrix
-               \item \code{residuals} extracts the residuals
-               \item \code{fitted} extracts the fitted values
+                \item \code{coef} extracts the estimated regression coefficients
+                \item \code{vcov} extracts the (estimated) covariance matrix
+                \item \code{residuals} extracts the residuals
+                \item \code{fitted} extracts the fitted values
             }
         }
     }
@@ -122,4 +124,28 @@ Godambe, V.P. and Thompson, M.E. (2009). Estimating Functions and Survey
 Sampling, in: D. Pfeffermann and C.R. Rao (eds.),
 \emph{Handbook of Statistics}, \bold{vol. 29B}, Sample Surveys: Inference and
 Analysis, Chapter 26, 83--101, Amsterdam: Elsevier.
+}
+\seealso{
+Weighted least squares: \code{\link{svyreg}}; robust weighted regression
+\code{\link{svyreg_huber}}, \code{\link{svyreg_huberGM}},
+\code{\link{svyreg_tukey}} and \code{\link{svyreg_tukeyGM}}
+}
+\examples{
+data(workplace)
+
+library(survey)
+# Survey design for simple random sampling without replacement
+dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
+    data = workplace)
+
+# Compute the regression estimate
+m <- svyreg_huber(payroll ~ employment, dn, k = 8)
+
+# utility functions
+summary(m)
+coef(m)
+SE(m)
+vcov(m)
+residuals(m)
+fitted(m)
 }

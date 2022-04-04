@@ -170,6 +170,12 @@ The output resembles the one of an `lm` call. The estimated model can be summari
 summary(m)
 ```
 
+The subsequent figure shows the model diagnostic plot of the standardized residuals vs. fitted values, i.e., `plot(m, which = 1)`.
+
+```{r, echo=FALSE, fig.show="hold", out.width="50%", fig.align = "center"}
+plot(m, 1)
+```
+
 Other useful methods and utility functions
 
 * `coef()` extracts the estimated coefficients

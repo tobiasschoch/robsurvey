@@ -40,7 +40,9 @@ psi-function.
 GM-estimates of regression by iteratively re-weighted least squares (IRWLS).
 The estimate of regression scale is (by default) computed by the (normalized)
 weighted median of absolute deviations from the weighted median (MAD; see
-\code{\link{weighted_mad}}) for each IRWLS iteration.
+\code{\link{weighted_mad}}) for each IRWLS iteration. If the weighted MAD
+is zero (or nearly so), the scale is computed by the (normalized) weighted
+interquartile range (IQR).
     \describe{
         \item{M-estimator}{
             The regression M-estimator is robust against residual
@@ -80,6 +82,18 @@ the default values by specifying the arguments \code{maxit} and/or
 \value{
 Object of class \code{svyreg.rob}
 }
+\seealso{
+\code{\link[=svyreg_rob]{summary}} for summaries.
+
+The generic functions \code{\link[=svyreg_rob]{coef}},
+\code{\link[=svyreg_rob]{residuals}}, \code{\link[=svyreg_rob]{fitted}}, and
+\code{\link[=svyreg_rob]{vcov}}.
+
+\code{\link[=svyreg_rob]{plot}} for regression diagnostic plot methods.
+
+Other robust estimating methods \code{\link{svyreg_tukey}} and
+\code{\link{svyreg_tukeyGM}}.
+}
 \examples{
 data(workplace)
 
@@ -100,15 +114,4 @@ coef(m)
 # Extract variance/ covariance matrix
 vcov(m)
 }
-\seealso{
-\code{\link[=svyreg_rob]{summary}} for summaries.
 
-The generic functions \code{\link[=svyreg_rob]{coef}},
-\code{\link[=svyreg_rob]{residuals}}, \code{\link[=svyreg_rob]{fitted}}, and
-\code{\link[=svyreg_rob]{vcov}}.
-
-\code{\link[=svyreg_rob]{plot}} for regression diagnostic plot methods.
-
-Other robust estimating methods \code{\link{svyreg_tukey}} and
-\code{\link{svyreg_tukeyGM}}.
-}
