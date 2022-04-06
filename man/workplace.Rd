@@ -54,5 +54,12 @@ Patak, Z., Hidiroglou, M. and Lavallée, P. (1998). The methodology of the
 
 \examples{
 data(workplace)
+
+\dontrun{
+# generate a survey design (library 'survey' must be loaded)
+library(survey)
+dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
+    data = workplace)
+}
 }
 \keyword{datasets}

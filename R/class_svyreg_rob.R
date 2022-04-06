@@ -161,7 +161,7 @@ vcov.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
 
     # robustness weights
     ui <- if (is.null(object$robust))
-        rep(1, n)
+        rep(1, object$model$n)
     else
         object$robust$robweights
 
