@@ -28,25 +28,6 @@
 // will silently eliminate the trailing comma) is not portable (clang complains)
 #define PRINT_OUT(...) Rprintf(__VA_ARGS__)
 
-// structure: regression data
-typedef struct regdata_struct {
-    int n;
-    int p;
-    double *x;
-    double *y;
-    double *w;
-    double *xwgt;
-} regdata;
-
-// structure: work arrays
-typedef struct workarray_struct {
-    int lwork;
-    double *work_lapack;
-    double *work_x;
-    double *work_y;
-    double *work_2n;
-} workarray;
-
 // declaration
 robsurvey_error_type variance_est(regdata*, double*restrict, double* restrict,
     double*, double*, double*, double (*)(double, const double));

@@ -15,7 +15,8 @@
 #include "wquantile.h"
 #include "psifunctions.h"
 #include "mallows.h"
-#include "constants.h"
+#include "regression_scale.h"
+#include "regression_data.h"
 
 #ifndef _REGRESSION_H
 #define _REGRESSION_H

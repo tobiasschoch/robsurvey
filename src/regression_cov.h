@@ -13,6 +13,7 @@
 #include <Rmath.h>
 #include "robsurvey_error.h"
 #include "psifunctions.h"
+#include "regression_data.h"
 
 #ifndef _REGRESSION_COV_H
 #define _REGRESSION_COV_H
