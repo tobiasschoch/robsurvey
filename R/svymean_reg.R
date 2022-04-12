@@ -8,9 +8,8 @@ svymean_reg <- function(object, auxiliary, k = Inf,
     model <- object$model
     model$coefficients <- object$estimate
     # check whether auxiliary matches with the regression estimate
-#FIXME: na.rm
     x <- .checkauxiliary(object, auxiliary, "mean", check.names,
-            na.action = stats::na.omit)
+            na.rm = na.rm)
     # greg estimate
     est <- sum(x * object$estimate)
     # linearized values

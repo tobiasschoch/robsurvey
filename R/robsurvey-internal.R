@@ -159,7 +159,7 @@
 }
 # check auxiliary totals and means
 .checkauxiliary <- function(object, data, est = "mean", check.names = TRUE,
-    na.action = stats::na.omit) #FIXME: default: na.fail
+    na.rm = FALSE)
 {
     names_beta <- names(object$estimate)
     names_data <- names(data)
@@ -186,9 +186,16 @@
     # compute mean/total based on design matrix
     } else {
         mf <- stats::model.frame(object$call$formula, data,
-            na.action = na.action)
+            na.action = stats::na.pass)
         xmat <- stats::model.matrix(stats::terms(mf), mf)
-        x <- switch(est, "mean" = colMeans(xmat), "total" = colSums(xmat))
+        # check for missing values
+        is_not_NA <- stats::complete.cases(xmat)
+        if (!all(is_not_NA) && na.rm) {
+            xmat <- xmat[is_not_NA, ]
+        }
+        x <- switch(est,
+            "mean" = colMeans(xmat),
+            "total" = colSums(xmat))
     }
     unname(x)
 }

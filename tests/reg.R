@@ -12,13 +12,6 @@ rlm_mod <- MASS:::rlm.default
 body(rlm_mod)[[4]] <- substitute(wmad <- function(x, w) weighted_mad(x, w))
 
 #-------------------------------------------------------------------------------
-# location estimation
-expect_equal(weighted_mean_huber(payroll, weight, k = 1.345), 94838.4395,
-    tolerance = 1e-5, label = "Huber M-est")
-expect_equal(weighted_mean_tukey(payroll, weight, k = 4.685), 78499.4842,
-    tolerance = 1e-5, label = "Tukey M-est")
-
-#-------------------------------------------------------------------------------
 # survey weighted regression (test against: survey::svyglm)
 ref <- svyglm(payroll ~ employment, dn)
 est <- svyreg(payroll ~ employment, dn)
