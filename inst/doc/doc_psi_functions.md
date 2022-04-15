@@ -1,4 +1,4 @@
-# Adding support for other $\psi$-functions
+# Adding Support for Other $\psi$-Functions
 
 Tobias Schoch – April 4, 2022
 
@@ -56,6 +56,6 @@ In order to add support for additional $\psi$-functions (which comply with
 the above signature), follow these steps:
 
 * add the C code of the new `psi`-, `weight`, and `psi-prime`-functions to the source;
-* add an entry in the `switch` statement of the functions `get_wgt_function()`, `get_psi_function()`, and
-  `get_psi_prime\_function()`;
+* add an entry in the `switch` statement of the functions `get_wgt_function()`,
+  `get_psi_function()`, and `get_psi_prime\_function()`;
 * add/ modify the R-functions.

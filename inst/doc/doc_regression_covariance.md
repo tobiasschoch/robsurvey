@@ -1,4 +1,4 @@
-# Model-based covariance estimation for regression *M*- and *GM*-estimators
+# Model-Based Covariance Estimation for Regression *M*- and *GM*-Estimators
 
 Tobias Schoch – April 2, 2022
 
@@ -62,20 +62,20 @@ where
 $$
 \begin{equation*}
     \bold W = \mathrm{diag}_{i=1,\ldots,n}\{w_i\} \qquad \text{and} \qquad
-    \bold H = \mathrm{diag}_{i=1,\ldots,n}\{h(\bold x_i)\}, 
+    \bold H = \mathrm{diag}_{i=1,\ldots,n}\{h(\bold x_i)\},
 \end{equation*}
 $$
 
 $$
 \begin{equation*}
-	\overline{\psi'} = \frac{1}{\widehat{N}}\sum_{i \in s} w_i \psi' \left( \frac{r_i}{\widehat{\sigma} \sqrt{v_i}} \right) \qquad \text{and} \qquad 
+	\overline{\psi'} = \frac{1}{\widehat{N}}\sum_{i \in s} w_i \psi' \left( \frac{r_i}{\widehat{\sigma} \sqrt{v_i}} \right) \qquad \text{and} \qquad
 \overline{\psi^2} = \frac{1}{\widehat{N}}\sum_{i \in s} w_i \psi^2 \left( \frac{r_i}{\widehat{\sigma} \sqrt{v_i}} \right),
 \end{equation*}
 $$
 
 $$
 \begin{equation*}
-    \bold S_1 = \mathrm{diag}_{i=1,\ldots,n} \big\{ s_1^i \big\}, \quad \text{with} \quad s_1^i = \frac{1}{\widehat{N}}\sum_{j \in s} w_j \psi'\left(\frac{r_j}{h(\bold x_i)\widehat{\sigma} \sqrt{v_j}}\right), 
+    \bold S_1 = \mathrm{diag}_{i=1,\ldots,n} \big\{ s_1^i \big\}, \quad \text{with} \quad s_1^i = \frac{1}{\widehat{N}}\sum_{j \in s} w_j \psi'\left(\frac{r_j}{h(\bold x_i)\widehat{\sigma} \sqrt{v_j}}\right),
 \end{equation*}
 $$
 

@@ -297,6 +297,6 @@ M_compare_cov <-  function(formula, data, digits = 3, tol = 1e-5,
     print(cov_mass)
 
     # absolute relative difference
-    cat("\nabsrelDIFF: ",
+    cat("\nabs_rel_DIFF: ",
         100 * max(abs(cov_mass / cov_robsurvey -  1)), "%\n")
 }

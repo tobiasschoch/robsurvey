@@ -8,15 +8,14 @@
 ^inst/doc/huber\.R$
 ^inst/doc/GM\.R$
 ^inst/doc/test_svyreg_huber\.R$
-^inst/doc/regression_covariance\.md$
-^inst/doc/psi_functions\.md$
+^inst/doc/comparison_functions\.R$
+^inst/doc/doc_regression_covariance\.md$
+^inst/doc/doc_robust_GREG\.md$
+^inst/doc/doc_psi_functions\.md$
+^inst/doc/doc_comparison\.md$
+^inst/doc/doc_comparison\.Rmd$
+# varia
 ^inst/varia/$
-# comparison
-^inst/comparison/comparison\.Rnw$
-^inst/comparison/Sweave\.sty$
-^inst/comparison/Makefile$
-^inst/comparison/R_functions\.R$
-^inst/comparison$
 # tests
 ^tests
 # src folder
