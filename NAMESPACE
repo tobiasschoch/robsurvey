@@ -80,6 +80,10 @@ export(weighted_mean_winsorized)
 export(weighted_median)
 export(weighted_median_line)
 export(weighted_median_ratio)
+S3method(print,medline)
+S3method(coef,medline)
+S3method(residuals,medline)
+S3method(fitted,medline)
 
 export(weighted_quantile)
 

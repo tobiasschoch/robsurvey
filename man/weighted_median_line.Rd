@@ -5,13 +5,13 @@
 weighted_median_line(x, y = NULL, w, type = "slopes", na.rm = FALSE)
 }
 \arguments{
-\item{x}{\code{[numeric vector]} explanatory variable.}
-\item{y}{\code{[numeric vector]} response variable (default: \code{NULL}).}
-\item{w}{\code{[numeric vector]} weights (same length as vector \code{x}).}
-\item{type}{\code{[character]} \code{"slopes"} or \code{"products"}
-    (default: \code{"slopes"}).}
-\item{na.rm}{\code{[logical]} indicating whether \code{NA} values should
-    be removed before the computation proceeds (default: \code{FALSE}).}
+    \item{x}{\code{[numeric vector]} explanatory variable.}
+    \item{y}{\code{[numeric vector]} response variable (default: \code{NULL}).}
+    \item{w}{\code{[numeric vector]} weights (same length as vector \code{x}).}
+    \item{type}{\code{[character]} \code{"slopes"} or \code{"products"}
+        (default: \code{"slopes"}).}
+    \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should
+        be removed before the computation proceeds (default: \code{FALSE}).}
 }
 \description{
 Robust simple linear regression based on medians: two methods are available:
@@ -44,7 +44,11 @@ x <- c(1, 2, 4, 5)
 y <- c(3, 2, 7, 4)
 weighted_line(y~x, w=rep(1, length(x)))
 weighted_median_line(y~x, w = rep(1, length(x)))
-weighted_median_line(y~x, w = rep(1, length(x)), type = "prod")
+m <- weighted_median_line(y~x, w = rep(1, length(x)), type = "prod")
+m
+coef(m)
+fitted(m)
+residuals(m)
 
 data(cars)
 with(cars, weighted_median_line(dist ~ speed, w = rep(1, length(dist))))
