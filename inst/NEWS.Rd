@@ -11,8 +11,17 @@
             \item Implementation of robust regression: If the estimated
                 regression scale (by default weighted MAD) is zero (or nearly
                 so), the weighted IQR is tried instead
-            \item Updated documentation files in folder \code{inst/doc}.
-            \item Internal changes.
+        }
+    }
+    \subsection{CHANGES}{
+        \itemize{
+            \item The default functions for regression M-estimators are now
+                called \code{svyreg_huberM} and \code{svyreg_tukeyM}; the
+                old functions \code{svyreg_huber} and \code{svyreg_tukey}
+                are deprecated but are kept for compatibility reasons.
+            \item Documentation files in folder \code{inst/doc} have been
+                updated.
+            \item Several internal changes.
         }
     }
 }

@@ -12,7 +12,6 @@
     - details
     - examples
 * tests
-* update `package?robsurvey`
 
 ## DOCUMENTATION
 * `weighted_line`  and  `weighted_median_lines`

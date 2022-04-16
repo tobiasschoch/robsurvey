@@ -1,5 +1,5 @@
 # robust Tukey biweight M-estimator of regression (depends on pkg survey)
-svyreg_tukey <- function(formula, design, k, var = NULL, na.rm = FALSE,
+svyreg_tukeyM <- function(formula, design, k, var = NULL, na.rm = FALSE,
     verbose = TRUE, ...)
 {
     dat <- .checkreg(formula, design, var, NULL, na.rm)
@@ -26,6 +26,14 @@ svyreg_tukey <- function(formula, design, k, var = NULL, na.rm = FALSE,
     res$call <- match.call()
     class(res) <- "svyreg_rob"
     res
+}
+# deprecated function kept for compatibility reasons
+svyreg_tukey <- function(formula, design, k, var = NULL, na.rm = FALSE,
+    verbose = TRUE, ...)
+{
+    warning("Function 'svyreg_tukey' is deprecated; use instead
+        'svyreg_tukeyM'", call. = FALSE)
+    svyreg_tukeyM(formula, design, k, var, na.rm, verbose, ...)
 }
 # robust Tukey biweight GM-estimator of regression (depends on pkg survey)
 svyreg_tukeyGM <- function(formula, design, k, type = c("Mallows", "Schweppe"),

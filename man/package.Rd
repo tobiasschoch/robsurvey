@@ -74,15 +74,21 @@ on the \pkg{\link{survey}} package.
         }
     }
 }
-\section{Survey Regression (weighted)}{
+\section{Survey Regression (weighted least squares)}{
     \code{\link{svyreg}}
 }
 \section{Robust Survey Regression (weighted)}{
     \itemize{
-        \item Regression M-estimators: \code{\link{svyreg_huber}} and
-            \code{\link{svyreg_tukey}}
+        \item Regression M-estimators: \code{\link{svyreg_huberM}} and
+            \code{\link{svyreg_tukeyM}}
         \item Regression GM-estimators (Mallows and Schweppe):
             \code{\link{svyreg_huberGM}} and \code{\link{svyreg_tukeyGM}}
+    }
+}
+\section{Robust Generalized Regression Estimation (GREG)}{
+    \itemize{
+        \item Mean: \code{\link{svymean_reg}}
+        \item Total: \code{\link{svytotal_reg}}
     }
 }
 \section{Utility functions}{

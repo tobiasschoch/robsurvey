@@ -1,12 +1,17 @@
 \name{svyreg_huber}
 \alias{svyreg_huber}
+\alias{svyreg_huberM}
 \alias{svyreg_huberGM}
 \title{Huber Robust Survey Regression M- and GM-Estimator}
 \usage{
-svyreg_huber(formula, design, k, var = NULL, na.rm = FALSE, asym = FALSE,
+svyreg_huberM(formula, design, k, var = NULL, na.rm = FALSE, asym = FALSE,
     verbose = TRUE, ...)
 svyreg_huberGM(formula, design, k, type = c("Mallows", "Schweppe"),
     xwgt, var = NULL, na.rm = FALSE, asym = FALSE, verbose = TRUE, ...)
+
+# deprecated
+svyreg_huber(formula, design, k, var = NULL, na.rm = FALSE, asym = FALSE,
+    verbose = TRUE, ...)
 }
 \arguments{
 \item{formula}{a \code{[formula]} object (i.e., symbolic description of the
@@ -31,12 +36,13 @@ svyreg_huberGM(formula, design, k, type = c("Mallows", "Schweppe"),
     \code{type = "Mallows"} or \code{type = "Schweppe"}.}
 }
 \description{
-\code{svyreg_huber} and \code{svyreg_huberGM} compute, respectively,
+\code{svyreg_huberM} and \code{svyreg_huberGM} compute, respectively,
 a survey weighted M- and GM-estimator of regression using the Huber
-psi-function.
+psi-function. Use \code{svyreg_huberM} not \code{svyreg_huber} because
+the latter is deprecated but is kept for computability reasons.
 }
 \details{
-\code{svyreg_huber} and \code{svyreg_huberGM} compute, respectively, M- and
+\code{svyreg_huberM} and \code{svyreg_huberGM} compute, respectively, M- and
 GM-estimates of regression by iteratively re-weighted least squares (IRWLS).
 The estimate of regression scale is (by default) computed by the (normalized)
 weighted median of absolute deviations from the weighted median (MAD; see
@@ -45,9 +51,9 @@ is zero (or nearly so), the scale is computed by the (normalized) weighted
 interquartile range (IQR).
     \describe{
         \item{M-estimator}{
-            The regression M-estimator is robust against residual
-            outliers (granted that the tuning constant \code{k} is chosen
-            appropriately).
+            The regression M-estimator \code{svyreg_huberM} is robust against
+            residual outliers (granted that the tuning constant \code{k} is
+            chosen appropriately).
         }
         \item{GM-estimator}{
             \code{svyreg_huberGM} implements the Mallows and Schweppe
@@ -91,7 +97,7 @@ The generic functions \code{\link[=svyreg_rob]{coef}},
 
 \code{\link[=svyreg_rob]{plot}} for regression diagnostic plot methods.
 
-Other robust estimating methods \code{\link{svyreg_tukey}} and
+Other robust estimating methods \code{\link{svyreg_tukeyM}} and
 \code{\link{svyreg_tukeyGM}}.
 }
 \examples{
@@ -102,8 +108,8 @@ library(survey)
 dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
     data = workplace)
 
-# Compute the regression estimate
-m <- svyreg_huber(payroll ~ employment, dn, k = 8)
+# Compute regression M-estimate with Huber psi-function
+m <- svyreg_huberM(payroll ~ employment, dn, k = 8)
 
 # Regression inference
 summary(m)
@@ -114,4 +120,3 @@ coef(m)
 # Extract variance/ covariance matrix
 vcov(m)
 }
-

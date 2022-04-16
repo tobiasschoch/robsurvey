@@ -10,7 +10,7 @@ Tobias Schoch – April 15, 2022
 ---
 
 ***Abstract.** In this report, we study the behavior of the methods
-`svyreg_huber` and `svyreg_huberGM` in package `robsurvey` with other
+`svyreg_huberM` and `svyreg_huberGM` in package `robsurvey` with other
 implementations. We restricted attention to studying the methods for
 4 well-known datasets. For all datasets under study, our implementations
 are identical (in terms of floating point arithmetic) with results of
@@ -90,12 +90,12 @@ comparable; we use:
 * `robeth::rywalg`: `tol = 1e-5`, `maxit = 50`, `itype = 1`, `isigma = 2`,
   `icnv = 1`, and `maxis = 1`; see [Marazzi](#literature) (1993) for more
   details.
-* `robsurvey::svyreg_huber`: `tol = 1e-5`, and `maxit = 50`.
+* `robsurvey::svyreg_huberM`: `tol = 1e-5`, and `maxit = 50`.
 
 The methods `MASS::rlm` and `robeth::rywalg` compute
 the regression scale estimate by the (normalized) median of the absolute
-deviations (MAD) *about zero*. The method `robsurvey::svyreg_huber`
-(and `svyreg_tukey`) implements two variants of the MAD:
+deviations (MAD) *about zero*. The method `robsurvey::svyreg_huberM`
+(and `svyreg_tukeyM`) implements two variants of the MAD:
 
 * `mad_center = FALSE`: MAD centered about zero,
 * `mad_center = TRUE`: MAD centered about the (weighted) median.
@@ -129,23 +129,23 @@ The following tabular output shows the estimated coefficients
 
 
 ```
-                    (Intercept)    X1    X2    X3  scale
-svyreg_huber           -434.837 0.030 0.061 1.270 40.379
-svyreg_huber (mad0)    -434.396 0.031 0.061 1.269 40.120
-rywalg (ROBETH)        -434.465 0.031 0.061 1.269 40.161
-rlm (MASS)             -434.395 0.031 0.061 1.269 40.120
+                     (Intercept)    X1    X2    X3  scale
+svyreg_huberM           -434.837 0.030 0.061 1.270 40.379
+svyreg_huberM (mad0)    -434.396 0.031 0.061 1.269 40.120
+rywalg (ROBETH)         -434.465 0.031 0.061 1.269 40.161
+rlm (MASS)              -434.395 0.031 0.061 1.269 40.120
 ```
 
 The estimates of the 4 methods differ only slightly. We have the
 following findings:
 
-* `svyreg_huber (mad0)` is based on the MAD centered about zero. In
+* `svyreg_huberM (mad0)` is based on the MAD centered about zero. In
   methodological terms, it is identical with the implementations `rlm (MASS)`
-  and `rywalg (ROBETH)`. The estimates of `svyreg_huber (mad0)` are
+  and `rywalg (ROBETH)`. The estimates of `svyreg_huberM (mad0)` are
   virtually identical with the ones of `rlm (MASS)`.  The estimates of
   `rywalg (ROBETH)` deviate more from the other methods.
-* `svyreg_huber` is based on the MAD centered about the (weighted) median.
-  The estimates differ slightly from `svyreg_huber (mad0)`.
+* `svyreg_huberM` is based on the MAD centered about the (weighted) median.
+  The estimates differ slightly from `svyreg_huberM (mad0)`.
 
 The discrepancies are mainly due to the normalization constant
 to make the MAD an unbiased estimator of the scale at the Gaussian core
@@ -154,11 +154,11 @@ model. In `rlm (MASS)`, the MAD about zero is computed by
 equal to $1.482580$ (with a precision of 6 decimal places), which
 differs slightly from $1/\Phi^{-1}(0.75)=1.482602$, where $\Phi$ denotes
 the cumulative distribution function of the standard Gaussian.
-The implementation of `svyreg_huber` uses $1.482602$
+The implementation of `svyreg_huberM` uses $1.482602$
 (see file `src/constants.h`). Now, if we replace $1 / 0.6745$ in the
 above code snippet by $1.482602$ in the function body of `rlm.default`,
 then the regression coefficients of the so modified code and
-`svyreg_huber` are (in terms of floating point arithmetic) almost
+`svyreg_huberM` are (in terms of floating point arithmetic) almost
 identical. The absolute relative difference is
 
 
@@ -170,7 +170,7 @@ abs_rel_DIFF:  1.054712e-12 %
 Next, we consider comparing the estimated (asymptotic) covariance matrix of
 the estimated regression coefficients. To this end, we computed the diagonal
 elements of the estimated covariance matrix for the
-methods `svyreg_huber (mad0)` and `rlm (MASS)`; see below. In
+methods `svyreg_huberM (mad0)` and `rlm (MASS)`; see below. In
 addition, we computed the absolute relative difference between the two
 methods.
 
@@ -206,16 +206,16 @@ of scale are tabulated for the 4 implementations/ methods under study.
 
 
 ```
-                    (Intercept) Air.Flow Water.Temp Acid.Conc. scale
-svyreg_huber            -41.051    0.827      0.939     -0.129 2.530
-svyreg_huber (mad0)     -41.027    0.829      0.926     -0.128 2.441
-rywalg (ROBETH)         -41.027    0.829      0.926     -0.128 2.442
-rlm (MASS)              -41.027    0.829      0.926     -0.128 2.441
+                     (Intercept) Air.Flow Water.Temp Acid.Conc. scale
+svyreg_huberM            -41.051    0.827      0.939     -0.129 2.530
+svyreg_huberM (mad0)     -41.027    0.829      0.926     -0.128 2.441
+rywalg (ROBETH)          -41.027    0.829      0.926     -0.128 2.442
+rlm (MASS)               -41.027    0.829      0.926     -0.128 2.441
 ```
 
 The estimates of the regression *M*-estimator which is based on
 the MAD centered about zero are virtually identical (see rows 2–4). The
-estimates of `svyreg_huber` deviate slightly from the latter
+estimates of `svyreg_huberM` deviate slightly from the latter
 because it is based on the MAD centered about the (weighted) median.
 
 We did not repeat the analysis on differences in the estimated
@@ -331,7 +331,7 @@ different. But the differences are minor.
 
 ## 4 Summary and conclusions
 
-In this paper, we studied the behavior of the methods `svyreg_huber`
+In this paper, we studied the behavior of the methods `svyreg_huberM`
 and `svyreg_huberGM` in package `robsurvey` with other
 implementations. We restricted attention to studying the methods for
 four well-known datasets. For all datasets under study, our implementations

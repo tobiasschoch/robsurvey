@@ -28,7 +28,7 @@ expect_equal(vcov(est, "model"), vcov(ref),
 
 #-------------------------------------------------------------------------------
 # Huber regression M-estimator (test against MASS::rlm)
-est <- svyreg_huber(payroll ~ employment, dn, k = 1.345, tol = 1e-9)
+est <- svyreg_huberM(payroll ~ employment, dn, k = 1.345, tol = 1e-9)
 ref <- rlm_mod(x = est$model$x, y = est$model$y, weights = est$model$w,
     k = 1.345, scale.est = "MAD", method = "M", wt.method = "case",
     acc = 1e-9, maxit = 50, test.vec = "coef")
@@ -46,7 +46,7 @@ expect_equal(vcov(est), ref,
 
 #-------------------------------------------------------------------------------
 # Tukey regression M-estimator
-est <- svyreg_tukey(payroll ~ employment, dn, k = 4.6, tol = 1e-9)
+est <- svyreg_tukeyM(payroll ~ employment, dn, k = 4.6, tol = 1e-9)
 ref <- rlm_mod(x = est$model$x, y = est$model$y, weights = est$model$w,
     c = 4.6, psi = psi.bisquare,  scale.est = "MAD", method = "M",
     wt.method = "case", acc = 1e-9, maxit = 50, test.vec = "coef")

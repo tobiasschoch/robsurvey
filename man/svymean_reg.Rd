@@ -8,7 +8,7 @@ svymean_reg(object, auxiliary, k = Inf, psi = c("Huber", "Huberasym", "Tukey"),
 }
 \arguments{
 \item{object}{of class \code{[svyreg_rob]}, e.g., result of the Huber
-    regression \eqn{M}-estimator \code{svyreg_huber}.}
+    regression \eqn{M}-estimator \code{svyreg_huberM}.}
 \item{auxiliary}{\code{[numeric]} mean or total of the auxiliary variables.}
 \item{k}{\code{[numeric]} robustness tuning constant of the
     \code{psi}-function used in the bias-correction term in the GREG
@@ -38,7 +38,7 @@ dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
     data = workplace)
 
 # Robust regression M-estimator with Huber psi-function
-reg <- svyreg_huber(payroll ~ employment, dn, k = 3)
+reg <- svyreg_huberM(payroll ~ employment, dn, k = 3)
 
 # Robust GREG estimator of the mean; the population means of the auxiliary
 # variables are from a register
@@ -58,6 +58,6 @@ scale(m)
 SE(m)
 }
 \seealso{
-\code{\link{svyreg}}, \code{\link{svyreg_huber}}, \code{\link{svyreg_huberGM}},
-\code{\link{svyreg_tukey}}, and \code{\link{svyreg_tukeyGM}}
+\code{\link{svyreg}}, \code{\link{svyreg_huberM}}, \code{\link{svyreg_huberGM}},
+\code{\link{svyreg_tukeyM}}, and \code{\link{svyreg_tukeyGM}}
 }

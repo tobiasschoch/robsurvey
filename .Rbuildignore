@@ -5,9 +5,6 @@
 ^README\.md$
 ^inst/TODO$
 # documentation
-^inst/doc/huber\.R$
-^inst/doc/GM\.R$
-^inst/doc/test_svyreg_huber\.R$
 ^inst/doc/comparison_functions\.R$
 ^inst/doc/doc_regression_covariance\.md$
 ^inst/doc/doc_robust_GREG\.md$

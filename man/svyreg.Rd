@@ -41,7 +41,7 @@ library(survey)
 dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
     data = workplace)
 
-# Compute the regression estimate
+# Compute the regression estimate (weighted least squares)
 m <- svyreg(payroll ~ employment, dn)
 
 # Regression inference
@@ -62,7 +62,7 @@ The generic functions \code{\link[=svyreg_rob]{coef}},
 
 \code{\link[=svyreg_rob]{plot}} for regression diagnostic plot methods.
 
-Robust estimating methods \code{\link{svyreg_huber}},
-\code{\link{svyreg_huberGM}}, \code{\link{svyreg_tukey}}, and
+Robust estimating methods \code{\link{svyreg_huberM}},
+\code{\link{svyreg_huberGM}}, \code{\link{svyreg_tukeyM}}, and
 \code{\link{svyreg_tukeyGM}}.
 }

@@ -127,8 +127,8 @@ Analysis, Chapter 26, 83--101, Amsterdam: Elsevier.
 }
 \seealso{
 Weighted least squares: \code{\link{svyreg}}; robust weighted regression
-\code{\link{svyreg_huber}}, \code{\link{svyreg_huberGM}},
-\code{\link{svyreg_tukey}} and \code{\link{svyreg_tukeyGM}}
+\code{\link{svyreg_huberM}}, \code{\link{svyreg_huberGM}},
+\code{\link{svyreg_tukeyM}} and \code{\link{svyreg_tukeyGM}}
 }
 \examples{
 data(workplace)
@@ -138,8 +138,8 @@ library(survey)
 dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
     data = workplace)
 
-# Compute the regression estimate
-m <- svyreg_huber(payroll ~ employment, dn, k = 8)
+# Compute regression M-estimate with Huber psi-function
+m <- svyreg_huberM(payroll ~ employment, dn, k = 8)
 
 # utility functions
 summary(m)

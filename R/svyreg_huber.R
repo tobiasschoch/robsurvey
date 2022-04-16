@@ -1,5 +1,5 @@
 # robust Huber M-estimator of regression (depends on pkg survey)
-svyreg_huber <- function(formula, design, k, var = NULL, na.rm = FALSE,
+svyreg_huberM <- function(formula, design, k, var = NULL, na.rm = FALSE,
     asym = FALSE, verbose = TRUE, ...)
 {
     dat <- .checkreg(formula, design, var, NULL, na.rm)
@@ -26,6 +26,14 @@ svyreg_huber <- function(formula, design, k, var = NULL, na.rm = FALSE,
     res$call <- match.call()
     class(res) <- "svyreg_rob"
     res
+}
+# deprecated function kept for compatibility reasons
+svyreg_huber <- function(formula, design, k, var = NULL, na.rm = FALSE,
+    asym = FALSE, verbose = TRUE, ...)
+{
+    warning("Function 'svyreg_huber' is deprecated; use instead
+        'svyreg_huberM'", call. = FALSE)
+    svyreg_huberM(formula, design, k, var, na.rm, asym, verbose, ...)
 }
 # robust Huber GM-estimator of regression (depends on pkg survey)
 svyreg_huberGM <- function(formula, design, k, type = c("Mallows", "Schweppe"),

@@ -191,9 +191,9 @@ M_compare <- function(formula, data, digits = 3, tol = 1e-5,
         data = data)
 
     # compute the different estimators
-    robsurvey1 <- svyreg_huber(formula, design, k = 1.345,
+    robsurvey1 <- svyreg_huberM(formula, design, k = 1.345,
         mad_center = TRUE, tol = tol, maxit = maxit)
-    robsurvey2 <- svyreg_huber(formula, design, k = 1.345,
+    robsurvey2 <- svyreg_huberM(formula, design, k = 1.345,
         mad_center = FALSE, tol = tol, maxit = maxit)
 
     mass <- rlm(formula, data, k = 1.345, method = "M", scale.est = "MAD",
@@ -208,7 +208,7 @@ M_compare <- function(formula, data, digits = 3, tol = 1e-5,
         c(coef(mass), mass$s))
 
     colnames(coeff)[NCOL(coeff)] <- "scale"
-    rownames(coeff) <- c("svyreg_huber", "svyreg_huber (mad0)",
+    rownames(coeff) <- c("svyreg_huberM", "svyreg_huberM (mad0)",
         "rywalg (ROBETH)", "rlm (MASS)")
 
     print(round(coeff, digits))
@@ -280,7 +280,7 @@ M_compare_cov <-  function(formula, data, digits = 3, tol = 1e-5,
     # robsurvey
     design <- svydesign(id = ~1, weights = rep(1, nrow(data)),
         data = data)
-    robsurvey <- svyreg_huber(formula, design, k = 1.345,
+    robsurvey <- svyreg_huberM(formula, design, k = 1.345,
         mad_center = FALSE, tol = tol, maxit = maxit)
     cov_robsurvey <- diag(vcov(robsurvey))
 

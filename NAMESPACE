@@ -56,9 +56,13 @@ export(svytotal_dalen)
 export(robsvyreg)
 export(svyreg)
 export(svyreg_control)
+
 export(svyreg_huber)
+export(svyreg_huberM)
 export(svyreg_huberGM)
+
 export(svyreg_tukey)
+export(svyreg_tukeyM)
 export(svyreg_tukeyGM)
 
 export(weighted_IQR)

@@ -1,12 +1,17 @@
 \name{svyreg_tukey}
 \alias{svyreg_tukey}
+\alias{svyreg_tukeyM}
 \alias{svyreg_tukeyGM}
 \title{Tukey Biweight Robust Survey Regression M- and GM-Estimator}
 \usage{
-svyreg_tukey(formula, design, k, var = NULL, na.rm = FALSE, verbose = TRUE,
+svyreg_tukeyM(formula, design, k, var = NULL, na.rm = FALSE, verbose = TRUE,
     ...)
 svyreg_tukeyGM(formula, design, k, type = c("Mallows", "Schweppe"),
     xwgt, var = NULL, na.rm = FALSE, verbose = TRUE, ...)
+
+# deprecated
+svyreg_tukey(formula, design, k, var = NULL, na.rm = FALSE, verbose = TRUE,
+    ...)
 }
 \arguments{
 \item{formula}{a \code{[formula]} object (i.e., symbolic description of the
@@ -29,12 +34,13 @@ svyreg_tukeyGM(formula, design, k, type = c("Mallows", "Schweppe"),
     \code{type = "Mallows"} or \code{type = "Schweppe"}.}
 }
 \description{
-\code{svyreg_tukey} and \code{svyreg_tukeyGM} compute, respectively,
+\code{svyreg_tukeyM} and \code{svyreg_tukeyGM} compute, respectively,
 a survey weighted M- and GM-estimator of regression using the biweight
-Tukey psi-function.
+Tukey psi-function. Use \code{svyreg_tukeyM} not \code{svyreg_tukey}
+because the latter is deprecated but is kept for computability reasons.
 }
 \details{
-\code{svyreg_tukey} and \code{svyreg_tukeyGM} compute, respectively, M- and
+\code{svyreg_tukeyM} and \code{svyreg_tukeyGM} compute, respectively, M- and
 GM-estimates of regression by iteratively re-weighted least squares (IRWLS).
 The estimate of regression scale is (by default) computed by the (normalized)
 weighted median of absolute deviations from the weighted median (MAD; see
@@ -43,9 +49,9 @@ is zero (or nearly so), the scale is computed by the (normalized) weighted
 interquartile range (IQR).
     \describe{
         \item{M-estimator}{
-            The regression M-estimator is robust against residual
-            outliers (granted that the tuning constant \code{k} is chosen
-            appropriately).
+            The regression M-estimator \code{svyreg_tukeyM} is robust against
+            residual outliers (granted that the tuning constant \code{k} is
+            chosen appropriately).
         }
         \item{GM-estimator}{
             \code{svyreg_huberGM} implements the Mallows and Schweppe
@@ -89,7 +95,7 @@ The generic functions \code{\link[=svyreg_rob]{coef}},
 
 \code{\link[=svyreg_rob]{plot}} for regression diagnostic plot methods.
 
-Other robust estimating methods \code{\link{svyreg_huber}} and
+Other robust estimating methods \code{\link{svyreg_huberM}} and
 \code{\link{svyreg_huberGM}}.
 }
 \examples{
@@ -100,8 +106,8 @@ library(survey)
 dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
     data = workplace)
 
-# Compute the regression estimate
-m <- svyreg_tukey(payroll ~ employment, dn, k = 8)
+# Compute regression M-estimate with Tukey bisquare psi-function
+m <- svyreg_tukeyM(payroll ~ employment, dn, k = 8)
 
 # Regression inference
 summary(m)

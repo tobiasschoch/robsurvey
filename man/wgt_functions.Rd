@@ -51,6 +51,6 @@ Simpson, D. G., Ruppert, D. and Carroll, R.J. (1992). On One-Step GM
     \emph{Journal of the American Statistical Association}, \bold{87}, 439--450.
 }
 \seealso{
-\code{\link{svyreg_huber}}, \code{\link{svyreg_huberGM}},
-\code{\link{svyreg_tukey}}, and \code{\link{svyreg_tukeyGM}}
+\code{\link{svyreg_huberM}}, \code{\link{svyreg_huberGM}},
+\code{\link{svyreg_tukeyM}}, and \code{\link{svyreg_tukeyGM}}
 }
