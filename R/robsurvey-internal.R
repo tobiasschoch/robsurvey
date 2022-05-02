@@ -1,5 +1,5 @@
-# return an empty object of class svystat_rob
-.empty_svystat_rob <- function(characteristic, yname, string, call,
+# constructor for class svystat_rob
+.new_svystat_rob <- function(characteristic, yname, string, call,
     design, ...)
 {
     structure(list(characteristic = characteristic,

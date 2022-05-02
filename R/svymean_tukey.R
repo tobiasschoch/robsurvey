@@ -7,7 +7,7 @@ svymean_tukey <- function(x, design, k, type = "rhj", na.rm = FALSE,
     dat <- .checkformula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
-        return(.empty_svystat_rob("mean", dat$yname,
+        return(.new_svystat_rob("mean", dat$yname,
             paste0("Tukey M-estimator (type = ", type, ")"), match.call(),
             design, type = type, psi = 2, psi_fun = "Tukey", k = k))
     # otherwise
@@ -38,12 +38,12 @@ svytotal_tukey <- function(x, design, k, type = "rhj", na.rm = FALSE,
     dat <- .checkformula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
-        return(.empty_svystat_rob("total", dat$yname,
+        return(.new_svystat_rob("total", dat$yname,
             paste0("Tukey M-estimator (type = ", type, ")"), match.call(),
             design, type = type, psi = 2, psi_fun = "Tukey", k = k))
     # otherwise
     design <- dat$design
-    res <- weighted_mean_tukey(dat$y, dat$w, k, type, TRUE, FALSE, verbose,
+    res <- weighted_total_tukey(dat$y, dat$w, k, type, TRUE, FALSE, verbose,
         ...)
     # modify residuals for type 'rht' (only for variance estimation)
     r <- if (type == "rht")
@@ -51,7 +51,7 @@ svytotal_tukey <- function(x, design, k, type = "rhj", na.rm = FALSE,
     else
         res$residuals
    # compute variance
-    infl <- res$robust$robweights * r * dat$w
+    infl <- res$robust$robweights * dat$y * dat$w
     res$variance <- survey::svyrecvar(infl, design$cluster, design$strata,
         design$fpc, postStrata = design$postStrata)
     names(res$estimate) <- dat$yname

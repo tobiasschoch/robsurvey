@@ -21,6 +21,6 @@ svyreg <- function(formula, design, var = NULL, na.rm = FALSE)
         k = Inf), estimate = tmp$beta, scale = tmp$scale,
         optim = list(converged = TRUE), residuals = tmp$resid,
         model = list(x = dat$x, y = dat$y, w = dat$w, var = dat$var,
-        n = n, p = p), design = dat$design, call = match.call()),
-        class = "svyreg_rob")
+        n = n, p = p), design = dat$design, terms = dat$terms,
+        call = match.call()), class = "svyreg_rob")
 }

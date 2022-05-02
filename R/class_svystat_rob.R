@@ -1,3 +1,35 @@
+# Slots of objects of class 'svystat_rob'
+#  + characteristic: "regression"
+#  + estimator [list]
+#     + string: [char]
+#     + type: [int]
+#     + psi: [int]
+#     + psi_fun: [char]
+#     + k: [numeric]
+#  + estimate: [numeric] vector of estimated regression coefficients
+#  + scale: [numeric] scale estimate
+#  + robust [list]
+#     + robweights: [numeric] robustness weights
+#     + outliers: [numeric] indicator variable
+#  + optim [list]
+#     + converged: [logical]
+#     + niter: [int] number of IRWLS iterations
+#     + tol: [numeric] numerical tolerance criterion (IRLWS)
+#     + used_iqr: [int] 1 = scale estimated by IQR not MAD
+#  + residuals: [numeric]
+#  + model [list]
+#     + x: [matrix] design matrix
+#     + y: [numeric] response variable
+#     + w: [numeric] sampling weights
+#     + var: [numeric] heteroscedasticity variances
+#     + xwgt: [numeric] weights in the model's design space (GM-estimator)
+#     + n [int] number of observations
+#     + p [int] number of independent variables
+#     + [others]
+#  + design: [survey.design object without 'variables']
+#  + variance: [numeric]
+#  + call: [call object]
+#
 # summary method for robust survey statistic object
 summary.svystat_rob <- function(object, digits = max(3L, getOption("digits") -
     3L), ...)

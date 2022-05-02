@@ -60,12 +60,12 @@ expect_equal(as.numeric(coef(est_t)), as.numeric(coef(st)),
     label = "MU284: total: Winsorized: coef")
 #-------------------------------------------------------------------------------
 # Dalen
-est_m <- svymean_dalen(~RMT85, dn, censoring = 1e10)
+est_m <- svymean_dalen(~RMT85, dn, censoring = 1e10, verbose = FALSE)
 expect_equal(as.numeric(SE(est_m)), as.numeric(SE(sm)),
     label = "MU284: mean: Dalen: SE")
 expect_equal(as.numeric(coef(est_m)), as.numeric(coef(sm)),
     label = "MU284: mean: Dalen: coef")
-est_t <- svytotal_dalen(~RMT85, dn, censoring = 1e10)
+est_t <- svytotal_dalen(~RMT85, dn, censoring = 1e10, verbose = FALSE)
 expect_equal(as.numeric(SE(est_t)), as.numeric(SE(st)),
     label = "MU284: total: Dalen: SE")
 expect_equal(as.numeric(coef(est_t)), as.numeric(coef(st)),
@@ -129,12 +129,12 @@ expect_equal(as.numeric(coef(est_t)), as.numeric(coef(st)),
     label = "workplace: total: Winsorized: coef")
 #-------------------------------------------------------------------------------
 # Dalen
-est_m <- svymean_dalen(~payroll, dn, censoring = 1e10)
+est_m <- svymean_dalen(~payroll, dn, censoring = 1e10, verbose = FALSE)
 expect_equal(as.numeric(SE(est_m)), as.numeric(SE(sm)),
     label = "workplace: mean: Dalen: SE")
 expect_equal(as.numeric(coef(est_m)), as.numeric(coef(sm)),
     label = "workplace: mean: Dalen: coef")
-est_t <- svytotal_dalen(~payroll, dn, censoring = 1e10)
+est_t <- svytotal_dalen(~payroll, dn, censoring = 1e10, verbose = FALSE)
 expect_equal(as.numeric(SE(est_t)), as.numeric(SE(st)),
     label = "workplace: total: Dalen: SE")
 expect_equal(as.numeric(coef(est_t)), as.numeric(coef(st)),

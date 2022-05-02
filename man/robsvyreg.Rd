@@ -4,7 +4,7 @@
 \title{Internal Function for the Regression GM-Estimator}
 \usage{
 robsvyreg(x, y, w, k, psi, type, xwgt, var = NULL, verbose = TRUE, ...)
-svyreg_control(tol = 1e-5, maxit = 100, k_Inf = 1e5, init = NULL,
+svyreg_control(tol = 1e-5, maxit = 100, k_Inf = 1e6, init = NULL,
     mad_center = TRUE, ...)
 }
 \arguments{
@@ -31,7 +31,7 @@ svyreg_control(tol = 1e-5, maxit = 100, k_Inf = 1e5, init = NULL,
 \item{maxit}{\code{[integer]} maximum number of iterations to use
     (default: \code{100}).}
 \item{k_Inf}{\code{[integer]} numerical value that represents \code{Inf}
-    (default: \code{1e+05}).}
+    (default: \code{1e+06}).}
 \item{init}{either \code{NULL} or \code{[numeric vector]}, if
     \code{init = NULL} the regression estimator is initialized by
     weighted least squares; otherwise, \code{init} can be specified as

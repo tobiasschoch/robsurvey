@@ -62,7 +62,7 @@ robsvyreg <- function(x, y, w, k, psi, type, xwgt, var = NULL,
         call = match.call())
 }
 # control function for robust regression
-svyreg_control <- function(tol = 1e-5, maxit = 100, k_Inf = 1e5, init = NULL,
+svyreg_control <- function(tol = 1e-5, maxit = 100, k_Inf = 1e6, init = NULL,
     mad_center = TRUE, ...)
 {
     if (!is.numeric(tol))

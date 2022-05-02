@@ -3,8 +3,6 @@
 
 * regression: what happens if p <= n
 
-* `SE()` of `svytotal_[]` are not correct; why?
-
 ## ADD FEATURE
 
 * `svymean_reg` (+ _total_)

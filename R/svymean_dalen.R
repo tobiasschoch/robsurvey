@@ -1,5 +1,4 @@
 # Dalen the weighted mean (depends on pkg survey)
-#FIXME: Std Err
 svymean_dalen <- function(x, design, censoring, type = "Z2", na.rm = FALSE,
     verbose = TRUE)
 {
@@ -8,7 +7,7 @@ svymean_dalen <- function(x, design, censoring, type = "Z2", na.rm = FALSE,
     dat <- .checkformula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
-        return(.empty_svystat_rob("mean", dat$yname, paste0("Dalen ", type,
+        return(.new_svystat_rob("mean", dat$yname, paste0("Dalen ", type,
             " estimator (censored at ", censoring, ")"), match.call(),
             design, censoring = censoring))
     # otherwise
@@ -16,9 +15,9 @@ svymean_dalen <- function(x, design, censoring, type = "Z2", na.rm = FALSE,
     res <- weighted_mean_dalen(dat$y, dat$w, censoring, type, TRUE, FALSE,
         verbose)
     # compute variance
-    res$variance <- survey::svyrecvar(res$robust$xw / sum(dat$w),
-        design$cluster, design$strata, design$fpc,
-        postStrata = design$postStrata)
+    infl <- (res$robust$xw - dat$w * res$estimate) / sum(dat$w)
+    res$variance <- survey::svyrecvar(infl, design$cluster, design$strata,
+        design$fpc, postStrata = design$postStrata)
     names(res$estimate) <- dat$yname
     res$call <- match.call()
     res$design <- design
@@ -34,7 +33,7 @@ svytotal_dalen <- function(x, design, censoring, type = "Z2", na.rm = FALSE,
     dat <- .checkformula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
-        return(.empty_svystat_rob("total", dat$yname, paste0("Dalen ", type,
+        return(.new_svystat_rob("total", dat$yname, paste0("Dalen ", type,
             " estimator (censored at ", censoring, ")"), match.call(),
             design, censoring = censoring))
     # otherwise

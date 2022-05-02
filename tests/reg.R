@@ -11,7 +11,9 @@ rlm_mod <- MASS:::rlm.default
 # replace wmad-function with our weighted mad
 body(rlm_mod)[[4]] <- substitute(wmad <- function(x, w) weighted_mad(x, w))
 
-#-------------------------------------------------------------------------------
+#===============================================================================
+# 1 REGRESSION
+#===============================================================================
 # survey weighted regression (test against: survey::svyglm)
 ref <- svyglm(payroll ~ employment, dn)
 est <- svyreg(payroll ~ employment, dn)
@@ -101,5 +103,26 @@ expect_equal(vcov(est), ref,
 #expect_equal(1, 2, label = "not a real test")
 
 
-
+#===============================================================================
+# 2 GENERALIZED REGRESSION ESTIMATOR
+#===============================================================================
+# total
+aux_totals <- c(86514, 953555)
+ref <- svytotal(~payroll, calibrate(dn, ~employment, aux_totals))
+reg <- svyreg(payroll ~ employment, dn)
+est <- svytotal_reg(reg, aux_totals, type = "ADU")
+expect_equal(coef(ref), coef(est),
+    label = "GREG: total: coef")
+expect_equal(as.numeric(SE(ref)), SE(est),
+    label = "GREG: total: SE")
+# mean
+aux_means <- c(1, 11.03)
+ref <- svymean(~payroll, calibrate(dn, ~employment, aux_means))
+reg <- svyreg(payroll ~ employment, dn)
+#FIXME:
+est <- svymean_reg(reg, aux_means)#, type = "ADU")
+expect_equal(coef(ref), coef(est),
+    label = "GREG: mean: coef")
+expect_equal(as.numeric(SE(ref)), SE(est),
+    label = "GREG: mean: SE")
 

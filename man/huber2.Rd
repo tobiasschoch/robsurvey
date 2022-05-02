@@ -3,7 +3,7 @@
 \title{Weighted Huber Proposal 2 Estimator}
 \usage{
 huber2(x, w, k = 1.5, na.rm = FALSE, maxit = 50, tol = 1e-04, info = FALSE,
-    k_Inf = 1e5, df_cor = TRUE)
+    k_Inf = 1e6, df_cor = TRUE)
 }
 \arguments{
 \item{x}{\code{[numeric vector]} data.}
@@ -19,7 +19,7 @@ huber2(x, w, k = 1.5, na.rm = FALSE, maxit = 50, tol = 1e-04, info = FALSE,
 \item{info}{\code{[logical]} indicating whether additional information
     should be returned (default: \code{FALSE}).}
 \item{k_Inf}{\code{[integer]} numerical value that represents \code{Inf}
-    (default: \code{1e+05}).}
+    (default: \code{1e+06}).}
 \item{df_cor}{\code{[logical]} toggle for the adjustment of the degrees of
     freedom for the estimate of scale (default: \code{TRUE}).}
 }

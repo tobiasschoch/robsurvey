@@ -7,7 +7,7 @@ svymean_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
     dat <- .checkformula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
-        return(.empty_svystat_rob("mean", dat$yname,
+        return(.new_svystat_rob("mean", dat$yname,
             paste0("Weighted winsorized estimator (", LB, ", ", UB, ")"),
             match.call(), design, LB = LB, UB = UB))
     # otherwise
@@ -37,7 +37,7 @@ svymean_k_winsorized <- function(x, design, k, na.rm = FALSE,
     dat <- .checkformula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
-        return(.empty_svystat_rob("mean", dat$yname,
+        return(.new_svystat_rob("mean", dat$yname,
             paste0("Weighted winsorized estimator (", "k = ", k),
             match.call(), design, k = k))
     # otherwise
@@ -68,7 +68,7 @@ svytotal_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
     dat <- .checkformula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
-        return(.empty_svystat_rob("total", dat$yname,
+        return(.new_svystat_rob("total", dat$yname,
             paste0("Weighted winsorized estimator (", LB, ", ", UB, ")"),
             match.call(), design, LB = LB, UB = UB))
     # otherwise
@@ -98,7 +98,7 @@ svytotal_k_winsorized <- function(x, design, k, na.rm = FALSE,
     dat <- .checkformula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
-        return(.empty_svystat_rob("total", dat$yname,
+        return(.new_svystat_rob("total", dat$yname,
             paste0("Weighted winsorized estimator (", "k = ", k),
             match.call(), design, k = k))
     # otherwise

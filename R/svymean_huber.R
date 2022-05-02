@@ -7,7 +7,7 @@ svymean_huber <- function(x, design, k, type = "rhj", asym = FALSE,
     dat <- .checkformula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
-        return(.empty_svystat_rob("mean", dat$yname,
+        return(.new_svystat_rob("mean", dat$yname,
             paste0("Huber M-estimator (type = ", type,
             ifelse(asym, "; asym. psi", ""), ")"), match.call(),
             design, type = type, psi = ifelse(asym, 1, 0), psi_fun = "Huber",
@@ -40,7 +40,7 @@ svytotal_huber <- function(x, design, k, type = "rhj", asym = FALSE,
     dat <- .checkformula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
-        return(.empty_svystat_rob("total", dat$yname,
+        return(.new_svystat_rob("total", dat$yname,
             paste0("Huber M-estimator (type = ", type,
             ifelse(asym, "; asym. psi", ""), ")"), match.call(),
             design, type = type, psi = ifelse(asym, 1, 0), psi_fun = "Huber",
@@ -55,7 +55,7 @@ svytotal_huber <- function(x, design, k, type = "rhj", asym = FALSE,
     else
         res$residuals
    # compute variance
-    infl <- res$robust$robweights * r * dat$w
+    infl <- res$robust$robweights * dat$y * dat$w
     res$variance <- survey::svyrecvar(infl, design$cluster, design$strata,
         design$fpc, postStrata = design$postStrata)
     names(res$estimate) <- dat$yname

@@ -11,6 +11,7 @@
 ^inst/doc/doc_psi_functions\.md$
 ^inst/doc/doc_comparison\.md$
 ^inst/doc/doc_comparison\.Rmd$
+^inst/doc/fluent\.css$
 # varia
 ^inst/varia/$
 # tests

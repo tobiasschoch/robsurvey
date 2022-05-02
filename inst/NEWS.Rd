@@ -21,7 +21,19 @@
                 are deprecated but are kept for compatibility reasons.
             \item Documentation files in folder \code{inst/doc} have been
                 updated.
-            \item Several internal changes.
+            \item Several internal changes (e.g., default value of
+                \code{k_Inf} is now \code{1e06} not \code{1e05}; see
+                function \code{svyreg_control()}).
+        }
+    }
+    \subsection{BUG FIXES}{
+        \itemize{
+            \item For designs with unequal probability sampling, the variance
+                estimates of the robust estimators of mean and total
+                are now identical with the estimates of
+                \code{survey::svymean()} and \code{survey::svytotal()} if
+                the tuning constant is \code{k = Inf} or \code{LB = 0}
+                and \code{UB = 1}
         }
     }
 }
