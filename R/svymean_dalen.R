@@ -4,7 +4,7 @@ svymean_dalen <- function(x, design, censoring, type = "Z2", na.rm = FALSE,
 {
     if (!is.language(x))
         stop("Argument 'x' must be a formula object\n", call. = FALSE)
-    dat <- .checkformula(x, design, na.rm)
+    dat <- .check_formula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
         return(.new_svystat_rob("mean", dat$yname, paste0("Dalen ", type,
@@ -30,7 +30,7 @@ svytotal_dalen <- function(x, design, censoring, type = "Z2", na.rm = FALSE,
 {
     if (!is.language(x))
         stop("Argument 'x' must be a formula object\n", call. = FALSE)
-    dat <- .checkformula(x, design, na.rm)
+    dat <- .check_formula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
         return(.new_svystat_rob("total", dat$yname, paste0("Dalen ", type,

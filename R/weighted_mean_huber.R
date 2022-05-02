@@ -5,7 +5,7 @@ weighted_mean_huber <- function(x, w, k, type = "rhj", asym = FALSE,
     string <- paste0("Huber M-estimator (type = ", type, ifelse(asym,
         "; asym. psi", ""), ")")
     psi <- ifelse(asym, 1, 0)
-    dat <- .check(x, w, na.rm)
+    dat <- .check_data_weights(x, w, na.rm)
     # empty data
     if (is.null(dat))
         return(NA)

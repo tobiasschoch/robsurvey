@@ -3,9 +3,8 @@
 \alias{svytotal_reg}
 \title{Generalized Regression Estimator (GREG) of the Mean and Total}
 \usage{
-svymean_reg(object, auxiliary, k = Inf, psi = c("Huber", "Huberasym", "Tukey"),
-    check.names = TRUE, na.rm = FALSE)
-
+svymean_reg(object, auxiliary, type, k = NULL, check.names = TRUE,
+    na.rm = FALSE, keep_object = TRUE)
 svytotal_reg(object, auxiliary, type, k = NULL, check.names = TRUE,
     na.rm = FALSE, keep_object = TRUE)
 }
@@ -18,7 +17,6 @@ svytotal_reg(object, auxiliary, type, k = NULL, check.names = TRUE,
     \item{k}{\code{[numeric]} robustness tuning constant of the
         \code{psi}-function used in the bias-correction term in the GREG
         (default: \code{Inf}, which implies a non-robust GREG).}
-    \item{psi}{\code{[character]} \eqn{\psi}{\psi}-function.}
     \item{check.names}{\code{[logical]} if \code{TRUE}, the names of
         \code{auxiliary} is checked against the independent variables of the
         fitted model \code{object} (default: \code{TRUE}.}
@@ -96,7 +94,7 @@ reg <- svyreg_huberM(payroll ~ employment, dn, k = 3)
 
 # Robust GREG estimator of the mean; the population means of the auxiliary
 # variables are from a register
-m <- svymean_reg(reg, auxiliary = c(1, 11.03))
+m <- svymean_reg(reg, auxiliary = c(1, 11.03), type = "ADU")
 m
 
 # ADU

@@ -2,7 +2,7 @@
 svyreg_tukeyM <- function(formula, design, k, var = NULL, na.rm = FALSE,
     verbose = TRUE, ...)
 {
-    dat <- .checkreg(formula, design, var, NULL, na.rm)
+    dat <- .check_regression(formula, design, var, NULL, na.rm)
     # add a 'reduced' survey.design2 object
     dat$design$variables <- NULL
     # in the presence of NA's
@@ -15,7 +15,7 @@ svyreg_tukeyM <- function(formula, design, k, var = NULL, na.rm = FALSE,
             scale = NA, robust = NA, optim = NA, residuals = NA,
             model = list(x = dat$x, y = dat$y, w = dat$w, var = dat$var,
                 xwgt = rep(1, length(dat$y)), n = length(dat$y),
-                p = NCOL(dat$x)),
+                p = NCOL(dat$x), yname = dat$yname),
             design = dat$design, terms = dat$terms, call = match.call()),
             class = "svyreg_rob"))
     # otherwise
@@ -24,6 +24,7 @@ svyreg_tukeyM <- function(formula, design, k, var = NULL, na.rm = FALSE,
     res$design <- dat$design
     res$terms <- dat$terms
     res$call <- match.call()
+    res$model$yname <- dat$yname
     class(res) <- "svyreg_rob"
     res
 }
@@ -48,7 +49,7 @@ svyreg_tukeyGM <- function(formula, design, k, type = c("Mallows", "Schweppe"),
         warning("Only first column of argument 'xwgt' is used\n",
             call. = FALSE)
     }
-    dat <- .checkreg(formula, design, var, xwgt, na.rm)
+    dat <- .check_regression(formula, design, var, xwgt, na.rm)
     # add a 'reduced' survey.design2 object
     dat$design$variables <- NULL
     # in the presence of NA's
@@ -61,7 +62,7 @@ svyreg_tukeyGM <- function(formula, design, k, type = c("Mallows", "Schweppe"),
             scale = NA, robust = NA, optim = NA, residuals = NA,
             model = list(x = dat$x, y = dat$y, w = dat$w, var = dat$var,
                 xwgt = rep(1, length(dat$y)), n = length(dat$y),
-                p = NCOL(dat$x)),
+                p = NCOL(dat$x), yname = dat$yname),
             design = dat$design, terms = dat$terms, call = match.call()),
             class = "svyreg_rob"))
     # otherwise
@@ -71,6 +72,7 @@ svyreg_tukeyGM <- function(formula, design, k, type = c("Mallows", "Schweppe"),
     res$terms <- dat$terms
     res$call <- match.call()
     res$model$xwgt <- dat$xwgt
+    res$model$yname <- dat$yname
     class(res) <- "svyreg_rob"
     res
 }

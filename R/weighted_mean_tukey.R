@@ -3,7 +3,7 @@ weighted_mean_tukey <- function(x, w, k, type = "rhj", info = FALSE,
     na.rm = FALSE, verbose = TRUE, ...)
 {
     string <- paste0("Tukey M-estimator (type = ", type, ")")
-    dat <- .check(x, w, na.rm)
+    dat <- .check_data_weights(x, w, na.rm)
     if (is.null(dat))
         return(NA)
     # only one observation

@@ -3,7 +3,7 @@ huber2 <- function(x, w, k = 1.5, na.rm = FALSE, maxit = 50, tol = 1e-4,
     info = FALSE, k_Inf = 1e6, df_cor = TRUE)
 {
     stopifnot(k_Inf > 0, is.numeric(k))
-    dat <- .check(x, w, na.rm)
+    dat <- .check_data_weights(x, w, na.rm)
     if (is.null(dat))
         return(NA)
 

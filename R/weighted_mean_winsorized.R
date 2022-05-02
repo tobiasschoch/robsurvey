@@ -2,7 +2,7 @@
 weighted_mean_winsorized <- function(x, w, LB = 0.05, UB = 1 - LB,
     info = FALSE, na.rm = FALSE)
 {
-    dat <- .check(x, w, na.rm)
+    dat <- .check_data_weights(x, w, na.rm)
     if (is.null(dat))
         return(NA)
     if (LB >= UB)
@@ -33,7 +33,7 @@ weighted_mean_winsorized <- function(x, w, LB = 0.05, UB = 1 - LB,
 # one-sided weighted k winsorized mean
 weighted_mean_k_winsorized <- function(x, w, k, info = FALSE, na.rm = FALSE)
 {
-    dat <- .check(x, w, na.rm)
+    dat <- .check_data_weights(x, w, na.rm)
     if (is.null(dat))
         return(NA)
     if (k %% 1 > 0){

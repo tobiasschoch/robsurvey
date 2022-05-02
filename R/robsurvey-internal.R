@@ -9,7 +9,7 @@
         class = "svystat_rob")
 }
 # check data and weight
-.check <- function(x, w, na.rm = FALSE, check_NA = TRUE)
+.check_data_weights <- function(x, w, na.rm = FALSE, check_NA = TRUE)
 {
     if (missing(w))
         stop("Argument 'w' is missing\n", call. = FALSE)
@@ -51,7 +51,7 @@
     list(x = x, w = w, n = n)
 }
 # check and extract data from survey.design object
-.checkformula <- function(f, design, na.rm = FALSE, check_NA = TRUE)
+.check_formula <- function(f, design, na.rm = FALSE, check_NA = TRUE)
 {
     if (inherits(f, "formula")) {
         if (length(all.vars(f)) > 1)
@@ -99,7 +99,8 @@
     list(failure = failure, yname = yname, y = y, w = w, design = design)
 }
 # check and extract data from survey.design object (for regression)
-.checkreg <- function(formula, design, var = NULL, xwgt = NULL, na.rm = FALSE)
+.check_regression <- function(formula, design, var = NULL, xwgt = NULL,
+    na.rm = FALSE)
 {
     if (!inherits(formula, "formula"))
         stop("Argument '", formula, "' must be a formula\n", call. = FALSE)
@@ -107,7 +108,7 @@
     # heteroscedasticity (only one variable); without NA handling; we will
     # deal with this together with x, y, etc.
     if (!is.null(var))
-        var <- .checkformula(var, design, FALSE, FALSE)$y
+        var <- .check_formula(var, design, FALSE, FALSE)$y
 
     # extract the variables
     mf <- stats::model.frame(formula, design$variables,
@@ -155,49 +156,7 @@
         }
     }
     list(failure = failure, x = x, y = y, var = var, w = w, terms = mt,
-        design = design, xwgt = xwgt)
-}
-# check auxiliary totals and means
-.checkauxiliary <- function(object, data, est = "mean", check.names = TRUE,
-    na.rm = FALSE)
-{
-    names_beta <- names(object$estimate)
-    names_data <- names(data)
-    if (is.vector(data))
-        if (NCOL(data) < NROW(data))
-	        data <- t(data)
-
-    # vector of population x-means or -totals
-    if (NROW(data) == 1) {
-        # drop intercept (if there is one)
-        if (attr(object$terms, "intercept")) {
-            names_data <- names_data[-1]
-            names_beta <- names_beta[-1]
-        }
-        if (length(data) != object$model$p)
-            stop("Length of auxiliary data does not match\n", call. = FALSE)
-
-        if (check.names && !is.null(names_data)) {
-            if (!all(names_data == names_beta))
-                stop("Variable names do not match (check.names = TRUE)",
-                    call. = FALSE)
-        }
-        x <- data
-    # compute mean/total based on design matrix
-    } else {
-        mf <- stats::model.frame(object$call$formula, data,
-            na.action = stats::na.pass)
-        xmat <- stats::model.matrix(stats::terms(mf), mf)
-        # check for missing values
-        is_not_NA <- stats::complete.cases(xmat)
-        if (!all(is_not_NA) && na.rm) {
-            xmat <- xmat[is_not_NA, ]
-        }
-        x <- switch(est,
-            "mean" = colMeans(xmat),
-            "total" = colSums(xmat))
-    }
-    unname(x)
+        design = design, xwgt = xwgt, yname = yname)
 }
 # psi functions
 .psi_function <- function(x, k, psi = c("Huber", "Huberasym", "Tukey"))

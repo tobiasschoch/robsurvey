@@ -19,7 +19,7 @@ weighted_total_dalen <- function(x, w, censoring, type = "Z2", info = FALSE,
     na.rm = FALSE, verbose = TRUE)
 {
     stopifnot(censoring > 0)
-    dat <- .check(x, w, na.rm)
+    dat <- .check_data_weights(x, w, na.rm)
     if (is.null(dat))
         return(NA)
     xw <- dat$x * dat$w

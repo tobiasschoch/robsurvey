@@ -1,7 +1,7 @@
 # weighted mean (Hajek estimator)
 weighted_mean <- function(x, w, na.rm = FALSE)
 {
-    dat <- .check(x, w, na.rm)
+    dat <- .check_data_weights(x, w, na.rm)
     if (is.null(dat))
         return(NA)
     else
@@ -10,7 +10,7 @@ weighted_mean <- function(x, w, na.rm = FALSE)
 # weighted total
 weighted_total <- function(x, w, na.rm = FALSE)
 {
-    dat <- .check(x, w, na.rm)
+    dat <- .check_data_weights(x, w, na.rm)
     if (is.null(dat))
         return(NA)
     else

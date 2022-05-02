@@ -2,7 +2,7 @@
 weighted_mean_trimmed <- function(x, w, LB = 0.05, UB = 1 - LB, info = FALSE,
     na.rm = FALSE)
 {
-    dat <- .check(x, w, na.rm)
+    dat <- .check_data_weights(x, w, na.rm)
     if (is.null(dat))
         return(NA)
 

@@ -1,7 +1,7 @@
 # Regression estimator of the mean (depends on pkg survey)
 svyreg <- function(formula, design, var = NULL, na.rm = FALSE)
 {
-    dat <- .checkreg(formula, design, var, NULL, na.rm)
+    dat <- .check_regression(formula, design, var, NULL, na.rm)
     # account for heteroscedasticity
     if (!is.null(var)) {
         dat$x <- dat$x / sqrt(dat$var)
@@ -21,6 +21,6 @@ svyreg <- function(formula, design, var = NULL, na.rm = FALSE)
         k = Inf), estimate = tmp$beta, scale = tmp$scale,
         optim = list(converged = TRUE), residuals = tmp$resid,
         model = list(x = dat$x, y = dat$y, w = dat$w, var = dat$var,
-        n = n, p = p), design = dat$design, terms = dat$terms,
-        call = match.call()), class = "svyreg_rob")
+        n = n, p = p, yname = dat$yname), design = dat$design,
+        terms = dat$terms, call = match.call()), class = "svyreg_rob")
 }

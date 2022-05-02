@@ -4,7 +4,7 @@ svymean_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
 {
     if (!is.language(x))
         stop("Argument 'x' must be a formula object\n", call. = FALSE)
-    dat <- .checkformula(x, design, na.rm)
+    dat <- .check_formula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
         return(.new_svystat_rob("mean", dat$yname,
@@ -34,7 +34,7 @@ svymean_k_winsorized <- function(x, design, k, na.rm = FALSE,
 {
     if (!is.language(x))
         stop("Argument 'x' must be a formula object\n", call. = FALSE)
-    dat <- .checkformula(x, design, na.rm)
+    dat <- .check_formula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
         return(.new_svystat_rob("mean", dat$yname,
@@ -65,7 +65,7 @@ svytotal_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
 {
     if (!is.language(x))
         stop("Argument 'x' must be a formula object\n", call. = FALSE)
-    dat <- .checkformula(x, design, na.rm)
+    dat <- .check_formula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
         return(.new_svystat_rob("total", dat$yname,
@@ -95,7 +95,7 @@ svytotal_k_winsorized <- function(x, design, k, na.rm = FALSE,
 {
     if (!is.language(x))
         stop("Argument 'x' must be a formula object\n", call. = FALSE)
-    dat <- .checkformula(x, design, na.rm)
+    dat <- .check_formula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
         return(.new_svystat_rob("total", dat$yname,
