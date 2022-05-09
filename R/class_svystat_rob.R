@@ -30,6 +30,16 @@
 #  + variance: [numeric]
 #  + call: [call object]
 #
+# constructor for empty object of class svystat_rob
+.new_svystat_rob <- function(characteristic, yname, string, call,
+    design, class = NULL, ...)
+{
+    structure(list(characteristic = characteristic,
+        estimator = list(string = string, ...),
+        estimate = stats::setNames(NA, yname), variance = NA,
+        residuals = NA, model = NA, design = design, call = call),
+        class = c("svystat_rob", class))
+}
 # summary method for robust survey statistic object
 summary.svystat_rob <- function(object, digits = max(3L, getOption("digits") -
     3L), ...)
@@ -126,4 +136,26 @@ print.svystat_rob <- function(x, digits = max(3L, getOption("digits") - 3L),
 scale.svystat_rob <- function(x, ...)
 {
     x$scale
+}
+# compute estimated mse, more precisely, estimated risk; see mer()
+mse <- function(object)
+{
+    if (!inherits(object, "svystat_rob"))
+        stop("MSE is defined only for object of class 'svystat_rob'\n",
+            call. = FALSE)
+
+    # consistent reference estimator (mean or total)
+    reference_estimator <- object$call
+    if (inherits(object, "mest"))
+        reference_estimator$k <- Inf
+    if (inherits(object, "dalen"))
+        reference_estimator$censoring <- Inf
+    if (inherits(object, c("wins", "trim"))) {
+        reference_estimator$LB<- 0
+        reference_estimator$UB<- 1
+    }
+    reference_estimator$verbose <- FALSE
+    reference_location <- coef.svystat_rob(eval(reference_estimator))
+    # estimated mse
+    as.numeric(object$variance + (object$estimate - reference_location)^2)
 }

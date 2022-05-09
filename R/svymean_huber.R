@@ -10,8 +10,8 @@ svymean_huber <- function(x, design, k, type = "rhj", asym = FALSE,
         return(.new_svystat_rob("mean", dat$yname,
             paste0("Huber M-estimator (type = ", type,
             ifelse(asym, "; asym. psi", ""), ")"), match.call(),
-            design, type = type, psi = ifelse(asym, 1, 0), psi_fun = "Huber",
-            k = k))
+            design, "mest", type = type, psi = ifelse(asym, 1, 0),
+            psi_fun = "Huber", k = k))
     # otherwise
     design <- dat$design
     res <- weighted_mean_huber(dat$y, dat$w, k, type, asym, TRUE, FALSE,
@@ -28,7 +28,7 @@ svymean_huber <- function(x, design, k, type = "rhj", asym = FALSE,
     names(res$estimate) <- dat$yname
     res$call <- match.call()
     res$design <- design
-    class(res) <- c("svystat_rob", "mer_capable")
+    class(res) <- c("svystat_rob", "mer_capable", "mest")
     res
 }
 # Huber M-estimator of the weighted total (depends on pkg survey)
@@ -43,8 +43,8 @@ svytotal_huber <- function(x, design, k, type = "rhj", asym = FALSE,
         return(.new_svystat_rob("total", dat$yname,
             paste0("Huber M-estimator (type = ", type,
             ifelse(asym, "; asym. psi", ""), ")"), match.call(),
-            design, type = type, psi = ifelse(asym, 1, 0), psi_fun = "Huber",
-            k = k))
+            design, "mest", type = type, psi = ifelse(asym, 1, 0),
+            psi_fun = "Huber", k = k))
     # otherwise
     design <- dat$design
     res <- weighted_total_huber(dat$y, dat$w, k, type, asym, TRUE, FALSE,
@@ -61,6 +61,6 @@ svytotal_huber <- function(x, design, k, type = "rhj", asym = FALSE,
     names(res$estimate) <- dat$yname
     res$call <- match.call()
     res$design <- design
-    class(res) <- c("svystat_rob", "mer_capable")
+    class(res) <- c("svystat_rob", "mer_capable", "mest")
     res
 }

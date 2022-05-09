@@ -8,7 +8,7 @@ svymean_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE)
     if (dat$failure)
         return(.new_svystat_rob("mean", dat$yname,
             paste0("Weighted trimmed estimator (", LB, ", ", UB, ")"),
-            match.call(), design, LB = LB, UB = UB))
+            match.call(), design, "trim", LB = LB, UB = UB))
     # otherwise
     design <- dat$design
     res <- weighted_mean_trimmed(dat$y, dat$w, LB, UB, TRUE, FALSE)
@@ -21,7 +21,7 @@ svymean_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE)
     names(res$estimate) <- dat$yname
     res$call <- match.call()
     res$design <- design
-    class(res) <- "svystat_rob"
+    class(res) <- c("svystat_rob", "trim")
     res
 }
 # weighted trimmed total (depends on pkg survey)
@@ -34,7 +34,7 @@ svytotal_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE)
     if (dat$failure)
         return(.new_svystat_rob("total", dat$yname,
             paste0("Weighted trimmed estimator (", LB, ", ", UB, ")"),
-            match.call(), design, LB = LB, UB = UB))
+            match.call(), design, "trim", LB = LB, UB = UB))
     # otherwise
     design <- dat$design
     res <- weighted_total_trimmed(dat$y, dat$w, LB, UB, TRUE, FALSE)
@@ -45,7 +45,7 @@ svytotal_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE)
     names(res$estimate) <- dat$yname
     res$call <- match.call()
     res$design <- design
-    class(res) <- "svystat_rob"
+    class(res) <- c("svystat_rob", "trim")
     res
 }
 # influence function, Huber (1981, p. 58)

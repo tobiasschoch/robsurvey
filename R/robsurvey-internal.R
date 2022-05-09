@@ -1,13 +1,3 @@
-# constructor for class svystat_rob
-.new_svystat_rob <- function(characteristic, yname, string, call,
-    design, ...)
-{
-    structure(list(characteristic = characteristic,
-        estimator = list(string = string, ...),
-        estimate = stats::setNames(NA, yname), variance = NA,
-        residuals = NA, model = NA, design = design, call = call),
-        class = "svystat_rob")
-}
 # check data and weight
 .check_data_weights <- function(x, w, na.rm = FALSE, check_NA = TRUE)
 {

@@ -9,7 +9,7 @@ svymean_tukey <- function(x, design, k, type = "rhj", na.rm = FALSE,
     if (dat$failure)
         return(.new_svystat_rob("mean", dat$yname,
             paste0("Tukey M-estimator (type = ", type, ")"), match.call(),
-            design, type = type, psi = 2, psi_fun = "Tukey", k = k))
+            design, "mest", type = type, psi = 2, psi_fun = "Tukey", k = k))
     # otherwise
     design <- dat$design
     res <- weighted_mean_tukey(dat$y, dat$w, k, type, TRUE, FALSE, verbose,
@@ -26,7 +26,7 @@ svymean_tukey <- function(x, design, k, type = "rhj", na.rm = FALSE,
     names(res$estimate) <- dat$yname
     res$call <- match.call()
     res$design <- design
-    class(res) <- c("svystat_rob", "mer_capable")
+    class(res) <- c("svystat_rob", "mer_capable", "mest")
     res
 }
 # Tukey biweight M-estimator of the weighted total (depends on pkg survey)
@@ -40,7 +40,7 @@ svytotal_tukey <- function(x, design, k, type = "rhj", na.rm = FALSE,
     if (dat$failure)
         return(.new_svystat_rob("total", dat$yname,
             paste0("Tukey M-estimator (type = ", type, ")"), match.call(),
-            design, type = type, psi = 2, psi_fun = "Tukey", k = k))
+            design, "mest", type = type, psi = 2, psi_fun = "Tukey", k = k))
     # otherwise
     design <- dat$design
     res <- weighted_total_tukey(dat$y, dat$w, k, type, TRUE, FALSE, verbose,
@@ -57,6 +57,6 @@ svytotal_tukey <- function(x, design, k, type = "rhj", na.rm = FALSE,
     names(res$estimate) <- dat$yname
     res$call <- match.call()
     res$design <- design
-    class(res) <- c("svystat_rob", "mer_capable")
+    class(res) <- c("svystat_rob", "mer_capable", "mest")
     res
 }

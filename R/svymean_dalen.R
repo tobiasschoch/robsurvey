@@ -9,7 +9,7 @@ svymean_dalen <- function(x, design, censoring, type = "Z2", na.rm = FALSE,
     if (dat$failure)
         return(.new_svystat_rob("mean", dat$yname, paste0("Dalen ", type,
             " estimator (censored at ", censoring, ")"), match.call(),
-            design, censoring = censoring))
+            design, "dalen", censoring = censoring))
     # otherwise
     design <- dat$design
     res <- weighted_mean_dalen(dat$y, dat$w, censoring, type, TRUE, FALSE,
@@ -21,7 +21,7 @@ svymean_dalen <- function(x, design, censoring, type = "Z2", na.rm = FALSE,
     names(res$estimate) <- dat$yname
     res$call <- match.call()
     res$design <- design
-    class(res) <- "svystat_rob"
+    class(res) <- c("svystat_rob", "dalen")
     res
 }
 # Dalen the weighted total (depends on pkg survey)
@@ -35,7 +35,7 @@ svytotal_dalen <- function(x, design, censoring, type = "Z2", na.rm = FALSE,
     if (dat$failure)
         return(.new_svystat_rob("total", dat$yname, paste0("Dalen ", type,
             " estimator (censored at ", censoring, ")"), match.call(),
-            design, censoring = censoring))
+            design, "dalen", censoring = censoring))
     # otherwise
     design <- dat$design
     res <- weighted_total_dalen(dat$y, dat$w, censoring, type, TRUE, FALSE,
@@ -46,6 +46,6 @@ svytotal_dalen <- function(x, design, censoring, type = "Z2", na.rm = FALSE,
     names(res$estimate) <- dat$yname
     res$call <- match.call()
     res$design <- design
-    class(res) <- "svystat_rob"
+    class(res) <- c("svystat_rob", "dalen")
     res
 }

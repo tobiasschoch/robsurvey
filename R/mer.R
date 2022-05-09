@@ -1,15 +1,17 @@
 # Minimum estimated risk estimator for location M-estimates
-mer <- function(object, verbose = TRUE, max_k = 1000, optim_args = list())
+mer <- function(object, verbose = TRUE, max_k = 10, init = 1, method = "Brent",
+    optim_args = list())
 {
     if (!inherits(object, "mer_capable"))
         stop("MER-estimator cannot be compute for this class of estimators\n",
             call. = FALSE)
-    stopifnot(is.numeric(max_k) && max_k > 1)
+    stopifnot(is.numeric(max_k), max_k > 1, is.numeric(init), init >= 0,
+        init < max_k)
 
     # search interval
-    range_k <- c(0.5, max_k)
+    range_k <- c(init, max_k)
 
-    # weighted mean or total (reference)
+    # weighted mean or total (reference estimator)
     reference_estimator <- object$call
     reference_estimator$k <- Inf
     # estimate of the design-unbiased estimator (mean or total)
@@ -27,8 +29,8 @@ mer <- function(object, verbose = TRUE, max_k = 1000, optim_args = list())
     }
 
     # minimize mse
-    opt <- stats::optim(1, estimated_mse, est = est, ref = ref,
-        method = "L-BFGS-B", lower = range_k[1], upper = range_k[2],
+    opt <- stats::optim(init, estimated_mse, est = est, ref = ref,
+        method = method, lower = range_k[1], upper = range_k[2],
         control = optim_args)
 
     if (verbose)

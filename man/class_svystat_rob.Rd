@@ -11,8 +11,10 @@
 \alias{robweights.svystat_rob}
 \alias{print.svystat_rob}
 \alias{scale.svystat_rob}
+\alias{mse}
 \title{Utility Functions for Objects of Class svystat_rob}
 \usage{
+mse(object)
 \method{summary}{svystat_rob}(object, digits = max(3L,
     getOption("digits") - 3L), ...)
 \method{coef}{svystat_rob}(object, ...)
@@ -33,11 +35,13 @@ robweights(object)
 }
 \description{
 Methods and utility functions for objects of class \code{svystat_rob} (e.g.,
-\code{\link{weighted_mean_huber}}).
+\code{\link{svymean_huber}}).
 }
 \details{
 Utility functions:
 \itemize{
+    \item \code{mse} computes the estimated risk (estimated mean square error)
+        in presence of representative outliers; see also \code{\link{mer}}
     \item \code{summary} gives a summary of the estimation properties
     \item \code{robweights} extracts the robustness weights
     \item \code{coef} extracts the estimate of location

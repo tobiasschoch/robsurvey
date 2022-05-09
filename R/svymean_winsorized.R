@@ -9,7 +9,7 @@ svymean_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
     if (dat$failure)
         return(.new_svystat_rob("mean", dat$yname,
             paste0("Weighted winsorized estimator (", LB, ", ", UB, ")"),
-            match.call(), design, LB = LB, UB = UB))
+            match.call(), design, "wins", LB = LB, UB = UB))
     # otherwise
     design <- dat$design
     res <- weighted_mean_winsorized(dat$y, dat$w, LB, UB, TRUE, FALSE)
@@ -25,7 +25,7 @@ svymean_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
     names(res$estimate) <- dat$yname
     res$call <- match.call()
     res$design <- design
-    class(res) <- "svystat_rob"
+    class(res) <- c("svystat_rob", "wins")
     res
 }
 # weighted one-sided k winsorized mean (depends on pkg survey)
@@ -39,7 +39,7 @@ svymean_k_winsorized <- function(x, design, k, na.rm = FALSE,
     if (dat$failure)
         return(.new_svystat_rob("mean", dat$yname,
             paste0("Weighted winsorized estimator (", "k = ", k),
-            match.call(), design, k = k))
+            match.call(), design, "wins", k = k))
     # otherwise
     design <- dat$design
     res <- weighted_mean_k_winsorized(dat$y, dat$w, k, TRUE, FALSE)
@@ -56,7 +56,7 @@ svymean_k_winsorized <- function(x, design, k, na.rm = FALSE,
     names(res$estimate) <- dat$yname
     res$call <- match.call()
     res$design <- design
-    class(res) <- "svystat_rob"
+    class(res) <- c("svystat_rob", "wins")
     res
 }
 # weighted winsorized total (depends on pkg survey)
@@ -70,7 +70,7 @@ svytotal_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
     if (dat$failure)
         return(.new_svystat_rob("total", dat$yname,
             paste0("Weighted winsorized estimator (", LB, ", ", UB, ")"),
-            match.call(), design, LB = LB, UB = UB))
+            match.call(), design, "wins", LB = LB, UB = UB))
     # otherwise
     design <- dat$design
     res <- weighted_total_winsorized(dat$y, dat$w, LB, UB, TRUE, FALSE)
@@ -86,7 +86,7 @@ svytotal_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
     names(res$estimate) <- dat$yname
     res$call <- match.call()
     res$design <- design
-    class(res) <- "svystat_rob"
+    class(res) <- c("svystat_rob", "wins")
     res
 }
 # weighted one-sided k winsorized total (depends on pkg survey)
@@ -100,7 +100,7 @@ svytotal_k_winsorized <- function(x, design, k, na.rm = FALSE,
     if (dat$failure)
         return(.new_svystat_rob("total", dat$yname,
             paste0("Weighted winsorized estimator (", "k = ", k),
-            match.call(), design, k = k))
+            match.call(), design, "wins", k = k))
     # otherwise
     design <- dat$design
     res <- weighted_total_k_winsorized(dat$y, dat$w, k, TRUE, FALSE)
@@ -116,7 +116,7 @@ svytotal_k_winsorized <- function(x, design, k, na.rm = FALSE,
     names(res$estimate) <- dat$yname
     res$call <- match.call()
     res$design <- design
-    class(res) <- "svystat_rob"
+    class(res) <- c("svystat_rob", "wins")
     res
 }
 # influence function, Huber (1981, p. 58-59)

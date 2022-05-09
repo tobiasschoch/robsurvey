@@ -97,6 +97,7 @@ export(weighted_total_tukey)
 export(weighted_total_winsorized)
 
 export(mer)
+export(mse)
 
 export(simpsonWgt)
 
