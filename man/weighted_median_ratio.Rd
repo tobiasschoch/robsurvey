@@ -12,11 +12,11 @@ weighted_median_ratio(x, y = NULL, w, na.rm = FALSE)
         be removed before the computation proceeds (default: \code{FALSE}).}
 }
 \description{
-A weighted median of the ratios y/x determines the slope of a regression
-through the origin.
+    A weighted median of the ratios y/x determines the slope of a regression
+    through the origin.
 }
 \value{
-A vector with two components: intercept and slope
+    A vector with two components: intercept and slope
 }
 \examples{
 x <- c(1,2,4,5)

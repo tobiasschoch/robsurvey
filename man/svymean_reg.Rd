@@ -26,7 +26,7 @@ svytotal_reg(object, auxiliary, type, k = NULL, check.names = TRUE,
         returned.}
 }
 \description{
-(Robust) Generalized Regression Estimator (GREG) of the Mean and Total
+    (Robust) Generalized Regression Estimator (GREG) of the Mean and Total
 }
 \details{
     \describe{
@@ -36,7 +36,8 @@ svytotal_reg(object, auxiliary, type, k = NULL, check.names = TRUE,
         \item{Types}{
             \itemize{
                 \item \code{"projective"} (Särndal et al., 1992)
-                \item \code{"ADU"} (Särndal et al., 1992; Gwet and Rivest, 1992)
+                \item \code{"ADU"} (Särndal et al., 1992; Gwet and Rivest,
+                    1992)
                 \item \code{"robust"}
                 \item \code{"BR"} (Beaumont and Rivest, 2009)
                 \item \code{"lee"} (Lee, 1991; 1992)
@@ -46,7 +47,7 @@ svytotal_reg(object, auxiliary, type, k = NULL, check.names = TRUE,
     }
 }
 \value{
-Object of class \code{\link{svystat_rob}}
+    Object of class \code{\link{svystat_rob}}
 }
 \references{
 Beaumont, J.-F. and L.-P. Rivest (2009). Dealing with outliers in survey data,
@@ -103,7 +104,6 @@ m
 
 m <- svyreg(payroll ~ employment, dn)
 svytotal_reg(m, auxiliary = c(86514, 953555), type = "ADU")
-
 
 # Summarize
 summary(m)

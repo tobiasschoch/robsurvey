@@ -18,7 +18,7 @@ svytotal_trimmed(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE)
     be removed before the computation proceeds (default: \code{FALSE}).}
 }
 \description{
-Weighted trimmed population mean and total.
+    Weighted trimmed population mean and total.
 }
 \details{
 \describe{
@@ -43,13 +43,13 @@ Weighted trimmed population mean and total.
 }
 }
 \value{
-Object of class \code{\link{svystat_rob}}
+    Object of class \code{\link{svystat_rob}}
 }
 \references{
 Huber, P. J. (1981). \emph{Robust Statistics}, New York: John Wiley and Sons.
 
 Shao, J. (1994). L-Statistics in Complex Survey Problems.
-\emph{The Annals of Statistics}, \bold{22}, 976--967.
+\emph{The Annals of Statistics} \bold{22}, 976--967.
 }
 \examples{
 data(workplace)

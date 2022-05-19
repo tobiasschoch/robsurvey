@@ -82,8 +82,7 @@
 		\code{[numeric]}.}
 }
 \description{
-Methods and utility functions for objects of class \code{svyreg_rob}.
-
+    Methods and utility functions for objects of class \code{svyreg_rob}.
 }
 \details{
     \describe{
@@ -117,7 +116,7 @@ Methods and utility functions for objects of class \code{svyreg_rob}.
 }
 \references{
 Binder, D. A. (1983).  On the Variances of Asymptotically Normal Estimators
-from Complex Surveys. \emph{International Statistical Review}, \bold{51},
+from Complex Surveys. \emph{International Statistical Review} \bold{51},
 279--292.
 
 Godambe, V.P. and Thompson, M.E. (2009). Estimating Functions and Survey

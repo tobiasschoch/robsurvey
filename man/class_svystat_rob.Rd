@@ -28,26 +28,27 @@ robweights(object)
 \method{print}{svystat_rob}(x, digits = max(3L, getOption("digits") - 3L), ...)
 }
 \arguments{
-\item{object}{object of class \code{svystat_rob}.}
-\item{digits}{\code{[integer]} minimal number of significant digits.}
-\item{\dots}{additional arguments passed to the method.}
-\item{x}{object of class \code{svystat_rob}.}
+    \item{object}{object of class \code{svystat_rob}.}
+    \item{digits}{\code{[integer]} minimal number of significant digits.}
+    \item{\dots}{additional arguments passed to the method.}
+    \item{x}{object of class \code{svystat_rob}.}
 }
 \description{
-Methods and utility functions for objects of class \code{svystat_rob} (e.g.,
-\code{\link{svymean_huber}}).
+    Methods and utility functions for objects of class \code{svystat_rob}
+    (e.g., \code{\link{svymean_huber}}).
 }
 \details{
-Utility functions:
-\itemize{
-    \item \code{mse} computes the estimated risk (estimated mean square error)
-        in presence of representative outliers; see also \code{\link{mer}}
-    \item \code{summary} gives a summary of the estimation properties
-    \item \code{robweights} extracts the robustness weights
-    \item \code{coef} extracts the estimate of location
-    \item \code{SE} extracts the (estimated) standard error
-    \item \code{vcov} extracts the (estimated) covariance matrix
-    \item \code{residuals} extracts the residuals
-    \item \code{fitted} extracts the fitted values
-}
+    Utility functions:
+    \itemize{
+        \item \code{mse} computes the estimated risk (estimated mean square
+            error) in presence of representative outliers; see also
+            \code{\link{mer}}
+        \item \code{summary} gives a summary of the estimation properties
+        \item \code{robweights} extracts the robustness weights
+        \item \code{coef} extracts the estimate of location
+        \item \code{SE} extracts the (estimated) standard error
+        \item \code{vcov} extracts the (estimated) covariance matrix
+        \item \code{residuals} extracts the residuals
+        \item \code{fitted} extracts the fitted values
+    }
 }

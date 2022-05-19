@@ -9,28 +9,29 @@ weighted_total_dalen( x, w, censoring, type = "Z2", info = FALSE,
     na.rm = FALSE, verbose = TRUE)
 }
 \arguments{
-\item{x}{\code{[numeric vector]} data.}
-\item{w}{\code{[numeric vector]} weights (same length as vector \code{x}).}
-\item{censoring}{\code{[double]} cutoff threshold above which the observations
-    are censored.}
-\item{type}{\code{[character]} type of estimator; either \code{"Z2"} or
-    \code{"Z3"} (default: \code{"Z2"}).}
-\item{info}{\code{[logical]} indicating whether additional information
-    should be returned (default: \code{FALSE}).}
-\item{na.rm}{\code{[logical]} indicating whether \code{NA} values should be
-    removed before the computation proceeds (default: \code{FALSE}).}
-\item{verbose}{\code{[logical]} indicating whether additional information
-    should be printed to the console (default: \code{FALSE}).}
+    \item{x}{\code{[numeric vector]} data.}
+    \item{w}{\code{[numeric vector]} weights (same length as vector
+        \code{x}).}
+    \item{censoring}{\code{[double]} cutoff threshold above which the
+        observations are censored.}
+    \item{type}{\code{[character]} type of estimator; either \code{"Z2"} or
+        \code{"Z3"} (default: \code{"Z2"}).}
+    \item{info}{\code{[logical]} indicating whether additional information
+        should be returned (default: \code{FALSE}).}
+    \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should be
+        removed before the computation proceeds (default: \code{FALSE}).}
+    \item{verbose}{\code{[logical]} indicating whether additional information
+        should be printed to the console (default: \code{FALSE}).}
 }
 \description{
-Dalén's estimators of the mean and total (bare-bone functions with limited
-functionality)
+    Dalén's estimators of the mean and total (bare-bone functions with
+    limited functionality)
 }
 \details{
-Let \eqn{\sum_{i \in s} w_ix_i}{sum(w[i]x[i])} denote the expansion
-estimator of the \eqn{x}-total (summation is over all elements \eqn{i} in
-sample \eqn{s}). The estimators Z2 and Z3 of Dalén (1987) are defined as
-follows.
+    Let \eqn{\sum_{i \in s} w_ix_i}{sum(w[i]x[i])} denote the expansion
+    estimator of the \eqn{x}-total (summation is over all elements \eqn{i}
+    in sample \eqn{s}). The estimators Z2 and Z3 of Dalén (1987) are
+    defined as follows.
     \describe{
         \item{Estimator Z2}{
             The estimator Z2 of the population total sums over
@@ -50,23 +51,23 @@ follows.
     }
 }
 \value{
-The return value depends on \code{info}:
-\describe{
-    \item{\code{info = FALSE}:}{estimate of mean or total \code{[double]}}
-    \item{\code{info = TRUE}:}{a \code{[list]} with items:
-        \itemize{
-            \item \code{characteristic} \code{[character]},
-            \item \code{estimator} \code{[character]},
-            \item \code{estimate} \code{[double]},
-            \item \code{variance} (default: \code{NA}),
-            \item \code{robust} \code{[list]},
-            \item \code{residuals} \code{[numeric vector]},
-            \item \code{model} \code{[list]},
-            \item \code{design} (default: \code{NA}),
-            \item \code{[call]}
+    The return value depends on \code{info}:
+    \describe{
+        \item{\code{info = FALSE}:}{estimate of mean or total \code{[double]}}
+        \item{\code{info = TRUE}:}{a \code{[list]} with items:
+            \itemize{
+                \item \code{characteristic} \code{[character]},
+                \item \code{estimator} \code{[character]},
+                \item \code{estimate} \code{[double]},
+                \item \code{variance} (default: \code{NA}),
+                \item \code{robust} \code{[list]},
+                \item \code{residuals} \code{[numeric vector]},
+                \item \code{model} \code{[list]},
+                \item \code{design} (default: \code{NA}),
+                \item \code{[call]}
+            }
         }
     }
-}
 }
 \examples{
 data(workplace)

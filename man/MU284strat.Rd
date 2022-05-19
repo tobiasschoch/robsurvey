@@ -3,10 +3,10 @@
 \docType{data}
 \title{Stratified Sample from the MU284 Population}
 \description{
-Stratified simple random sample (without replacement) of municipalities
-from the MU284 population of Särndal et al. (1992); stratification is by
-geographic region and a take-all stratum (by 1975 population size), which
-includes the big cities Stockholm, Göteborg, and Malmö.
+    Stratified simple random sample (without replacement) of municipalities
+    from the MU284 population of Särndal et al. (1992); stratification is by
+    geographic region and a take-all stratum (by 1975 population size), which
+    includes the big cities Stockholm, Göteborg, and Malmö.
 }
 \usage{data(MU284strat)}
 \format{
@@ -38,32 +38,32 @@ includes the big cities Stockholm, Göteborg, and Malmö.
     }
 }
 \details{
-The MU284 population of Särndal et al. (1992, Appendix B) is a
-dataset with observations on the 284 municipalities in Sweden in the late
-1970s and early 1980s. The \code{MU284} \emph{population} data are available
-in the \pkg{sampling} package of Tillé and Matei (2021).
+    The MU284 population of Särndal et al. (1992, Appendix B) is a
+    dataset with observations on the 284 municipalities in Sweden in the
+    late 1970s and early 1980s. The \code{MU284} \emph{population} data
+    are available in the \pkg{sampling} package of Tillé and Matei (2021).
 
-The population is divided into two parts based on 1975 population
-size (\code{P75}):
-    \itemize{
-        \item the MU281 population, which consists of the 281 smallest
-            municipalities;
-        \item the MU3 population of the three biggest municipalities/ cities
-            in Sweden (Stockholm, Göteborg, and Malmö).
-    }
-The three biggest cities take exceedingly large values (representative
-outliers) on almost all of the variables. To account for this, a stratified
-sample has been drawn from the MU284 population using a take-all stratum.
-The sample data, \code{MU284strat}, (of size \eqn{n=60}) consists of
-    \itemize{
-        \item a stratified simple random sample (without replacement)
-            from the MU281 population, where stratification is by geographic
-            region (\code{REG}) with proportional sample size allocation;
-        \item a take-all stratum that includes the three biggest
-            cities/ municipalities (population M3).
-    }
+    The population is divided into two parts based on 1975 population
+    size (\code{P75}):
+        \itemize{
+            \item the MU281 population, which consists of the 281 smallest
+                municipalities;
+            \item the MU3 population of the three biggest municipalities/
+                cities in Sweden (Stockholm, Göteborg, and Malmö).
+        }
+    The three biggest cities take exceedingly large values (representative
+    outliers) on almost all of the variables. To account for this, a stratified
+    sample has been drawn from the MU284 population using a take-all stratum.
+    The sample data, \code{MU284strat}, (of size \eqn{n=60}) consists of
+        \itemize{
+            \item a stratified simple random sample (without replacement)
+                from the MU281 population, where stratification is by
+                geographic region (\code{REG}) with proportional sample
+                size allocation;
+            \item a take-all stratum that includes the three biggest
+                cities/ municipalities (population M3).
+        }
 }
-
 \source{
 Särndal, C.E., Swensson, B. and Wretman, J. (1992).
     \emph{Model Assisted Survey Sampling}, New York: Springer-Verlag.
@@ -71,7 +71,6 @@ Särndal, C.E., Swensson, B. and Wretman, J. (1992).
 Tillé, Y. and Matei, A. (2021). \emph{sampling: Survey Sampling}.
     R package version 2.9. \url{https://CRAN.R-project.org/package=sampling}
 }
-
 \examples{
 data(MU284strat)
 

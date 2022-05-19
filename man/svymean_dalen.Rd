@@ -9,37 +9,38 @@ svytotal_dalen(x, design, censoring, type = "Z2", na.rm = FALSE,
     verbose = TRUE)
 }
 \arguments{
-\item{x}{a one-sided \code{[formula]}, e.g., \code{~myVariable}.}
-\item{design}{an object of class \code{survey.design}; see
-    \code{\link[survey]{svydesign}}.}
-\item{censoring}{\code{[double]} cutoff threshold above which the observations
-    are censored.}
-\item{type}{\code{[character]} type of estimator; either \code{"Z2"} or
-    \code{"Z3"} (default: \code{"Z2"}).}
-\item{na.rm}{\code{[logical]} indicating whether \code{NA} values should
-    be removed before the computation proceeds (default: \code{FALSE}).}
-\item{verbose}{\code{[logical]} indicating whether additional information
-		is printed to the console (default: \code{TRUE}).}
+    \item{x}{a one-sided \code{[formula]}, e.g., \code{~myVariable}.}
+    \item{design}{an object of class \code{survey.design}; see
+        \code{\link[survey]{svydesign}}.}
+    \item{censoring}{\code{[double]} cutoff threshold above which the
+        observations are censored.}
+    \item{type}{\code{[character]} type of estimator; either \code{"Z2"} or
+        \code{"Z3"} (default: \code{"Z2"}).}
+    \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should
+        be removed before the computation proceeds (default: \code{FALSE}).}
+    \item{verbose}{\code{[logical]} indicating whether additional information
+            is printed to the console (default: \code{TRUE}).}
 }
 \description{
-Dalen's estimators Z2 and Z3 of the population mean and total; see
-\code{\link{weighted_mean_dalen}} for further details.
+    Dalen's estimators Z2 and Z3 of the population mean and total; see
+    \code{\link{weighted_mean_dalen}} for further details.
 }
 \details{
-\describe{
-    \item{Methods/ types}{\code{type = "Z2"} or \code{type = "Z3"}; see
-        \code{\link{weighted_mean_dalen}} for more details.}
-    \item{Utility functions}{\code{\link[=svystat_rob]{summary}},
-        \code{\link[=svystat_rob]{coef}}, \code{\link[=svystat_rob]{SE}},
-        \code{\link[=svystat_rob]{vcov}}, \code{\link[=svystat_rob]{residuals}},
-        \code{\link[=svystat_rob]{fitted}}, and
-        \code{\link[=svystat_rob]{robweights}}.}
-    \item{Bare-bone functions}{See \code{\link{weighted_mean_dalen}} and
-        \code{\link{weighted_total_dalen}}.}
-}
+    \describe{
+        \item{Methods/ types}{\code{type = "Z2"} or \code{type = "Z3"}; see
+            \code{\link{weighted_mean_dalen}} for more details.}
+        \item{Utility functions}{\code{\link[=svystat_rob]{summary}},
+            \code{\link[=svystat_rob]{coef}}, \code{\link[=svystat_rob]{SE}},
+            \code{\link[=svystat_rob]{vcov}},
+            \code{\link[=svystat_rob]{residuals}},
+            \code{\link[=svystat_rob]{fitted}}, and
+            \code{\link[=svystat_rob]{robweights}}.}
+        \item{Bare-bone functions}{See \code{\link{weighted_mean_dalen}} and
+            \code{\link{weighted_total_dalen}}.}
+    }
 }
 \value{
-Object of class \code{\link{svystat_rob}}
+    Object of class \code{\link{svystat_rob}}
 }
 \examples{
 data(workplace)

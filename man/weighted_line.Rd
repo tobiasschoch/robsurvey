@@ -25,14 +25,14 @@ weighted_line(x, y = NULL, w, na.rm = FALSE, iter = 1)
     \item{\dots}{additional arguments passed to the method.}
 }
 \description{
-\code{weighted_line} fits a robust line and allows weights.
+    \code{weighted_line} fits a robust line and allows weights.
 }
 \details{
-\code{weighted_line} uses different quantiles for splitting the sample than
-\code{stats::line()}.
+    \code{weighted_line} uses different quantiles for splitting the sample
+    than \code{stats::line()}.
 }
 \value{
-intercept and slope of the fitted line
+    intercept and slope of the fitted line
 }
 \examples{
 data(cars)

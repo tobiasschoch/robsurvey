@@ -14,30 +14,31 @@ weighted_median_line(x, y = NULL, w, type = "slopes", na.rm = FALSE)
         be removed before the computation proceeds (default: \code{FALSE}).}
 }
 \description{
-Robust simple linear regression based on medians: two methods are available:
-\code{"slopes"} and \code{"product"}.
+    Robust simple linear regression based on medians: two methods are available:
+    \code{"slopes"} and \code{"product"}.
 }
 \details{
-\describe{
-    \item{Overview.}{Robust simple linear regression based on medians}
-    \item{Type.}{Two methods/ types are available. Let \eqn{m(x,w)} denote
-        the weighted median of variable \code{x} with weights \code{w}:
-        \describe{
-            \item{\code{type = "slopes"}:}{The slope is computed as
-                \deqn{b1 = m\left( \frac{y - m(y,w)}{x - m(x,w)}, w\right).
-                    }{m[(y - m[y, w]) / (x - m[x, w]), w].}
-            }
-            \item{\code{type = "products"}:}{The slope is computed as
-                \deqn{b1 = \frac{m\big([y - m(y,w)][x - m(x,w)], w\big)}
-                {m\big([x - m(x,w)]^2, w\big)}.}{m([y - m(y, w)][x - m(x, w)],
-                w) / m([x - m(x, w)]^2, w).}
+    \describe{
+        \item{Overview.}{Robust simple linear regression based on medians}
+        \item{Type.}{Two methods/ types are available. Let \eqn{m(x,w)}
+            denote the weighted median of variable \code{x} with weights
+            \code{w}:
+            \describe{
+                \item{\code{type = "slopes"}:}{The slope is computed as
+                    \deqn{b1 = m\left( \frac{y - m(y,w)}{x - m(x,w)}, w\right).
+                        }{m[(y - m[y, w]) / (x - m[x, w]), w].}
+                }
+                \item{\code{type = "products"}:}{The slope is computed as
+                    \deqn{b1 = \frac{m\big([y - m(y,w)][x - m(x,w)], w\big)}
+                    {m\big([x - m(x,w)]^2, w\big)}.}
+                    {m([y - m(y, w)][x - m(x, w)], w) / m([x - m(x, w)]^2, w).}
+                }
             }
         }
     }
 }
-}
 \value{
-A vector with two components: intercept and slope
+    A vector with two components: intercept and slope
 }
 \examples{
 x <- c(1, 2, 4, 5)

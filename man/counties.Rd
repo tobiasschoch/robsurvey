@@ -3,8 +3,8 @@
 \docType{data}
 \title{Data on a Simple Random Sample of 100 Counties in the U.S.}
 \description{
-Data from a simple random sample (without replacement) of 100 of the 3141
-counties in the United Stated (U.S. Bureau of the Census, 1994).
+    Data from a simple random sample (without replacement) of 100 of the 3141
+    counties in the United Stated (U.S. Bureau of the Census, 1994).
 }
 \usage{data(counties)}
 \format{
@@ -25,14 +25,13 @@ counties in the United Stated (U.S. Bureau of the Census, 1994).
     }
 }
 \details{
-The data (and 10 additional variables) are published in Lohr (1999, Appendix C).
+    The data (and 10 additional variables) are published in Lohr (1999,
+    Appendix C).
 }
-
 \source{
 Lohr, S.L. (1999). \emph{Sampling: Design and Analysis},
     Pacific Grove (CA): Duxbury Press.
 }
-
 \examples{
 data(counties)
 
