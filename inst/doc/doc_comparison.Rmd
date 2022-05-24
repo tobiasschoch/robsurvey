@@ -352,7 +352,7 @@ CHATTERJEE, S. AND A. S. HADI (2012).
 MÄCHLER, M., P. ROUSSEEUW, C. CROUX, V. TODOROV, A. RUCKSTUHL,
 M.  SALIBIAN-BARRERA, T. VERBEKE, M. KOLLER, E. L. T. CONCEICAO, AND M. A.
 DI PALMA (2019). *robustbase: Basic Robust Statistics*. R package version
-0.93-4. URL http://CRAN.R-project.org/package=robustbase
+0.93-4. URL https://CRAN.R-project.org/package=robustbase
 
 MARAZZI, A. (2020). *robeth: R Functions for Robust Statistics*. R package
 version 2.7-6. URL https://CRAN.R-project.org/package=robeth

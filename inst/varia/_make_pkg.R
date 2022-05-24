@@ -76,7 +76,7 @@ if (mode == "check") {
     if (file.exists(pkg_tar))
         file.remove(pkg_tar)
     system(paste0("R CMD build ", PKG))
-    system(paste0("R CMD check ", pkg_tar))
+    system(paste0("R CMD check --as-cran ", pkg_tar))
 }
 
 # full build and install (incl. html, vignette, etc)

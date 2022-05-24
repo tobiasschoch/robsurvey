@@ -24,6 +24,8 @@ implementations. We are fairly confident that the methods in package
 
 [TOC]
 
+
+
 ## 1 Introduction
 In this short report, we compare the behavior of the regression *M*- and
 *GM*-estimators in package `robsurvey` with the methods from
@@ -34,7 +36,7 @@ packages:
 
 
 ```
-MASS, version: 7.3.54
+MASS, version: 7.3.57
 robeth, version: 2.7.6
 ```
 
@@ -355,7 +357,7 @@ CHATTERJEE, S. AND A. S. HADI (2012).
 MÄCHLER, M., P. ROUSSEEUW, C. CROUX, V. TODOROV, A. RUCKSTUHL,
 M.  SALIBIAN-BARRERA, T. VERBEKE, M. KOLLER, E. L. T. CONCEICAO, AND M. A.
 DI PALMA (2019). *robustbase: Basic Robust Statistics*. R package version
-0.93-4. URL http://CRAN.R-project.org/package=robustbase
+0.93-4. URL https://CRAN.R-project.org/package=robustbase
 
 MARAZZI, A. (2020). *robeth: R Functions for Robust Statistics*. R package
 version 2.7-6. URL https://CRAN.R-project.org/package=robeth
@@ -385,27 +387,27 @@ New York: Springer, 4th ed.
 
 
 ```
-R version 4.1.2 (2021-11-01)
+R version 4.2.0 Patched (2022-05-20 r82390 ucrt)
 Platform: x86_64-w64-mingw32/x64 (64-bit)
 Running under: Windows 10 x64 (build 19044)
 
 Matrix products: default
 
 locale:
-[1] LC_COLLATE=German_Switzerland.1252  LC_CTYPE=German_Switzerland.1252   
-[3] LC_MONETARY=German_Switzerland.1252 LC_NUMERIC=C                       
-[5] LC_TIME=German_Switzerland.1252    
+[1] LC_COLLATE=German_Switzerland.utf8  LC_CTYPE=German_Switzerland.utf8   
+[3] LC_MONETARY=German_Switzerland.utf8 LC_NUMERIC=C                       
+[5] LC_TIME=German_Switzerland.utf8    
 
 attached base packages:
 [1] grid      stats     graphics  grDevices utils     datasets  methods  
 [8] base     
 
 other attached packages:
-[1] robeth_2.7-6      robustbase_0.93-9 MASS_7.3-54       survey_4.1-1     
-[5] survival_3.2-13   Matrix_1.3-4      robsurvey_0.3     knitr_1.36       
+[1] robeth_2.7-6      robustbase_0.93-9 MASS_7.3-57       survey_4.1-1     
+[5] survival_3.3-1    Matrix_1.4-1      robsurvey_0.3     knitr_1.39       
 
 loaded via a namespace (and not attached):
- [1] lattice_0.20-45 DBI_1.1.1       magrittr_2.0.1  evaluate_0.15  
- [5] stringi_1.7.6   splines_4.1.2   tools_4.1.2     stringr_1.4.0  
- [9] DEoptimR_1.0-10 xfun_0.28       compiler_4.1.2  mitools_2.4    
+ [1] lattice_0.20-45 DBI_1.1.1       magrittr_2.0.3  evaluate_0.15  
+ [5] stringi_1.7.6   splines_4.2.0   tools_4.2.0     stringr_1.4.0  
+ [9] DEoptimR_1.0-10 xfun_0.31       compiler_4.2.0  mitools_2.4    
 ```
