@@ -35,5 +35,11 @@ truncating hospital length of stay. \emph{Casemix Quarterly} \bold{2}.
 }
 \examples{
 data(losdata)
+
+\dontrun{
+# survey design for losdata (pkg survey is required)
+library(survey)
+dn <- svydesign(ids = ~1, fpc = ~fpc, weights = ~weight, data = losdata)
+}
 }
 \keyword{datasets}

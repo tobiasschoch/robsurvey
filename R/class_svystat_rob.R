@@ -153,8 +153,9 @@ mse <- function(object)
     if (inherits(object, c("wins", "trim"))) {
         reference_estimator$LB<- 0
         reference_estimator$UB<- 1
-    }
-    reference_estimator$verbose <- FALSE
+    } else
+        reference_estimator$verbose <- FALSE
+
     reference_location <- coef.svystat_rob(eval(reference_estimator))
     # estimated mse
     as.numeric(object$variance + (object$estimate - reference_location)^2)
