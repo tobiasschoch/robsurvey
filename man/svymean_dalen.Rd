@@ -67,8 +67,8 @@ SE(m)
 }
 \references{
 Dalén, J. (1987). Practical Estimators of a Population Total Which Reduce
-the Impact of Large Observations. R & D Report U/STM 1987:32, Statistics
-Sweden, Stockholm.
+    the Impact of Large Observations. R & D Report U/STM 1987:32, Statistics
+    Sweden, Stockholm.
 }
 \seealso{
 \code{\link{svymean_trimmed}}, \code{\link{svytotal_trimmed}},

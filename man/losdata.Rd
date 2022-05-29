@@ -31,7 +31,7 @@ package \pkg{robustbase}.
 }
 \references{
 Ruffieux, C., Paccaud, F. and Marazzi, A. (2000). Comparing rules for
-truncating hospital length of stay. \emph{Casemix Quarterly} \bold{2}.
+    truncating hospital length of stay. \emph{Casemix Quarterly} \bold{2}.
 }
 \examples{
 data(losdata)

@@ -1,6 +1,6 @@
 # Model-Based Covariance Estimation for Regression *M*- and *GM*-Estimators
 
-Tobias Schoch – April 2, 2022
+Tobias Schoch
 
 [TOC]
 
@@ -159,25 +159,25 @@ $$
 
 ## Literature
 
-ANDERSON, E., BAI, Z., BISCHOF, C., BLACKFORD, L. S. , DEMMEL, J., DONGARRA, J., CROZ, J. D. , GREENHAUM, A., HAMMARLING, S., MCKENNEY, A., AND D. SORENSEN (1999). LAPACK Users’ Guide. 3rd edition.
-Society for Industrial and Applied Mathematics (SIAM), Philadelphia.
+ANDERSON, E., BAI, Z., BISCHOF, C., BLACKFORD, L. S. , DEMMEL, J., DONGARRA, J., CROZ, J. D. , GREENHAUM, A., HAMMARLING, S., MCKENNEY, A. AND SORENSEN, D. (1999). *LAPACK Users’ Guide*.
+Philadelphia: Society for Industrial and Applied Mathematics (SIAM), 3rd edition. [DOI: 10.1137/1.9780898719604](https://doi.org/10.1137/1.9780898719604)
 
 BLACKFORD, L. S., PETITET, A., POZO, R., REMINGTON, K., WHALEY, R. C., DEMMEL, J., DONGARRA, J., DUFF,
-I., HAMMARLING, S., HENRY, G., HEROUX, M., KAUFMAN, L. AND A. Lumsdaine (2002). An Updated
-Set of Basic Linear Algebra Subprograms (BLAS). ACM Transactions on Mathematical
-Software, 28, 135–151.
+I., HAMMARLING, S., HENRY, G., HEROUX, M., KAUFMAN, L. AND LUMSDAINE, A. (2002). An Updated
+Set of Basic Linear Algebra Subprograms (BLAS). *ACM Transactions on Mathematical
+Software* **28**, 135–151. [DOI: 10.1145/567806.567807](https://doi.org/10.1145/567806.567807)
 
-HAMPEL, F. R., E. M. RONCHETTI, P. J. ROUSSEEUW, AND W. A. STAHEL (1986). Robust Statistics: The Approach Based on Influence Functions, New York: John Wiley & Sons.
+HAMPEL, F. R., RONCHETTI, E. M., ROUSSEEUW, P. J. AND STAHEL, W. A. (1986). *Robust Statistics: The Approach Based on Influence Functions*, New York: John Wiley and Sons. [DOI: 10.1002/9781118186435](https://doi.org/10.1002/9781118186435)
 
-HUBER, P. J. (1981). Robust Statistics, New York: John Wiley & Sons.
+HUBER, P. J. (1981). *Robust Statistics*, New York: John Wiley and Sons. [DOI: 10.1002/ 0471725250](https://doi.org/10.1002/0471725250)
 
 MARAZZI, A. (1987). Subroutines for robust and bounded influence regression in ROBETH, Cahiers
 de Recherches et de Documentation, 3 ROBETH 2, Division de Statistique et Informatique, Institut Universitaire de Médecine Sociale et Préventive, Lausanne, ROBETH-85 Document No. 2, August
 1985, revised April 1987.
 
-MARAZZI, A. (1993). Algorithms, Routines, and S Functions for Robust Statistics: The FORTRAN Library
-ROBETH with an interface to S-PLUS, New York: Chapman & Hall.
+MARAZZI, A. (1993). *Algorithms, Routines, and S Functions for Robust Statistics: The FORTRAN Library
+ROBETH with an interface to S-PLUS*, New York: Chapman and Hall.
 
 MARAZZI, A. (2020). robeth: R Functions for Robust Statistics, R package version 2.7-6.
 
-VENABLES, W. N. AND B. D. RIPLEY (2002). Modern Applied Statistics with S, New York: Springer, 4th ed.
+VENABLES, W. N. AND RIPLEY, B. D. (2002). *Modern Applied Statistics with S*, New York: Springer, 4th edition. [DOI: 10.1007/978-0-387-21706-2](https://doi.org/10.1007/978-0-387-21706-2)

@@ -1,6 +1,6 @@
 # https://www.jstatsoft.org/article/view/v094c01
 
-DOCUMENT = regression
+DOCUMENT = rht
 
 ifeq ($(OS),Windows_NT)
 	RSCRIPT = Rscript.exe

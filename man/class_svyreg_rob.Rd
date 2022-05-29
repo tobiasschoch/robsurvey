@@ -115,14 +115,15 @@
     }
 }
 \references{
-Binder, D. A. (1983).  On the Variances of Asymptotically Normal Estimators
-from Complex Surveys. \emph{International Statistical Review} \bold{51},
-279--292.
+Binder, D. A. (1983). On the Variances of Asymptotically Normal Estimators
+    from Complex Surveys. \emph{International Statistical Review} \bold{51},
+    279--292. \doi{10.2307/1402588}
 
 Godambe, V.P. and Thompson, M.E. (2009). Estimating Functions and Survey
-Sampling, in: D. Pfeffermann and C.R. Rao (eds.),
-\emph{Handbook of Statistics}, \bold{vol. 29B}, Sample Surveys: Inference and
-Analysis, Chapter 26, 83--101, Amsterdam: Elsevier.
+    Sampling. In: \emph{Sample Surveys: Inference and Analysis} ed. by
+    Pfeffermann, D. and Rao, C. R. Volume 29B of \emph{Handbook of Statistics},
+    Amsterdam: Elsevier, Chap. 26, 83--101.
+    \doi{10.1016/S0169-7161(09)00226-0}
 }
 \seealso{
 Weighted least squares: \code{\link{svyreg}}; robust weighted regression

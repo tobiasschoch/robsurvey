@@ -1,6 +1,6 @@
 # Robust Generalized Regression Estimator
 
-Tobias Schoch – April 15, 2022
+Tobias Schoch
 
 [TOC]
 
@@ -232,7 +232,7 @@ $$
 ### 9.1 Only representative outliers
 
 * reference: $t_y$
-* census parameter is estimated by weighted LS, $\boldsymbol \theta_{LS}$ (weighting is required because of heteroscedasticity)
+* census parameter is estimated by weighted LS, $\boldsymbol \theta_{LS}$ (weighting is required because of heteroscedasticity)
 * robust estimation with sample data incurs a bias => mse not variance
 
 ### 9.2 Both
@@ -243,7 +243,36 @@ $$
 * symmetric contamination distribution: robust estimation does not incur bias (if $E_i$  also have a symmetric distribution)
 * otherwise (more realistic): bias
 
+## GREG: first principles
+
+Consider model
+$$
+\begin{equation*}
+	\xi: \quad Y_i = \bold x_i^T \boldsymbol{\theta} + \sigma \sqrt{v_i}E_i, \qquad \boldsymbol{\theta} \in \R^p, \quad \sigma > 0, \quad i \in U,
+\end{equation*}
+$$
+and note that $\widehat{t}_y=\sum_{i \in s} w_i y_i$ is a design-unbiased estimator of $t_y$, but it is not model-unbiased under model $\xi$. The model bias of $\widehat{t}_y$ is
+$$
+\begin{equation*}
+	\mathrm{E}_{\xi}(\widehat{t}_y - t_y) = \sum_{i \in s} w_i \bold x_i^T\boldsymbol \theta - \sum_{i \in U} \bold x_i^T \boldsymbol \theta,
+\end{equation*}
+$$
+given that $\mathrm{E}_{\xi}(E_i)=0$. If $\boldsymbol \theta$ were known, we could define the "corrected" estimator
+$$
+\begin{equation*}
+	\widehat{t}_y^* = \sum_{i \in s}w_i y_i - \sum_{i \in s} w_i \bold x_i^T\boldsymbol \theta + \sum_{i \in U} \bold x_i^T \boldsymbol \theta,
+\end{equation*}
+$$
+which is design- and model-unbiased as an estimator of $t_y$.
+
+* estimator $\widehat{\boldsymbol \theta}$ must be model-unbiased
+* estimator $\widehat{\boldsymbol \theta}$ must be design-consistent for $\boldsymbol \theta_N$
+
+
+
 ## Literature
+
+==must be modified==
 
 BEAUMONT, J.-F. AND A. ALAVI (2004). Robust Generalized Regression Estimation, *Survey Methodology* **30**, 195–208.
 

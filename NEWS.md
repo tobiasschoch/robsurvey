@@ -11,7 +11,7 @@
   * `method` : the method used in the search for a minimum, e.g., `"Brent"`, `"BFGS"`, see `stats::optim()` for more details
   * `init` determines the left side of the search interval and the initial value in the minimization approach
 
-* Function `mse()` computes/ extracts the estimated mean square error/ estimated risk in presence of representative outliers; see also `mer()`
+* Function `mse()` computes/ extracts the estimated mean square error/ estimated risk in presence of representative outliers; see also `mer()`
 
 ## CHANGES
 
@@ -22,6 +22,10 @@
 ## BUG FIX
 
 For designs with unequal probability sampling, the variance estimates of the robust estimators of mean and total are now identical with the estimates of `survey::svymean()` and `survey::svytotal()` if the tuning constant is `k = Inf` or `LB = 0` and `UB = 1`
+
+## MISC
+
+Added `DOI` to all references (where available).
 
 # robsurvey VERSION 0.2 (2022-01-17)
 

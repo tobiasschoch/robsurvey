@@ -466,24 +466,20 @@ We may call `vcov(m, mode = "compound")` to extract the estimated covariance mat
 
 ## References {#biblio}
 
-Lumley, T. (2021). survey: analysis of complex survey samples. R package version 4.0, URL https://CRAN.R-project.org/package=survey.
+LOHR, S. L. (1999). *Sampling: Design and Analysis*, Pacific Grove (CA): Duxbury Press.
 
-Lumley, T. (2010). Complex Surveys: A Guide to Analysis Using R: *A Guide to Analysis Using R*. John Wiley and Sons, Hoboken, NJ.
+LUMLEY, T. (2010). *Complex Surveys: A Guide to Analysis Using R: A Guide to Analysis Using R*, Hoboken (NJ): John Wiley and Sons.
 
-Lohr, S.L. (1999). *Sampling: Design and Analysis*. Pacific Grove (CA): Duxbury Press.
+LUMLEY, T. (2021). survey: analysis of complex survey samples. R package version 4.0, URL https://CRAN.R-project.org/package=survey.
 
-Venables, W.N. and Ripley, B.D. (2002). *Modern Applied Statistics with S*. 4th Edition. Springer, New York.
+SÄRNDAL, C.-E., SWENSSON, B. AND WRETMAN, J. (1992). *Model Assisted Survey Sampling*, New York: Springer.
 
-Schoch, T. (2021). wbacon: Weighted BACON algorithms for multivariate outlier nomination (detection) and robust linear regression. *Journal of Open Source Software* 6 (62), 3238. DOI: [10.21105/joss.03238](https://doi.org/10.21105/joss.03238)
+SCHOCH, T. (2021). wbacon: Weighted BACON algorithms for multivariate outlier nomination (detection) and robust linear regression. J*ournal of Open Source Software* **6**, 3238, [DOI: 10. 21105/joss.03238](https://doi.org/10.21105/joss.03238).
 
-Simpson, D.G., Ruppert, D. and Carroll, R.J. (1992). On One-Step GM Estimates and Stability of Inferences in Linear Regression. *Journal of the American Statistical Association* 87, 439-450. DOI: [10.1080/01621459.1992.10475224](https://doi.org/10.1080/01621459.1992.10475224)
+SIMPSON, D. G., RUPPERT, D. AND CARROLL, R. J. (1992). On one-step GM estimates and stability of inferences in linear regression. *Journal of the American Statistical Association* **87**, 439–450, [DOI: 10.2307/2290275](https://doi.org/10.2307/2290275).
 
-Tillé, T. and Matei, A. (2021). sampling: Survey Sampling. R package version 2.9.  https://CRAN.R-project.org/package=sampling.
+TILLE, T. and MATEI, A. (2021). sampling: Survey Sampling. R package version 2.9.  https://CRAN.R-project.org/package=sampling.
 
-<!--
-Chambers, R. (1986). Outlier Robust Finite Population Estimation. *Journal of the American Statistical Association* 81, pp. 1063–1069. DOI: [10.1080/01621459.1986.10478374](https://doi.org/10.1080/01621459.1986.10478374)
+VENABLES, W. N. AND RIPLEY, B. D. (2002). *Modern Applied Statistics with S*, New York: Springer, 4th edition, [DOI: 10.1007/978-0-387-21706-2](https://doi.org/10.1007/978-0-387-21706-2).
 
-Hampel, F.R., Ronchetti, E.M., Rousseeuw, P.J., and Stahel, W.A. (1986). *Robust Statistics: The Approach Based on Influence Functions*. John Wiley and Sons, New York.
 
-Huber, P.J. (1981). *Robust Statistics*. John Wiley and Sons, New York.
--->

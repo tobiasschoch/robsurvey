@@ -87,10 +87,13 @@ svytotal_k_winsorized(x, design, k, na.rm = FALSE, trim_var = FALSE)
     Object of class \code{\link{svystat_rob}}
 }
 \references{
-Huber, P. J. (1981). \emph{Robust Statistics}, New York: John Wiley and Sons.
+Huber, P. J. and Ronchetti, E. (2009). \emph{Robust Statistics},
+    New York: John Wiley and Sons, 2nd edition.
+    \doi{10.1002/9780470434697}
 
 Shao, J. (1994). L-Statistics in Complex Survey Problems.
-\emph{The Annals of Statistics} \bold{22}, 976--967.
+    \emph{The Annals of Statistics} \bold{22}, 976--967.
+    \doi{10.1214/aos/1176325505}
 }
 \examples{
 data(workplace)

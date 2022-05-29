@@ -471,7 +471,7 @@ By default, the normalization constant to make the weighted IQR an unbiased esti
 
 The paper of [Chambers](#biblio) (1986) is the landmark paper about outliers in finite population sampling. [Lee](#biblio) (1995) and [Beaumont and Rivest](#biblio) (2009) are a good starting point to learn about robustness in finite population sampling.
 
-Trimming and winsorization are discussed in [Lee](#biblio) (1995) and [Beaumont and Rivest](#biblio) (2009). The variance estimators are straightforward adaptions of the classical estimators; see [Huber](#biblio) (1981) or [Serfling](#biblio) (1980). A rigorous treatment in the context of finite population sampling can be found in [Shao](#biblio) (1994).
+Trimming and winsorization are discussed in [Lee](#biblio) (1995) and [Beaumont and Rivest](#biblio) (2009). The variance estimators are straightforward adaptions of the classical estimators; see [Huber and Ronchetti](#biblio) (2009) or [Serfling](#biblio) (1980). A rigorous treatment in the context of finite population sampling can be found in [Shao](#biblio) (1994).
 
 [Rao](#biblio) (1971) was among the first to propose weight reduction. Consider a sample of size $n$, and suppose that the $i$th observation is an outlier. He suggested to reduce the outlier’s sampling weight $w_i$ to one, and redistribute the weight difference $w_i−1$ among the remaining
 observations. As a result, observation $i$ does not represent other values like it. Dalén's estimator offers a more general notion of weight reducution; see [Dalén](#biblio) (1987) and also [Chen et al.](#biblio) (2017).
@@ -482,38 +482,38 @@ In the context of finite population sampling, M-estimators were first studied by
 
 ## References {#biblio}
 
-Beaumont, J.F., Rivest, L.P. (2009). Dealing with outliers in survey data, in: D. Pfeffermann, C.R. Rao (eds.), *Sample Surveys: Theory, Methods and Inference*, volume 29A of Handbook of Statistics, chapter 11, pp. 247–280. Elsevier, Amsterdam.
+BEAUMONT, J.-F. AND RIVEST, L.-P. (2009). Dealing with outliers in survey data. In: *Sample Surveys: Theory, Methods and Inference* ed. by Pfeffermann, D. and Rao, C. R. Volume 29A of Handbook of Statistics, Amsterdam: Elsevier, Chap. 11, 247–280. [DOI: 10.1016/S0169-7161(08)00011-4](https://doi.org/10.1016/S0169-7161(08)00011-4)
 
-Chambers, R. (1986). Outlier Robust Finite Population Estimation. *Journal of the American Statistical Association* 81, pp. 1063–1069.
+CHAMBERS, R. (1986). Outlier Robust Finite Population Estimation. *Journal of the American Statistical Association* **81**, 1063–1069, [DOI: 10.1080/01621459.1986.10478374](https://doi.org/10.1080/01621459.1986.10478374).
 
-Dalén, J. (1987). Practical Estimators of a Population Total Which Reduce the Impact of Large Observations, Research Report, Statistics Sweden.
+DALEN, J. (1987). *Practical Estimators of a Population Total Which Reduce the Impact of Large Observations*. Research report, Statistics Sweden, Stockholm.
 
-Chen. Q, Elliott, M.R., Haziza, D., Yang, Y., Ghosh, M., Little, R.J.A., Sedransk, J., Thompson, M. (2017). Approaches to Improving Survey-Weighted Estimates. *Statistical Science* 32, pp. 227–248.
+CHEN, Q., ELLIOTT, M. R., HAZIZA, D., YANG, Y., GHOSH, M., LITTLE, R. J. A., SEDRANSK, J. AND THOMPSON, M. (2017). Approaches to Improving Survey-Weighted Estimates. *Statistical Science* **32**, 227–248, [DOI: 10.1214/17-STS609](https://doi.org/10.1214/17-STS609).
 
-Gwet J.P. and Rivest L.P. (1992). Outlier Resistant Alternatives to the Ratio Estimator. *Journal of the American Statistical Association* 87, pp. 1174-1182.
+GWET, J.-P. AND RIVEST, L.-P. (1992). Outlier Resistant Alternatives to the Ratio Estimator. *Journal of the American Statistical Association* **87**, 1174–1182, [DOI: 10.1080/01621459.1992. 10476275](https://doi.org/10.1080/01621459.1992.10476275).
 
-Huber, P. (1981). *Robust Statistics*, John Wiley & Sons, New York.
+HUBER, P. J. AND RONCHETTI, E. (2009). *Robust Statistics*, New York: John Wiley and Sons, 2nd edition, [DOI: 10.1002/9780470434697](https://doi.org/10.1002/9780470434697).
 
-Hulliger B (2005). Horvitz-Thompson Estimators, Robustified, in: S. Kotz (ed.), *Encyclopedia of Statistical Sciences*, volume 5, 2nd edition. John Wiley and Sons, Hoboken (NJ).
+HULLIGER, B. (2006). Horvitz–Thompson Estimators, Robustified. In: *Encyclopedia of Statistical Sciences* ed. by Kotz, S. Volume 5, Hoboken (NJ): John Wiley and Sons, 2nd edition, [DOI: 10.1002/0471667196.ess1066.pub2](https://doi.org/10.1002/0471667196.ess1066.pub2).
 
-Hulliger, B (1999). Simple and robust estimators for sampling, in: *Proceedings of the Survey Research Methods Section, American Statistical Association*, pp. 54–63. American Statistical Association.
+HULLIGER, B. (1999). Simple and robust estimators for sampling. In: *Proceedings of the Survey Research Methods Section*, American Statistical Association, 54–63, American Statistical Association.
 
-Hulliger. B. (1995). Outlier Robust Horvitz–Thompson Estimators. *Survey Methodology* 21, pp. 79–87.
+HULLIGER, B. (1995). Outlier Robust Horvitz–Thompson Estimators. *Survey Methodology* **21**, 79–87.
 
-Lee, H. (1995). Outliers in business surveys, in: B.G. Cox, D.A. Binder, B.N. Chinnappa, A. Christianson, M.J. Colledge, and P.S. Kott (eds.), *Business survey methods*, chapter 26: 503–526. John Wiley and Sons, New York.
+LEE, H. (1995). Outliers in business surveys. In: *Business survey methods* ed. by Cox, B. G., Binder, D. A., Chinnappa, B. N., Christianson, A., Colledge, M. J. and Kott, P. S. New York: John Wiley and Sons, Chap. 26, 503–526, [DOI: 10.1002/9781118150504.ch26](https://doi.org/10.1002/9781118150504.ch26).
 
-Lumley, T (2021). survey: analysis of complex survey samples. R package version 4.0, URL https://CRAN.R-project.org/package=survey.
+LUMLEY, T. (2021). survey: analysis of complex survey samples. R package version 4.0, URL https://CRAN.R-project.org/package=survey.
 
-Lumley, T. (2010). Complex Surveys: A Guide to Analysis Using R: *A Guide to Analysis Using R*. John Wiley and Sons, Hoboken, NJ.
+LUMLEY, T. (2010). *Complex Surveys: A Guide to Analysis Using R: A Guide to Analysis Using R*, Hoboken (NJ): John Wiley and Sons.
 
-Rao, J.N.K. (1971). Some Aspects of Statistical Inference in Problems of Sampling from Finite Populations, in: V.P. Godambe and D.A. Sprott (eds.), *Foundations of Statistical Inference*, pp.  171-202. Holt, Rinehart, and Winston, Toronto.
+RAO, J. N. K. (1971). Some Aspects of Statistical Inference in Problems of Sampling from Finite Populations. In: *Foundations of Statistical Inference* ed. by Godambe, V. P. and Sprott, D. A. Toronto: Holt, Rinehart, and Winston, 171–202.
 
-Royall, R.M. and Cumberland, W.G. (1981). An Empirical Study of the Ratio Estimator and Estimators of its Variance. *Journal of the American Statistical Association* 76, pp. 66-82.
+ROYALL, R. M. AND CUMBERLAND, W. G. (1981). An Empirical Study of the Ratio Estimator and Estimators of its Variance. *Journal of the American Statistical Association* **76**, 66–82, [DOI: 10.2307/2287043](https://doi.org/10.2307/2287043).
 
-Ruffieux, C., F. Paccaud, and A. Marazzi (2000). Comparing rules for truncating hospital length of stay, *Casemix Quarterly* 2.
+RUFFIEUX, C., PACCAUD, F. AND MARAZZI, A. (2000). Comparing rules for truncating hospital length of stay. *Casemix Quarterly* **2**, 3–11.
 
-Shao., J (1994). L-Statistics in complex survey problems. *The Annals of Statistics* 22, pp. 946–967.
+SHAO, J. (1994). L-Statistics in complex survey problems. *The Annals of Statistics* **22**, 946–967, [DOI: 10.1214/aos/1176325505](https://doi.org/10.1214/aos/1176325505).
 
-Serfling, R.J. (1980). *Approximation Theorems of Mathematical Statistics* John Wiley & Sons, New York.
+SERFLING, R. J. (1980). *Approximation theorems of mathematical statistics*, New York: Wiley. [DOI: 10.1002/9780470316481](https://doi.org/10.1002/9780470316481).
 
-Venables, W.N. and Ripley B.D. (2002). *Modern Applied Statistics with S*. 4th edition. Springer, New York.
+VENABLES, W. N. AND RIPLEY, B. D. (2002). *Modern Applied Statistics with S*, New York: Springer, 4th edition, [DOI: 10.1007/978-0-387-21706-2](https://doi.org/10.1007/978-0-387-21706-2).

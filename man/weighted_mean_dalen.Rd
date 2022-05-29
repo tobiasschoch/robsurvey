@@ -77,6 +77,6 @@ weighted_total_dalen(workplace$employment, workplace$weight, 100000)
 }
 \references{
 Dalén, J. (1987). Practical Estimators of a Population Total Which Reduce
-the Impact of Large Observations. R & D Report U/STM 1987:32, Statistics
-Sweden, Stockholm.
+    the Impact of Large Observations. R & D Report U/STM 1987:32, Statistics
+    Sweden, Stockholm.
 }

@@ -1,6 +1,6 @@
 # Adding Support for Other $\psi$-Functions
 
-Tobias Schoch – April 4, 2022
+Tobias Schoch
 
 ## 1 Introduction
 

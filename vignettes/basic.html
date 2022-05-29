@@ -219,6 +219,7 @@ window.buildTabsets = function(tocID) {
     </style>
 
 
+
 <style type="text/css">
   code {
     white-space: pre;
@@ -340,6 +341,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -783,11 +787,11 @@ The <span class="math inline">\(M\)</span>-estimators are computed by iterative 
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> m <span class="ot">&lt;-</span> <span class="fu">svymean_huber</span>(<span class="sc">~</span>los, dn, <span class="at">type =</span> <span class="st">&quot;rhj&quot;</span>, <span class="at">k =</span> <span class="dv">8</span>)</span></code></pre></div>
 <p>Next, we compute the MER, starting from the current <span class="math inline">\(M\)</span>-estimate, i.e., object <code>m</code>.</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">mer</span>(m)</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>Search interval<span class="sc">:</span> [<span class="fl">0.5</span>, <span class="dv">1000</span>]</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>Minimum found <span class="cf">for</span> k <span class="ot">=</span>  <span class="fl">14.4532</span> </span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>Rel. efficiency gain<span class="sc">:</span> <span class="dv">39</span>%</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>Search interval<span class="sc">:</span> [<span class="dv">1</span>, <span class="dv">10</span>]</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>Minimum found <span class="cf">for</span> k <span class="ot">=</span>  <span class="dv">10</span> </span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>Rel. efficiency gain<span class="sc">:</span> <span class="dv">35</span>%</span>
 <span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>     mean    SE</span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>los <span class="fl">11.84</span> <span class="fl">1.716</span></span></code></pre></div>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>los <span class="fl">11.46</span> <span class="fl">1.478</span></span></code></pre></div>
 <p>Hence, the MER is 39% more efficient than the classical estimator as an estimator of the population total.</p>
 </div>
 </div>
@@ -829,30 +833,30 @@ The <span class="math inline">\(M\)</span>-estimators are computed by iterative 
 <div id="bibliographical-notes" class="section level2">
 <h2>Bibliographical Notes</h2>
 <p>The paper of <a href="#biblio">Chambers</a> (1986) is the landmark paper about outliers in finite population sampling. <a href="#biblio">Lee</a> (1995) and <a href="#biblio">Beaumont and Rivest</a> (2009) are a good starting point to learn about robustness in finite population sampling.</p>
-<p>Trimming and winsorization are discussed in <a href="#biblio">Lee</a> (1995) and <a href="#biblio">Beaumont and Rivest</a> (2009). The variance estimators are straightforward adaptions of the classical estimators; see <a href="#biblio">Huber</a> (1981) or <a href="#biblio">Serfling</a> (1980). A rigorous treatment in the context of finite population sampling can be found in <a href="#biblio">Shao</a> (1994).</p>
+<p>Trimming and winsorization are discussed in <a href="#biblio">Lee</a> (1995) and <a href="#biblio">Beaumont and Rivest</a> (2009). The variance estimators are straightforward adaptions of the classical estimators; see <a href="#biblio">Huber and Ronchetti</a> (2009) or <a href="#biblio">Serfling</a> (1980). A rigorous treatment in the context of finite population sampling can be found in <a href="#biblio">Shao</a> (1994).</p>
 <p><a href="#biblio">Rao</a> (1971) was among the first to propose weight reduction. Consider a sample of size <span class="math inline">\(n\)</span>, and suppose that the <span class="math inline">\(i\)</span>th observation is an outlier. He suggested to reduce the outlier’s sampling weight <span class="math inline">\(w_i\)</span> to one, and redistribute the weight difference <span class="math inline">\(w_i−1\)</span> among the remaining observations. As a result, observation <span class="math inline">\(i\)</span> does not represent other values like it. Dalén’s estimator offers a more general notion of weight reducution; see <a href="#biblio">Dalén</a> (1987) and also <a href="#biblio">Chen et al.</a> (2017).</p>
 <p>In the context of finite population sampling, M-estimators were first studied by <a href="#biblio">Chambers</a> (1986). He investigated robust methods in the model- or prediction based framework of <a href="#biblio">Royall and Cumberland</a> (1981). Model-assisted estimators were introduced (for ratio estimation) by <a href="#biblio">Gwet and Rivest</a> (1992) and studied by <a href="#biblio">Lee</a> (1995), and <a href="#biblio">Hulliger</a> (1995, 1999, 2005). A recent comprehensive treatment can be found in <a href="#biblio">Beaumont and Rivest</a> (2009).</p>
 </div>
 <div id="biblio" class="section level2">
 <h2>References</h2>
-<p>Beaumont, J.F., Rivest, L.P. (2009). Dealing with outliers in survey data, in: D. Pfeffermann, C.R. Rao (eds.), <em>Sample Surveys: Theory, Methods and Inference</em>, volume 29A of Handbook of Statistics, chapter 11, pp. 247–280. Elsevier, Amsterdam.</p>
-<p>Chambers, R. (1986). Outlier Robust Finite Population Estimation. <em>Journal of the American Statistical Association</em> 81, pp. 1063–1069.</p>
-<p>Dalén, J. (1987). Practical Estimators of a Population Total Which Reduce the Impact of Large Observations, Research Report, Statistics Sweden.</p>
-<p>Chen. Q, Elliott, M.R., Haziza, D., Yang, Y., Ghosh, M., Little, R.J.A., Sedransk, J., Thompson, M. (2017). Approaches to Improving Survey-Weighted Estimates. <em>Statistical Science</em> 32, pp. 227–248.</p>
-<p>Gwet J.P. and Rivest L.P. (1992). Outlier Resistant Alternatives to the Ratio Estimator. <em>Journal of the American Statistical Association</em> 87, pp. 1174-1182.</p>
-<p>Huber, P. (1981). <em>Robust Statistics</em>, John Wiley &amp; Sons, New York.</p>
-<p>Hulliger B (2005). Horvitz-Thompson Estimators, Robustified, in: S. Kotz (ed.), <em>Encyclopedia of Statistical Sciences</em>, volume 5, 2nd edition. John Wiley and Sons, Hoboken (NJ).</p>
-<p>Hulliger, B (1999). Simple and robust estimators for sampling, in: <em>Proceedings of the Survey Research Methods Section, American Statistical Association</em>, pp. 54–63. American Statistical Association.</p>
-<p>Hulliger. B. (1995). Outlier Robust Horvitz–Thompson Estimators. <em>Survey Methodology</em> 21, pp. 79–87.</p>
-<p>Lee, H. (1995). Outliers in business surveys, in: B.G. Cox, D.A. Binder, B.N. Chinnappa, A. Christianson, M.J. Colledge, and P.S. Kott (eds.), <em>Business survey methods</em>, chapter 26: 503–526. John Wiley and Sons, New York.</p>
-<p>Lumley, T (2021). survey: analysis of complex survey samples. R package version 4.0, URL <a href="https://CRAN.R-project.org/package=survey" class="uri">https://CRAN.R-project.org/package=survey</a>.</p>
-<p>Lumley, T. (2010). Complex Surveys: A Guide to Analysis Using R: <em>A Guide to Analysis Using R</em>. John Wiley and Sons, Hoboken, NJ.</p>
-<p>Rao, J.N.K. (1971). Some Aspects of Statistical Inference in Problems of Sampling from Finite Populations, in: V.P. Godambe and D.A. Sprott (eds.), <em>Foundations of Statistical Inference</em>, pp. 171-202. Holt, Rinehart, and Winston, Toronto.</p>
-<p>Royall, R.M. and Cumberland, W.G. (1981). An Empirical Study of the Ratio Estimator and Estimators of its Variance. <em>Journal of the American Statistical Association</em> 76, pp. 66-82.</p>
-<p>Ruffieux, C., F. Paccaud, and A. Marazzi (2000). Comparing rules for truncating hospital length of stay, <em>Casemix Quarterly</em> 2.</p>
-<p>Shao., J (1994). L-Statistics in complex survey problems. <em>The Annals of Statistics</em> 22, pp. 946–967.</p>
-<p>Serfling, R.J. (1980). <em>Approximation Theorems of Mathematical Statistics</em> John Wiley &amp; Sons, New York.</p>
-<p>Venables, W.N. and Ripley B.D. (2002). <em>Modern Applied Statistics with S</em>. 4th edition. Springer, New York.</p>
+<p>BEAUMONT, J.-F. AND RIVEST, L.-P. (2009). Dealing with outliers in survey data. In: <em>Sample Surveys: Theory, Methods and Inference</em> ed. by Pfeffermann, D. and Rao, C. R. Volume 29A of Handbook of Statistics, Amsterdam: Elsevier, Chap. 11, 247–280. <a href="https://doi.org/10.1016/S0169-7161(08)00011-4">DOI: 10.1016/S0169-7161(08)00011-4</a></p>
+<p>CHAMBERS, R. (1986). Outlier Robust Finite Population Estimation. <em>Journal of the American Statistical Association</em> <strong>81</strong>, 1063–1069, <a href="https://doi.org/10.1080/01621459.1986.10478374">DOI: 10.1080/01621459.1986.10478374</a>.</p>
+<p>DALEN, J. (1987). <em>Practical Estimators of a Population Total Which Reduce the Impact of Large Observations</em>. Research report, Statistics Sweden, Stockholm.</p>
+<p>CHEN, Q., ELLIOTT, M. R., HAZIZA, D., YANG, Y., GHOSH, M., LITTLE, R. J. A., SEDRANSK, J. AND THOMPSON, M. (2017). Approaches to Improving Survey-Weighted Estimates. <em>Statistical Science</em> <strong>32</strong>, 227–248, <a href="https://doi.org/10.1214/17-STS609">DOI: 10.1214/17-STS609</a>.</p>
+<p>GWET, J.-P. AND RIVEST, L.-P. (1992). Outlier Resistant Alternatives to the Ratio Estimator. <em>Journal of the American Statistical Association</em> <strong>87</strong>, 1174–1182, <a href="https://doi.org/10.1080/01621459.1992.10476275">DOI: 10.1080/01621459.1992. 10476275</a>.</p>
+<p>HUBER, P. J. AND RONCHETTI, E. (2009). <em>Robust Statistics</em>, New York: John Wiley and Sons, 2nd edition, <a href="https://doi.org/10.1002/9780470434697">DOI: 10.1002/9780470434697</a>.</p>
+<p>HULLIGER, B. (2006). Horvitz–Thompson Estimators, Robustified. In: <em>Encyclopedia of Statistical Sciences</em> ed. by Kotz, S. Volume 5, Hoboken (NJ): John Wiley and Sons, 2nd edition, <a href="https://doi.org/10.1002/0471667196.ess1066.pub2">DOI: 10.1002/0471667196.ess1066.pub2</a>.</p>
+<p>HULLIGER, B. (1999). Simple and robust estimators for sampling. In: <em>Proceedings of the Survey Research Methods Section</em>, American Statistical Association, 54–63, American Statistical Association.</p>
+<p>HULLIGER, B. (1995). Outlier Robust Horvitz–Thompson Estimators. <em>Survey Methodology</em> <strong>21</strong>, 79–87.</p>
+<p>LEE, H. (1995). Outliers in business surveys. In: <em>Business survey methods</em> ed. by Cox, B. G., Binder, D. A., Chinnappa, B. N., Christianson, A., Colledge, M. J. and Kott, P. S. New York: John Wiley and Sons, Chap. 26, 503–526, <a href="https://doi.org/10.1002/9781118150504.ch26">DOI: 10.1002/9781118150504.ch26</a>.</p>
+<p>LUMLEY, T. (2021). survey: analysis of complex survey samples. R package version 4.0, URL <a href="https://CRAN.R-project.org/package=survey" class="uri">https://CRAN.R-project.org/package=survey</a>.</p>
+<p>LUMLEY, T. (2010). <em>Complex Surveys: A Guide to Analysis Using R: A Guide to Analysis Using R</em>, Hoboken (NJ): John Wiley and Sons.</p>
+<p>RAO, J. N. K. (1971). Some Aspects of Statistical Inference in Problems of Sampling from Finite Populations. In: <em>Foundations of Statistical Inference</em> ed. by Godambe, V. P. and Sprott, D. A. Toronto: Holt, Rinehart, and Winston, 171–202.</p>
+<p>ROYALL, R. M. AND CUMBERLAND, W. G. (1981). An Empirical Study of the Ratio Estimator and Estimators of its Variance. <em>Journal of the American Statistical Association</em> <strong>76</strong>, 66–82, <a href="https://doi.org/10.2307/2287043">DOI: 10.2307/2287043</a>.</p>
+<p>RUFFIEUX, C., PACCAUD, F. AND MARAZZI, A. (2000). Comparing rules for truncating hospital length of stay. <em>Casemix Quarterly</em> <strong>2</strong>, 3–11.</p>
+<p>SHAO, J. (1994). L-Statistics in complex survey problems. <em>The Annals of Statistics</em> <strong>22</strong>, 946–967, <a href="https://doi.org/10.1214/aos/1176325505">DOI: 10.1214/aos/1176325505</a>.</p>
+<p>SERFLING, R. J. (1980). <em>Approximation theorems of mathematical statistics</em>, New York: Wiley. <a href="https://doi.org/10.1002/9780470316481">DOI: 10.1002/9780470316481</a>.</p>
+<p>VENABLES, W. N. AND RIPLEY, B. D. (2002). <em>Modern Applied Statistics with S</em>, New York: Springer, 4th edition, <a href="https://doi.org/10.1007/978-0-387-21706-2">DOI: 10.1007/978-0-387-21706-2</a>.</p>
 </div>
 
 

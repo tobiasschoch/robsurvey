@@ -29,7 +29,7 @@
     Appendix C).
 }
 \source{
-Lohr, S.L. (1999). \emph{Sampling: Design and Analysis},
+Lohr, S. L. (1999). \emph{Sampling: Design and Analysis},
     Pacific Grove (CA): Duxbury Press.
 }
 \examples{

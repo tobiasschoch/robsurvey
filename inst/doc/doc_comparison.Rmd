@@ -1,11 +1,11 @@
 <!--
-library(knitr); knit("comparison.Rmd")
+library(knitr); knit("doc_comparison.Rmd")
 Then I process the markdown file in Typora (using theme: Fluent)
 -->
 
 # Comparison With Other Implementations of Regression *M*- and *GM*-Estimators
 
-Tobias Schoch – April 15, 2022
+Tobias Schoch
 
 ---
 
@@ -341,40 +341,38 @@ some light on the behavior of our implementations.
 
 BROWNLEE, K. A. (1965).
 *Statistical Theory and Methodology in Science and Engineering*,
-New York: John Wiley and Sons, 2nd ed.
+New York: John Wiley and Sons, 2nd edition.
 
-CHATTERJEE, S. AND B. PRICE (1977). *Regression Analysis by Example*,
+CHATTERJEE, S. AND PRICE, B. (1977). *Regression Analysis by Example*,
 New York: John Wiley and Sons.
 
-CHATTERJEE, S. AND A. S. HADI (2012).
-*Regression Analysis by Example*, Hoboken (NJ): John Wiley and Sons, 5th ed.
+CHATTERJEE, S. AND HADI, A. S. (2012).
+*Regression Analysis by Example*, Hoboken (NJ): John Wiley and Sons, 5th edition.
 
-MÄCHLER, M., P. ROUSSEEUW, C. CROUX, V. TODOROV, A. RUCKSTUHL,
-M.  SALIBIAN-BARRERA, T. VERBEKE, M. KOLLER, E. L. T. CONCEICAO, AND M. A.
-DI PALMA (2019). *robustbase: Basic Robust Statistics*. R package version
-0.93-4. URL https://CRAN.R-project.org/package=robustbase
+MÄCHLER, M., ROUSSEEUW, P., CROUX, C., TODOROV, V., RUCKSTUHL, A., SALIBIAN-BARRERA, M., VERBEKE, T., KOLLER, M., CONCEICAO, E. L. T. AND DI PALMA, M. A. (2019). *robustbase: Basic Robust Statistics*. R package version
+0.93-4. URL: https://CRAN.R-project.org/package=robustbase
 
 MARAZZI, A. (2020). *robeth: R Functions for Robust Statistics*. R package
 version 2.7-6. URL https://CRAN.R-project.org/package=robeth
 
 MARAZZI, A. (1993). *Algorithms, Routines, and S Functions for Robust
 Statistics: The FORTRAN Library ROBETH with an interface to S-PLUS*,
-New York: Chapman & Hall.
+New York: Chapman and Hall.
 
-MONTGOMERY, D. C. AND E. A. PECK (2006).
+MONTGOMERY, D. C. AND PECK, E. A. (2006).
 *Introduction to Linear Regression Analysis*, Hoboken (NJ): John Wiley
-and Sons, 4th ed.
+and Sons, 4th edition.
 
-ROUSSEEUW, P. J. AND A. M. LEROY (1987). *Robust Regression and Outlier
-Detection*, (Wiley Series in Probability and Statistics), Hoboken: John
-Wiley and Sons.
+ROUSSEEUW, P. J. AND LEROY, A. M.  (1987). *Robust Regression and Outlier
+Detection*, Hoboken (NJ): John
+Wiley and Sons. [DOI: 10.1002/ 0471725382](https://doi.org/10.1002/0471725382)
 
-RUPPERT, D. AND R. J. CARROLL (1980). Trimmed least squares estimation in
+RUPPERT, D. AND CARROLL, R. J. (1980). Trimmed least squares estimation in
 the linear model, *Journal of the American Statistical Association* **75**,
-828–838.
+828–838. [DOI: 10.1080/01621459.1980. 10477560](https://doi.org/10.1080/01621459.1980.10477560)
 
-VENABLES, W. N. AND B. D. RIPLEY (2002). *Modern Applied Statistics with S*,
-New York: Springer, 4th ed.
+VENABLES, W. N. AND RIPLEY, B. D. (2002). *Modern Applied Statistics with S*,
+New York: Springer, 4th edition. [DOI: 10.1007/978-0-387-21706-2](https://doi.org/10.1007/978-0-387-21706-2)
 
 ## Appendix
 

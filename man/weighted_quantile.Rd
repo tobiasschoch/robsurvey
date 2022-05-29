@@ -43,9 +43,11 @@ weighted_quantile(workplace$employment, workplace$weight, 0.25)
 \references{
 Bentley, J. L. and McIlroy, D. M. (1993). Engineering a Sort Function,
     \emph{Software - Practice and Experience} \bold{23}, 1249--1265.
+    \doi{10.1002/spe.4380231105}
 
 Hyndman, R.J. and Fan, Y. (1996). Sample Quantiles in Statistical Packages,
     \emph{The American Statistician} \bold{50}, 361--365.
+    \doi{10.1080/00031305.1996.10473566}
 }
 \seealso{
 \code{\link{weighted_median}}

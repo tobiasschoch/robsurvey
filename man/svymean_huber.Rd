@@ -83,7 +83,7 @@ SE(m)
 }
 \references{
 Hulliger, B. (1995). Outlier Robust Horvitz-Thompson Estimators.
-\emph{Survey Methodology} \bold{21}, 79--87.
+    \emph{Survey Methodology} \bold{21}, 79--87.
 }
 \seealso{
 \code{\link{svymean_tukey}} and \code{\link{svytotal_tukey}}

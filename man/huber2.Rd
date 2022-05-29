@@ -91,5 +91,6 @@ m1 / m2 - 1
 }
 \references{
 Huber, P. J. (1964). Robust Estimation of a Location Parameter.
-\emph{Annals of Mathematical Statistics} \bold{35}, 73--101.
+    \emph{Annals of Mathematical Statistics} \bold{35}, 73--101.
+    \doi{10.1214/aoms/1177703732}
 }

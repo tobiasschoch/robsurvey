@@ -50,6 +50,7 @@ simpsonWgt(x, a, b)
 Simpson, D. G., Ruppert, D. and Carroll, R.J. (1992). On One-Step GM
     Estimates and Stability of Inferences in Linear Regression.
     \emph{Journal of the American Statistical Association} \bold{87}, 439--450.
+    \doi{10.2307/2290275}
 }
 \seealso{
 \code{\link{svyreg_huberM}}, \code{\link{svyreg_huberGM}},

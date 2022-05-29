@@ -65,7 +65,7 @@
         }
 }
 \source{
-Särndal, C.E., Swensson, B. and Wretman, J. (1992).
+Särndal, C.-E., Swensson, B. and Wretman, J. (1992).
     \emph{Model Assisted Survey Sampling}, New York: Springer-Verlag.
 
 Tillé, Y. and Matei, A. (2021). \emph{sampling: Survey Sampling}.

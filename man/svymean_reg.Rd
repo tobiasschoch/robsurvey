@@ -50,37 +50,35 @@ svytotal_reg(object, auxiliary, type, k = NULL, check.names = TRUE,
     Object of class \code{\link{svystat_rob}}
 }
 \references{
-Beaumont, J.-F. and L.-P. Rivest (2009). Dealing with outliers in survey data,
-    in \emph{Sample Surveys: Theory, Methods and Inference},
-    ed. by D. Pfeffermann and C. R. Rao,
-    Amsterdam: Elsevier, vol. 29A of \emph{Handbook of Statistics},
-    chap. 11, 247--280.
+Beaumont, J.-F. and Rivest, L.-P. (2009). Dealing with outliers in survey
+    data. In: \emph{Sample Surveys: Theory, Methods and Inference}
+    ed. by Pfeffermann, D. and Rao, C. R. Volume 29A of
+    \emph{Handbook of Statistics}, Amsterdam: Elsevier, Chap. 11, 247--280.
+    \doi{10.1016/S0169-7161(08)00011-4}
 
-Chambers, R. (1986). Outlier Robust Finite Population Estimation,
+Chambers, R. (1986). Outlier Robust Finite Population Estimation.
     \emph{Journal of the American Statistical Association} \bold{81},
-    1063--1069.
+    1063--1069. \doi{10.1080/01621459.1986.10478374}
 
 Duchesne, P. (1999). Robust calibration estimators,
     \emph{Survey Methodology} \bold{25}, 43--56.
 
-Gwet, J.-P. and L.-P. Rivest (1992).
-    Outlier Resistant Alternatives to the Ratio Estimator,
-    \emph{Journal of the American Statistical Association} \bold{87},
-    1174--1182.
+Gwet, J.-P. and Rivest, L.-P. (1992). Outlier Resistant Alternatives to
+    the Ratio Estimator. \emph{Journal of the American Statistical Association}
+    \bold{87}, 1174--1182. \doi{10.1080/01621459.1992.10476275}
 
 Lee, H. (1991). Model-Based Estimators That Are Robust to Outliers,
     in \emph{Proceedings of the 1991 Annual Research Conference},
     Bureau of the Census, 178--202. Washington, DC, Department of Commerce.
 
-Lee, H. (1995). Outliers in business surveys,
-    in \emph{Business survey methods},
-    ed. by B. G. Cox, D. A. Binder, B. N. Chinnappa, A. Christianson,
-    M. J. Colledge, and P. S. Kott,
-    New York: John Wiley and Sons, chap. 26, 503--526.
+Lee, H. (1995). Outliers in business surveys. In:
+    \emph{Business survey methods} ed. by Cox, B. G., Binder, D. A.,
+    Chinnappa, B. N., Christianson, A., Colledge, M. J. and Kott, P. S.
+    New York: John Wiley and Sons, Chap. 26, 503--526.
+    \doi{10.1002/9781118150504.ch26}
 
-Särndal, C.-E., B. Swensson and J. Wretman (1992).
+Särndal, C.-E., Swensson, B. and Wretman, J. (1992).
     \emph{Model Assisted Survey Sampling}, New York: Springer.
-
 }
 \examples{
 data(workplace)
