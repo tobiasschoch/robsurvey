@@ -1,5 +1,5 @@
 <!--
-library(knitr); knit("comparison.Rmd")
+library(knitr); knit("doc_comparison.Rmd")
 Then I process the markdown file in Typora (using theme: Fluent)
 -->
 
@@ -179,11 +179,11 @@ methods.
 
 ```
  (Intercept)           X1           X2           X3 
-4.029214e+04 3.385965e-03 3.267618e-04 2.375409e-01 
+1.548342e+04 2.694538e-03 1.373338e-04 1.010169e-01 
  (Intercept)           X1           X2           X3 
 1.548341e+04 2.694537e-03 1.373338e-04 1.010168e-01 
 
-abs_rel_DIFF:  61.57214 %
+abs_rel_DIFF:  5.187249e-05 %
 ```
 
 The diagonal elements of the estimated covariance matrix differ

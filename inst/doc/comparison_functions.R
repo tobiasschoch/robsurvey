@@ -274,6 +274,7 @@ GM_schweppe_compare <- function(formula, data, digits = 3, tol = 1e-5,
     print(round(coeff, digits))
 }
 
+# Model-based covariance
 M_compare_cov <-  function(formula, data, digits = 3, tol = 1e-5,
     maxit = 50)
 {
@@ -282,7 +283,7 @@ M_compare_cov <-  function(formula, data, digits = 3, tol = 1e-5,
         data = data)
     robsurvey <- svyreg_huberM(formula, design, k = 1.345,
         mad_center = FALSE, tol = tol, maxit = maxit)
-    cov_robsurvey <- diag(vcov(robsurvey))
+    cov_robsurvey <- diag(vcov(robsurvey, mode = "model"))
 
     # MASS
     rlm_mod <- MASS:::rlm.default
