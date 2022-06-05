@@ -1,7 +1,10 @@
 # robust GREG for mean
 svymean_reg <- function(object, auxiliary, type, k = NULL, check.names = TRUE,
-    na.rm = FALSE, keep_object = TRUE)
+    na.rm = FALSE, keep_object = TRUE, verbose = TRUE)
 {
+    if (verbose)
+        message("Note: This functions is experimental!")
+
     if (!inherits(object, "svyreg_rob"))
         stop(paste0("The function cannot be used for an object of class '",
             class(object), "'\n"))
@@ -16,8 +19,9 @@ svymean_reg <- function(object, auxiliary, type, k = NULL, check.names = TRUE,
     names(est) <- object$model$yname
     # GREG bias correction
     tmp <- .bias_correction(object, r_std, type, k)
-    zi <- tmp$zi; ui <- tmp$ui
-    est <- (est + tmp$correction) / sum(object$model$w)
+    zi <- tmp$zi / sum(object$model$w)
+    correction <- tmp$correction / sum(object$model$w)
+    est <- est + correction
     # variance estimate
     design <- object$design
     v <- survey::svyrecvar(zi, design$cluster, design$strata, design$fpc,
@@ -25,18 +29,21 @@ svymean_reg <- function(object, auxiliary, type, k = NULL, check.names = TRUE,
     res <- structure(list(characteristic = "mean",
         estimator = list(string = .method_name(type, k),
         type = type, psi = 0, psi_fun = "Huber", k = k), estimate = est,
-        robust = list(robweights = ui), residuals = r_std,
+        robust = list(robweights = tmp$ui), residuals = r_std,
         model = list(object$model, coef = object$estimate,
         auxiliary = auxiliary), design = design, call = match.call(),
-        variance = v), class = "svystat_rob")
+        variance = v, bias = correction), class = "svystat_rob")
     if (keep_object)
         res$object <- object
     res
 }
 # robust GREG for total
 svytotal_reg <- function(object, auxiliary, type, k = NULL, check.names = TRUE,
-    na.rm = FALSE, keep_object = TRUE)
+    na.rm = FALSE, keep_object = TRUE, verbose = TRUE)
 {
+    if (verbose)
+        message("Note: This functions is experimental!")
+
     if (!inherits(object, "svyreg_rob"))
         stop(paste0("The function cannot be used for an object of class '",
             class(object), "'\n"))
@@ -52,7 +59,7 @@ svytotal_reg <- function(object, auxiliary, type, k = NULL, check.names = TRUE,
     names(est) <- object$model$yname
     # GREG bias correction
     tmp <- .bias_correction(object, r_std, type, k)
-    zi <- tmp$zi; ui <- tmp$ui
+    zi <- tmp$zi
     est <- est + tmp$correction
     # variance estimate
     design <- object$design
@@ -61,10 +68,10 @@ svytotal_reg <- function(object, auxiliary, type, k = NULL, check.names = TRUE,
     res <- structure(list(characteristic = "total",
         estimator = list(string = .method_name(type, k),
         type = type, psi = 0, psi_fun = "Huber", k = k), estimate = est,
-        robust = list(robweights = ui), residuals = r_std,
+        robust = list(robweights = tmp$ui), residuals = r_std,
         model = list(object$model, coef = object$estimate,
         auxiliary = auxiliary), design = design, call = match.call(),
-        variance = v), class = "svystat_rob")
+        variance = v, bias = tmp$correction), class = "svystat_rob")
     if (keep_object)
         res$object <- object
     res
@@ -116,16 +123,23 @@ svytotal_reg <- function(object, auxiliary, type, k = NULL, check.names = TRUE,
 {
     type <- match.arg(type, c("projective", "ADU", "robust", "lee", "BR",
         "duchesne"))
-    if (is.null(k) && type %in% c("robust", "lee", "BR", "duchesne"))
-        stop("Robustness tuning must not be NULL\n", call. = FALSE)
-    if (type == "lee" && (k < 0 || k > 1))
-        stop("For type = 'lee', argument 'k' must satisfy 0 <= k <= 1\n",
-            call. = FALSE)
-    if (type %in% c("robust", "BR", "duchesne") && k <= 0)
-        stop("Argument 'k' must be positive\n", call. = FALSE)
-    if (type == "duchesne" && length(k) != 2)
-        stop("For type = 'duchesene', argument 'k' must be a vector: c(a, b)\n",
-            call. = FALSE)
+    switch(type,
+        "ADU" = {
+            if (!is.null(k))
+                warning("Argument 'k' is ignored\n", call. = FALSE,
+                    immediate. = TRUE)
+        },
+        "projective" = {
+            if (!is.null(k))
+                warning("Argument 'k' is ignored\n", call. = FALSE,
+                    immediate. = TRUE)
+        },
+        "robust" = stopifnot(is.numeric(k), length(k) == 1, k > 0),
+        "lee" = stopifnot(is.numeric(k), length(k) == 1, k >= 0, k <= 1),
+        "BR" = stopifnot(is.numeric(k), length(k) == 1, k > 0),
+        "duchesne" = stopifnot(is.numeric(k),
+            "k must be a 2-vector of positive real values" = length(k) == 2,
+            all(k > 0)))
     type
 }
 # Standardized residuals
@@ -156,20 +170,23 @@ svytotal_reg <- function(object, auxiliary, type, k = NULL, check.names = TRUE,
 .bias_correction <- function(object, r_std, type, k)
 {
     w <- object$model$w
+    n <- object$model$n
     # robustness weights
     ui <- switch(type,
-        "projective" = rep(0, object$model$n),
-        "ADU" = rep(1, object$model$n),
+        "projective" = rep(1, n),
+        "ADU" = rep(1, n),
         "robust" = .psi_wgt_function(r_std, k, "Huber"),
-        "lee" = k,
+        "lee" = rep(k, n),
         "BR" = .psi_wgt_beaumont_rivest(r_std, w, k),
         "duchesne" = .psi_duchesne(r_std, k[1], k[2]) / r_std)
     # multiplicative factor for Mallows type GM-estimator
     if (object$estimator$type == 1)
         ui <- ui * object$model$xwgt
-    # bias-correction
-    zi <- w * ui *object$residuals
-    list(zi = zi, correction = sum(zi), ui = ui)
+    # linearization (influence function)
+    zi <- w * ui * object$residuals
+    # bias-correction term of GREG
+    correction <- ifelse(type == "projective", 0, sum(zi))
+    list(zi = zi, correction = correction, ui = ui)
 }
 # Modified Huber psi-function of Duchsene (1999)
 .psi_duchesne <- function(x, a, b)

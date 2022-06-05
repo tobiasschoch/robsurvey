@@ -53,7 +53,7 @@ Bare-bone methods are stripped-down versions of the survey methods in terms of f
 | `weighted_total_huber()` | `svytotal_huber()` |
 | `weighted_total_tukey()` | `svytotal_tukey()` |
 
-The *M*-estimators have a `type` argument taking the values `"rht"` or `"rhj"` to specify, respectively, the robust Horvitz–Thompson (RHT) or the robust Hajek (RHJ) estimator. 
+The *M*-estimators have a `type` argument taking the values `"rht"` or `"rhj"` to specify, respectively, the robust Horvitz–Thompson (RHT) or the robust Hajek (RHJ) estimator. 
 
 In addition, `huber2()` implements a weighted Huber "Proposal 2" estimator (only bare-bone function). Function `mer()` (minimum estimated risk estimator) implements an adaptive *M*-estimator.
 
@@ -81,7 +81,13 @@ In addition, `huber2()` implements a weighted Huber "Proposal 2" estimator (only
 
 ### 1.3 Robust generalized regression estimator (GREG)
 
-> The functions are experimental; they may change!
+> The current implementation of the functions is **EXPERIMENTAL**. Experimental features may:
+>
+> * have undergone less extensive testing than is normal for standard features
+> * interact with unstable (external) dependencies
+> * be subject to change
+> * not be directly supported by the developers in the event
+>   issues arise
 
 * `svymean_reg()`
 * `svytotal_reg()`

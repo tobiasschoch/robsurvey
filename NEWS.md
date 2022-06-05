@@ -1,17 +1,25 @@
 **If you are viewing this file on CRAN, please check [latest news on GitHub](https://github.com/tobiasschoch/robsurvey/blob/master/NEWS.md) where the formatting is also better.**
 
-# robsurvey VERSION 0.3 (2022-05-07)
+# robsurvey VERSION 0.3 (2022-06-04)
 
 ## NEW FEATURES
 
-* robust generalized regression estimation (GREG) of the mean and total; see `svymean_reg()` and `svytotal_reg()`
 * Diagnostic plots for fitted regression model, i.e., objects of class `svyreg_rob`
 * Robust regression: If the estimated regression scale (by default weighted MAD) is zero (or nearly so), the weighted IQR is tried instead. If the weighted IQR ist also zero, the function returns with an error.
-* Function `mer()` for minimum estimated risk estimation of location gained two new arguments: 
+* Function `mer()` for minimum estimated risk estimation of location gained two new arguments:
   * `method` : the method used in the search for a minimum, e.g., `"Brent"`, `"BFGS"`, see `stats::optim()` for more details
   * `init` determines the left side of the search interval and the initial value in the minimization approach
 
 * Function `mse()` computes/ extracts the estimated mean square error/ estimated risk in presence of representative outliers; see also `mer()`
+
+* Robust generalized regression estimation (GREG) of the mean and total; see `svymean_reg()` and `svytotal_reg()`. The current implementation of the functions is **EXPERIMENTAL** and a warning is issued when calling the functions (unless `verbose = FALSE`). Experimental features may:
+  * have undergone less extensive testing than is normal for standard features
+  * interact with unstable (external) dependencies
+  * be subject to change
+  * not be directly supported by the developers in the event
+    issues arise
+  
+
 
 ## CHANGES
 
@@ -25,7 +33,7 @@ For designs with unequal probability sampling, the variance estimates of the rob
 
 ## MISC
 
-Added `DOI` to all references (where available).
+Added `DOI` to all references (where available).
 
 # robsurvey VERSION 0.2 (2022-01-17)
 

@@ -4,9 +4,9 @@
 \title{Generalized Regression Estimator (GREG) of the Mean and Total}
 \usage{
 svymean_reg(object, auxiliary, type, k = NULL, check.names = TRUE,
-    na.rm = FALSE, keep_object = TRUE)
+    na.rm = FALSE, keep_object = TRUE, verbose = TRUE)
 svytotal_reg(object, auxiliary, type, k = NULL, check.names = TRUE,
-    na.rm = FALSE, keep_object = TRUE)
+    na.rm = FALSE, keep_object = TRUE, verbose = TRUE)
 }
 \arguments{
     \item{object}{of class \code{[svyreg_rob]}, e.g., result of the Huber
@@ -24,16 +24,27 @@ svytotal_reg(object, auxiliary, type, k = NULL, check.names = TRUE,
         be removed before the computation proceeds (default: \code{FALSE}).}
     \item{keep_object}{\code{[logical]} if \code{TRUE}, \code{object} is
         returned.}
+    \item{verbose}{\code{[logical]} if \code{TRUE} warnings are printed to
+        the console.}
 }
 \description{
-    (Robust) Generalized Regression Estimator (GREG) of the Mean and Total
+    (Robust) generalized regression estimator (GREG) of the mean and total
+    \bold{This implementation is EXPERIMENTAL}
 }
 \details{
+    \bold{NOTE}: The current implementation of the functions
+        \code{svymean_reg()} and \code{svytotal_reg()} is \bold{EXPERIMENTAL}.
+        Experimental features may:
+    \itemize{
+            \item have undergone less extensive testing than is normal for
+                standard features
+            \item interact with unstable (external) dependencies
+            \item be subject to change
+            \item not be directly supported by the developers in the event
+                issues arise
+    }
     \describe{
-        \item{How to}{
-            Text
-        }
-        \item{Types}{
+        \item{Types of prediction estimators}{
             \itemize{
                 \item \code{"projective"} (Särndal et al., 1992)
                 \item \code{"ADU"} (Särndal et al., 1992; Gwet and Rivest,

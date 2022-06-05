@@ -1,20 +1,37 @@
-# MILESTONE R 0.3
-## FIX
+# TODO - Road Map
+
+---
+
+## MILESTONE ver. 0.3
+
+### FIX
 
 * regression: what happens if p <= n
 
-## ADD FEATURE
+### CHANGE
+
+* vignettes => `mer`
+
+### NEW FEATURE
 
 * `svymean_reg` (+ _total_)
-    - description
-    - details
-    - examples
-* tests
+    - SE of mean w/o intercept
+    - population x-totals should not equal the weighted sample mean
 
-## DOCUMENTATION
-* `weighted_line`  and  `weighted_median_lines`
+---
 
-# UNSCHEDULED
-* svyreg: predict method
+## MILESTONE ver. 0.4
+
+### DOCUMENTATION
+
+* Improve documentation of `weighted_line()`  and  `weighted_median_lines()`
+* Documentation, examples, and vignette of `svymean_reg()` and `svytotal_reg()`
+
+### NEW FEATURE
+
+* `svyreg()`: predict method
 * robust calibration
 
+---
+
+## UNSCHEDULED
