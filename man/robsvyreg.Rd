@@ -38,15 +38,15 @@ svyreg_control(tol = 1e-5, maxit = 100, k_Inf = 1e6, init = NULL,
         weighted least squares; otherwise, \code{init} can be specified as
         the estimate (i.e., \emph{p}-vector) to initialize the iteratively
         re-weighted least squares method (default: \code{NULL}).}
-    \item{mad_center}{\code{[logical]} toggle to select whether the MAD is
-        centered about the (weighted) median (\code{TRUE}) or about zero
-        (default: \code{TRUE}).}
+    \item{mad_center}{\code{[logical]} if \code{TRUE}, the weighted MAD is
+        centered about the (weighted) median, otherwise the weighted MAD is
+        centered about zero (default: \code{TRUE}).}
 }
 \description{
-    \strong{Internal} function for the robust survey regression GM-estimator;
-    this function is \strong{only} intended for internal use. The function
-    does \strong{not} check or validate the arguments. In particular,
-    missing values in the data may make the function crash.
+    \strong{Internal} function to call the robust survey regression
+    \emph{GM}-estimator; this function is \strong{only} intended for internal
+    use.  The function does \strong{not} check or validate the arguments.
+    In particular, missing values in the data may make the function crash.
 }
 \details{
     Not documented

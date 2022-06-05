@@ -8,8 +8,7 @@ weighted_total(x, w, na.rm = FALSE)
 }
 \arguments{
     \item{x}{\code{[numeric vector]} data.}
-    \item{w}{\code{[numeric vector]} weights (same length as vector
-        \code{x}).}
+    \item{w}{\code{[numeric vector]} weights (same length as \code{x}).}
     \item{na.rm}{\code{[logical]} indicating whether \code{NA} values
         should be removed before the computation proceeds
         (default: \code{FALSE}).}
@@ -19,8 +18,8 @@ weighted_total(x, w, na.rm = FALSE)
 }
 \details{
     \code{weighted_total} and \code{weighted_mean} compute, respectively,
-    the Horvitz-Thompson estimator of the total and the Hajek estimator
-    of the mean.
+    the Horvitz-Thompson estimator of the population total and the Hajek
+    estimator of the population mean.
 }
 \value{
     Estimated population mean or total

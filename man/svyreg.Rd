@@ -1,6 +1,6 @@
 \name{svyreg}
 \alias{svyreg}
-\title{Survey Regression Estimator}
+\title{Survey Regression Estimator -- Weighted Least Squares}
 \usage{
 svyreg(formula, design, var = NULL, na.rm = FALSE)
 }
@@ -9,14 +9,14 @@ svyreg(formula, design, var = NULL, na.rm = FALSE)
         of the model)}
     \item{design}{an object of class \code{survey.design}; see
         \code{\link[survey]{svydesign}}.}
-    \item{var}{\code{[numeric vector]} heteroscedastic variance (default:
-        \code{NULL}, i.e., homoscedastic variance).}
+    \item{var}{\code{[numeric vector]} or \code{[NULL]} heteroscedastic
+        variance (default: \code{NULL} implies homoscedastic variance).}
     \item{na.rm}{\code{[logical]} indicating whether \code{NA} values
         should be removed before the computation proceeds
         (default: \code{FALSE}).}
 }
 \description{
-    \code{svyreg} is used to fit survey weighted linear models.
+    Weighted least squares estimator of regression
 }
 \details{
     \code{svyreg} computes the regression coefficients by weighted least
@@ -56,15 +56,13 @@ coef(m)
 vcov(m)
 }
 \seealso{
-\code{\link[=svyreg_rob]{summary}} for summaries.
+\code{\link[=svyreg_rob]{summary}}, \code{\link[=svyreg_rob]{coef}},
+\code{\link[=svyreg_rob]{residuals}}, \code{\link[=svyreg_rob]{fitted}} and
+\code{\link[=svyreg_rob]{vcov}}
 
-The generic functions \code{\link[=svyreg_rob]{coef}},
-\code{\link[=svyreg_rob]{residuals}}, \code{\link[=svyreg_rob]{fitted}}, and
-\code{\link[=svyreg_rob]{vcov}}.
-
-\code{\link[=svyreg_rob]{plot}} for regression diagnostic plot methods.
+\code{\link[=svyreg_rob]{plot}} for regression diagnostic plot methods
 
 Robust estimating methods \code{\link{svyreg_huberM}},
-\code{\link{svyreg_huberGM}}, \code{\link{svyreg_tukeyM}}, and
+\code{\link{svyreg_huberGM}}, \code{\link{svyreg_tukeyM}} and
 \code{\link{svyreg_tukeyGM}}.
 }

@@ -34,13 +34,12 @@ robweights(object)
     \item{x}{object of class \code{svystat_rob}.}
 }
 \description{
-    Methods and utility functions for objects of class \code{svystat_rob}
-    (e.g., \code{\link{svymean_huber}}).
+    Methods and utility functions for objects of class \code{svystat_rob}.
 }
 \details{
     Utility functions:
     \itemize{
-        \item \code{mse} computes the estimated risk (estimated mean square
+        \item \code{mse} computes the estimated risk (mean square
             error) in presence of representative outliers; see also
             \code{\link{mer}}
         \item \code{summary} gives a summary of the estimation properties

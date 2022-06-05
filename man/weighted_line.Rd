@@ -16,7 +16,7 @@ weighted_line(x, y = NULL, w, na.rm = FALSE, iter = 1)
 \arguments{
     \item{x}{\code{[numeric vector]} explanatory variable.}
     \item{y}{\code{[numeric vector]} response variable (default: \code{NULL}).}
-    \item{w}{\code{[numeric vector]} weights (same length as vector \code{x}).}
+    \item{w}{\code{[numeric vector]} weights (same length as \code{x}).}
     \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should
         be removed before the computation proceeds (default: \code{FALSE}).}
     \item{iter}{\code{[integer]} number of iterations to use (default:

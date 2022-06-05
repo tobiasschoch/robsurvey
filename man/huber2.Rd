@@ -7,7 +7,7 @@ huber2(x, w, k = 1.5, na.rm = FALSE, maxit = 50, tol = 1e-04, info = FALSE,
 }
 \arguments{
     \item{x}{\code{[numeric vector]} data.}
-    \item{w}{\code{[numeric vector]} weights (same length as vector \code{x}).}
+    \item{w}{\code{[numeric vector]} weights (same length as \code{x}).}
     \item{k}{\code{[double]} robustness tuning constant
         (\eqn{0 < k \leq \infty}{0 < k <= Inf}).}
     \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should
@@ -20,14 +20,14 @@ huber2(x, w, k = 1.5, na.rm = FALSE, maxit = 50, tol = 1e-04, info = FALSE,
         should be returned (default: \code{FALSE}).}
     \item{k_Inf}{\code{[integer]} numerical value that represents \code{Inf}
         (default: \code{1e+06}).}
-    \item{df_cor}{\code{[logical]} toggle for the adjustment of the degrees of
-        freedom for the estimate of scale (default: \code{TRUE}).}
+    \item{df_cor}{\code{[logical]} if \code{TRUE}, the degrees of freedom of
+        the estimate of scale is adjusted (default: \code{TRUE}).}
 }
 \description{
     Weighted Huber Proposal 2 estimator of location and scatter.
 }
 \details{
-    The function \code{huber2} computes the weighted Huber (1964) Proposal 2
+    Function \code{huber2} computes the weighted Huber (1964) Proposal 2
     estimates of location and scale.
 
     The method is initialized by the weighted median (location) and the
@@ -66,7 +66,7 @@ data(workplace)
 # Weighted "Proposal 2" estimator of the mean
 huber2(workplace$employment, workplace$weight, k = 8)
 
-# More information on the estimate
+# More information on the estimate, i.e., info = TRUE
 m <- huber2(workplace$employment, workplace$weight, k = 8, info = TRUE)
 
 # Estimate of scale

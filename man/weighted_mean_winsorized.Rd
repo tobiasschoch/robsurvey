@@ -14,7 +14,7 @@ weighted_total_k_winsorized(x, w, k, info = FALSE, na.rm = FALSE)
 }
 \arguments{
     \item{x}{\code{[numeric vector]} data.}
-    \item{w}{\code{[numeric vector]} weights (same length as vector \code{x}).}
+    \item{w}{\code{[numeric vector]} weights (same length as \code{x}).}
     \item{LB}{\code{[double]} lower bound of winsorization such that
         \eqn{0 \leq} \code{LB} \eqn{<} \code{UB} \eqn{\leq 1}.}
     \item{UB}{\code{[double]} upper bound of winsorization such that
@@ -41,15 +41,17 @@ weighted_total_k_winsorized(x, w, k, info = FALSE, na.rm = FALSE)
         \item{Modes of winsorization.}{The amount of winsorization can be
             specified in relative or absolute terms:
             \itemize{
-                \item \emph{relative:} By specifying \code{LB} and \code{UB},
+                \item \emph{Relative:} By specifying \code{LB} and \code{UB},
                     the methods winsorizes the \code{LB}\eqn{~\cdot 100\%}
-                    percentage of the smallest observations and the
-                    (1 - \code{UB})\eqn{~\cdot 100\%} percentage of the largest
+                    of the smallest observations and the
+                    (1 - \code{UB})\eqn{~\cdot 100\%} of the largest
                     observations from the data.
-                \item \emph{absolute:} By specifying argument \code{k} in the
+                \item \emph{Absolute:} By specifying argument \code{k} in the
                     functions with the "infix" \code{_k_} in their name, the
                     largest \eqn{k} observations are winsorized, \eqn{0<k<n},
-                    where \eqn{n} denotes the sample size.
+                    where \eqn{n} denotes the sample size. E.g., \code{k = 2}
+                    implies that the largest and the second largest
+                    observation are winsorized.
             }
         }
         \item{Variance estimation.}{See survey methods:
@@ -93,5 +95,5 @@ weighted_total_k_winsorized(workplace$employment, workplace$weight, k = 2)
 }
 \seealso{
 \code{\link{svymean_winsorized}}, \code{\link{svymean_k_winsorized}},
-\code{\link{svytotal_winsorized}}, and \code{\link{svytotal_k_winsorized}}
+\code{\link{svytotal_winsorized}} and \code{\link{svytotal_k_winsorized}}
 }

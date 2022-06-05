@@ -22,7 +22,7 @@ svytotal_k_winsorized(x, design, k, na.rm = FALSE, trim_var = FALSE)
         \eqn{0 \leq} \code{LB} \eqn{<} \code{UB} \eqn{\leq 1}.}
     \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should
         be removed before the computation proceeds (default: \code{FALSE}).}
-    \item{trim_var}{\code{[logical]} logical indicating whether the variance
+    \item{trim_var}{\code{[logical]} indicating whether the variance
         should be approximated by the variance estimator of the trimmed mean/
         total (default: \code{FALSE}).}
     \item{k}{\code{[integer]} number of observations to be winsorized at the
@@ -42,29 +42,32 @@ svytotal_k_winsorized(x, design, k, na.rm = FALSE, trim_var = FALSE)
         \item{Modes of winsorization.}{The amount of winsorization can be
             specified in relative or absolute terms:
         \itemize{
-            \item \emph{relative:} By specifying \code{LB} and \code{UB},
+            \item \emph{Relative:} By specifying \code{LB} and \code{UB},
                 the method winsorizes the \code{LB}\eqn{~\cdot 100\%}
-                percentage of the smallest observations and the
-                (1 - \code{UB})\eqn{~\cdot 100\%} percentage of the
-                largest observations from the data.
-            \item \emph{absolute:} By specifying argument \code{k} in the
+                of the smallest observations and the
+                (1 - \code{UB})\eqn{~\cdot 100\%} of the largest
+                observations from the data.
+            \item \emph{Absolute:} By specifying argument \code{k} in the
                 functions with the "infix" \code{_k_} in their name (e.g.,
                 \code{svymean_k_winsorized}), the
                 largest \eqn{k} observations are winsorized, \eqn{0<k<n},
-                where \eqn{n} denotes the sample size.}
+                where \eqn{n} denotes the sample size. E.g., \code{k = 2}
+                implies that the largest and the second largest observation
+                are winsorized.
+            }
         }
         \item{Variance estimation.}{Large-sample approximation based on the
-            influence function; see Huber (1981, Chap. 3.3) and Shao (1994).
-            Two estimators are available:
+            influence function; see Huber and Ronchetti (2009, Chap. 3.3)
+            and Shao (1994). Two estimators are available:
             \describe{
-                \item{\code{simple_var = FALSE}:}{Variance estimator of
+                \item{\code{simple_var = FALSE}}{Variance estimator of
                     the winsorized mean/ total. The estimator depends on
                     the estimated probability density function evaluated at
                     the winsorization thresholds, which can be -- depending
                     on the context -- numerically unstable. As a remedy,
                     a simplified variance estimator is available by
                     setting \code{simple_var = TRUE}.}
-                \item{\code{simple_var = TRUE}:}{Variance is approximated
+                \item{\code{simple_var = TRUE}}{Variance is approximated
                     using the variance estimator of the trimmed mean/ total.}
             }
         }
@@ -72,7 +75,7 @@ svytotal_k_winsorized(x, design, k, na.rm = FALSE, trim_var = FALSE)
             \code{\link[=svystat_rob]{coef}}, \code{\link[=svystat_rob]{SE}},
             \code{\link[=svystat_rob]{vcov}},
             \code{\link[=svystat_rob]{residuals}},
-            \code{\link[=svystat_rob]{fitted}}, and
+            \code{\link[=svystat_rob]{fitted}} and
             \code{\link[=svystat_rob]{robweights}}.}
         \item{Bare-bone functions.}{See:
             \itemize{
@@ -113,6 +116,6 @@ svytotal_k_winsorized(~employment, dn, k = 2)
 \seealso{
 \code{\link{weighted_mean_winsorized}},
 \code{\link{weighted_mean_k_winsorized}},
-\code{\link{weighted_total_winsorized}}, and
+\code{\link{weighted_total_winsorized}} and
 \code{\link{weighted_total_k_winsorized}}
 }

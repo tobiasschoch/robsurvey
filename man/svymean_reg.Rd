@@ -9,23 +9,23 @@ svytotal_reg(object, auxiliary, type, k = NULL, check.names = TRUE,
     na.rm = FALSE, keep_object = TRUE, verbose = TRUE)
 }
 \arguments{
-    \item{object}{of class \code{[svyreg_rob]}, e.g., result of the Huber
-        regression \eqn{M}-estimator \code{svyreg_huberM}.}
+    \item{object}{an object of class \code{[svyreg_rob]}, e.g., result of
+        the Huber regression \eqn{M}-estimator \code{svyreg_huberM}.}
     \item{auxiliary}{\code{[numeric]} mean or total of the auxiliary
         variables.}
-    \item{type}{\code{[character]} type of estimator.}
+    \item{type}{\code{[character]} type of estimator; see Details.}
     \item{k}{\code{[numeric]} robustness tuning constant of the
-        \code{psi}-function used in the bias-correction term in the GREG
+        \code{psi}-function used in the bias-correction term of the GREG
         (default: \code{Inf}, which implies a non-robust GREG).}
     \item{check.names}{\code{[logical]} if \code{TRUE}, the names of
-        \code{auxiliary} is checked against the independent variables of the
-        fitted model \code{object} (default: \code{TRUE}.}
+        \code{auxiliary} are checked against the names of the independent
+        variables of the fitted model \code{object} (default: \code{TRUE}).}
     \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should
         be removed before the computation proceeds (default: \code{FALSE}).}
     \item{keep_object}{\code{[logical]} if \code{TRUE}, \code{object} is
-        returned.}
+        returned (default: \code{TRUE}).}
     \item{verbose}{\code{[logical]} if \code{TRUE} warnings are printed to
-        the console.}
+        the console (default: \code{TRUE}).}
 }
 \description{
     (Robust) generalized regression estimator (GREG) of the mean and total
@@ -45,6 +45,7 @@ svytotal_reg(object, auxiliary, type, k = NULL, check.names = TRUE,
     }
     \describe{
         \item{Types of prediction estimators}{
+            The following GREG prediction estimators are available:
             \itemize{
                 \item \code{"projective"} (Särndal et al., 1992)
                 \item \code{"ADU"} (Särndal et al., 1992; Gwet and Rivest,
@@ -125,5 +126,5 @@ SE(m)
 }
 \seealso{
 \code{\link{svyreg}}, \code{\link{svyreg_huberM}}, \code{\link{svyreg_huberGM}},
-\code{\link{svyreg_tukeyM}}, and \code{\link{svyreg_tukeyGM}}
+\code{\link{svyreg_tukeyM}} and \code{\link{svyreg_tukeyGM}}
 }

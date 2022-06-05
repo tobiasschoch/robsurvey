@@ -6,7 +6,7 @@ weighted_mad(x, w, na.rm = FALSE, constant = 1.482602)
 }
 \arguments{
     \item{x}{\code{[numeric vector]} data.}
-    \item{w}{\code{[numeric vector]} weights (same length as vector \code{x}).}
+    \item{w}{\code{[numeric vector]} weights (same length as \code{x}).}
     \item{na.rm}{\code{[logical]} indicating whether \code{NA} values
         should be removed before the computation proceeds
         (default: \code{FALSE}).}
@@ -14,8 +14,7 @@ weighted_mad(x, w, na.rm = FALSE, constant = 1.482602)
         MAD a consistent estimator of the scale (default: \code{1.4826}).}
     }
 \description{
-    \code{weighted_mad} computes weighted median of the absolute deviations
-    from the weighted median
+    Weighted median of the absolute deviations from the weighted median
 }
 \details{
     The weighted MAD is computed as the (normalized) weighted median of the

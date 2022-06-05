@@ -12,7 +12,7 @@
     }
     Bare-bone methods are stripped-down versions of the survey methods in
     terms of functionality and informativeness. These functions may serve
-    users and other package developers as building blocks. In particular,
+    users and package developers as building blocks. In particular,
     bare-bone functions \emph{cannot compute} variances.
 
     The survey methods are much more capable and depend, for variance
@@ -61,7 +61,7 @@
                     \code{\link{weighted_total_huber}}
                 \item \code{\link{weighted_mean_tukey}} and
                     \code{\link{weighted_total_tukey}}
-                \item \code{\link{huber2}} (weighted Huber proposal 2
+                \item \code{\link{huber2}} (weighted Huber Proposal 2
                     estimator)
             }
             \item Survey methods:

@@ -18,11 +18,11 @@ Authors@R: c(person(
         family = "Sterchi",
         email = "martin.sterchi@fhnw.ch",
         role = c("ctr", "com")))
-Description: Functions to compute robust (outlier-resistant) estimates of
-    finite population characteristics. The package supports the computations
-    of robust means, totals, ratios, etc. Available methods are regression
-    M- and GM-estimators, trimming, and winsorization. The package
-    complements the 'survey' package.
+Description: Robust (outlier-resistant) estimators of finite population
+    characteristics like of means, totals, ratios, regression, etc. Available
+    methods are M- and GM-estimators of regression, weight reduction,
+    trimming, and winsorization. The package extends the 'survey'
+    <https://CRAN.R-project.org/package=survey> package.
 License: GPL (>= 2)
 Classification/MSC-2010: 62D05, 62F35
 URL: https://github.com/tobiasschoch/robsurvey

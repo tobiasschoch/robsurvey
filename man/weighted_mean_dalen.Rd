@@ -10,8 +10,7 @@ weighted_total_dalen( x, w, censoring, type = "Z2", info = FALSE,
 }
 \arguments{
     \item{x}{\code{[numeric vector]} data.}
-    \item{w}{\code{[numeric vector]} weights (same length as vector
-        \code{x}).}
+    \item{w}{\code{[numeric vector]} weights (same length as \code{x}).}
     \item{censoring}{\code{[double]} cutoff threshold above which the
         observations are censored.}
     \item{type}{\code{[character]} type of estimator; either \code{"Z2"} or
@@ -24,8 +23,8 @@ weighted_total_dalen( x, w, censoring, type = "Z2", info = FALSE,
         should be printed to the console (default: \code{FALSE}).}
 }
 \description{
-    Dalén's estimators of the mean and total (bare-bone functions with
-    limited functionality)
+    Dalén's estimators of the population mean and the population total
+    (bare-bone functions with limited functionality).
 }
 \details{
     Let \eqn{\sum_{i \in s} w_ix_i}{sum(w[i]x[i])} denote the expansion
@@ -38,13 +37,14 @@ weighted_total_dalen( x, w, censoring, type = "Z2", info = FALSE,
             \eqn{\min(c, w_ix_i)}{min(c, w[i]x[i]}; hence, it
             censors the products \eqn{w_ix_i}{w[i]x[i]} to the
             censoring constant \eqn{c} (\code{censoring}). The estimator of
-            the population \eqn{x}-mean is is defined similarly.
+            the population \eqn{x}-mean is is defined as the total divided
+            by the population size.
         }
         \item{Estimator Z3}{
             The estimator Z3 of the population total is defined as the sum
             over the elements \eqn{z_i}{z[i]}, which is equal to
             \eqn{z_i = w_ix_i}{z[i] = w[i]x[i]}
-            if\eqn{w_iy_i \leq c}{w[i]x[i] <= c} and
+            if \eqn{w_iy_i \leq c}{w[i]x[i] <= c} and
             \eqn{z_i = c + (y_i - c/w_i)}{z[i] = c + (y[i] - c/w[i])}
             otherwise.
         }

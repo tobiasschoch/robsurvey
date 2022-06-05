@@ -42,44 +42,46 @@
     \item{digits}{\code{[integer]} minimal number of significant digits.}
     \item{\dots}{additional arguments passed to the method.}
     \item{object}{object of class \code{svyreg_rob}.}
-    \item{mode}{mode of variance estimator: \code{"design"}, \code{"model"} or
-        \code{"compound"} (default: \code{"design"}).}
-    \item{which}{indicating which plots to be drawn; if a subset of the plots
-        is required, you can specify a subset of the numbers \code{1:4}.}
+    \item{mode}{\code{[character]} mode of variance estimator:
+        \code{"design"}, \code{"model"} or \code{"compound"} (default:
+        \code{"design"}).}
+    \item{which}{\code{[integer]} indicating which plots to be drawn; if
+        a subset of the plots is required, you can specify a subset of the
+        numbers \code{1:4}.}
     \item{hex}{\code{[logical]} if \code{TRUE}, a hexagonally binned plot
         is shown in place of a scatterplot.}
-    \item{caption}{captions to appear above the plots;
-		\code{[character]} vector of valid graphics annotations. It
-		can be set to \code{""} or \code{NA} to suppress all captions.}
+    \item{caption}{\code{[character]} captions to appear above the plots;
+		 vector of valid graphics annotations. It can be set to \code{""}
+         or \code{NA} to suppress all captions.}
 	\item{panel}{panel function. The useful alternative to
 		\code{\link{points}}, \code{\link{panel.smooth}} can be chosen
 		by \code{add.smooth = TRUE}.}
-	\item{sub.caption}{common title \code{[character]}---above the figures
+	\item{sub.caption}{\code{[character]} common title---above the figures
 		if there are more than one; used as \code{sub} (s.\code{\link{title}})
 		otherwise. If \code{NULL}, as by default, a possible abbreviated
 		version of \code{deparse(x$call)} is used.}
-	\item{main}{title to each plot \code{[character]}---in addition
+	\item{main}{\code{[character]} title to each plot---in addition
 		to \code{caption}.}
 	\item{ask}{\code{[logical]}; if \code{TRUE}, the user is \emph{ask}ed
         before each plot, see \code{\link{par}(ask=.)}.}
-	\item{id.n}{number of points to be labelled in each plot, starting
-		with the most extreme, \code{[integer]}.}
-	\item{labels.id}{vector of labels \code{[character]}, from which the
+	\item{id.n}{\code{[integer]} number of points to be labelled in each plot,
+        starting with the most extreme.}
+	\item{labels.id}{\code{[character]} vector of labels from which the
 		labels for extreme points will be chosen. \code{NULL} uses
 		observation numbers.}
-	\item{cex.id}{magnification of point labels, \code{[numeric]}.}
-	\item{qqline}{\code{[logical]} indicating if a \code{\link{qqline}()}
+	\item{cex.id}{\code{[numeric]} magnification of point labels.}
+	\item{qqline}{\code{[logical]} indicating if a \code{\link{qqline}}
 		should be added to the normal Q-Q plot.}
 	\item{add.smooth}{\code{[logical]} indicating if a smoother should be
 		added to most plots; see also \code{panel} above.}
-	\item{iter.smooth}{the number of robustness iterations \code{[integer]},
-		the argument \code{iter} in \code{\link{panel.smooth}()}.}
-	\item{label.pos}{positioning of labels \code{[numeric]}, for the left
+	\item{iter.smooth}{\code{[integer]} the number of robustness iterations,
+		the argument \code{iter} in \code{\link{panel.smooth}}.}
+	\item{label.pos}{\code{[numeric]} positioning of labels, for the left
 		half and right half of the graph respectively.}
-	\item{cex.caption}{controls the size of \code{caption}, \code{[numeric]}.}
-	\item{cex.oma.main}{controls the size of the \code{sub.caption} only if
-		that is \emph{above} the figures when there is more than one,
-		\code{[numeric]}.}
+	\item{cex.caption}{\code{[numeric]} controls the size of \code{caption}.}
+	\item{cex.oma.main}{\code{[numeric]} controls the size of the
+        \code{sub.caption} only if that is \emph{above} the figures when
+        there is more than one.}
 }
 \description{
     Methods and utility functions for objects of class \code{svyreg_rob}.
@@ -95,10 +97,12 @@
                 \item \code{"model"}: model-based weighted variance estimator
                     (the sampling design is ignored)
                 \item \code{"compound"}: design-model-based variance
-                    estimator; see Godambe and Thompson (2009)
+                    estimator; see Rubin-Bleuer and Schiopu-Kratina (2005)
+                    and Binder and Roberts (2009)
             }
         }
         \item{Utility functions}{
+            The following utility functions are available:
             \itemize{
                 \item \code{summary} gives a summary of the estimation
                     properties
@@ -119,11 +123,16 @@ Binder, D. A. (1983). On the Variances of Asymptotically Normal Estimators
     from Complex Surveys. \emph{International Statistical Review} \bold{51},
     279--292. \doi{10.2307/1402588}
 
-Godambe, V.P. and Thompson, M.E. (2009). Estimating Functions and Survey
-    Sampling. In: \emph{Sample Surveys: Inference and Analysis} ed. by
-    Pfeffermann, D. and Rao, C. R. Volume 29B of \emph{Handbook of Statistics},
-    Amsterdam: Elsevier, Chap. 26, 83--101.
-    \doi{10.1016/S0169-7161(09)00226-0}
+Binder, D. A. and Roberts, G. (2009). Design- and Model-Based Inference for
+    Model Parameters. In: \emph{Sample Surveys: Inference and Analysis}
+    ed. by Pfeffermann, D. and Rao, C. R. Volume 29B of
+    \emph{Handbook of Statistics}, Amsterdam: Elsevier, Chap. 24, 33--54
+    \doi{DOI:10.1016/S0169-7161(09)00224-7}
+
+Rubin-Bleuer, S. and Schiopu-Kratina, I. (2005). On the Two-phase
+    framework for joint model and design-based inference.
+    \emph{The Annals of Statistics} \bold{33}, 2789--2810.
+    \doi{10.1214/ 009053605000000651}
 }
 \seealso{
 Weighted least squares: \code{\link{svyreg}}; robust weighted regression

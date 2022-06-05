@@ -7,8 +7,8 @@
 \arguments{
     \item{object}{one-sided \code{[formula]} for which a summary is desired,
         e.g., \code{~payroll}.}
-    \item{design}{an object of class \code{survey.design} or
-        \code{survey.design2}.}
+    \item{design}{an object of class \code{survey.design}; see
+        \code{\link{svydesign}}.}
     \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should
         be removed before the computation proceeds (default: \code{FALSE}).}
     \item{\dots}{additional arguments.}

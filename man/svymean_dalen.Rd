@@ -33,7 +33,7 @@ svytotal_dalen(x, design, censoring, type = "Z2", na.rm = FALSE,
             \code{\link[=svystat_rob]{coef}}, \code{\link[=svystat_rob]{SE}},
             \code{\link[=svystat_rob]{vcov}},
             \code{\link[=svystat_rob]{residuals}},
-            \code{\link[=svystat_rob]{fitted}}, and
+            \code{\link[=svystat_rob]{fitted}},
             \code{\link[=svystat_rob]{robweights}}.}
         \item{Bare-bone functions}{See \code{\link{weighted_mean_dalen}} and
             \code{\link{weighted_total_dalen}}.}
@@ -73,5 +73,5 @@ Dalén, J. (1987). Practical Estimators of a Population Total Which Reduce
 \seealso{
 \code{\link{svymean_trimmed}}, \code{\link{svytotal_trimmed}},
 \code{\link{svymean_winsorized}}, \code{\link{svytotal_winsorized}},
-\code{\link{svymean_huber}}, and \code{\link{svytotal_huber}}
+\code{\link{svymean_huber}} and \code{\link{svytotal_huber}}
 }

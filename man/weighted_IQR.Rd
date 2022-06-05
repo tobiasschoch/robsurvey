@@ -6,8 +6,7 @@ weighted_IQR(x, w, na.rm = FALSE, constant = 0.7413)
 }
 \arguments{
     \item{x}{\code{[numeric vector]} data.}
-    \item{w}{\code{[numeric vector]} weights (same length as vector
-        \code{x}).}
+    \item{w}{\code{[numeric vector]} weights (same length as \code{x}).}
     \item{na.rm}{\code{[logical]} indicating whether \code{NA} values
         should be removed before the computation proceeds
         (default: \code{FALSE}).}
@@ -16,7 +15,7 @@ weighted_IQR(x, w, na.rm = FALSE, constant = 0.7413)
         (default: \code{0.7413}).}
 }
 \description{
-    \code{weighted_IQR} computes weighted (normalized) interquartile range
+    Weighted (normalized) interquartile range
 }
 \details{
     By default, the weighted IQR is normalized to be an unbiased estimate of

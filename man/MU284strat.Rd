@@ -4,7 +4,7 @@
 \title{Stratified Sample from the MU284 Population}
 \description{
     Stratified simple random sample (without replacement) of municipalities
-    from the MU284 population of Särndal et al. (1992); stratification is by
+    from the MU284 population in Särndal et al. (1992). Stratification is by
     geographic region and a take-all stratum (by 1975 population size), which
     includes the big cities Stockholm, Göteborg, and Malmö.
 }

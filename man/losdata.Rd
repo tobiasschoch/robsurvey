@@ -7,7 +7,7 @@
 }
 \usage{data(losdata)}
 \format{
-    A \code{data.frame} with data on 70 patients.
+    A \code{data.frame} with data on the following variables:
     \describe{
         \item{\code{los}}{length of stay (days) \code{[integer]}.}
         \item{\code{weight}}{sampling weight \code{[double]}.}
@@ -24,12 +24,11 @@
     (2000) are available in the R package \pkg{robustbase}; see
     \code{robustbase::data(los)}.  Our \code{losdata} are a SRSWOR of
     size \eqn{n = 70} from the 201 original observations.
+
+Ruffieux et al. (2000) and data.frame \code{los} in the R
+    package \pkg{robustbase}.
 }
 \source{
-Ruffieux et al. (2000) and data.frame \code{los} in the R
-package \pkg{robustbase}.
-}
-\references{
 Ruffieux, C., Paccaud, F. and Marazzi, A. (2000). Comparing rules for
     truncating hospital length of stay. \emph{Casemix Quarterly} \bold{2}.
 }

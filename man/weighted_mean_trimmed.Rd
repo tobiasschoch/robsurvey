@@ -10,7 +10,7 @@ weighted_total_trimmed(x, w, LB = 0.05, UB = 1 - LB, info = FALSE,
 }
 \arguments{
     \item{x}{\code{[numeric vector]} data.}
-    \item{w}{\code{[numeric vector]} weights (same length as vector \code{x}).}
+    \item{w}{\code{[numeric vector]} weights (same length as \code{x}).}
     \item{LB}{\code{[double]} lower bound of trimming such that
         \eqn{0 \leq} \code{LB} \eqn{<} \code{UB} \eqn{\leq 1}.}
     \item{UB}{\code{[double]} upper bound of trimming such that
@@ -52,9 +52,9 @@ weighted_total_trimmed(x, w, LB = 0.05, UB = 1 - LB, info = FALSE,
             \eqn{\hat{N} =\sum w_i}{Nhat = sum(w[i])}, where
             summation is over all observations in the sample.}
         \item{Trimming.}{The methods trims the \code{LB}\eqn{~\cdot 100\%}
-            percentage of the smallest observations and the
-            (1 - \code{UB})\eqn{~\cdot 100\%} percentage of the largest
-            observations from the data.}
+            of the smallest observations and the
+            (1 - \code{UB})\eqn{~\cdot 100\%} of the largest observations
+            from the data.}
         \item{Variance estimation.}{See survey methods:
             \itemize{
                 \item \code{\link{svymean_trimmed}},

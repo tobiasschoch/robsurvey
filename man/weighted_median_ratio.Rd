@@ -7,7 +7,7 @@ weighted_median_ratio(x, y = NULL, w, na.rm = FALSE)
 \arguments{
     \item{x}{\code{[numeric vector]} explanatory variable.}
     \item{y}{\code{[numeric vector]} response variable (default: \code{NULL}).}
-    \item{w}{\code{[numeric vector]} weights (same length as vector \code{x}).}
+    \item{w}{\code{[numeric vector]} weights (same length as \code{x}).}
     \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should
         be removed before the computation proceeds (default: \code{FALSE}).}
 }
@@ -28,6 +28,6 @@ fitted(m)
 residuals(m)
 }
 \seealso{
-\code{\link[stats]{line}}, \code{\link{weighted_line}}, and
+\code{\link[stats]{line}}, \code{\link{weighted_line}} and
 \code{\link{weighted_median_line}}
 }

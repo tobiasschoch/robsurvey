@@ -28,15 +28,15 @@ svytotal_trimmed(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE)
         \eqn{\hat{N} =\sum w_i}{Nhat = sum(w[i])}, where
         summation is over all observations in the sample.}
     \item{Trimming.}{The methods trims the \code{LB}\eqn{~\cdot 100\%}
-        percentage of the smallest observations and the
-        (1 - \code{UB})\eqn{~\cdot 100\%} percentage of the largest
-        observations from the data.}
+        of the smallest observations and the (1 - \code{UB})\eqn{~\cdot 100\%}
+        of the largest observations from the data.}
     \item{Variance estimation.}{Large-sample approximation based on the
-        influence function; see Huber (1981, Chap. 3.3) and Shao (1994).}
+        influence function; see Huber and Ronchetti (2009, Chap. 3.3) and
+        Shao (1994).}
     \item{Utility functions.}{\code{\link[=svystat_rob]{summary}},
         \code{\link[=svystat_rob]{coef}}, \code{\link[=svystat_rob]{SE}},
         \code{\link[=svystat_rob]{vcov}}, \code{\link[=svystat_rob]{residuals}},
-        \code{\link[=svystat_rob]{fitted}}, and
+        \code{\link[=svystat_rob]{fitted}},
         \code{\link[=svystat_rob]{robweights}}.}
     \item{Bare-bone functions.}{See \code{\link{weighted_mean_trimmed}} and
         \code{\link{weighted_total_trimmed}}.}

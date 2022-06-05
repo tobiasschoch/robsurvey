@@ -1,7 +1,7 @@
 \name{svymean_tukey}
 \alias{svymean_tukey}
 \alias{svytotal_tukey}
-\title{Weighted Tukey Biweight Mean and Total - Robust Horvitz-Thompson
+\title{Weighted Tukey Mean and Total -- Robust Horvitz-Thompson
 Estimator}
 \usage{
 svymean_tukey(x, design, k, type = "rhj", na.rm = FALSE, verbose = TRUE, ...)
@@ -24,8 +24,8 @@ svytotal_tukey(x, design, k, type = "rhj", na.rm = FALSE, verbose = TRUE, ...)
         \code{\link{svyreg_control}}).}
 }
 \description{
-    Weighted Tukey biweight M-estimator of the population mean and total
-    (robust Horvitz-Thompson estimator)
+    Weighted Tukey biweight (or bisquare) \emph{M}-estimator of the population
+    mean and total (robust Horvitz-Thompson estimator)
 }
 \details{
     \describe{
@@ -37,7 +37,7 @@ svytotal_tukey(x, design, k, type = "rhj", na.rm = FALSE, verbose = TRUE, ...)
             \code{\link[=svystat_rob]{coef}}, \code{\link[=svystat_rob]{SE}},
             \code{\link[=svystat_rob]{vcov}},
             \code{\link[=svystat_rob]{residuals}},
-            \code{\link[=svystat_rob]{fitted}}, and
+            \code{\link[=svystat_rob]{fitted}},
             \code{\link[=svystat_rob]{robweights}}.}
        \item{Bare-bone functions}{See \code{\link{weighted_mean_tukey}} and
             \code{\link{weighted_total_tukey}}.}
@@ -46,9 +46,8 @@ svytotal_tukey(x, design, k, type = "rhj", na.rm = FALSE, verbose = TRUE, ...)
 \section{Failure of convergence}{
     By default, the method assumes a maximum number of \code{maxit = 100}
     iterations and a numerical tolerance criterion to stop the iterations of
-    \code{tol = 1e-05}. You can run the code with specifications other than
-    the default values by specifying the arguments \code{maxit} and/or
-    \code{tol} in the function call; see also \code{\link{svyreg_control}}.
+    \code{tol = 1e-05}. If the algorithm fails to converge, you may
+    consider changing the default values; see \code{\link{svyreg_control}}.
 }
 \value{
     Object of class \code{\link{svystat_rob}}

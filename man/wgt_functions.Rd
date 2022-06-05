@@ -54,5 +54,5 @@ Simpson, D. G., Ruppert, D. and Carroll, R.J. (1992). On One-Step GM
 }
 \seealso{
 \code{\link{svyreg_huberM}}, \code{\link{svyreg_huberGM}},
-\code{\link{svyreg_tukeyM}}, and \code{\link{svyreg_tukeyGM}}
+\code{\link{svyreg_tukeyM}} and \code{\link{svyreg_tukeyGM}}
 }

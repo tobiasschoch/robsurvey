@@ -20,8 +20,8 @@ svyreg_huber(formula, design, k, var = NULL, na.rm = FALSE, asym = FALSE,
         \code{\link[survey]{svydesign}}.}
     \item{k}{\code{[double]} robustness tuning constant
         (\eqn{0 < k \leq \infty}{0 < k <= Inf}).}
-    \item{var}{\code{[numeric vector]} heteroscedastic variance (default:
-        \code{NULL}, i.e., homoscedastic variance).}
+    \item{var}{\code{[numeric vector]} or \code{[NULL]} heteroscedastic
+        variance (default: \code{NULL} implies homoscedastic variance).}
     \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should
         be removed before the computation proceeds (default: \code{FALSE}).}
     \item{asym}{\code{[logical]} toggle for asymmetric Huber psi-function
@@ -31,24 +31,24 @@ svyreg_huber(formula, design, k, var = NULL, na.rm = FALSE, asym = FALSE,
     \item{\dots}{additional arguments passed to the method (e.g., \code{maxit}:
         maxit number of iterations, etc.).}
     \item{type}{\code{[character]} \code{"Mallows"} or \code{"Schweppe"}.}
-    \item{xwgt}{\code{[numerical vector]} of weights in the design space
-        (default: \code{NULL}); \code{xwgt} is only relevant for
-        \code{type = "Mallows"} or \code{type = "Schweppe"}.}
+    \item{xwgt}{\code{[numerical vector]} or \code{[NULL]} of weights in
+        the design space (default: \code{NULL}); \code{xwgt} is only
+        relevant for \code{type = "Mallows"} or \code{type = "Schweppe"}.}
 }
 \description{
     \code{svyreg_huberM} and \code{svyreg_huberGM} compute, respectively,
-    a survey weighted M- and GM-estimator of regression using the Huber
-    psi-function. Use \code{svyreg_huberM} not \code{svyreg_huber} because
-    the latter is deprecated but is kept for computability reasons.
+    a survey weighted \emph{M}- and \emph{GM}-estimator of regression using
+    the Huber psi-function. Use \code{svyreg_huberM} not \code{svyreg_huber}
+    because the latter is deprecated but is kept for compatibility reasons.
 }
 \details{
     \code{svyreg_huberM} and \code{svyreg_huberGM} compute, respectively,
-    M- and GM-estimates of regression by iteratively re-weighted least
-    squares (IRWLS).  The estimate of regression scale is (by default)
-    computed by the (normalized) weighted median of absolute deviations
+    \emph{M}- and \emph{GM}-estimates of regression by iteratively re-weighted
+    least squares (IRWLS).  The estimate of regression scale is (by default)
+    computed as the (normalized) weighted median of absolute deviations
     from the weighted median (MAD; see \code{\link{weighted_mad}}) for
     each IRWLS iteration. If the weighted MAD is zero (or nearly so),
-    the scale is computed by the (normalized) weighted interquartile
+    the scale is computed as the (normalized) weighted interquartile
     range (IQR).
     \describe{
         \item{M-estimator}{
@@ -57,9 +57,9 @@ svyreg_huber(formula, design, k, var = NULL, na.rm = FALSE, asym = FALSE,
             chosen appropriately).
         }
         \item{GM-estimator}{
-            \code{svyreg_huberGM} implements the Mallows and Schweppe
+            Function \code{svyreg_huberGM} implements the Mallows and Schweppe
             regression GM-estimator (see argument \code{type}).
-            The regression GM-estimator are robust against residual outliers
+            The regression GM-estimators are robust against residual outliers
             \emph{and} outliers in the model's design space (leverage
             observations; see argument \code{xwgt}).
         }
@@ -68,7 +68,7 @@ svyreg_huber(formula, design, k, var = NULL, na.rm = FALSE, asym = FALSE,
         }
         \item{Models}{
             Models for \code{svyreg_rob} are specified symbolically. A typical
-            model has the form \code{response ~ terms} where \code{response}
+            model has the form \code{response ~ terms}, where \code{response}
             is the (numeric) response vector and \code{terms} is a series of
             terms which specifies a linear predictor for \code{response}; see
             \code{\link{formula}} and \code{\link{lm}}.
@@ -82,24 +82,21 @@ svyreg_huber(formula, design, k, var = NULL, na.rm = FALSE, asym = FALSE,
 \section{Failure of convergence}{
     By default, the method assumes a maximum number of \code{maxit = 100}
     iterations and a numerical tolerance criterion to stop the iterations of
-    \code{tol = 1e-05}. You can run the code with specifications other than
-    the default values by specifying the arguments \code{maxit} and/or
-    \code{tol} in the function call; see also \code{\link{svyreg_control}}.
+    \code{tol = 1e-05}. If the algorithm fails to converge, you may
+    consider changing the default values; see \code{\link{svyreg_control}}.
 }
 \value{
     Object of class \code{svyreg.rob}
 }
 \seealso{
-\code{\link[=svyreg_rob]{summary}} for summaries.
+\code{\link[=svyreg_rob]{summary}}, \code{\link[=svyreg_rob]{coef}},
+\code{\link[=svyreg_rob]{residuals}}, \code{\link[=svyreg_rob]{fitted}} and
+\code{\link[=svyreg_rob]{vcov}}
 
-The generic functions \code{\link[=svyreg_rob]{coef}},
-\code{\link[=svyreg_rob]{residuals}}, \code{\link[=svyreg_rob]{fitted}}, and
-\code{\link[=svyreg_rob]{vcov}}.
-
-\code{\link[=svyreg_rob]{plot}} for regression diagnostic plot methods.
+\code{\link[=svyreg_rob]{plot}} for regression diagnostic plot methods
 
 Other robust estimating methods \code{\link{svyreg_tukeyM}} and
-\code{\link{svyreg_tukeyGM}}.
+\code{\link{svyreg_tukeyGM}}
 }
 \examples{
 data(workplace)
