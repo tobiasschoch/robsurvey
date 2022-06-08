@@ -8,10 +8,6 @@
 
 * regression: what happens if p <= n
 
-### CHANGE
-
-* vignettes => `mer`
-
 ### NEW FEATURE
 
 * `svymean_reg` (+ _total_)

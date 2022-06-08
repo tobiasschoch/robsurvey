@@ -3,6 +3,7 @@ title: "Vignette: Robust Horvitz-Thompson Estimator"
 author: "Beat Hulliger and Tobias Schoch"
 output:
     html_document:
+        css: "fluent.css"
         highlight: tango
 vignette: >
   %\VignetteIndexEntry{Robust Horvitz-Thompson Estimator}
@@ -61,7 +62,7 @@ In this vignette, we discuss the robust Horvitz-Thompson (RHT) estimator of [Hul
  - bare-bone method
  - survey method
 
-Bare-bone methods are stripped-down versions of the survey methods in terms of functionality and informativeness. These functions may serve users and other package developers as building blocks. In particular, bare-bone functions cannot compute variances.
+Bare-bone methods are stripped-down versions of the survey methods in terms of functionality and informativeness. These functions may serve users and package developers as building blocks. In particular, bare-bone functions cannot compute variances.
 
 See Vignette "Basic Robust Estimators" to learn more about other robust estimators (trimming, winsorization, etc.).
 </p>
@@ -70,7 +71,7 @@ See Vignette "Basic Robust Estimators" to learn more about other robust estimato
 First, we load the package.
 
 ```{r}
-library(robsurvey, quietly = TRUE)
+library("robsurvey", quietly = TRUE)
 ```
 
 ## 1. Workplace Data
@@ -96,14 +97,14 @@ head(workplace, 3)
 **For the survey methods** (not bare-bone methods), we must **load** the `survey` package ([Lumley](#biblio), 2010, 2021)
 
 ```{r, eval = FALSE}
-library(survey)
+library("survey")
 ```
 
 ```{r, echo = FALSE}
 suppressPackageStartupMessages(library(survey))
 ```
 
-and specify a `survey.design` object
+and specify a survey or sampling design object
 
 ```{r}
 dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight, data = workplace)
@@ -125,9 +126,9 @@ svyboxplot(payroll~ 1, dn, all.outliers = TRUE, xlab = "payroll", horizontal = T
 svyboxplot(log(payroll) ~ 1, dn, all.outliers = TRUE, xlab = "log(payroll)", horizontal = TRUE)
 ```
 
-From the boxplot with `payroll` on raw scale, we recognise that the sample distribution of `payroll` is very skewed to the right; the boxplot on logarithmic scale demonstrates that log-transform is not sufficient to turn the skewed distribution into a symmetric distribution, and shows some outliers. The outliers need not be errors. Following [Chambers](#biblio) (1986), we distinguish representative outliers from non-representative outliers ($\rightarrow$ see vignette "Basic Robust Estimators" for an introduction to the notion of non-/ representative outliers).
+From the boxplot with `payroll` on raw scale, we recognise that the sample distribution of `payroll` is skewed to the right; the boxplot on logarithmic scale demonstrates that log-transform is not sufficient to turn the skewed distribution into a symmetric distribution. The outliers need not be errors. Following [Chambers](#biblio) (1986), we distinguish representative outliers from non-representative outliers ($\rightarrow$ see vignette "Basic Robust Estimators" for an introduction to the notion of non-/ representative outliers).
 
-The outliers visible in the boxplot refer to a few but rather large workplaces. Moreover, we assume that these outliers represent other workplaces in the population that are similar in value (i.e., representative outliers).
+The outliers visible in the boxplot refer to a few large workplaces. Moreover, we assume that these outliers represent other workplaces in the population that are similar in value (i.e., representative outliers).
 
 <div class="my-sidebar-blue">
 <p style="color: #1f618d;">
@@ -142,16 +143,15 @@ plot(weights(dn), dn$variables$payroll, ylab = "payroll (log scale)", log = "y",
     panel.first = grid(col = "grey", lty = 2))
 ```
 
-In the scatter plot, we can spot the following tendency:
+In the scatter plot, we can observe the following tendency:
 
  - Large observations have rather small weights (and vice versa).
- - Or, if we think of a linear fit, we would draw the line from the top left to the bottom right corner.
+ - Or, if we think of a linear regression fit, we would draw the line from the top left to the bottom right corner.
 
-This tendency reflects the survey designers' attempt to prevent *influential outliers* at the stage of designing the survey, that is, to prevent observations that are far from the bulk of values *and* have a large sampling weight. The survey designers achieved this by carefully sampling workplaces with large (anticipated) payroll with a sample inclusion probability equal or at least close to unity.
+This tendency reflects the survey designers' attempt to prevent *influential outliers* at the stage of designing the survey, that is, to prevent observations that are far from the bulk of values *and* have a large sampling weight. The survey designers achieved this by carefully sampling workplaces with large (anticipated) payroll with a sample inclusion probability equal or close to unity.
 
 Although the designers did a great job, we are faced with the following problem: Because outliers have a sampling weight that is already close to unity, there is little we can do by reducing the sampling weight in order to limit the impact of an influential value. Hence, weight reduction ($\rightarrow$ see vignette "Basic Robust Estimators") is not a productive strategy. Fortunately, this situation is where the RHT shines.
-<p>
-</p>
+
 </div>
 
 ## 2 Robust Horvitz-Thompson Estimator
@@ -161,20 +161,20 @@ Although the designers did a great job, we are faced with the following problem:
 **IMPORTANT**
 </p>
 <p>
-The RHT estimator is the method of choice for pps designs (i.e., designs without replacement where the sample inclusion probabilities are proportional to some measure of size). For equal-probability designs, the $M$-estimator of `type = "rhj"` (robust Hajek type estimator) tends to be superior $\rightarrow$ see vignette <b><a style = "color:#ce5b00;">Basic Robust Estimators</a></b> to learn more.
+The RHT estimator is the method of choice for pps designs (i.e., designs without replacement where the sample inclusion probabilities are proportional to some measure of size). For equal-probability designs, the *M*-estimator of `type = "rhj"` (robust Hajek type estimator) tends to be superior; see vignette <b><a style = "color:#ce5b00;">Basic Robust Estimators</a></b> to learn more.
 </p>
 </div>
 
 ### 2.1 Bare-bone methods
 
-The following bare-bone estimating methods are available
+The following bare-bone estimating methods are available:
 
  - `weighted_mean_huber()`
  - `weighted_total_huber()`
  - `weighted_mean_tukey()`
  - `weighted_total_tukey()`
 
-The functions with postfix `_tukey` are $M$-estimators with the Tukey biweight $\psi$-function. The Huber RHT $M$-estimator of the payroll total can be computed with
+The functions with postfix `_tukey` are *M*-estimators with the Tukey biweight $\psi$-function. The Huber RHT *M*-estimator of the payroll total can be computed with
 
 ```{r}
 weighted_total_huber(payroll, weight, k = 8, type = "rht")
@@ -190,22 +190,21 @@ In general, the tuning constant `k` must be chosen larger than (loosely speaking
 
 All bare-bone methods can be called with the argument `info = TRUE` (default: `FALSE`). This instructs the functions to return a list with estimate-specific information $\rightarrow$ see vignette "Basic Robust Estimators" to learn more.
 
-The Huber $M$-estimator can be computed for an asymmetric Huber $\psi$-function by calling the function with the additional argument `asym = TRUE`.
+The Huber *M*-estimator can be computed for an asymmetric Huber $\psi$-function by calling the function with the additional argument `asym = TRUE`.
 
-The $M$-estimators are computed by iterative methods. If the algorithm fails to converge, the functions return `NA`. By default, the algorithm uses a maximum of `maxit = 50` iterations and a numerical tolerance criterion of `tol = 1e-5` as a stopping rule. Other values of `maxit` and `tol` can be specified in the function call.
-</p>
+The *M*-estimators are computed by iterative methods. If the algorithm fails to converge, the functions return `NA`. By default, the algorithm uses a maximum of `maxit = 50` iterations and a numerical tolerance criterion of `tol = 1e-5` as a stopping rule. Other values of `maxit` and `tol` can be specified in the function call; see `svyreg_control()`.</p>
 </div>
 
 ### 2.2 Survey methods
 
-The following survey method are available
+The following survey method are available;
 
  - `svymean_huber()`
  - `svytotal_huber()`
  - `svymean_tukey()`
  - `svytotal_tukey()`
 
-The survey method of the RHT (and its standard error) are computed as follows (`type = "rht"`)
+The survey method of the RHT (and its standard error) is
 
 ```{r}
 m <- svytotal_huber(~payroll, dn, k = 8, type = "rht")
@@ -226,19 +225,19 @@ vcov(m)
 SE(m)
 ```
 
-For $M$-estimators, the estimated scale (weighted MAD) can be extracted with the `scale()` function.
+For *M*-estimators, the estimated scale (weighted MAD) can be extracted with the `scale()` function.
 
 ```{r}
 scale(m)
 ```
 
-Additional utility functions
+Additional utility functions are:
 
  - `residuals()` to extract the residuals
  - `fitted()` to extract the fitted values under the model in use
  - `robweights()` to extract the robustness weights
 
-In the following figure, the robustness weights of object `m` are plotted against the residuals. The Huber RHT $M$-estimator downweights observations at both ends of the residuals' distribution.
+In the following figure, the robustness weights of object `m` are plotted against the residuals. The Huber RHT *M*-estimator downweights observations at both ends of the residuals' distribution.
 
 ```{r, eval = FALSE, fig.align = "center"}
 plot(residuals(m), robweights(m))
@@ -251,7 +250,7 @@ plot(residuals(m), robweights(m))
 
 ### 2.3 Adaptive estimation
 
-An adaptive $M$-estimator of the total (or mean) is defined by letting the data chose the tuning constant $k$. This approach is available for the RHT estimator $\rightarrow$ see vignette "Basic Robust Estimators", Chap. 5.3 on $M$-estimators.
+An adaptive *M*-estimator of the total (or mean) is defined by letting the data chose the tuning constant $k$. This approach is available for the RHT estimator $\rightarrow$ see vignette "Basic Robust Estimators", Chap. 5.3 on *M*-estimators.
 
 ---
 
