@@ -105,15 +105,15 @@ reg <- svyreg_huberM(payroll ~ employment, dn, k = 3)
 
 # Robust GREG estimator of the mean; the population means of the auxiliary
 # variables are from a register
-m <- svymean_reg(reg, auxiliary = c(1, 11.03), type = "ADU")
+m <- svymean_reg(reg, auxiliary = c(1.05, 11.57), type = "ADU")
 m
 
 # ADU
-m <- svytotal_reg(reg, auxiliary = c(86514, 953555), type = "ADU")
+m <- svytotal_reg(reg, auxiliary = c(90840, 1001233), type = "ADU")
 m
 
 m <- svyreg(payroll ~ employment, dn)
-svytotal_reg(m, auxiliary = c(86514, 953555), type = "ADU")
+svytotal_reg(m, auxiliary = c(90840, 1001233), type = "ADU")
 
 # Summarize
 summary(m)

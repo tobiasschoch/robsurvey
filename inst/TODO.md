@@ -2,20 +2,6 @@
 
 ---
 
-## MILESTONE ver. 0.3
-
-### FIX
-
-* regression: what happens if p <= n
-
-### NEW FEATURE
-
-* `svymean_reg` (+ _total_)
-    - SE of mean w/o intercept
-    - population x-totals should not equal the weighted sample mean
-
----
-
 ## MILESTONE ver. 0.4
 
 ### DOCUMENTATION
