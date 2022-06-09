@@ -127,12 +127,12 @@ Binder, D. A. and Roberts, G. (2009). Design- and Model-Based Inference for
     Model Parameters. In: \emph{Sample Surveys: Inference and Analysis}
     ed. by Pfeffermann, D. and Rao, C. R. Volume 29B of
     \emph{Handbook of Statistics}, Amsterdam: Elsevier, Chap. 24, 33--54
-    \doi{DOI:10.1016/S0169-7161(09)00224-7}
+    \doi{10.1016/S0169-7161(09)00224-7}
 
 Rubin-Bleuer, S. and Schiopu-Kratina, I. (2005). On the Two-phase
     framework for joint model and design-based inference.
     \emph{The Annals of Statistics} \bold{33}, 2789--2810.
-    \doi{10.1214/ 009053605000000651}
+    \doi{10.1214/009053605000000651}
 }
 \seealso{
 Weighted least squares: \code{\link{svyreg}}; robust weighted regression
