@@ -251,7 +251,7 @@ that the implementations do not differ in terms of the `xgwt`'s.
 
 The `delivery` data consist of observations on servicing 25
 soft drink vending machines. The data are from
-[Montgomery and Peck](@literature) (2006); see also
+[Montgomery and Peck](#literature) (2006); see also
 [Rousseeuw and Leroy](#literature) (1987). The variables are:
 
 * `n.prod`: number of products stocked in the vending machine,
