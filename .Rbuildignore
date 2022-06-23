@@ -13,6 +13,7 @@
 ^inst/doc/doc_comparison\.Rmd$
 ^inst/doc/fluent\.css$
 ^inst/doc/doc_robust_GREG\.md$
+^inst/doc/useR_2022_conference
 # varia
 ^inst/varia/$
 # tests

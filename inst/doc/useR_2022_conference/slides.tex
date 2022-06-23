@@ -1,0 +1,840 @@
+\documentclass[framenumber,t]{beamer}
+\usepackage[absolute,overlay]{textpos}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{booktabs}
+\usepackage{multicol}
+
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{bm}
+
+%----------------------------
+% fonts
+\usepackage{helvet}
+\usepackage{mathptmx} % fatter math font
+\usefonttheme[onlymath]{serif}
+\usepackage{lmodern}
+\renewcommand{\ttdefault}{cmtt}
+
+%----------------------------
+% colors
+\definecolor{fhnwblue}{RGB}{0,51,121}
+\definecolor{orange}{RGB}{199,90,9}
+\definecolor{orange_dark}{RGB}{162,74,14}
+
+\setbeamercolor{frametitle}{fg=fhnwblue}
+
+\setbeamercolor{section in toc}{fg=fhnwblue,bg=white}
+\setbeamercolor{item projected}{bg=fhnwblue}
+\setbeamertemplate{enumerate items}[default]
+\setbeamertemplate{navigation symbols}{}
+\setbeamercovered{transparent}
+\setbeamercolor{enumerate item}{fg=fhnwblue}
+\setbeamercolor{enumerate subitem}{fg=fhnwblue}
+\setbeamercolor{enumerate subsubitem}{fg=fhnwblue}
+\setbeamercolor{itemize item}{fg=fhnwblue}
+\setbeamercolor{itemize subitem}{fg=fhnwblue}
+\setbeamercolor{itemize subsubitem}{fg=fhnwblue}
+
+\setbeamerfont{framesubtitle}{size=\large}
+
+%----------------------------
+% alerted text
+\setbeamerfont{alerted text}{series=\bfseries}
+\setbeamercolor{alerted text}{fg=orange_dark}
+
+%----------------------------
+% code command (can deal with '$', '_', etc.)
+\makeatletter
+\newcommand\code{\bgroup\@makeother\_\@makeother\~\@makeother\$\@makeother\^\@codex}
+\def\@codex#1{{\normalfont\ttfamily\hyphenchar\font=-1 #1}\egroup}
+\makeatother
+
+% proglang
+\let\proglang=\textsf
+
+%----------------------------
+% itemize without identation
+\setlength{\leftmargini}{7pt}
+\setbeamertemplate{itemize items}{\scalebox{0.6}{$\blacksquare$}}
+
+%----------------------------
+% code listing (needs specification 'fragile')
+\usepackage{listings}
+\lstdefinestyle{in_big}{
+    language=R,
+    basicstyle=\small\ttfamily\bfseries\color{orange_dark}
+}
+\lstdefinestyle{in_small}{
+    language=R,
+    basicstyle=\footnotesize\ttfamily\bfseries\color{orange_dark}
+}
+\lstdefinestyle{out_big}{
+    language=R,
+    basicstyle=\small\ttfamily\color{fhnwblue}
+}
+\lstdefinestyle{out_small}{
+    language=R,
+    basicstyle=\footnotesize\ttfamily\color{fhnwblue}
+}
+
+%----------------------------
+\usepackage{tikz}
+\usetikzlibrary{backgrounds, positioning}
+\usepackage{pgf}
+\logo{\pgfputat{\pgfxy(-6.2,8.4)}{\pgfbox[right,base]{%
+    \includegraphics[height=0.65cm]{FHNW_HW_E_10mm.pdf}}}}
+\newcommand{\nologo}{\setbeamertemplate{logo}{}}
+\makeatletter
+\setbeamertemplate{frametitle}{
+    \bfseries
+    \ifbeamercolorempty[bg]{frametitle}{}{\nointerlineskip}%
+    \@tempdima=\textwidth%
+    \advance\@tempdima by\beamer@leftmargin%
+    \advance\@tempdima by\beamer@rightmargin%
+    \hspace*{1.25em} %%%%%%%%%%%%% For example insert shift to right
+    \begin{beamercolorbox}[left,wd=\the\@tempdima]{frametitle}
+        \usebeamerfont{frametitle}%
+        \vbox{}\vskip 4.5ex%
+        \if@tempswa\else\csname beamer@ftecenter\endcsname\fi%
+        \strut\insertframetitle\strut\par%
+        {%
+            \ifx\insertframesubtitle\@empty%
+            \else%
+            {\usebeamerfont{framesubtitle}\usebeamercolor[fg]{framesubtitle}%
+                \insertframesubtitle\strut\par}%
+            \fi
+        }%
+        \vskip-1ex%
+        \if@tempswa\else\vskip-.3cm\fi% set inside beamercolorbox...
+        \vspace{0.5em}
+    \end{beamercolorbox}%
+}
+\makeatother
+
+\setbeamertemplate{footline}[text line]{%
+    \parbox{\linewidth}{%
+        \vspace*{-15pt}%
+        \insertshorttitle\hfill\insertshortauthor\hfill\insertpagenumber}
+}
+\setbeamertemplate{navigation symbols}{}
+
+% -----------------------------------------------------------------------------
+\begin{document}
+
+\title[robsurvey: useR! 2022 conference]{\emph{robsurvey:} Robust Survey Statistics Estimation}
+\subtitle{useR! 2022 Conference}
+
+\author[Tobias Schoch]{Tobias Schoch (joint work with Beat Hulliger)}
+\date{\today}
+
+% -----------------------------------------------------------------------------
+% title page
+{
+\setbeamertemplate{footline}{}
+\begin{frame}
+   \pgfputat{\pgfxy(-1,-7.6)}{\pgfbox[left,base]{%
+        \includegraphics[width=12cm]{title.png}}}
+    %
+    \begin{textblock}{20}(1.15,3.6)
+        \Large\bfseries\color{fhnwblue}\inserttitle
+    \end{textblock}
+    %
+    \begin{textblock}{20}(1.15,4.8)
+        \small\bfseries\color{fhnwblue}\insertsubtitle
+    \end{textblock}
+    %
+    \begin{textblock}{20}(1.15,15.2)
+        \scriptsize\color{black}\insertauthor, ~\insertdate
+    \end{textblock}
+    %
+    \vspace*{3.3cm}\hspace{-1.2cm}%
+    \begin{tikzpicture}[ scale=1]
+    \draw [fhnwblue,fill] (0,0) rectangle (1.1,4);
+    \end{tikzpicture}
+\end{frame}
+}
+\addtocounter{framenumber}{-1}
+% -----------------------------------------------------------------------------
+\begin{frame}[fragile]
+\frametitle{Outline}
+    \begin{itemize}
+        \setlength\itemsep{0.75em}
+        \item Basic robust estimators
+        \item Robust weighted regression
+        \item Summary \& outlook
+    \end{itemize}
+    \vspace{3em}
+    \begin{minipage}{6cm}
+        \alert{Requirement}
+    \end{minipage}
+    \begin{lstlisting}[style=in_big]
+> library("robsurvey", quietly = TRUE)
+> data("losdata")
+> data("counties")
+    \end{lstlisting}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+\bgroup
+\setbeamercolor{background canvas}{bg=fhnwblue}
+\begin{frame}[c,plain]{}
+\begin{center}
+    \textcolor{white}{\large PART 1}\\
+    \vspace{1em}
+    \textcolor{white}{\Huge Basic Robust Estimators}
+\end{center}
+\end{frame}
+\egroup
+
+% -----------------------------------------------------------------------------
+\begin{frame}[fragile]
+\frametitle{The \code{losdata} data}
+    \begin{itemize}
+        \setlength\itemsep{0.5em}
+        \item \alert{Length of stay} (LOS) in hospital (days per year)
+        \item \alert{Sample} of $n = 71$ patients (population size $N = 2479$)
+    \end{itemize}
+    \begin{lstlisting}[style=in_big]
+> head(losdata, 3)
+    \end{lstlisting}
+    \begin{lstlisting}[style=out_big]
+  los   weight  fpc
+1  10 34.91549 2479
+2   7 34.91549 2479
+3  21 34.91549 2479
+    \end{lstlisting}
+    where\\
+    \vspace{0.5em}
+    \begin{tabular}{ll}
+        \code{los} & length of stay in hospital\\
+        \code{weight} & sampling weight\\
+        \code{fpc} & population size (finite population correction)\\
+    \end{tabular}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+\begin{frame}
+\frametitle{The \code{losdata} data {\small (cont'd)}}
+    \begin{itemize}
+        \setlength\itemsep{0.1em}
+        \vspace{0.5em}
+        \item \alert{Distribution} of \code{los}
+        \begin{itemize}
+            \setlength\itemsep{0.5em}
+            \item Average: 13.03 (days)
+            \item Maximum: 182
+        \end{itemize}
+    \end{itemize}
+
+    % library(robsurvey)
+    % attach(losdata)
+    % file_name <- "boxplot_los.pdf"
+    % pdf(file = file_name, height = 3)
+    % boxplot(los, horizontal = TRUE, xlab = "LOS (days)", cex.axis = 1.2,
+    %     cex.lab = 1.4)
+    % dev.off()
+    % system(paste("pdfcrop.exe", file_name, file_name))
+    \begin{center}
+        \includegraphics[height=3cm]{figure/boxplot_los}
+    \end{center}
+    % \begin{itemize}
+    %     \setlength\itemsep{0.5em}
+    %     \item $\mathrm{var}(\bar{y})$ is large
+    %     \item Is there an \alert{estimator $\theta(y_1, \ldots, y_n)$} of the
+    %         mean such that $\mathrm{mse}(\theta) < \mathrm{var}(\bar{y})$?
+    %         E.g., winsorized mean or $M$-estimator?
+    %     % \item Chambers (1986)
+    %     %     \begin{itemize}
+    %     %         \setlength\itemsep{0.5em}
+    %     %         \item \alert{Representative outlier}: extreme but \alert{correct}
+    %     %             value that \alert{represents} other population units
+    %     %             similar in value
+    %     %         \item \alert{Nonrepresentative outlier}: extreme observation
+    %     %             whose value is either deemed erroneous or \alert{unique}
+    %     %             in the sense that there is no other unit like it
+    %     %     \end{itemize}
+    % \end{itemize}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+\begin{frame}[fragile]
+\frametitle{Two ``flavors'' of basic robust estimators\vspace{0.5em}}
+\begin{itemize}
+    \item \alert{bare-bone} functions: \code{weighted_mean} and
+        \code{weighted_total}
+    \item \alert{survey} methods: \code{svymean} and \code{svytotal}
+\end{itemize}
+\vspace{0.5em}
+followed by (suffix)
+\vspace{1em}
+\begin{tabular}{ll}
+    \addlinespace
+    &\code{_winsorized()} and \code{_k_winsorized()}: winsorization\\
+    \addlinespace
+    &\code{_trimmed()}: trimming\\
+    \addlinespace
+    &\code{_huber()} and \code{_tukey()}: $M$-estimators\\
+    \addlinespace
+    &\code{_dalen()}: Dal{\'e}n's estimators: censoring of value and weight\\
+\end{tabular}
+E.g., \code{weighted_mean_winsorized()}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+\begin{frame}[fragile]
+    \frametitle{Bare-bone functions}
+    The 2\% one-sided \alert{winsorized weighted mean} is
+
+    \begin{lstlisting}[style=in_big]
+> attach(losdata)
+> weighted_mean_winsorized(los, weight, LB = 0,
+                           UB = 0.98)
+    \end{lstlisting}
+    \vspace{-1em}
+    \begin{lstlisting}[style=out_big]
+[1] 11.40845
+    \end{lstlisting}
+    \vspace{0.5em}
+    \begin{itemize}
+        \setlength\itemsep{0.5em}
+        \item Lower bound \code{LB} = 0
+        \item Upper bound \code{UB = 0.98} \alert{$\boldsymbol{\Rightarrow}$}
+            largest 2\% of the observations are winsorized
+        \item Return value: estimate (scalar)
+        \item Light-weight, minimalistic, bare-bone
+        \item Useful for package developers
+    \end{itemize}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+\begin{frame}[fragile]
+\frametitle{Survey methods}
+\begin{lstlisting}[style=in_big]
+> library("survey")
+> dn <- svydesign(ids = ~1, fpc = ~fpc,
+                  weights = ~weight,
+                  data = losdata)
+\end{lstlisting}
+%where \code{survey::svydesign()} defines a survey design
+\vspace{1em}
+\begin{lstlisting}[style=in_big]
+> svymean_winsorized(~los, dn, LB = 0, UB = 0.98)
+\end{lstlisting}
+\vspace{-0.5em}
+\begin{lstlisting}[style=out_big]
+     mean  SE
+los 11.41 1.5
+\end{lstlisting}
+\vspace{0.5em}
+\begin{itemize}
+    \setlength\itemsep{0.5em}
+    \item Computes \alert{standard errors (\code{SE})}
+        using functionality of the \code{survey} package (Lumley, 2010, 2021)
+    \item Return value: an instance of class \code{svystat_rob}
+\end{itemize}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Survey methods {\small (cont'd)}\vspace{0.25em}}
+\framesubtitle{Utility methods}
+
+\begin{tabular}{llr}
+    \code{coef()}& extracts estimates&$\surd$\\
+    \code{vcov()}& variance-covariance matrix&$\surd$\\
+    \code{SE()}& standard error&$\surd$\\
+    \alert{\code{summary()}}& shows summary of fitted model&\\
+    \alert{\code{mse()}}& computes mean square error&\\
+    \alert{\code{residuals()}}& extracts residuals&\\
+    \alert{\code{fitted()}}& computes fitted values&\\
+    \alert{\code{robweights()}}& robustness weights ($M$-estimators)&\\
+    \alert{\code{scale()}}& estimate of scale ($M$-estimators)&\\
+\end{tabular}
+\vspace{1em}
+
+{\small Note: $\surd$ indicates methods that are also available in the
+    \code{survey} package.}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+\begin{frame}
+\frametitle{What more?}
+    \begin{itemize}
+    \setlength\itemsep{0.5em}
+    \item Implemented in the \code{C} language
+%    \item Sums are computed as Kahan-type compensated sums
+    \item \alert{$M$-estimators}
+    \begin{itemize}
+        \setlength\itemsep{0.25em}
+        \item Huber and Tukey $\psi$-function
+        \item Interface to add other $\psi$-functions: see
+            \code{doc\_psifunction.html}
+    \end{itemize}
+%    \item Other functions like \code{weighted\_mad()}, \code{weighted\_IQR()}, etc.
+    \item \alert{Vignettes}
+    \begin{itemize}
+        \setlength\itemsep{0.25em}
+        \item Basic Robust Estimators
+        \item Robust Horvitz--Thompson Estimator
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+\bgroup
+\setbeamercolor{background canvas}{bg=fhnwblue}
+\begin{frame}[c,plain]{}
+\begin{center}
+    \textcolor{white}{\large PART 2}\\
+    \vspace{1em}
+    \textcolor{white}{\Huge Robust Weighted Regression}
+\end{center}
+\end{frame}
+\egroup
+
+% -----------------------------------------------------------------------------
+\begin{frame}[fragile]
+\frametitle{Regression}
+    \begin{itemize}
+        \item Simple random sample of $n = 100$ counties in the U.S.
+        \item Population: $N = 3\,141$ counties
+        \item Data: Lohr (1999)
+    \end{itemize}
+    \begin{lstlisting}[style=in_big]
+> head(counties[, c(2, 6, 7, 9, 10)], 2)
+    \end{lstlisting}
+    \vspace{-1em}
+    \begin{lstlisting}[style=out_big]
+    county  farmpop  numfarm  weights   fpc
+1 Escambia      531      414    31.41  3141
+2 Marshall     1592    15824    31.41  3141
+    \end{lstlisting}
+    where\\
+    \vspace{0.5em}
+    \begin{tabular}{ll|lll}
+        \code{farmpop} & farm population && \code{weights} &weights\\
+        \code{numfarm} & number of farms && \code{fpc} &population size\\
+    \end{tabular}
+
+\end{frame}
+
+% -----------------------------------------------------------------------------
+\begin{frame}[fragile]
+\frametitle{Regression: Weighted least squares}
+    % file_name <- "scatter_counties.pdf"
+    % file_name_log <- "scatter_counties_log.pdf"
+    % col_orange <- rgb(199, 90, 9, maxColorValue = 255)
+    % library("robsurvey"); library("survey")
+    % data(counties)
+    % dn <- svydesign(ids = ~1, fpc = ~fpc, weights = ~weights,
+    %     data = counties[counties$farmpop > 0, ])
+    % pdf(file = file_name, height = 7, width = 5)
+    % par(mar = c(5, 5, 4, 2))
+    % plot(farmpop ~ numfarm, dn$variables, xlab = "numfarm", ylab = "farmpop",
+    %     cex.axis = 1.4, cex.lab = 1.8)
+    % dev.off()
+    % system(paste("pdfcrop.exe", file_name, file_name))
+    % pdf(file = file_name_log, height = 7, width = 5)
+    % par(mar = c(5, 5, 4, 2))
+    % plot(farmpop ~ numfarm, dn$variables, xlab = "numfarm (log)",
+    %     ylab = "farmpop (log)", log = "xy", cex.axis = 1.4, cex.lab = 1.8)
+    % points(farmpop ~ numfarm, dn$variables[3, ], pch = 19, col = col_orange)
+    % arrows(10, 70, 3, 70, length = 0.15, col = col_orange)
+    % dev.off()
+    % system(paste("pdfcrop.exe", file_name_log, file_name_log))
+    \begin{multicols}{2}
+        \includegraphics[width=4.5cm]{figure/scatter_counties}
+        \columnbreak
+        \begin{itemize}
+            \setlength\itemsep{1em}
+            \item \alert{Model:} \code{farmpop} $\sim$ \code{numfarm}
+            \item \alert{Variance:} (heteroscedasticity)
+                \code{var = sqrt(numfarm)}
+            \item \alert{Sampling design:} % i.e., "survey" must be loaded
+\begin{verbatim}
+dn <- svydesign(ids = ~1,
+   fpc = ~fpc,
+   weights = ~weights,
+   data = subset(counties,
+   numfarm > 0))
+\end{verbatim}
+            \item \alert{Weighted least squares}
+        \end{itemize}
+    \end{multicols}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+\begin{frame}[fragile]
+    \frametitle{Regression: Weighted least squares {\small (cont'd)}}
+    \begin{lstlisting}[style=in_small]
+> svyreg(farmpop ~ numfarm, dn, var = ~sqrt(numfarm))
+    \end{lstlisting}
+    \vspace{-1em}
+    \begin{lstlisting}[style=out_small]
+
+Weighted least squares
+
+Call:
+svyreg(formula = farmpop ~ numfarm, design = dn,
+       var = ~vi)
+
+Coefficients:
+(Intercept)      numfarm
+    -53.998        1.839
+
+Scale estimate: 99.25
+    \end{lstlisting}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+\begin{frame}[fragile]
+    \frametitle{Regression: Weighted least squares {\small (cont'd)}}
+    \begin{itemize}
+        \setlength\itemsep{1em}
+        \item \alert{Methods}: \code{coef()}, \code{residuals()},
+            \code{fitted()}, \code{plot()}, etc.
+        \item \alert{Inference} under the model
+            $y_i = \bm x_i^T \bm \theta + \sigma \sqrt{v_i} e_i$, $i \in U$
+        \begin{itemize}
+        {\normalsize
+            \setlength\itemsep{1em}
+            \vspace{0.5em}
+            \item $\bm \theta$: super-population parameter
+            \item $\bm \theta_N$: census parameter, finite-population parameter
+            \item $\widehat{\bm \theta}_n$: sample-based estimator
+        }
+        \end{itemize}
+        \item \alert{Design-based}: estimate $\bm \theta_N$
+        \begin{verbatim}summary(..., mode = "design")\end{verbatim}
+        \begin{verbatim}vcov(..., mode = "design")\end{verbatim}
+    \end{itemize}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+\begin{frame}[fragile]
+    \frametitle{Regression: Weighted least squares {\small (cont'd)}}
+    \begin{itemize}
+        \setlength\itemsep{1em}
+        \item \alert{Model-based}: estimate $\bm \theta$ (ignore sampling
+            design)\\
+            %Let the LS estimator $\widehat{\bm \theta}_{LS}$ be an estimator
+            %of $\bm \theta$\\
+            %(conditional on sample $s$)\\
+            \vspace{0.5em}
+            \code{mode = "model"} in \code{summary()} and \code{vcov()}
+        \item \alert{Compound design-model}: estimate $\bm \theta$\\
+            %Let $\widehat{\bm \theta}_n$ be an estimator of $\bm \theta$\\
+            \vspace{0.5em}
+            \code{mode = "compound"} in \code{summary()} and \code{vcov()}
+            \vspace{0.5em}
+        % \begin{itemize}
+        %     \setlength\itemsep{1em}
+        %     {\normalsize
+        %     \item Large sampling fraction $f$ (e.g., $f > 20\%$)
+        %     \item Otherwise contribution of model-based variance is negligible
+        %     }
+        % \end{itemize}
+    \end{itemize}
+    \vspace{1em}
+    {\small Literature: Rubin-Bleuer and Schriopu-Kratina (2005), Binder
+        and Roberts (2009)}
+ \end{frame}
+
+% -----------------------------------------------------------------------------
+\begin{frame}[fragile]
+    \frametitle{Robust regression}
+    \begin{multicols}{2}
+        \includegraphics[width=4.5cm]{figure/scatter_counties_log}
+        \columnbreak
+        \begin{itemize}
+            \setlength\itemsep{1em}
+            \item \alert{Model:} \code{log(farmpop)} $\sim$ \code{log(numfarm)}
+            \item \alert{Variance:} homoscedastic
+            \item \alert{Outlier} $\rightarrow$ Robust regression
+        \end{itemize}
+    \end{multicols}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Robust regression: Implementation}
+\vspace{-0.5em}
+\begin{center}
+{ \footnotesize
+\begin{tabular}{llrrrr}
+    \multicolumn{2}{l}{Language} & $M$ & $GM$ & Reference\\
+    \addlinespace
+    \toprule
+    \multicolumn{5}{l}{\alert{\textit{\footnotesize{with weighting}}}} \\
+    \addlinespace
+    \code{MASS}& \proglang{R} & $\surd$  & -- & Venables and Ripley (2002)\\
+    \code{robust}& \proglang{R} & $\surd$ & -- & Wang et al. (2022)\\
+    \code{robustbase}& \proglang{R} & $\surd$ & -- &
+        M{\"a}chler et al. (2021)\\
+    \code{robstat}& \proglang{Stata} & $\surd$ & -- & Jann et al. (2018)\\
+    \code{robustreg}& \proglang{SAS}& $\surd$ & -- & SAS Institute (2022)\\
+    \alert{\code{robsurvey}} & \alert{\proglang{R}} & \alert{$\surd$}
+        & \alert{$\surd$} & \alert{this talk}\\
+    \addlinespace
+    \midrule
+    \multicolumn{5}{l}{\textit{\footnotesize{without weighting}}} \\
+    \code{robeth}& \proglang{R} & $\surd$ & $\surd$ & Marazzi (1993, 2020)\\
+    \proglang{NAG}& \proglang{C} & $\surd$ & $\surd$ & NAG (2022)\\
+    \code{GSL}& \proglang{C} & $\surd$ & -- & Galassi et al. (2019)\\
+    \code{[?]regress} & \proglang{Stata} & $\surd$ & -- & Verardi and
+        Croux (2009)\\
+    \code{rreg}& \proglang{Stata}& $\surd$ & -- & StataCorp (2022)\\
+    \code{robustfit}& \proglang{MATLAB} & $\surd$ & -- &The Math Works (2022)\\
+\end{tabular}
+}
+\end{center}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+\begin{frame}[fragile]
+    \frametitle{Robust regression: \emph{M}- and \emph{GM}-estimators}
+     \alert{Function} \code{svyreg} followed by
+    \begin{verbatim}
+   _huberM(formula, design, k, var = NULL, ...)
+  _huberGM(formula, design, k,
+           type = c("Mallows", "Schweppe"),
+           xwgt, var = NULL, ...)
+    \end{verbatim}
+    \vspace{-1.5em}
+    \begin{itemize}
+        \setlength\itemsep{0.5em}
+        \item \code{k}: robustness tuning constant of Huber $\psi$-function
+        \item \code{type}: Mallows or Schweppe \emph{GM}-estimator
+        \item \code{xwgt}: downweight high-leverage observations
+        \item \alert{Also} \code{_tukeyM()} and \code{_tukeyGM()} with Tukey
+            $\psi$-function
+    \end{itemize}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% \begin{frame}[fragile]
+%     \frametitle{Robust regression: \emph{M}- and \emph{GM}-estimators
+%         {\small (cont'd)}}
+%     \begin{lstlisting}[style=in_small]
+% > svyreg_huberM(log(farmpop) ~ log(numfarm), dn,
+%                 k = 2)
+%     \end{lstlisting}
+%     \vspace{-1.5em}
+%     \begin{lstlisting}[style=out_small]
+
+% Survey regression M-estimator (Huber psi, k = 2)
+
+% Call:
+% svyreg_huberM(formula = farmpop ~ numfarm,
+%               design = dn, k = 2)
+
+% IRWLS converged in 7 iterations
+
+% Coefficients:
+% (Intercept)      numfarm
+%     -78.980        1.805
+
+% Scale estimate: 388.4 (weighted MAD)
+%     \end{lstlisting}
+% \end{frame}
+
+% -----------------------------------------------------------------------------
+\begin{frame}
+    \frametitle{Robust regression: \emph{M}- and \emph{GM}-estimators
+        {\small (cont'd)}}
+    \vspace{1em}
+    \begin{itemize}
+        \setlength\itemsep{1em}
+        \item \alert{Utility methods:} \code{coef()}, \code{plot()}, etc.
+        \item \alert{Inference:} \code{summary()} and \code{vcov()} (3 modes
+            of inference)
+        \item Vignette: \alert{Robust Weighted Regression}
+    \end{itemize}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+\bgroup
+\setbeamercolor{background canvas}{bg=fhnwblue}
+\begin{frame}[c,plain]{}
+\begin{center}
+    \textcolor{white}{\large PART 3}\\
+    \vspace{1em}
+    \textcolor{white}{\Huge Summary and Outlook}
+\end{center}
+\end{frame}
+\egroup
+
+% -----------------------------------------------------------------------------
+\begin{frame}
+    \frametitle{Summary and outlook}
+    \vspace{1em}
+    \begin{itemize}
+        \setlength\itemsep{0.75em}
+        \item Package: \alert{52 exported functions} (+ 21 S3-methods)
+        \vspace{0.5em}
+        {\large
+        \begin{itemize}
+            \setlength\itemsep{0.5em}
+            \item Robust generalized regression (GREG) estimator
+            \item Tukey's weighted line
+            \item ...
+        \end{itemize}
+        }
+        \item Take away message: \alert{2 ``flavors''} of functions
+        \vspace{0.5em}
+        {\large
+        \begin{itemize}
+            \setlength\itemsep{0.5em}
+            \item Bare-bone functions
+            \item Survey methods (\code{survey} package required)
+                $\Rightarrow$ variance
+        \end{itemize}
+        }
+        \item \alert{What is missing? What methods do you need?}
+    \end{itemize}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+\begin{frame}
+    \frametitle{Summary and outlook {\small (cont'd)}}
+    \vspace{1em}
+    \begin{itemize}
+        \setlength\itemsep{0.75em}
+        \item Where can I find this slide deck?
+        \vspace{0.5em}
+        {\large
+        \begin{itemize}
+            \setlength\itemsep{0.5em}
+            \item \alert{CRAN} webpage of \code{robsurvey}
+            \item \alert{Link} to \alert{GitHub} \code{tobiasschoch/robsurvey}
+            \item On GitHub: \alert{folder:}
+                \code{/inst/doc/useR\_2022\_conference}
+        \end{itemize}
+        }
+    \end{itemize}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+\bgroup
+\setbeamercolor{background canvas}{bg=fhnwblue}
+\begin{frame}[c,plain]{}
+\begin{center}
+    \textcolor{white}{\Huge I'm ready to take your questions!}
+\end{center}
+\end{frame}
+\egroup
+
+% -----------------------------------------------------------------------------
+\begin{frame}
+    \frametitle{Appendix: Datasets}
+    {\footnotesize
+    \begin{itemize}
+        \setlength\itemsep{0.5em}
+        \item \alert{counties}: Lohr SL (1999). \emph{Sampling: Design and
+            Analysis}. Pacific Grove (CA): Duxbury Press, Appendix C.
+        \item \alert{losdata}: Ruffieux C, Paccaud F, Marazzi A (2000).
+            Comparing rules for truncating hospital length of stay.
+            \emph{Casemix Quarterly} 2.
+    \end{itemize}
+    }
+\end{frame}
+
+% -----------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Appendix: Software}
+    {\footnotesize
+    \begin{itemize}
+        \setlength\itemsep{0.25em}
+        \item \alert{GSL} Galassi M, Davies J, Theiler J, Gough B, Jungman G,
+            Alken P, Booth M, Rossi F, Ulerich R (2019). GNU Scientific Library
+            (release 2.6). 3rd edition.
+        \item \alert{MASS} Venables WN and Ripley BD, 2002, Modern Applied
+            Statistics with S. 4th edition, New York: Springer-Verlag.
+        \item \alert{NAG} NAG (2022). The NAG Library for C. The Numerical
+            Algorithms Group (NAG), Oxford. C library mark 28.3.
+        \item \alert{[?]regress} Verardi V, Croux C (2009). Robust Regression
+            in Stata. \emph{The Stata Journal} 9, 439--453.
+            {\scriptsize \textcolor{orange_dark}{(Note: [?] is a wildcard for
+            \code{m}, \code{s}, or \code{mm}; the methods thus read
+            \code{mregress}, etc.)}}
+        \item \alert{robeth} Marazzi A, 2020, robeth: R Functions for
+            Robust Statistics. R package version 2.7-6.
+        \item \alert{robstat} Jann B, Verardi V, Vermandele C, 2018. ROBSTAT:
+            Stata module to compute robust univariate statistics. Statistical
+            Software Components, Boston College Department of Economics.
+    \end{itemize}
+    }
+\end{frame}
+
+% -----------------------------------------------------------------------------
+\begin{frame}
+    \frametitle{Appendix: Software {\small (cont'd)}}
+    {\footnotesize
+    \begin{itemize}
+        \setlength\itemsep{0.25em}
+        \item \alert{robust} Wang J, Zamar R, Marazzi A, Yohai V,
+            Salibián-Barrera M, Maronna R, Zivot E, Rocke D, Martin D,
+            Mächler M, Konis K (2022). robust: A Port of the S-PLUS
+            "Robust Library".  R package version 0.7-0.
+        \item \alert{robustbase} Mächler M, Rousseeuw P, Croux C, Todorov V,
+            Ruckstuhl A, Salibián-Barrera M, Verbeke T, Koller M, Conceicao ELT,
+            Anna di Palma M (2021). robustbase: Basic Robust Statistics.
+            R package version 0.93-9.
+        \item \alert{robustfit} The Math Works, Inc. (2022). MATLAB. Version
+            R2022a.
+        \item \alert{robustreg} SAS Institute, Inc. (2020). SAS/STAT Software.
+            SAS Institute Inc., Cary. Version 15.2.
+        \item \alert{rreg} StataCorp (2022). Stata Statistical Software.
+            StataCorp LLC, College Station. Release 17.
+        \item \alert{survey} Lumley T (2021). survey: Analysis of Complex
+            Survey Samples. R package version 4.1-1.
+    \end{itemize}
+    }
+\end{frame}
+
+% -----------------------------------------------------------------------------
+\begin{frame}
+    \frametitle{Appendix: Literature}
+    {\footnotesize
+    \begin{itemize}
+        \setlength\itemsep{0.25em}
+        \item \alert{Beaumont JF and Rivest LP (2009)}. Dealing with outliers
+            in survey data, in \emph{Sample Surveys: Theory, Methods and
+            Inference}, ed. by Pfeffermann D and Rao CR, Amsterdam: Elsevier,
+            vol. 29A of Handbook of Statistics, chap. 11, 247–280.
+        \item \alert{Binder DA and Roberts G (2009)}. Design- and Model-Based
+            Inference for Model Parameters. In: \emph{Sample Surveys: Inference
+            and Analysis ed. by Pfeffermann}, D. and Rao, C. R. Volume 29B
+            of Handbook of Statistics, Amsterdam: Elsevier, Chap. 24, 33--54.
+        \item \alert{Hampel FR, Ronchetti EM, Rousseeuw PJ and Stahel WA
+            (1986)}.  \emph{Robust Statistics: The Approach Based on Influence
+            Functions}.  New York: John Wiley and Sons.
+        \item \alert{Hulliger B (1995)}. Outlier Robust Horvitz–Thompson
+            Estimators.  \emph{Survey Methodology} 21, 79--87.
+        \item \alert{Lee H (1995)}. Outliers in Business Surveys, in
+            \emph{Business Survey Methods}, ed. by Cox BG,
+            Binder DA, Chinnappa BN, Christianson A, Colledge MJ, Kott PS,
+            New York: John Wiley and Sons, chap. 26, 503--526.
+    \end{itemize}
+    }
+\end{frame}
+
+% -----------------------------------------------------------------------------
+\begin{frame}
+    \frametitle{Appendix: Literature {\small (cont'd)}}
+    {\footnotesize
+    \begin{itemize}
+        \setlength\itemsep{0.25em}
+        \item \alert{Lumley T (2010)}. \emph{Complex Surveys: A Guide to
+            Analysis Using R.}, Hoboken (NJ): John Wiley and Sons.
+        \item \alert{Rubin-Bleuer S and Schiopu-Kratina I (2005)}. On the
+            Two-phase framework for joint model and design-based inference.
+            \emph{The Annals of Statistics} 33, 2789--2810.
+    \end{itemize}
+    }
+\end{frame}
+
+
+% -----------------------------------------------------------------------------
+\end{document}
