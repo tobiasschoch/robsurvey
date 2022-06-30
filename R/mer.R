@@ -55,7 +55,7 @@ mer <- function(object, verbose = TRUE, max_k = 10, init = 1, method = "Brent",
         result <- eval(est)
         result$robust$rel_mse <- opt$value - 1
     }
-    result$estimator <- paste("MER:", result$estimator)
+    result$estimator$string <- paste("MER:", result$estimator$string)
     result$call <- match.call()
     result
 }
