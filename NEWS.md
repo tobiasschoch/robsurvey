@@ -4,11 +4,11 @@
 
 ## Changes
 
-
+* Added documentation for variable `strat` in the `workplace` data and updated description of variable `payroll`
 
 ## BUG FIX
 
-Slot`estimator$string` in the return value of function `mer()` indicates the name of the underlying estimator correctly.
+* Slot`estimator$string` in the return value of function `mer()` indicates the name of the underlying estimator correctly.
 
 # robsurvey VERSION 0.3 (2022-06-04)
 

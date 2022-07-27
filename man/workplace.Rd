@@ -12,8 +12,9 @@
     \describe{
         \item{\code{ID}}{identifier variable \code{[integer]}.}
         \item{\code{weight}}{sampling weight \code{[double]}.}
-        \item{\code{employment}}{(total) employment \code{[double]}.}
-        \item{\code{payroll}}{payroll \code{[double]}.}
+        \item{\code{employment}}{employment total \code{[double]}.}
+        \item{\code{payroll}}{payroll total (1000 dollars)\code{[double]}.}
+        \item{\code{strat}}{stratum identifier\code{[integer]}.}
         \item{\code{fpc}}{finite population correction \code{[integer]}.}
     }
 }
@@ -30,7 +31,8 @@
     industry, geographic region, and size (size is defined using
     estimated employment). A sample of workplaces has been drawn
     independently in each stratum using simple random sample without
-    replacement (sample size is determined by Neyman allocation).
+    replacement (the stratum-specific sample sizes are determined
+    by Neyman allocation).
     Several strata containing very large workplaces were sampled
     exhaustively; see Patak et al (1998). The original sampling weights
     were adjusted for nonresponse.
