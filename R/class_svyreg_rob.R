@@ -305,7 +305,7 @@ plot.svyreg_rob <- function(x, which = 1L:4L,
     w <- x$model$w
     y <- x$model$y
 
-    # standardized residuals
+    # Standardized residuals
     rs <- r / x$scale
 
     if (is.null(id.n)) {
@@ -358,7 +358,7 @@ plot.svyreg_rob <- function(x, which = 1L:4L,
         oask <- devAskNewPage(TRUE)
         on.exit(devAskNewPage(oask))
     }
-	# Standardized residuals vs. Fitted values
+	# 1 Standardized residuals vs. Fitted values
     if (show[1L]) {
         ylim <- range(rs, na.rm = TRUE)
         if (id.n > 0)
@@ -388,7 +388,7 @@ plot.svyreg_rob <- function(x, which = 1L:4L,
         }
         dev.flush()
     }
-	# Normal Q-Q
+	# 2 Normal Q-Q
     if (show[2L]) {
         ylim <- range(rs, na.rm = TRUE)
         ylim[2L] <- ylim[2L] + diff(ylim) * 0.075
@@ -404,7 +404,7 @@ plot.svyreg_rob <- function(x, which = 1L:4L,
             text.id(qq$x[show.rs], qq$y[show.rs], show.rs)
         dev.flush()
     }
-    # Response vs. Fitted values
+    # 3 Response vs. Fitted values
     if (show[3L]) {
         ylim <- range(y, na.rm = TRUE)
         if (id.n > 0)
@@ -430,10 +430,12 @@ plot.svyreg_rob <- function(x, which = 1L:4L,
                 text.id(yh[show.r], y.id, show.r)
             }
             abline(h = 0, lty = 3, col = "gray")
+            abline(0, 1, lty = 2, col = "grey")
         }
+
         dev.flush()
     }
-    # Sqrt of abs(Residuals) vs. Fitted values
+    # 4 Sqrt of abs(Residuals) vs. Fitted values
     if (show[4L]) {
         sqrtabsr <- sqrt(abs(r))
         ylim <- c(0, max(sqrtabsr, na.rm = TRUE))
@@ -454,7 +456,7 @@ plot.svyreg_rob <- function(x, which = 1L:4L,
                 title(sub = sub.caption, ...)
             mtext(getCaption(4), 3, 0.25, cex = cex.caption)
             if (id.n > 0)
-                text.id(yhn0[show.rs], sqrtabsr[show.rs], show.rs)
+                text.id(yhn0[show.r], sqrtabsr[show.r], show.r)
         }
         dev.flush()
     }

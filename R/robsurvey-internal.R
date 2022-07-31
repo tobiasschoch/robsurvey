@@ -220,7 +220,7 @@
      88   Y8. .8P 88  dP  \\__ \\ |_| | |   \\ V /  __/ |_| |
      88    'Y8P'  88e8P'  |___/\\__,_|_|    \\_/ \\___|\\__, |
 						     __/ |
-					version 0.3 |___/\n\ntype: package?robsurvey to learn more
+					version 0.4 |___/\n\ntype: package?robsurvey to learn more
 use:  library(robsurvey, quietly = TRUE) to suppress the
       start-up message\n")
    }

@@ -4,11 +4,13 @@
 
 ## Changes
 
-* Added documentation for variable `strat` in the `workplace` data and updated description of variable `payroll`
+* Added documentation for variable `strat` in the `workplace` data and updated description of variable `payroll`.
+* Added 45-degree line in the diagnostic `plot` method for "3 Response vs. Fitted values" (`which = 3`) of class `svyreg_rob`.
 
 ## BUG FIX
 
 * Slot`estimator$string` in the return value of function `mer()` indicates the name of the underlying estimator correctly.
+* Fixed annotation of observations in diagnostic plot "Sqrt of abs(Residuals) vs. Fitted values" (`which = 4` in `plot`) for class `svyreg_rob`.
 
 # robsurvey VERSION 0.3 (2022-06-04)
 
