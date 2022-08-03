@@ -5,6 +5,7 @@
 \alias{summary.svyreg_rob}
 \alias{coef.svyreg_rob}
 \alias{vcov.svyreg_rob}
+\alias{SE.svyreg_rob}
 \alias{residuals.svyreg_rob}
 \alias{fitted.svyreg_rob}
 \alias{robweights.svyreg_rob}
@@ -19,6 +20,8 @@
 \method{coef}{svyreg_rob}(object, ...)
 
 \method{vcov}{svyreg_rob}(object, mode = c("design", "model", "compound"), ...)
+
+\method{SE}{svyreg_rob}(object, mode = c("design", "model", "compound"), ...)
 
 \method{residuals}{svyreg_rob}(object, ...)
 
@@ -89,8 +92,8 @@
 \details{
     \describe{
         \item{Variance}{
-            For variance estimation (\code{summary} and \code{vcov}),
-            three modes are available:
+            For variance estimation (\code{summary}, \code{vcov}, and
+            \code{SE}) three modes are available:
             \itemize{
                 \item \code{"design"}: design-based variance estimator using
                     linearization; see Binder (1983)

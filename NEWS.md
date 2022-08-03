@@ -5,7 +5,8 @@
 ## Changes
 
 * Added documentation for variable `strat` in the `workplace` data and updated description of variable `payroll`.
-* Added 45-degree line in the diagnostic `plot` method for "3 Response vs. Fitted values" (`which = 3`) of class `svyreg_rob`.
+* Added 45-degree line in the diagnostic `plot` method for "3 Response vs. Fitted values" (`which = 3`) of class `svyreg_rob`.
+* Method `SE()` for class `svyreg_rob` is now exported to the namespace.
 
 ## BUG FIX
 

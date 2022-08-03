@@ -28,6 +28,7 @@ S3method(robweights,svystat_rob)
 S3method(robweights,svyreg_rob)
 
 export(SE.svystat_rob)
+export(SE.svyreg_rob)
 
 S3method(plot,svyreg_rob)
 

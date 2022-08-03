@@ -145,6 +145,13 @@ vcov.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
     mat
 }
 
+# extract standard error from robust regression object
+SE.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
+    ...)
+{
+    sqrt(diag(vcov.svyreg_rob(object, mode, ...)))
+}
+
 # model-based covariance matrix of M- and GM-regression estimators
 .cov_reg_model <- function(object)
 {
@@ -430,7 +437,7 @@ plot.svyreg_rob <- function(x, which = 1L:4L,
                 text.id(yh[show.r], y.id, show.r)
             }
             abline(h = 0, lty = 3, col = "gray")
-            abline(0, 1, lty = 2, col = "grey")
+            abline(0, 1, lty = 2, col = "gray")
         }
 
         dev.flush()
