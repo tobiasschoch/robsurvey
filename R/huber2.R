@@ -9,7 +9,7 @@ huber2 <- function(x, w, k = 1.5, na.rm = FALSE, maxit = 50, tol = 1e-4,
 
     kk <- ifelse(is.finite(k), k, k_Inf)
 
-    tmp <- .C("huberm", x = as.double(dat$x), w = as.double(dat$w),
+    tmp <- .C("whuber2", x = as.double(dat$x), w = as.double(dat$w),
         robwgt = as.double(numeric(dat$n)), k = as.double(kk),
         loc = as.double(numeric(1)), scale = as.double(numeric(1)),
         n = as.integer(dat$n), maxit = as.integer(maxit), tol = as.double(tol),

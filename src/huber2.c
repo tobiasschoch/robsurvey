@@ -57,7 +57,7 @@ static inline double kappa_huber(const double) __attribute__((always_inline));
 |*  success   on return: 1: successful; 0: failure (when initial scale        *|
 |*            estimate = 0)                                                   *|
 \******************************************************************************/
-void huberm(double* restrict x, double* restrict w, double* restrict robwgt,
+void whuber2(double* restrict x, double* restrict w, double* restrict robwgt,
     double *k, double *loc, double *scale, int *n, int *maxit,
     const double *tol, int* df_cor, int *success)
 {

@@ -10,7 +10,7 @@
 static const R_CMethodDef cMethods[]  = {
     {"wtrimmedmean", (DL_FUNC) &wtrimmedmean, 7},
     {"wwinsorizedmean", (DL_FUNC) &wwinsorizedmean, 6},
-    {"huberm", (DL_FUNC) &huberm, 11},
+    {"whuber2", (DL_FUNC) &whuber2, 11},
     {"rwlslm", (DL_FUNC) &rwlslm, 19},
     {"wlslm", (DL_FUNC) &wlslm, 8},
     {"wquantile", (DL_FUNC) &wquantile, 5},

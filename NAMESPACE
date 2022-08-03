@@ -105,7 +105,7 @@ export(simpsonWgt)
 importFrom(graphics,plot)
 
 useDynLib(robsurvey)
-useDynLib(robsurvey,huberm)
+useDynLib(robsurvey,whuber2)
 useDynLib(robsurvey,rwlslm)
 useDynLib(robsurvey,wlslm)
 useDynLib(robsurvey,wquantile)
