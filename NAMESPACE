@@ -45,6 +45,7 @@ export(svymean_trimmed)
 export(svymean_tukey)
 export(svymean_winsorized)
 export(svymean_dalen)
+
 export(svymean_reg)
 export(svytotal_reg)
 

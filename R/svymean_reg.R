@@ -1,192 +1,121 @@
-# robust GREG for mean
-svymean_reg <- function(object, auxiliary, type, k = NULL, check.names = TRUE,
-    na.rm = FALSE, keep_object = TRUE, verbose = TRUE)
+# GREG predictor of the total
+svytotal_reg <- function(object, totals, N = NULL, type, k = NULL,
+    check.names = TRUE, keep_object = TRUE)
 {
-    if (verbose)
-        message("Note: This functions is experimental!")
-
     if (!inherits(object, "svyreg_rob"))
         stop(paste0("The function cannot be used for an object of class '",
             class(object), "'\n"))
     # check whether 'type' and 'k' are correctly specified
     type <- .check_k(type, k)
-    # standardized residuals
-    r_std <- .std_residuals(object)
     # check whether auxiliary matches with the regression estimate
-    x <- .check_auxiliary(object, auxiliary, "mean", check.names, na.rm = na.rm)
-    # linear predictor
-    est <- sum(x * object$estimate)
+    auxiliary <- .check_auxiliary(object, totals, N, check.names, FALSE)
+    # g-weights
+    gi <- .gi_weights(object, auxiliary, type, k)
+    # estimate
+    est <- sum(gi * object$model$y)
     names(est) <- object$model$yname
-    # GREG bias correction
-    tmp <- .bias_correction(object, r_std, type, k)
-    zi <- tmp$zi / sum(object$model$w)
-    correction <- tmp$correction / sum(object$model$w)
-    est <- est + correction
+    # residuals (not accounting for heteroscedasticity)
+    ri <- object$model$y - as.numeric(object$model$x %*% object$estimate)
     # variance estimate
     design <- object$design
-    v <- survey::svyrecvar(zi, design$cluster, design$strata, design$fpc,
+    v <- survey::svyrecvar(ri * gi, design$cluster, design$strata, design$fpc,
         postStrata = design$postStrata)
-    res <- structure(list(characteristic = "mean",
-        estimator = list(string = .method_name(type, k),
-        type = type, psi = 0, psi_fun = "Huber", k = k), estimate = est,
-        robust = list(robweights = tmp$ui), residuals = r_std,
-        model = list(object$model, coef = object$estimate,
-        auxiliary = auxiliary), design = design, call = match.call(),
-        variance = v, bias = correction), class = "svystat_rob")
-    if (keep_object)
-        res$object <- object
-    res
-}
-# robust GREG for total
-svytotal_reg <- function(object, auxiliary, type, k = NULL, check.names = TRUE,
-    na.rm = FALSE, keep_object = TRUE, verbose = TRUE)
-{
-    if (verbose)
-        message("Note: This functions is experimental!")
-
-    if (!inherits(object, "svyreg_rob"))
-        stop(paste0("The function cannot be used for an object of class '",
-            class(object), "'\n"))
-    # check whether 'type' and 'k' are correctly specified
-    type <- .check_k(type, k)
-    # standardized residuals
-    r_std <- .std_residuals(object)
-    # check whether auxiliary matches with the regression estimate
-    x <- .check_auxiliary(object, auxiliary, "total", check.names,
-        na.rm = na.rm)
-    # linear predictor
-    est <- sum(x * object$estimate)
-    names(est) <- object$model$yname
-    # GREG bias correction
-    tmp <- .bias_correction(object, r_std, type, k)
-    zi <- tmp$zi
-    est <- est + tmp$correction
-    # variance estimate
-    design <- object$design
-    v <- survey::svyrecvar(zi, design$cluster, design$strata, design$fpc,
-        postStrata = design$postStrata)
+    # return
     res <- structure(list(characteristic = "total",
-        estimator = list(string = .method_name(type, k),
-        type = type, psi = 0, psi_fun = "Huber", k = k), estimate = est,
-        robust = list(robweights = tmp$ui), residuals = r_std,
-        model = list(object$model, coef = object$estimate,
-        auxiliary = auxiliary), design = design, call = match.call(),
-        variance = v, bias = tmp$correction), class = "svystat_rob")
+        estimator = .method_name(type, k), estimate = est,
+        robust = list(robweights = .bi_weights(object, type, k)),
+        residuals = ri, model = object$model, design = design,
+        call = match.call(), variance = v, auxiliary = auxiliary,
+        gweights = gi), class = c("svystat_rob", "greg"))
     if (keep_object)
         res$object <- object
     res
 }
-# check auxiliary totals and means
-.check_auxiliary <- function(object, data, est = "mean", check.names = TRUE,
-    na.rm = FALSE)
+# GREG predictor of the mean
+svymean_reg <- function(object, totals, N = NULL, type, k = NULL,
+    check.names = TRUE, keep_object = TRUE, N_unknown = FALSE)
 {
-    names_beta <- names(object$estimate)
-    names_data <- names(data)
-    if (is.vector(data))
-        if (NCOL(data) < NROW(data))
-	        data <- t(data)
+    if (!inherits(object, "svyreg_rob"))
+        stop(paste0("The function cannot be used for an object of class '",
+            class(object), "'\n"))
+    # check whether 'type' and 'k' are correctly specified
+    type <- .check_k(type, k)
+    # if N is unknown, it will be estimated
+    if (N_unknown)
+        N <- sum(object$model$w)
 
-    # vector of population x-means or -totals
-    if (NROW(data) == 1) {
-        # drop intercept (if there is one)
-        if (attr(object$terms, "intercept")) {
-            names_data <- names_data[-1]
-            names_beta <- names_beta[-1]
-        }
-        if (length(data) != object$model$p)
-            stop("Length of auxiliary data does not match\n", call. = FALSE)
-
-        if (check.names && !is.null(names_data)) {
-            if (!all(names_data == names_beta))
-                stop("Variable names do not match (check.names = TRUE)",
-                    call. = FALSE)
-        }
-        x <- data
-    # compute mean/total based on design matrix
-    } else {
-        mf <- stats::model.frame(object$call$formula, data,
-            na.action = stats::na.pass)
-        xmat <- stats::model.matrix(stats::terms(mf), mf)
-        # check for missing values
-        is_not_NA <- stats::complete.cases(xmat)
-        if (!all(is_not_NA) && na.rm) {
-            xmat <- xmat[is_not_NA, ]
-        }
-        x <- switch(est,
-            "mean" = colMeans(xmat),
-            "total" = colSums(xmat))
-    }
-    unname(x)
+    # check whether auxiliary matches with the regression estimate
+    auxiliary <- .check_auxiliary(object, totals, N, check.names, TRUE)
+    # g-weights
+    gi <- .gi_weights(object, auxiliary, type, k) / N
+    # estimate
+    est <- sum(gi * object$model$y)
+    names(est) <- object$model$yname
+    # residuals (not accounting for heteroscedasticity)
+    ri <- object$model$y - as.numeric(object$model$x %*% object$estimate)
+    # variance estimate
+    design <- object$design
+    v <- survey::svyrecvar(ri * gi, design$cluster, design$strata,
+        design$fpc, postStrata = design$postStrata)
+    # return
+    res <- structure(list(characteristic = "mean",
+        estimator = .method_name(type, k), estimate = est,
+        robust = list(robweights = .bi_weights(object, type, k)),
+        residuals = ri, model = object$model, design = design,
+        call = match.call(), variance = v, auxiliary = auxiliary,
+        gweights = gi), class = c("svystat_rob", "greg"))
+    if (keep_object)
+        res$object <- object
+    res
 }
-# Check whether 'type' and 'k' are correctly specified
-.check_k <- function(type, k)
+# g-weights
+.gi_weights <- function(object, auxiliary, type, k)
 {
-    type <- match.arg(type, c("projective", "ADU", "robust", "lee", "BR",
-        "duchesne"))
-    switch(type,
-        "ADU" = {
-            if (!is.null(k))
-                warning("Argument 'k' is ignored\n", call. = FALSE,
-                    immediate. = TRUE)
-        },
-        "projective" = {
-            if (!is.null(k))
-                warning("Argument 'k' is ignored\n", call. = FALSE,
-                    immediate. = TRUE)
-        },
-        "robust" = stopifnot(is.numeric(k), length(k) == 1, k > 0),
-        "lee" = stopifnot(is.numeric(k), length(k) == 1, k >= 0, k <= 1),
-        "BR" = stopifnot(is.numeric(k), length(k) == 1, k > 0),
-        "duchesne" = stopifnot(is.numeric(k),
-            "k must be a 2-vector of positive real values" = length(k) == 2,
-            all(k > 0)))
-    type
+    # bi's (of QR-predictor; originally, ri's in Wright, 1983)
+    bi <- .bi_weights(object, type, k) * object$model$w
+    delta <- auxiliary - colSums(bi * object$model$x)
+    # qi's (of QR-predictor)
+    qi_sqrt <- sqrt(.qi_weights(object))
+    QR_x <- qr(qi_sqrt * object$model$x)
+    H <- backsolve(qr.R(QR_x), t(qr.Q(QR_x)))
+    # g-weights
+    bi + as.numeric(crossprod(H, delta)) * qi_sqrt
 }
-# Standardized residuals
-.std_residuals <- function(object)
+# qi's in Wright's QR-estimator
+.qi_weights <- function(object)
 {
-    # scale
-    r_std <- object$residuals / object$scale
+    # robustness and design weights
+    qi <- robweights(object) * object$model$w
     # account for heteroscedasticity
     if (!is.null(object$model$var))
-        r_std <- r_std / sqrt(object$model$var)
-    # Schweppe type GM-estimator
-    if (object$estimator$type == 2)
-        r_std <- r_std / object$model$xwgt
-    r_std
-}
-# Name of the method
-.method_name <- function(type, k)
-{
-    switch(type,
-        "projective" = "projective",
-        "ADU" = "ADU",
-        "robust" = paste0("robust, Huber psi, k = ", k),
-        "lee" = paste0("Lee, k = ", k),
-        "BR" = paste0("BR, Huber psi, k = ", k),
-        "duchesne" = paste0("Duchesne, k = (", k[1], ", ", k[2], ")"))
-}
-# GREG bias correction
-.bias_correction <- function(object, r_std, type, k)
-{
-    w <- object$model$w
-    n <- object$model$n
-    # robustness weights
-    ui <- switch(type,
-        "projective" = rep(1, n),
-        "ADU" = rep(1, n),
-        "robust" = .psi_wgt_function(r_std, k, "Huber"),
-        "lee" = rep(k, n),
-        "BR" = .psi_wgt_beaumont_rivest(r_std, w, k),
-        "duchesne" = .psi_duchesne(r_std, k[1], k[2]) / r_std)
+        qi <- qi / object$model$var
     # multiplicative factor for Mallows type GM-estimator
     if (object$estimator$type == 1)
-        ui <- ui * object$model$xwgt
-    # linearization (influence function)
-    zi <- w * ui * object$residuals
-    # bias-correction term of GREG
-    correction <- ifelse(type == "projective", 0, sum(zi))
-    list(zi = zi, correction = correction, ui = ui)
+        qi <- qi * object$model$xwgt
+    qi
+}
+# bi's without sampling weight (actually, ri's in Wright's QR-estimator)
+.bi_weights <- function(object, type, k)
+{
+    n <- object$model$n
+    # scaled residuals (already accounts for heteroscedasticity)
+    ri <- object$residuals / object$scale
+    # Schweppe type GM-estimator
+    if (object$estimator$type == 2)
+        ri <- ri / object$model$xwgt
+    # robustness weights (with k used in prediction)
+    bi <- switch(type,
+        "projective" = rep(0, n),
+        "ADU" = rep(1, n),
+        "huber" = .psi_wgt_function(ri, k, "Huber"),
+        "tukey" = .psi_wgt_function(ri, k, "Tukey"),
+        "lee" = rep(k, n),
+        "BR" = .psi_wgt_beaumont_rivest(ri, object$model$w, k),
+        "duchesne" = .psi_duchesne(ri, k[1], k[2]) / ri)
+    # multiplicative factor for Mallows type GM-estimator
+    if (object$estimator$type == 1)
+        bi <- bi * object$model$xwgt
+    bi
 }
 # Modified Huber psi-function of Duchsene (1999)
 .psi_duchesne <- function(x, a, b)
@@ -198,4 +127,91 @@ svytotal_reg <- function(object, auxiliary, type, k = NULL, check.names = TRUE,
 .psi_wgt_beaumont_rivest <- function(x, w, k)
 {
     (x / w + (1 - 1 / w) * .psi_function(x, k, "Huber")) / x
+}
+# Check whether 'type' and 'k' are correctly specified
+.check_k <- function(type, k)
+{
+    if (missing(type))
+        stop("Argument 'type' is missing\n", call. = FALSE)
+    type <- match.arg(type, c("projective", "ADU", "huber", "tukey", "lee",
+        "BR", "duchesne"))
+    switch(type,
+        "ADU" = {
+            if (!is.null(k))
+                warning("Argument 'k' is ignored\n", call. = FALSE,
+                    immediate. = TRUE)
+        },
+        "projective" = {
+            if (!is.null(k))
+                warning("Argument 'k' is ignored\n", call. = FALSE,
+                    immediate. = TRUE)
+        },
+        "huber" = stopifnot(is.numeric(k), length(k) == 1, k > 0),
+        "tukey" = stopifnot(is.numeric(k), length(k) == 1, k > 0),
+        "lee" = stopifnot(is.numeric(k), length(k) == 1, k >= 0, k <= 1),
+        "BR" = stopifnot(is.numeric(k), length(k) == 1, k > 0),
+        "duchesne" = stopifnot(is.numeric(k),
+            "k must be a 2-vector of positive real values" = length(k) == 2,
+            all(k > 0)))
+    type
+}
+# Name of the method
+.method_name <- function(type, k)
+{
+    string <- switch(type,
+        "projective" = "(projective)",
+        "ADU" = "(ADU)",
+        "huber" = paste0("(robust, Huber psi, k = ", k, ")"),
+        "tukey" = paste0("(robust, Tukey psi, k = ", k, ")"),
+        "lee" = paste0("robust (Lee, k = ", k, ")"),
+        "BR" = paste0("(BR, Huber psi, k = ", k, ")"),
+        "duchesne" = paste0("(Duchesne, k = (", k[1], ", ", k[2], "))"))
+    if (type == "tukey") {
+        psi <- 2
+        psi_fun <- "Tukey"
+    } else {
+        psi <- 0
+        psi_fun <- "Huber"
+    }
+    list(string = paste0("GREG predictor ", string), type = type, psi = psi,
+         psi_fun = psi_fun, k = k)
+}
+# check auxiliary totals and means
+.check_auxiliary <- function(object, totals, N = NULL, check.names, mean)
+{
+    has_intercept <- attr(object$terms, "intercept")
+    name_totals <- names(totals)
+    name_coef <- names(object$estimate)
+    if (has_intercept)
+        name_coef <- name_coef[-1]
+
+    if (is.matrix(totals) || is.data.frame(totals)) {
+        if (all(dim(totals) > 1))
+            stop("Argument 'totals' must be a vector\n", call. = FALSE)
+        totals <- as.numeric(totals)
+    }
+
+    if (is.null(N)) {
+        if (mean)
+            stop("Argument 'N' is missing\n", call. = FALSE)
+        else if (has_intercept)
+            stop("Argument 'N' is missing (model has an intercept)\n",
+                call. = FALSE)
+    } else {
+        stopifnot(is.numeric(N), N > 0)
+    }
+
+    if (length(totals) != length(name_coef))
+        stop("Length of vector of totals is not appropriate\n", call. = FALSE)
+
+    if (check.names && !is.null(name_totals)) {
+        if (!all(name_totals == name_coef))
+            stop("Variable names do not match (check.names = TRUE)",
+                call. = FALSE)
+    }
+
+    if (has_intercept)
+        c(N, totals)
+    else
+        totals
 }

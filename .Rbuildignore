@@ -3,11 +3,11 @@
 ^\.gitattributes$
 ^\.gitignore$
 ^README\.md$
-^inst/TODO$
+^inst/TODO\.md$
 # documentation
 ^inst/doc/comparison_functions\.R$
 ^inst/doc/doc_regression_covariance\.md$
-^inst/doc/doc_robust_GREG\.md$
+^inst/doc/doc_greg\.md$
 ^inst/doc/doc_psi_functions\.md$
 ^inst/doc/doc_comparison\.md$
 ^inst/doc/doc_comparison\.Rmd$
@@ -15,7 +15,7 @@
 ^inst/doc/doc_robust_GREG\.md$
 ^inst/doc/useR_2022_conference
 # varia
-^inst/varia/$
+^inst/varia
 # tests
 ^tests
 # src folder

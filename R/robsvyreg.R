@@ -3,12 +3,14 @@ robsvyreg <- function(x, y, w, k, psi, type, xwgt, var = NULL,
     verbose = TRUE, ...)
 {
     stopifnot(is.numeric(k))
+    n <- length(y); p <- NCOL(x)
+    model <- list(x = x, y = y, w = w, var = var, xwgt = xwgt, n = n, p = p)
+
     ctrl <- svyreg_control(...)
     if (k <= 0)
         stop("Argument 'k' must be > 0\n", call. = FALSE)
     if (k == Inf)
         k <- ctrl$k_Inf
-    n <- length(y); p <- NCOL(x)
 
     # account for heteroscedasticity
     if (!is.null(var)) {
@@ -40,6 +42,7 @@ robsvyreg <- function(x, y, w, k, psi, type, xwgt, var = NULL,
         type = as.integer(type), init = as.integer(init_flag),
         mad_center = as.integer(ctrl$mad_center), verbose = as.integer(verbose),
         used_iqr = as.integer(0), PACKAGE = "robsurvey")
+    # Note: The residuals are (y - x*beta) / sqrt(var)
 
     converged <- (tmp$maxit != 0)
 
@@ -50,16 +53,12 @@ robsvyreg <- function(x, y, w, k, psi, type, xwgt, var = NULL,
             switch(type + 1, "", "Mallows G", "Schweppe G"),
             "M-estimator (", psi_fun," psi, k = ",
 	        k, ")"), type = type, psi = psi, psi_fun = psi_fun, k = k),
-        estimate = tmp$beta,
-        scale = tmp$scale,
+        estimate = tmp$beta, scale = tmp$scale,
         robust = list(robweights = tmp$robwgt, outliers = 1 * (tmp$robwgt < 1)),
         optim = list(converged = converged,
             niter = ifelse(tmp$maxit == 0, ctrl$maxit, tmp$maxit),
             tol = ctrl$tol, used_iqr = tmp$used_iqr),
-        residuals = tmp$resid,
-        model = list(x = x, y = y, w = w, var = var, xwgt = xwgt, n = n, p = p),
-        design = NA,
-        call = match.call())
+        residuals = tmp$resid, model = model, design = NA, call = match.call())
 }
 # control function for robust regression
 svyreg_control <- function(tol = 1e-5, maxit = 100, k_Inf = 1e6, init = NULL,

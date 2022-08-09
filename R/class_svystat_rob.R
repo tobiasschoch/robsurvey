@@ -146,6 +146,11 @@ mse <- function(object)
 
     # consistent reference estimator (mean or total)
     reference_estimator <- object$call
+
+    if (inherits(object, "greg")) {
+        reference_estimator$k <- NULL
+        reference_estimator$type <- "ADU"
+    }
     if (inherits(object, "mest"))
         reference_estimator$k <- Inf
     if (inherits(object, "dalen"))
@@ -153,8 +158,8 @@ mse <- function(object)
     if (inherits(object, c("wins", "trim"))) {
         reference_estimator$LB<- 0
         reference_estimator$UB<- 1
-    } else
         reference_estimator$verbose <- FALSE
+    }
 
     reference_location <- coef.svystat_rob(eval(reference_estimator))
     # estimated mse

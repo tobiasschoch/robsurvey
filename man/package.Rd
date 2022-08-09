@@ -16,7 +16,7 @@
     bare-bone functions \emph{cannot compute} variances.
 
     The survey methods are much more capable and depend, for variance
-    estimation, on the \pkg{\link{survey}} package.
+    estimation, on the \pkg{survey} package.
 }
 \section{Basic Robust Estimators}{
     \subsection{Trimming}{

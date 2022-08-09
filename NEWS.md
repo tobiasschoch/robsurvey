@@ -4,9 +4,16 @@
 
 ## Changes
 
+* Functions `svymean_reg()` and `svytotal_reg()` are not flagged as "experimental" anymore. Several changes took place (in fact, the functions have undergone a complete code refactoring):
+  * Argument `auxiliary` has been replaced by the two arguments `N` (population size) and `totals` (i.e., population totals of non-constant explanatory variables). **Important:** `svymean_reg()` is now called with `totals` not the population means.
+  * The arguments `na.rm` and `verbose` have been dropped (not needed).
+  * The variance estimators in `svymean_reg()` and `svytotal_reg()` are now implemented as *g*-weighted residual variance estimators.
+
+
 * Added documentation for variable `strat` in the `workplace` data and updated description of variable `payroll`.
+
 * Added 45-degree line in the diagnostic `plot` method for "3 Response vs. Fitted values" (`which = 3`) of class `svyreg_rob`.
-* Method `SE()` for class `svyreg_rob` is now exported to the namespace.
+* Method `SE()` for class `svyreg_rob` is now exported to the namespace.
 
 ## BUG FIX
 

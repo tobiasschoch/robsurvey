@@ -141,6 +141,8 @@ vcov.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
         mat <- matrix(NA, object$model$p, object$model$p)
     }
     ns <- colnames(object$model$x)
+    if (length(ns) == 1)
+        ns <- names(object$estimate)
     dimnames(mat) <- list(ns, ns)
     mat
 }
@@ -161,18 +163,14 @@ SE.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
         k <- svyreg_control()$k
 
     # account for heteroscedasticity
-    r <- object$residuals
-    v <- object$model$var
-    if (!is.null(v))
-        r <- r / sqrt(v)
+    x <- object$model$x
+    if (!is.null(object$model$var))
+        x <- x / sqrt(object$model$var)
 
     # robustness weights
-    ui <- if (is.null(object$robust))
-        rep(1, object$model$n)
-    else
-        object$robust$robweights
+    ui <- robweights(object)
 
-    tmp <- .C("cov_reg_model", resid = as.double(r),
+    tmp <- .C("cov_reg_model", resid = as.double(object$residuals),
         x = as.double(object$model$x), xwgt = as.double(object$model$xwgt),
         robwgt = as.double(ui), w = as.double(object$model$w), k = as.double(k),
         scale = as.double(object$scale), scale = as.double(numeric(1)),
@@ -199,33 +197,25 @@ SE.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
         k <- svyreg_control()$k
 
     x <- object$model$x
-    r <- object$residuals
     n <- NROW(x); p <- NCOL(x)
-
     # account for heteroscedasticity
-    v <- object$model$var
-    if (!is.null(v))
-        r <- r / sqrt(v)
+    if (!is.null(object$model$var)) {
+        x <- x / sqrt(object$model$var)
+    }
 
     # weights in the model's design space
     xwgt <- object$model$xwgt
     if (is.null(xwgt))
         xwgt <- rep(1, n)
 
-    # account for heteroscedasticity
-    if (!is.null(object$model$var))
-        x <- x / sqrt(object$model$var)
-
     # scale the weights (prevent overflow)
     w <- object$model$w / sum(object$model$w)
 
     # robustness weights
-    ui <- if (is.null(object$robust))
-        rep(1, n)
-    else
-        object$robust$robweights
+    ui <- robweights(object)
 
     # Q matrix
+    r <- object$residuals
     Q <- survey::svyrecvar(w * xwgt * x * ui * r, object$design$cluster,
         object$design$strata, object$design$fpc)
 
@@ -281,12 +271,10 @@ fitted.svyreg_rob <- function(object, ...)
 robweights.svyreg_rob <- function(object)
 {
     tmp <- object$robust$robweights
-    if (is.null(tmp)) {
-        warning("not available (for this estimator)\n")
-        NA
-    } else {
+    if (is.null(tmp))
+        rep(1, object$model$n)
+    else
         tmp
-    }
 }
 # plot method for robust regression object
 plot.svyreg_rob <- function(x, which = 1L:4L,

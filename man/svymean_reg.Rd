@@ -1,60 +1,116 @@
 \name{svymean_reg}
 \alias{svymean_reg}
 \alias{svytotal_reg}
-\title{Generalized Regression Estimator (GREG) of the Mean and Total}
+\title{Robust Generalized Regression Estimator (GREG) of the Mean and Total}
 \usage{
-svymean_reg(object, auxiliary, type, k = NULL, check.names = TRUE,
-    na.rm = FALSE, keep_object = TRUE, verbose = TRUE)
-svytotal_reg(object, auxiliary, type, k = NULL, check.names = TRUE,
-    na.rm = FALSE, keep_object = TRUE, verbose = TRUE)
+svytotal_reg(object, totals, N = NULL, type, k = NULL, check.names = TRUE,
+    keep_object = TRUE)
+svymean_reg(object, totals, N = NULL, type, k = NULL, check.names = TRUE,
+    keep_object = TRUE, N_unknown = FALSE)
 }
 \arguments{
     \item{object}{an object of class \code{[svyreg_rob]}, e.g., result of
         the Huber regression \eqn{M}-estimator \code{svyreg_huberM}.}
-    \item{auxiliary}{\code{[numeric]} mean or total of the auxiliary
-        variables.}
-    \item{type}{\code{[character]} type of estimator; see Details.}
+    \item{totals}{\code{[numeric]} vector of population totals of the
+        auxiliary variables.}
+    \item{N}{\code{[numeric]} population size (see also \code{N_unknown}.}
+    \item{type}{\code{[character]} type of predictor; see Details Section.}
     \item{k}{\code{[numeric]} robustness tuning constant of the
-        \code{psi}-function used in the bias-correction term of the GREG
-        (default: \code{Inf}, which implies a non-robust GREG).}
+        \code{psi}-function used in the bias-correction term of the GREG.
+        The definition of \code{k} depends on the \code{type} of predictor
+        and is discussed in the Details Section.}
     \item{check.names}{\code{[logical]} if \code{TRUE}, the names of
         \code{auxiliary} are checked against the names of the independent
         variables of the fitted model \code{object} (default: \code{TRUE}).}
-    \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should
-        be removed before the computation proceeds (default: \code{FALSE}).}
     \item{keep_object}{\code{[logical]} if \code{TRUE}, \code{object} is
-        returned (default: \code{TRUE}).}
-    \item{verbose}{\code{[logical]} if \code{TRUE} warnings are printed to
-        the console (default: \code{TRUE}).}
+        returned as an additional slot of the return value (default:
+        \code{TRUE}).}
+    \item{N_unknown}{\code{[logical]} if \code{TRUE}, it is assumed that
+        the population size is unknown; thus, it is estimated
+        (default: \code{FALSE}).}
 }
 \description{
-    (Robust) generalized regression estimator (GREG) of the mean and total
-    \bold{This implementation is EXPERIMENTAL}
+    Generalized regression estimator (GREG) predictor of the mean and total,
+    and robust GREG \eqn{M}-estimator predictor
 }
 \details{
-    \bold{NOTE}: The current implementation of the functions
-        \code{svymean_reg()} and \code{svytotal_reg()} is \bold{EXPERIMENTAL}.
-        Experimental features may:
+    The (robust) GREG predictor of the population total or mean is
+    computed in two steps.
     \itemize{
-            \item have undergone less extensive testing than is normal for
-                standard features
-            \item interact with unstable (external) dependencies
-            \item be subject to change
-            \item not be directly supported by the developers in the event
-                issues arise
+        \item Step 1: Fit the regression model associated with the GREG
+            predictor by one of the functions \code{\link{svyreg}},
+            \code{\link{svyreg_huberM}}, \code{\link{svyreg_huberGM}},
+            \code{\link{svyreg_tukeyM}} or \code{\link{svyreg_tukeyGM}}.
+            The fitted model is called \code{object}.
+        \item Step 2: Based on the fitted model obtained in the first step,
+            we predict the population total and mean, respectively, by
+            the predictors \code{svytotal_reg} and \code{svymean_reg},
+            where \code{object} is the fitted regression model.
     }
+    The following GREG predictiors are available:
     \describe{
-        \item{Types of prediction estimators}{
-            The following GREG prediction estimators are available:
+        \item{GREG (not robust, \code{k = NULL})}{
             \itemize{
-                \item \code{"projective"} (Särndal et al., 1992)
-                \item \code{"ADU"} (Särndal et al., 1992; Gwet and Rivest,
-                    1992)
-                \item \code{"robust"}
-                \item \code{"BR"} (Beaumont and Rivest, 2009)
-                \item \code{"lee"} (Lee, 1991; 1992)
-                \item \code{"duchesne"} (Duchesne, 1999)
+                \item \code{type = "projective"} ignores the bias correction
+                    term of the GREG predictor; see Särndal and Wright (1984).
+                \item \code{type = "ADU"} is the "standard" GREG,
+                    which is an asymptotically design unbiased (ADU)
+                    predictor; see Särndal et al.(1992, Chapter 6).
             }
+            If the fitted regression model (\code{object}) does include
+            a regression intercept, the predictor types \code{"projective"}
+            and \code{"ADU"} are identical because the bias correction
+            of the GREG is zero by design.
+        }
+        \item{Robust GREG}{
+            The following \emph{robust} GREG predictor are available:
+            \itemize{
+                \item \code{type = "huber"} and \code{type = "tukey"} are,
+                    respectively, the robust GREG predictors with Huber
+                    and Tukey bisquare (biweight) psi-function. The tuning
+                    constant must satisfy \code{0 < k <= Inf}.
+                    We can use the Huber-type GREG predictor although the
+                    model has been fitted by the regression estimator
+                    with Tukey psi-function (and vice versa).
+                \item \code{type = "BR"} is the bias-corrected robust GREG
+                    predictor of Beaumont and Rivest (2009), which is
+                    inspired by the bias-corrected robust predictor of
+                    Chambers (1986). The tuning constant must satisfy
+                    \code{0 < k <= Inf}.
+                \item \code{type = "lee"} is the bias-corrected predictor
+                    of Lee (1991; 1992). Tthe tuning constant \code{k} must
+                    satisfy \code{0 <= k <= 1}.
+                \item \code{type = "duchesne"} is the bias-corrected,
+                    calibration-type estimator/ predictor of Duchesne (1999).
+                    The tuning constant \code{k} must be specified as a
+                    vector \code{k = c(a, b)}, where \code{a} and \code{b}
+                    are the tuning constants of Duchesne's modified Huber
+                    psi-function (default values: \code{a = 9} and
+                    \code{b = 0.25}).
+            }
+        }
+        \item{Auxiliary data}{
+            Two types of auxiliary variables are distinguished: (1)
+            population size \eqn{N} and (2) population totals of the
+            auxiliary variables used in the regression model (i.e.,
+            non-constant explanatory variables).
+
+            The option \code{N_unknown = TRUE} can be used in the predictor
+            of the population mean if \eqn{N} is unknown.
+
+            The names of the entries of \code{totals} are checked against
+            the names of the regression fit (\code{object}), unless we specify
+            \code{check.names = FALSE}.
+        }
+        \item{Utility functions}{
+            The return value is an object of class \code{\link{svystat_rob}}.
+            Thus, the utility functions \code{\link[=svystat_rob]{summary}},
+                \code{\link[=svystat_rob]{coef}},
+                \code{\link[=svystat_rob]{SE}},
+                \code{\link[=svystat_rob]{vcov}},
+                \code{\link[=svystat_rob]{residuals}},
+                \code{\link[=svystat_rob]{fitted}}, and
+                \code{\link[=svystat_rob]{robweights}} are available.
         }
     }
 }
@@ -72,8 +128,8 @@ Chambers, R. (1986). Outlier Robust Finite Population Estimation.
     \emph{Journal of the American Statistical Association} \bold{81},
     1063--1069. \doi{10.1080/01621459.1986.10478374}
 
-Duchesne, P. (1999). Robust calibration estimators,
-    \emph{Survey Methodology} \bold{25}, 43--56.
+Duchesne, P. (1999). Robust calibration estimators, \emph{Survey Methodology}
+    \bold{25}, 43--56.
 
 Gwet, J.-P. and Rivest, L.-P. (1992). Outlier Resistant Alternatives to
     the Ratio Estimator. \emph{Journal of the American Statistical Association}
@@ -91,6 +147,10 @@ Lee, H. (1995). Outliers in business surveys. In:
 
 Särndal, C.-E., Swensson, B. and Wretman, J. (1992).
     \emph{Model Assisted Survey Sampling}, New York: Springer.
+
+Särndal, C.-E. and Wright, R. L. (1984). Cosmetic Form of Estimators
+    in Survey Sampling. \emph{Scandinavian Journal of Statistics} \bold{11},
+    146--156.
 }
 \examples{
 data(workplace)
@@ -103,17 +163,14 @@ dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
 # Robust regression M-estimator with Huber psi-function
 reg <- svyreg_huberM(payroll ~ employment, dn, k = 3)
 
+# ADU (asymptotically design unbiased) estimator
+m <- svytotal_reg(reg, totals = 1001233, 90840, type = "ADU")
+m
+
 # Robust GREG estimator of the mean; the population means of the auxiliary
 # variables are from a register
-m <- svymean_reg(reg, auxiliary = c(1.05, 11.57), type = "ADU")
+m <- svymean_reg(reg, totals = 1001233, 90840, type = "huber", k = 20)
 m
-
-# ADU
-m <- svytotal_reg(reg, auxiliary = c(90840, 1001233), type = "ADU")
-m
-
-m <- svyreg(payroll ~ employment, dn)
-svytotal_reg(m, auxiliary = c(90840, 1001233), type = "ADU")
 
 # Summarize
 summary(m)
@@ -123,6 +180,9 @@ coef(m)
 
 # Extract estimated standard error
 SE(m)
+
+# Approximation of the estimated mean square error
+mse(m)
 }
 \seealso{
 \code{\link{svyreg}}, \code{\link{svyreg_huberM}}, \code{\link{svyreg_huberGM}},
