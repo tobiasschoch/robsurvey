@@ -33,12 +33,6 @@ weighted_quantile(x, w, probs, na.rm = FALSE)
 \value{
     Weighted estimate of the population quantiles
 }
-\examples{
-data(workplace)
-
-# Weighted 25\% quantile (1st quartile)
-weighted_quantile(workplace$employment, workplace$weight, 0.25)
-}
 \references{
 Bentley, J. L. and McIlroy, D. M. (1993). Engineering a Sort Function,
     \emph{Software - Practice and Experience} \bold{23}, 1249--1265.
@@ -49,5 +43,13 @@ Hyndman, R.J. and Fan, Y. (1996). Sample Quantiles in Statistical Packages,
     \doi{10.1080/00031305.1996.10473566}
 }
 \seealso{
+\link[=robsurvey-package]{Overview} (of all implemented functions)
+
 \code{\link{weighted_median}}
+}
+\examples{
+data(workplace)
+
+# Weighted 25\% quantile (1st quartile)
+weighted_quantile(workplace$employment, workplace$weight, 0.25)
 }

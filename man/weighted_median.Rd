@@ -20,11 +20,13 @@ weighted_median(x, w, na.rm = FALSE)
 \value{
     Weighted estimate of the population median
 }
+\seealso{
+\link[=robsurvey-package]{Overview} (of all implemented functions)
+
+\code{\link{weighted_quantile}}
+}
 \examples{
 data(workplace)
 
 weighted_median(workplace$employment, workplace$weight)
-}
-\seealso{
-\code{\link{weighted_quantile}}
 }

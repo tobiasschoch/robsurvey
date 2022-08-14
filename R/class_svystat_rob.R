@@ -151,14 +151,20 @@ mse <- function(object)
         reference_estimator$k <- NULL
         reference_estimator$type <- "ADU"
     }
+
+#FIXME:
+    if (inherits(object, "ratio_est"))
+        .NotYetImplemented()
+
     if (inherits(object, "mest"))
         reference_estimator$k <- Inf
-    if (inherits(object, "dalen"))
+    if (inherits(object, "dalen")) {
         reference_estimator$censoring <- Inf
+        reference_estimator$verbose <- FALSE
+    }
     if (inherits(object, c("wins", "trim"))) {
         reference_estimator$LB<- 0
         reference_estimator$UB<- 1
-        reference_estimator$verbose <- FALSE
     }
 
     reference_location <- coef.svystat_rob(eval(reference_estimator))

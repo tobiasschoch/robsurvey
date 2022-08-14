@@ -1,7 +1,7 @@
 \name{svymean_reg}
 \alias{svymean_reg}
 \alias{svytotal_reg}
-\title{Robust Generalized Regression Estimator (GREG) of the Mean and Total}
+\title{Robust Generalized Regression Predictor (GREG) of the Mean and Total}
 \usage{
 svytotal_reg(object, totals, N = NULL, type, k = NULL, check.names = TRUE,
     keep_object = TRUE)
@@ -47,7 +47,7 @@ svymean_reg(object, totals, N = NULL, type, k = NULL, check.names = TRUE,
             the predictors \code{svytotal_reg} and \code{svymean_reg},
             where \code{object} is the fitted regression model.
     }
-    The following GREG predictiors are available:
+    The following GREG predictors are available:
     \describe{
         \item{GREG (not robust, \code{k = NULL})}{
             \itemize{
@@ -152,6 +152,20 @@ Särndal, C.-E. and Wright, R. L. (1984). Cosmetic Form of Estimators
     in Survey Sampling. \emph{Scandinavian Journal of Statistics} \bold{11},
     146--156.
 }
+\seealso{
+\link[=robsurvey-package]{Overview} (of all implemented functions)
+
+\code{\link{svymean_ratio}} and \code{\link{svytotal_ratio}} for (robust)
+ratio predictors
+
+\code{\link{svymean_huber}}, \code{\link{svytotal_huber}},
+\code{\link{svymean_tukey}} and \code{\link{svytotal_tukey}} for
+\eqn{M}-estimators
+
+\code{\link{svyreg}}, \code{\link{svyreg_huberM}}, \code{\link{svyreg_huberGM}},
+\code{\link{svyreg_tukeyM}} and \code{\link{svyreg_tukeyGM}} for robust
+regression \eqn{M}- and \eqn{GM}-estimators
+}
 \examples{
 data(workplace)
 
@@ -183,8 +197,4 @@ SE(m)
 
 # Approximation of the estimated mean square error
 mse(m)
-}
-\seealso{
-\code{\link{svyreg}}, \code{\link{svyreg_huberM}}, \code{\link{svyreg_huberGM}},
-\code{\link{svyreg_tukeyM}} and \code{\link{svyreg_tukeyGM}}
 }

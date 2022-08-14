@@ -83,6 +83,12 @@ weighted_total_k_winsorized(x, w, k, info = FALSE, na.rm = FALSE)
         }
     }
 }
+\seealso{
+\link[=robsurvey-package]{Overview} (of all implemented functions)
+
+\code{\link{svymean_winsorized}}, \code{\link{svymean_k_winsorized}},
+\code{\link{svytotal_winsorized}} and \code{\link{svytotal_k_winsorized}}
+}
 \examples{
 data(workplace)
 
@@ -92,8 +98,4 @@ weighted_mean_winsorized(workplace$employment, workplace$weight, LB = 0.05)
 # Estimated one-sided k winsorized population total (2 observations are
 # winsorized at the top of the distribution)
 weighted_total_k_winsorized(workplace$employment, workplace$weight, k = 2)
-}
-\seealso{
-\code{\link{svymean_winsorized}}, \code{\link{svymean_k_winsorized}},
-\code{\link{svytotal_winsorized}} and \code{\link{svytotal_k_winsorized}}
 }

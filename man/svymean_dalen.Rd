@@ -42,6 +42,18 @@ svytotal_dalen(x, design, censoring, type = "Z2", na.rm = FALSE,
 \value{
     Object of class \code{\link{svystat_rob}}
 }
+\references{
+Dalén, J. (1987). Practical Estimators of a Population Total Which Reduce
+    the Impact of Large Observations. R & D Report U/STM 1987:32, Statistics
+    Sweden, Stockholm.
+}
+\seealso{
+\link[=robsurvey-package]{Overview} (of all implemented functions)
+
+\code{\link{svymean_trimmed}}, \code{\link{svytotal_trimmed}},
+\code{\link{svymean_winsorized}}, \code{\link{svytotal_winsorized}},
+\code{\link{svymean_huber}} and \code{\link{svytotal_huber}}
+}
 \examples{
 data(workplace)
 
@@ -64,14 +76,4 @@ coef(m)
 
 # Extract estimated standard error
 SE(m)
-}
-\references{
-Dalén, J. (1987). Practical Estimators of a Population Total Which Reduce
-    the Impact of Large Observations. R & D Report U/STM 1987:32, Statistics
-    Sweden, Stockholm.
-}
-\seealso{
-\code{\link{svymean_trimmed}}, \code{\link{svytotal_trimmed}},
-\code{\link{svymean_winsorized}}, \code{\link{svytotal_winsorized}},
-\code{\link{svymean_huber}} and \code{\link{svytotal_huber}}
 }

@@ -49,6 +49,9 @@ export(svymean_dalen)
 export(svymean_reg)
 export(svytotal_reg)
 
+export(svymean_ratio)
+export(svytotal_ratio)
+
 export(svytotal_huber)
 export(svytotal_k_winsorized)
 export(svytotal_trimmed)
@@ -67,6 +70,9 @@ export(svyreg_huberGM)
 export(svyreg_tukey)
 export(svyreg_tukeyM)
 export(svyreg_tukeyGM)
+
+export(svyratio_huber)
+export(svyratio_tukey)
 
 export(weighted_IQR)
 export(weighted_line)

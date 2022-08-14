@@ -78,18 +78,24 @@
 \section{Survey Regression (weighted least squares)}{
     \code{\link{svyreg}}
 }
-\section{Robust Survey Regression (weighted)}{
+\section{Robust Regression and Ratio Estimation (weighted)}{
     \itemize{
         \item Regression M-estimators: \code{\link{svyreg_huberM}} and
             \code{\link{svyreg_tukeyM}}
         \item Regression GM-estimators (Mallows and Schweppe):
             \code{\link{svyreg_huberGM}} and \code{\link{svyreg_tukeyGM}}
+        \item Ratio M-estimators:
+            \code{\link{svyratio_huber}} and \code{\link{svyratio_tukey}}
+
     }
 }
-\section{Robust Generalized Regression Estimation (GREG)}{
+\section{Robust Generalized Regression (GREG) and Ratio Prediction of the
+        Population Mean and Total}{
     \itemize{
-        \item Mean: \code{\link{svymean_reg}}
-        \item Total: \code{\link{svytotal_reg}}
+        \item Regression predictors: \code{\link{svymean_reg}} and
+            \code{\link{svytotal_reg}}
+        \item Ratio predictors: \code{\link{svymean_ratio}} and
+            \code{\link{svytotal_ratio}}
     }
 }
 \section{Utility functions}{

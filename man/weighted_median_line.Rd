@@ -40,6 +40,12 @@ weighted_median_line(x, y = NULL, w, type = "slopes", na.rm = FALSE)
 \value{
     A vector with two components: intercept and slope
 }
+\seealso{
+\link[=robsurvey-package]{Overview} (of all implemented functions)
+
+\code{\link[stats]{line}}, \code{\link{weighted_line}} and
+\code{\link{weighted_median_ratio}}
+}
 \examples{
 x <- c(1, 2, 4, 5)
 y <- c(3, 2, 7, 4)
@@ -71,8 +77,4 @@ data(cars)
 cars$speed[49] <- 72
 with(cars, weighted_median_line(dist ~ speed, w = w))
 with(cars, weighted_median_line(dist ~ speed, w = w, type = "prod"))
-}
-\seealso{
-\code{\link[stats]{line}}, \code{\link{weighted_line}} and
-\code{\link{weighted_median_ratio}}
 }

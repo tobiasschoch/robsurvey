@@ -4,23 +4,22 @@
 
 ## MILESTONE ver. 0.4
 
+## Code
+
+* `mse`: for instance, in `mse(svymean_reg(object))`, we must re-compute `object` for `k=Inf` (this is the reference estimator; not only prediction with `k=Inf`)
+
 ### DOCUMENTATION
 
-* `packge.Rd`link to \pkg{survey} does not work
+* vignettes: GREG + ratio
+
+**Also**
+
 * Improve documentation of `weighted_line()`  and  `weighted_median_lines()`
 * Documentation, examples, and vignette of `svymean_reg()` and `svytotal_reg()`
 
-### NEW FEATURE
-
-* `svyreg()`: predict method
-* robust calibration
-
 ## BUG FIX
 
-* GREG tests + heteroscedasticity (of calibrate)
 * Mallows type GM-estimator
-
-
 
 ```R
 library("survey")
@@ -59,4 +58,9 @@ lm.wfit(m$model$x, m$model$y, .qi_weights(m))$coefficients
 
 ---
 
-## UNSCHEDULED
+## UNSCHEDULED VERSION
+
+### NEW FEATURE
+
+* `svyreg()`: predict method
+* robust calibration

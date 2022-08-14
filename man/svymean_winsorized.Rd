@@ -98,6 +98,14 @@ Shao, J. (1994). L-Statistics in Complex Survey Problems.
     \emph{The Annals of Statistics} \bold{22}, 976--967.
     \doi{10.1214/aos/1176325505}
 }
+\seealso{
+\link[=robsurvey-package]{Overview} (of all implemented functions)
+
+\code{\link{weighted_mean_winsorized}},
+\code{\link{weighted_mean_k_winsorized}},
+\code{\link{weighted_total_winsorized}} and
+\code{\link{weighted_total_k_winsorized}}
+}
 \examples{
 data(workplace)
 
@@ -112,10 +120,4 @@ svymean_winsorized(~employment, dn, LB = 0.05)
 # Estimated one-sided k winsorized population total (2 observations are
 # winsorized at the top of the distribution)
 svytotal_k_winsorized(~employment, dn, k = 2)
-}
-\seealso{
-\code{\link{weighted_mean_winsorized}},
-\code{\link{weighted_mean_k_winsorized}},
-\code{\link{weighted_total_winsorized}} and
-\code{\link{weighted_total_k_winsorized}}
 }

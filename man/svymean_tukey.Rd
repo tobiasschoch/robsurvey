@@ -52,6 +52,15 @@ svytotal_tukey(x, design, k, type = "rhj", na.rm = FALSE, verbose = TRUE, ...)
 \value{
     Object of class \code{\link{svystat_rob}}
 }
+\references{
+Hulliger, B. (1995). Outlier Robust Horvitz-Thompson Estimators.
+    \emph{Survey Methodology} \bold{21}, 79--87.
+}
+\seealso{
+\link[=robsurvey-package]{Overview} (of all implemented functions)
+
+\code{\link{svymean_huber}} and \code{\link{svytotal_huber}}
+}
 \examples{
 data(workplace)
 
@@ -77,11 +86,4 @@ scale(m)
 
 # Extract estimated standard error
 SE(m)
-}
-\references{
-Hulliger, B. (1995). Outlier Robust Horvitz-Thompson Estimators.
-    \emph{Survey Methodology} \bold{21}, 79--87.
-}
-\seealso{
-\code{\link{svymean_huber}} and \code{\link{svytotal_huber}}
 }

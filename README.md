@@ -79,15 +79,19 @@ In addition, `huber2()` implements a weighted Huber "Proposal 2" estimator (only
 * `svyreg_huberGM()`
 * `svyreg_tukeyGM()`
 
-### 1.3 Robust generalized regression estimator (GREG)
+**Weighted ratio *M*-estimator**
 
-> The current implementation of the functions is **EXPERIMENTAL**. Experimental features may:
->
-> * have undergone less extensive testing than is normal for standard features
-> * interact with unstable (external) dependencies
-> * be subject to change
-> * not be directly supported by the developers in the event
->   issues arise
+* `svyratio_huber()`
+* `svyratio_tukey()`
+
+### 1.3 Robust ratio and generalized regression estimator (GREG)
+
+**Robust ratio estimator of the mean or total**
+
+* `svymean_ratio()`
+* `svytotal_ratio()`
+
+**Robust regression estimator of the mean or total**
 
 * `svymean_reg()`
 * `svytotal_reg()`

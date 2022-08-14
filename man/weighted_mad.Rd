@@ -26,6 +26,9 @@ weighted_mad(x, w, na.rm = FALSE, constant = 1.482602)
 \value{
     Weighted median absolute deviation from the (weighted) median
 }
+\seealso{
+\link[=robsurvey-package]{Overview} (of all implemented functions)
+}
 \examples{
 data(workplace)
 

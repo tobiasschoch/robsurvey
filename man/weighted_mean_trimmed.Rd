@@ -20,25 +20,6 @@ weighted_total_trimmed(x, w, LB = 0.05, UB = 1 - LB, info = FALSE,
     \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should
         be removed before the computation proceeds (default: \code{FALSE}).}
 }
-\value{
-    The return value depends on \code{info}:
-    \describe{
-        \item{\code{info = FALSE}:}{estimate of mean or total \code{[double]}}
-        \item{\code{info = TRUE}:}{a \code{[list]} with items:
-            \itemize{
-                \item \code{characteristic} \code{[character]},
-                \item \code{estimator} \code{[character]},
-                \item \code{estimate} \code{[double]},
-                \item \code{variance} (default: \code{NA}),
-                \item \code{robust} \code{[list]},
-                \item \code{residuals} \code{[numeric vector]},
-                \item \code{model} \code{[list]},
-                \item \code{design} (default: \code{NA}),
-                \item \code{[call]}
-            }
-        }
-    }
-}
 \description{
     Weighted trimmed mean and total (bare-bone functions with limited
     functionality; see \code{\link{svymean_trimmed}} and
@@ -63,6 +44,30 @@ weighted_total_trimmed(x, w, LB = 0.05, UB = 1 - LB, info = FALSE,
         }
     }
 }
+\value{
+    The return value depends on \code{info}:
+    \describe{
+        \item{\code{info = FALSE}:}{estimate of mean or total \code{[double]}}
+        \item{\code{info = TRUE}:}{a \code{[list]} with items:
+            \itemize{
+                \item \code{characteristic} \code{[character]},
+                \item \code{estimator} \code{[character]},
+                \item \code{estimate} \code{[double]},
+                \item \code{variance} (default: \code{NA}),
+                \item \code{robust} \code{[list]},
+                \item \code{residuals} \code{[numeric vector]},
+                \item \code{model} \code{[list]},
+                \item \code{design} (default: \code{NA}),
+                \item \code{[call]}
+            }
+        }
+    }
+}
+\seealso{
+\link[=robsurvey-package]{Overview} (of all implemented functions)
+
+\code{\link{svymean_trimmed}} and \code{\link{svytotal_trimmed}}
+}
 \examples{
 data(workplace)
 
@@ -72,7 +77,4 @@ weighted_total_trimmed(workplace$employment, workplace$weight, LB = 0.05,
 
 # Estimated trimmed population mean (5\% trimming at the top of the distr.)
 weighted_mean_trimmed(workplace$employment, workplace$weight, UB = 0.95)
-}
-\seealso{
-\code{\link{svymean_trimmed}} and \code{\link{svytotal_trimmed}}
 }

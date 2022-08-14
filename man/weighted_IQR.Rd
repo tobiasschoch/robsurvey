@@ -25,6 +25,9 @@ weighted_IQR(x, w, na.rm = FALSE, constant = 0.7413)
 \value{
     Weighted IQR
 }
+\seealso{
+\link[=robsurvey-package]{Overview} (of all implemented functions)
+}
 \examples{
 data(workplace)
 

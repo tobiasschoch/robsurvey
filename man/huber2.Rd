@@ -60,6 +60,11 @@ huber2(x, w, k = 1.5, na.rm = FALSE, maxit = 50, tol = 1e-04, info = FALSE,
         }
     }
 }
+\references{
+Huber, P. J. (1964). Robust Estimation of a Location Parameter.
+    \emph{Annals of Mathematical Statistics} \bold{35}, 73--101.
+    \doi{10.1214/aoms/1177703732}
+}
 \examples{
 data(workplace)
 
@@ -88,9 +93,4 @@ m2 <- hubers_mod(workplace$payroll, tol = TOLERANCE)$mu
 m1 / m2 - 1
 
 # The absolute relative difference is < 4.0-09 (smaller than TOLERANCE)
-}
-\references{
-Huber, P. J. (1964). Robust Estimation of a Location Parameter.
-    \emph{Annals of Mathematical Statistics} \bold{35}, 73--101.
-    \doi{10.1214/aoms/1177703732}
 }

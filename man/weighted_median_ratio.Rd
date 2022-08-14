@@ -18,6 +18,12 @@ weighted_median_ratio(x, y = NULL, w, na.rm = FALSE)
 \value{
     A vector with two components: intercept and slope
 }
+\seealso{
+\link[=robsurvey-package]{Overview} (of all implemented functions)
+
+\code{\link[stats]{line}}, \code{\link{weighted_line}} and
+\code{\link{weighted_median_line}}
+}
 \examples{
 x <- c(1,2,4,5)
 y <- c(1,0,5,2)
@@ -26,8 +32,4 @@ m
 coef(m)
 fitted(m)
 residuals(m)
-}
-\seealso{
-\code{\link[stats]{line}}, \code{\link{weighted_line}} and
-\code{\link{weighted_median_line}}
 }

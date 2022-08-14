@@ -54,6 +54,11 @@ Shao, J. (1994). L-Statistics in Complex Survey Problems.
     \emph{The Annals of Statistics} \bold{22}, 976--967.
     \doi{10.1214/aos/1176325505}
 }
+\seealso{
+\link[=robsurvey-package]{Overview} (of all implemented functions)
+
+\code{\link{weighted_mean_trimmed}} and \code{\link{weighted_total_trimmed}}
+}
 \examples{
 data(workplace)
 
@@ -67,7 +72,4 @@ svytotal_trimmed(~employment, dn, LB = 0.05, UB = 0.95)
 
 # Estimated trimmed population mean (5\% trimming at the top of the distr.)
 svymean_trimmed(~employment, dn, UB = 0.95)
-}
-\seealso{
-\code{\link{weighted_mean_trimmed}} and \code{\link{weighted_total_trimmed}}
 }

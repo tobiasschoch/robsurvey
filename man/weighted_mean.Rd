@@ -24,6 +24,9 @@ weighted_total(x, w, na.rm = FALSE)
 \value{
     Estimated population mean or total
 }
+\seealso{
+\link[=robsurvey-package]{Overview} (of all implemented functions)
+}
 \examples{
 data(workplace)
 

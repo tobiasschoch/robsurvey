@@ -32,6 +32,13 @@ mer(object, verbose = TRUE, max_k = 10, init = 1, method = "Brent",
 \value{
 Object of class \code{\link{svystat_rob}}
 }
+\references{
+Hulliger, B. (1995). Outlier Robust Horvitz-Thompson Estimators.
+    \emph{Survey Methodology} \bold{21}, 79--87.
+}
+\seealso{
+\link[=robsurvey-package]{Overview} (of all implemented functions)
+}
 \examples{
 library(survey)
 data(losdata)
@@ -42,8 +49,4 @@ m <- svymean_huber(~los, dn, type = "rhj", k = 8)
 
 # MER estimator
 mer(m)
-}
-\references{
-Hulliger, B. (1995). Outlier Robust Horvitz-Thompson Estimators.
-    \emph{Survey Methodology} \bold{21}, 79--87.
 }

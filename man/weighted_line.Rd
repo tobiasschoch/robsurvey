@@ -34,6 +34,11 @@ weighted_line(x, y = NULL, w, na.rm = FALSE, iter = 1)
 \value{
     intercept and slope of the fitted line
 }
+\seealso{
+\link[=robsurvey-package]{Overview} (of all implemented functions)
+
+\code{\link[stats]{line}}
+}
 \examples{
 data(cars)
 
@@ -44,7 +49,4 @@ m
 coef(m)
 residuals(m)
 fitted(m)
-}
-\seealso{
-\code{\link[stats]{line}}
 }

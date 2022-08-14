@@ -53,6 +53,8 @@ Simpson, D. G., Ruppert, D. and Carroll, R.J. (1992). On One-Step GM
     \doi{10.2307/2290275}
 }
 \seealso{
+\link[=robsurvey-package]{Overview} (of all implemented functions)
+
 \code{\link{svyreg_huberM}}, \code{\link{svyreg_huberGM}},
 \code{\link{svyreg_tukeyM}} and \code{\link{svyreg_tukeyGM}}
 }

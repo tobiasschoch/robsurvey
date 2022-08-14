@@ -2,10 +2,15 @@
 
 # robsurvey VERSION 0.4 (==ADD==)
 
-## Changes
+## NEW FEATURES
+
+* Robust estimators of the ratio of two variables (`svyratio_huber()` and `svyratio_tukey()`); these functions are robust alternatives to `survey::svyratio()`.
+* Robust ratio estimators of the population mean and total, `svymean_ratio()` and `svytotal_ratio()`.
+
+## CHANGES
 
 * Functions `svymean_reg()` and `svytotal_reg()` are not flagged as "experimental" anymore. Several changes took place (in fact, the functions have undergone a complete code refactoring):
-  * Argument `auxiliary` has been replaced by the two arguments `N` (population size) and `totals` (i.e., population totals of non-constant explanatory variables). **Important:** `svymean_reg()` is now called with `totals` not the population means.
+  * Argument `auxiliary` has been replaced by the two arguments `N` (population size) and `totals` (i.e., population totals of non-constant explanatory variables). **Important:** `svymean_reg()` is now called with `totals` not the population means.
   * The arguments `na.rm` and `verbose` have been dropped (not needed).
   * The variance estimators in `svymean_reg()` and `svytotal_reg()` are now implemented as *g*-weighted residual variance estimators.
 

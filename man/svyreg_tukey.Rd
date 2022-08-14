@@ -20,8 +20,10 @@ svyreg_tukey(formula, design, k, var = NULL, na.rm = FALSE, verbose = TRUE,
         \code{\link[survey]{svydesign}}.}
     \item{k}{\code{[double]} robustness tuning constant
         (\eqn{0 < k \leq \infty}{0 < k <= Inf}).}
-    \item{var}{\code{[numeric vector]} or \code{[NULL]} heteroscedastic
-        variance (default: \code{NULL} implies homoscedastic variance).}
+    \item{var}{a one-sided \code{[formula]} object or variable name
+        (\code{[character]}) that defines the heteroscedastic variance
+        or \code{[NULL]} indicating homoscedastic variance (default:
+        \code{NULL}).}
     \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should
         be removed before the computation proceeds (default: \code{FALSE}).}
     \item{verbose}{\code{[logical]} indicating whether additional information
@@ -88,9 +90,11 @@ svyreg_tukey(formula, design, k, var = NULL, na.rm = FALSE, verbose = TRUE,
     Object of class \code{svyreg.rob}
 }
 \seealso{
+\link[=robsurvey-package]{Overview} (of all implemented functions)
+
 \code{\link[=svyreg_rob]{summary}}, \code{\link[=svyreg_rob]{coef}},
-\code{\link[=svyreg_rob]{residuals}}, \code{\link[=svyreg_rob]{fitted}} and
-\code{\link[=svyreg_rob]{vcov}}
+\code{\link[=svyreg_rob]{residuals}}, \code{\link[=svyreg_rob]{fitted}},
+\code{\link[=svyreg_rob]{SE}} and \code{\link[=svyreg_rob]{vcov}}
 
 \code{\link[=svyreg_rob]{plot}} for regression diagnostic plot methods.
 

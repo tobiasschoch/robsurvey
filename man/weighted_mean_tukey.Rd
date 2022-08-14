@@ -86,6 +86,15 @@ weighted_total_tukey(x, w, k, type = "rhj", info = FALSE, na.rm = FALSE,
         }
     }
 }
+\references{
+Hulliger, B. (1995). Outlier Robust Horvitz-Thompson Estimators.
+    \emph{Survey Methodology} \bold{21}, 79--87.
+}
+\seealso{
+\link[=robsurvey-package]{Overview} (of all implemented functions)
+
+\code{\link{weighted_mean_huber}} and \code{\link{weighted_total_huber}}
+}
 \examples{
 data(workplace)
 
@@ -96,11 +105,4 @@ weighted_total_tukey(workplace$employment, workplace$weight, k = 9,
 # Robust weighted M-estimator of the population mean
 weighted_mean_tukey(workplace$employment, workplace$weight, k = 12,
     type = "rhj")
-}
-\references{
-Hulliger, B. (1995). Outlier Robust Horvitz-Thompson Estimators.
-    \emph{Survey Methodology} \bold{21}, 79--87.
-}
-\seealso{
-\code{\link{weighted_mean_huber}} and \code{\link{weighted_total_huber}}
 }
