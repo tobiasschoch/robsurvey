@@ -21,7 +21,7 @@ svymean_dalen <- function(x, design, censoring, type = "Z2", na.rm = FALSE,
     names(res$estimate) <- dat$yname
     res$call <- match.call()
     res$design <- design
-    class(res) <- c("svystat_rob", "dalen")
+    class(res) <- "svystat_rob"
     res
 }
 # Dalen the weighted total (depends on pkg survey)
@@ -46,6 +46,6 @@ svytotal_dalen <- function(x, design, censoring, type = "Z2", na.rm = FALSE,
     names(res$estimate) <- dat$yname
     res$call <- match.call()
     res$design <- design
-    class(res) <- c("svystat_rob", "dalen")
+    class(res) <- "svystat_rob"
     res
 }

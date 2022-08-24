@@ -25,7 +25,7 @@ svymean_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
     names(res$estimate) <- dat$yname
     res$call <- match.call()
     res$design <- design
-    class(res) <- c("svystat_rob", "wins")
+    class(res) <- "svystat_rob"
     res
 }
 # weighted one-sided k winsorized mean (depends on pkg survey)
@@ -56,7 +56,7 @@ svymean_k_winsorized <- function(x, design, k, na.rm = FALSE,
     names(res$estimate) <- dat$yname
     res$call <- match.call()
     res$design <- design
-    class(res) <- c("svystat_rob", "wins")
+    class(res) <- "svystat_rob"
     res
 }
 # weighted winsorized total (depends on pkg survey)
@@ -86,7 +86,7 @@ svytotal_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
     names(res$estimate) <- dat$yname
     res$call <- match.call()
     res$design <- design
-    class(res) <- c("svystat_rob", "wins")
+    class(res) <- "svystat_rob"
     res
 }
 # weighted one-sided k winsorized total (depends on pkg survey)
@@ -116,7 +116,7 @@ svytotal_k_winsorized <- function(x, design, k, na.rm = FALSE,
     names(res$estimate) <- dat$yname
     res$call <- match.call()
     res$design <- design
-    class(res) <- c("svystat_rob", "wins")
+    class(res) <- "svystat_rob"
     res
 }
 # influence function, Huber (1981, p. 58-59)

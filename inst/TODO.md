@@ -4,10 +4,6 @@
 
 ## MILESTONE ver. 0.4
 
-## Code
-
-* `mse`: for instance, in `mse(svymean_reg(object))`, we must re-compute `object` for `k=Inf` (this is the reference estimator; not only prediction with `k=Inf`)
-
 ### DOCUMENTATION
 
 * vignettes: GREG + ratio
@@ -15,7 +11,6 @@
 **Also**
 
 * Improve documentation of `weighted_line()`  and  `weighted_median_lines()`
-* Documentation, examples, and vignette of `svymean_reg()` and `svytotal_reg()`
 
 ## BUG FIX
 

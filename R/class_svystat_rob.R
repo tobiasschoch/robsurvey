@@ -18,7 +18,7 @@
 #     + used_iqr: [int] 1 = scale estimated by IQR not MAD
 #  + residuals: [numeric]
 #  + model [list]
-#     + x: [matrix] design matrix
+#     + x: [matrix] design matrix (only for GREG type estimators)
 #     + y: [numeric] response variable
 #     + w: [numeric] sampling weights
 #     + var: [numeric] heteroscedasticity variances
@@ -137,37 +137,32 @@ scale.svystat_rob <- function(x, ...)
 {
     x$scale
 }
-# compute estimated mse, more precisely, estimated risk; see mer()
+# compute estimated mse, more precisely, estimated risk
 mse <- function(object)
 {
-    if (!inherits(object, "svystat_rob"))
-        stop("MSE is defined only for object of class 'svystat_rob'\n",
-            call. = FALSE)
-
-    # consistent reference estimator (mean or total)
-    reference_estimator <- object$call
-
-    if (inherits(object, "greg")) {
-        reference_estimator$k <- NULL
-        reference_estimator$type <- "ADU"
+    call <- object$call
+    # reference estimator
+    if (grepl("_reg$", call[[1]])) {                # robust GREG
+        reg_call <- object$model$call
+        tmp <- eval(as.call(list(substitute(svyreg), reg_call$formula,
+            reg_call$design, reg_call$var, !is.null(reg_call$na.rm))))
+        call$object <- substitute(tmp)
+        call$type <- "ADU"
+        ref <- coef.svystat_rob(eval(call))
+    } else if (grepl("_ratio$", call[[1]])) {       # robust ratio
+        rat_call <- object$model$call
+        rat_call$k <- Inf
+        rat_call$asym <- FALSE
+        rat_call$verbose <- FALSE
+        tmp <- eval(rat_call)
+        call$object <- substitute(tmp)
+        ref <- coef.svystat_rob(eval(call))
+    } else {                                        # otherwise
+        ref <- weighted_total(object$model$y, object$model$w,
+            na.rm = !is.null(call$na.rm))
+        if (object$characteristic == "mean")
+            ref <- ref / sum(object$model$w)
     }
-
-#FIXME:
-    if (inherits(object, "ratio_est"))
-        .NotYetImplemented()
-
-    if (inherits(object, "mest"))
-        reference_estimator$k <- Inf
-    if (inherits(object, "dalen")) {
-        reference_estimator$censoring <- Inf
-        reference_estimator$verbose <- FALSE
-    }
-    if (inherits(object, c("wins", "trim"))) {
-        reference_estimator$LB<- 0
-        reference_estimator$UB<- 1
-    }
-
-    reference_location <- coef.svystat_rob(eval(reference_estimator))
-    # estimated mse
-    as.numeric(object$variance + (object$estimate - reference_location)^2)
+    # mse
+    as.numeric(object$variance + (object$estimate - ref)^2)
 }

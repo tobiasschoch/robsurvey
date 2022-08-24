@@ -34,7 +34,9 @@ svyreg_tukey <- function(formula, design, k, var = NULL, na.rm = FALSE,
 {
     warning("Function 'svyreg_tukey' is deprecated; use instead
         'svyreg_tukeyM'", call. = FALSE)
-    svyreg_tukeyM(formula, design, k, var, na.rm, verbose, ...)
+    tmp <- svyreg_tukeyM(formula, design, k, var, na.rm, verbose, ...)
+    tmp$call <- match.call()
+    tmp
 }
 # robust Tukey biweight GM-estimator of regression (depends on pkg survey)
 svyreg_tukeyGM <- function(formula, design, k, type = c("Mallows", "Schweppe"),

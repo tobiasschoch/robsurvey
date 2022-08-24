@@ -12,9 +12,9 @@ svytotal_ratio <- function(object, total, variance = "wu", keep_object = TRUE)
         estimator = object$estimator, estimate = object$estimate * total,
         robust = object$robust, residuals = object$residuals,
         model = list(object$model, coef = object$estimate,
-            total = total, variance = variance),
+            total = total, variance = variance, call = object$call),
         design = object$design, call = match.call(),
-        variance = stderr^2), class = c("svystat_rob", "ratio_est"))
+        variance = stderr^2), class = "svystat_rob")
     if (keep_object)
         res$object <- object
     res
@@ -39,9 +39,9 @@ svymean_ratio <- function(object, total, N = NULL, variance = "wu",
         estimator = object$estimator, estimate = object$estimate * total / N,
         robust = object$robust, residuals = object$residuals,
         model = list(object$model, coef = object$estimate,
-            total = total, variance = variance),
+            total = total, variance = variance, call = object$call),
         design = object$design, call = match.call(),
-        variance = stderr^2), class = c("svystat_rob", "ratio_est"))
+        variance = stderr^2), class = "svystat_rob")
     if (keep_object)
         res$object <- object
     res

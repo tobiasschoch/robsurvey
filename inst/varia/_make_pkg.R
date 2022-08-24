@@ -10,7 +10,8 @@ if (length(args) == 0) {
         tar     = "tar",
         h       = "help",
         help    = "help",
-        test    =  "test")
+        test    = "test",
+        pdf     = "pdf")
 }
 
 if (mode == "help") {
@@ -20,6 +21,7 @@ if (mode == "help") {
     cat("  tar (generate tar ball)\n")
     cat("  full (standard installation)\n")
     cat("  test (run test cases)\n\n")
+    cat("  pdf  (compile manual)\n\n")
     q(save = "no")
 }
 
@@ -107,4 +109,10 @@ if (mode == "test") {
 }
 
 # render pdf manual
-#system("R CMD Rd2pdf robsurvey")
+if (mode == "pdf") {
+    setwd(PKG_ROOT)
+    pkg_pdf <- paste0(PKG, ".pdf")
+    if (file.exists(pkg_pdf))
+        file.remove(pkg_pdf)
+    system("R CMD Rd2pdf robsurvey")
+}

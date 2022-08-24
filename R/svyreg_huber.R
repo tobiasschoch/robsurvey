@@ -34,7 +34,9 @@ svyreg_huber <- function(formula, design, k, var = NULL, na.rm = FALSE,
 {
     warning("Function 'svyreg_huber' is deprecated; use instead
         'svyreg_huberM'", call. = FALSE)
-    svyreg_huberM(formula, design, k, var, na.rm, asym, verbose, ...)
+    tmp <- svyreg_huberM(formula, design, k, var, na.rm, asym, verbose, ...)
+    tmp$call <- match.call()
+    tmp
 }
 # robust Huber GM-estimator of regression (depends on pkg survey)
 svyreg_huberGM <- function(formula, design, k, type = c("Mallows", "Schweppe"),

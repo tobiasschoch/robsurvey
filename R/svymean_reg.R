@@ -5,6 +5,7 @@ svytotal_reg <- function(object, totals, N = NULL, type, k = NULL,
     if (!inherits(object, "svyreg_rob"))
         stop(paste0("The function cannot be used for an object of class '",
             class(object), "'\n"))
+    model <- object$model
     # check whether 'type' and 'k' are correctly specified
     type <- .check_k(type, k)
     # check whether auxiliary matches with the regression estimate
@@ -12,21 +13,23 @@ svytotal_reg <- function(object, totals, N = NULL, type, k = NULL,
     # g-weights
     gi <- .gi_weights(object, auxiliary, type, k)
     # estimate
-    est <- sum(gi * object$model$y)
-    names(est) <- object$model$yname
+    est <- sum(gi * model$y)
+    names(est) <- model$yname
     # residuals (not accounting for heteroscedasticity)
-    ri <- object$model$y - as.numeric(object$model$x %*% object$estimate)
+    ri <- model$y - as.numeric(model$x %*% object$estimate)
     # variance estimate
     design <- object$design
     v <- survey::svyrecvar(ri * gi, design$cluster, design$strata, design$fpc,
         postStrata = design$postStrata)
     # return
+    model$coef <- object$estimate
+    model$call <- object$call
     res <- structure(list(characteristic = "total",
         estimator = .method_name(type, k), estimate = est,
         robust = list(robweights = .bi_weights(object, type, k)),
-        residuals = ri, model = object$model, design = design,
+        residuals = ri, model = model, design = design,
         call = match.call(), variance = v, auxiliary = auxiliary,
-        gweights = gi), class = c("svystat_rob", "greg"))
+        gweights = gi), class = "svystat_rob")
     if (keep_object)
         res$object <- object
     res
@@ -38,32 +41,35 @@ svymean_reg <- function(object, totals, N = NULL, type, k = NULL,
     if (!inherits(object, "svyreg_rob"))
         stop(paste0("The function cannot be used for an object of class '",
             class(object), "'\n"))
+    model <- object$model
     # check whether 'type' and 'k' are correctly specified
     type <- .check_k(type, k)
     # if N is unknown, it will be estimated
     if (N_unknown)
-        N <- sum(object$model$w)
+        N <- sum(model$w)
 
     # check whether auxiliary matches with the regression estimate
     auxiliary <- .check_auxiliary(object, totals, N, check.names, TRUE)
     # g-weights
     gi <- .gi_weights(object, auxiliary, type, k) / N
     # estimate
-    est <- sum(gi * object$model$y)
-    names(est) <- object$model$yname
+    est <- sum(gi * model$y)
+    names(est) <- model$yname
     # residuals (not accounting for heteroscedasticity)
-    ri <- object$model$y - as.numeric(object$model$x %*% object$estimate)
+    ri <- model$y - as.numeric(model$x %*% object$estimate)
     # variance estimate
     design <- object$design
     v <- survey::svyrecvar(ri * gi, design$cluster, design$strata,
         design$fpc, postStrata = design$postStrata)
     # return
+    model$coef <- object$estimate
+    model$call <- object$call
     res <- structure(list(characteristic = "mean",
         estimator = .method_name(type, k), estimate = est,
         robust = list(robweights = .bi_weights(object, type, k)),
-        residuals = ri, model = object$model, design = design,
+        residuals = ri, model = model, design = design,
         call = match.call(), variance = v, auxiliary = auxiliary,
-        gweights = gi), class = c("svystat_rob", "greg"))
+        gweights = gi), class = "svystat_rob")
     if (keep_object)
         res$object <- object
     res

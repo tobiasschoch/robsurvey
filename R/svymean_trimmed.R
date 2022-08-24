@@ -21,7 +21,7 @@ svymean_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE)
     names(res$estimate) <- dat$yname
     res$call <- match.call()
     res$design <- design
-    class(res) <- c("svystat_rob", "trim")
+    class(res) <- "svystat_rob"
     res
 }
 # weighted trimmed total (depends on pkg survey)
@@ -45,7 +45,7 @@ svytotal_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE)
     names(res$estimate) <- dat$yname
     res$call <- match.call()
     res$design <- design
-    class(res) <- c("svystat_rob", "trim")
+    class(res) <- "svystat_rob"
     res
 }
 # influence function, Huber (1981, p. 58)
