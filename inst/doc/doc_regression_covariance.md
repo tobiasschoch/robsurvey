@@ -51,7 +51,7 @@ $$
 \end{equation*}
 $$
 
-and $\mathrm{E}_{\xi}$ denotes expectation with respect to model $\xi$. For the sample regression $GM$-estimator $\widehat{\boldsymbol{\theta}}_n$, the matrices $\bold M$ and $\bold Q$ must be estimated. In place of $\bold M$ and $\bold Q$ in ($\ref{eq:cov}$), we have
+and $\mathrm{E}_{\xi}$ denotes expectation with respect to model $\xi$. For the sample regression $GM$-estimator $\widehat{\boldsymbol{\theta}}_n$, the matrices $\bold M$ and $\bold Q$ must be estimated. Expressions of the generic matrices $\bold M$ and $\bold Q$ in ($\ref{eq:cov}$) are given in the following table for the *M*- and *GM*-estimators.
 
 | M-estimator                                                  | Mallows GM-estimator                                         | Schweppe GM-Estimator                                        |
 | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -115,7 +115,9 @@ The functions `cov_m_est()`, `cov_mallows_gm_est()`, and `cov_schweppe_gm_est()`
 
 To fix notation, denote the Hadamard product of the matrices $\bold A$ and $\bold B$ by $\bold A\circ \bold B$ and suppose that $\sqrt{\cdot}$ is applied element by element.
 
-**M-estimator** (`cov_m_est`). The covariance matrix is (up to a scalar) equal to
+### 3.1 *M*-estimator 
+
+The covariance matrix is (up to $\widehat{\sigma}$) equal to (see `cov_m_est`)
 $$
 \begin{equation}\label{eq:cov_m}
    (\bold X^T \bold W \bold X)^{-1}
@@ -127,7 +129,9 @@ and is computed as follows:
 * Invert the upper triangular matrix $\bold R$ by backward substitution to get $\bold R^{-1}$ (LAPACK: `dtrtri`).
 * Compute $\bold R^{-1} \bold R^{-T}$, which is equal to ($\ref{eq:cov_m}$); taking advantage of the triangular shape of $\bold R^{-1}$ and $\bold R^{-T}$ (LAPACK: `dtrmm`).
 
-**Mallows GM-estimator** (`cov_mallows_gm_est`). The covariance matrix is (up to a scalar) equal to
+### 3.2 Mallows *GM*-estimator 
+
+The covariance matrix is (up to $\widehat{\sigma}$) equal to (see `cov_mallows_gm_est`)
 $$
 \begin{equation}\label{eq:cov_mallows}
    \big(\bold X^T \bold W \bold H \bold X\big)^{-1} \bold X^T \bold W \bold H^2 \bold X \big(\bold X^T \bold W \bold H \bold X\big)^{-1}
@@ -141,7 +145,9 @@ and is computed as follows:
 * Update the matrix: $\bold A \leftarrow \bold A \bold R^{-T}$ (taking advantage of the triangular shape of $\bold R^{-1}$; LAPACK: `dtrmm`).
 * Compute $\bold A \bold A^T$, which corresponds to the expression in ($\ref{eq:cov_mallows}$); (LAPACK: `dgemm`).
 
-**Schweppe GM-estimator** (`cov_schweppe_gm_est`). The covariance matrix is (up to a scalar) equal to
+### 3.3 Schweppe *GM*-estimator
+
+The covariance matrix is (up to $\widehat{\sigma}$) equal to (see `cov_schweppe_gm_est`)
 $$
 \begin{equation}\label{eq:cov_schweppe}
    \big(\bold X^T \bold W \bold S_1 \bold X\big)^{-1} \bold X^T \bold W \bold S_2 \bold X \big(\bold X^T \bold W \bold S_1 \bold X\big)^{-1}.
@@ -155,7 +161,7 @@ $$
 * Update the matrix: $\bold A \leftarrow \bold A \bold R^{-T}$ (taking advantage of the triangular shape of $\bold R^{-1}$; LAPACK: `dtrmm`).
 * Compute $\bold A \bold A^T$, which corresponds to the expression in ($\ref{eq:cov_schweppe}$); (LAPACK: ` dgemm`).
 
-**Note**. [Marazzi](#literature) (1987) uses the Cholesky factorization (see subroutines `RTASKV` and `RTASKW`) which is computationally a bit cheaper than our QR factorization.
+**Note**. [Marazzi](#literature) (1987) uses the Cholesky factorization (see his subroutines `RTASKV` and `RTASKW`) which is computationally a bit cheaper than our QR factorization.
 
 ## Literature
 

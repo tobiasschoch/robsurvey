@@ -29,9 +29,8 @@ implementations. We are fairly confident that the methods in package
 ## 1 Introduction
 In this short report, we compare the behavior of the regression *M*- and
 *GM*-estimators in package `robsurvey` with the methods from
-other implementations. To this end, we study the estimated parameters
-for four well-known datasets/ cases studies. With regard to competing
-implementations, we consider the methods from the following R
+other implementations. To this end, we study the estimated regression coefficients
+of four well-known datasets/ cases studies. We consider the estimating methods from the following R
 packages:
 
 
