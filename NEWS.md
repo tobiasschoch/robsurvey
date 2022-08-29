@@ -5,7 +5,8 @@
 ## NEW FEATURES
 
 * Robust estimators of the ratio of two variables (`svyratio_huber()` and `svyratio_tukey()`); these functions are robust alternatives to `survey::svyratio()`.
-* Robust ratio estimators of the population mean and total, `svymean_ratio()` and `svytotal_ratio()`.
+* Robust ratio estimators of the population mean and total, see `svymean_ratio()` and `svytotal_ratio()`.
+* Example data `MU284pps`: A pps sample without replacement of size 50 from the MU284 population in Särndal et al. (1992).
 
 ## CHANGES
 

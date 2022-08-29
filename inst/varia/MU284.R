@@ -1,5 +1,7 @@
 library(sampling)
 data(MU284)
+#-------------------------------------------------------------------------------
+# Stratified by region + take all stratum of large citites
 
 # MU281: population of the 281 smallest municipalities (based on 1975 population)
 MU281 <- MU284[MU284$P75 < 200, ]
@@ -41,3 +43,36 @@ save(MU284strat, file = "MU284strat.RData")
 # design
 dn <- svydesign(ids = ~LABEL, strata = ~Stratum, fpc = ~fpc,
     weights = ~weights, data = MU284strat)
+
+#-------------------------------------------------------------------------------
+# Sample with probabilites proportional to population size in 1975 (P75)
+n <- 50
+pik <- inclusionprobabilities(MU284$P75, n)
+set.seed(1)
+s_index <- UPbrewer(pik)
+MU284pps <- MU284[s_index == 1, ]
+MU284pps$pi <- pik[s_index == 1]
+# calibrate the weights that are not equal to 1.0
+MU284pps$intercept <- 1
+MU284pps <- MU284pps[order(1 / MU284pps$pi), ]
+at <- 4:50
+totals <- c(284 - 3, sum(MU284$P75) - sum(MU284pps$P75[1:3]))
+MU284pps$g[at] <- calib(MU284pps[at, c("intercept", "P75")],
+    d = 1 / MU284pps$pi[at], total = totals, method = "truncated",
+    bounds = c(0.8, 10))
+MU284pps$weights[at] <- MU284pps$g[at] / MU284pps$pi[at]
+MU284pps$weights[1:3] <- 1
+MU284pps[, c("pi", "g", "intercept")] <- NULL
+MU284pps$pi <- 1 / MU284pps$weights
+
+# with(MU284pps, sum(weights))
+# with(MU284pps, sum(weights * P75))
+# plot(weights ~ P75, MU284pps)
+
+save(MU284pps, file = "MU284pps.RData")
+
+# design
+dn <- svydesign(ids = ~LABEL, fpc = ~pi, data = MU284pps, pps = "brewer")
+svytotal(~P75, dn)
+
+

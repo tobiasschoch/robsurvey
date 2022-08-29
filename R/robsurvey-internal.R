@@ -97,8 +97,11 @@
 
     # heteroscedasticity (only one variable); without NA handling; we will
     # deal with this together with x, y, etc.
-    if (!is.null(var))
+    if (!is.null(var)) {
         var <- .check_formula(var, design, FALSE, FALSE)$y
+        if (any(var <  .Machine$double.eps))
+            stop("Some variances are zero or close to zero\n", call. = FALSE)
+    }
 
     # extract the variables
     mf <- stats::model.frame(formula, design$variables,

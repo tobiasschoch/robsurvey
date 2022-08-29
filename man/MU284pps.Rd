@@ -1,14 +1,14 @@
-\name{MU284strat}
-\alias{MU284strat}
+\name{MU284pps}
+\alias{MU284pps}
 \docType{data}
-\title{Stratified Sample from the MU284 Population}
+\title{PPS Sample From the MU284 Population}
 \description{
-    Stratified simple random sample (without replacement) of municipalities
-    from the MU284 population in Särndal et al. (1992). Stratification is by
-    geographic region and a take-all stratum (by 1975 population size), which
-    includes the big cities Stockholm, Göteborg, and Malmö.
+    Probability-proportional-to-size sample (PPS) without replacement of
+    municipalities from the MU284 population in Särndal et al. (1992).
+    The sample inclusion probabilities are proportional to the
+    population size in 1975 (variable P75).
 }
-\usage{data(MU284strat)}
+\usage{data(MU284pps)}
 \format{
     A \code{data.frame} with 60 observations on the following variables:
     \describe{
@@ -29,12 +29,11 @@
             \code{[double]}.}
         \item{\code{REV84}}{real estate values according to 1984 assessment
             (in millions of kronor), \code{[double]}.}
+        \item{\code{REG}}{geographic region indicator, \code{[integer]}.}
         \item{\code{CL}}{cluster indicator (a cluster consists of a set of
             neighbouring municipalities), \code{[integer]}.}
-        \item{\code{REG}}{geographic region indicator, \code{[integer]}.}
-        \item{\code{Stratum}}{stratum indicator, \code{[integer]}.}
         \item{\code{weights}}{sampling weights, \code{[double]}.}
-        \item{\code{fpc}}{finite population correction, \code{[double]}.}
+        \item{\code{pi}}{sample inclusion probability, \code{[double]}.}
     }
 }
 \details{
@@ -43,26 +42,13 @@
     late 1970s and early 1980s. The \code{MU284} \emph{population} data
     are available in the \pkg{sampling} package of Tillé and Matei (2021).
 
-    The population is divided into two parts based on 1975 population
-    size (\code{P75}):
-        \itemize{
-            \item the MU281 population, which consists of the 281 smallest
-                municipalities;
-            \item the MU3 population of the three biggest municipalities/
-                cities in Sweden (Stockholm, Göteborg, and Malmö).
-        }
-    The three biggest cities take exceedingly large values (representative
-    outliers) on almost all of the variables. To account for this, a stratified
-    sample has been drawn from the MU284 population using a take-all stratum.
-    The sample data, \code{MU284strat}, (of size \eqn{n=60}) consists of
-        \itemize{
-            \item a stratified simple random sample (without replacement)
-                from the MU281 population, where stratification is by
-                geographic region (\code{REG}) with proportional sample
-                size allocation;
-            \item a take-all stratum that includes the three biggest
-                cities/ municipalities (population M3).
-        }
+    The data frame \code{MU284pps} is a probability-proportional-to-size
+    sample (PPS) without replacement from the MU284 population.
+    The sample inclusion probabilities are proportional to the
+    population size in 1975 (variable P75). The sample has been
+    selected by Brewer’s method; see Tillé (2006, Chap. 7).
+    The sampling weight (inclusion probabilities) are calibrated to
+    the population size and the population total of P75.
 }
 \source{
 Särndal, C.-E., Swensson, B. and Wretman, J. (1992).
@@ -70,18 +56,19 @@ Särndal, C.-E., Swensson, B. and Wretman, J. (1992).
 
 Tillé, Y. and Matei, A. (2021). \emph{sampling: Survey Sampling}.
     R package version 2.9. \url{https://CRAN.R-project.org/package=sampling}
+
+Tillé, Y. (2006). \emph{Sampling Algorithms}. New York: Springer-Verlag.
 }
 \seealso{
-    \code{\link{MU284pps}}
+    \code{\link{MU284strat}}
 }
 \examples{
-data(MU284strat)
+data(MU284pps)
 
 \dontrun{
 # survey design for counties data (pkg survey is required)
 library(survey)
-dn <- svydesign(ids = ~LABEL, strata = ~Stratum, fpc = ~fpc,
-    weights = ~weights, data = MU284strat)
+dn <- svydesign(ids = ~LABEL, fpc = ~pi, data = MU284pps, pps = "brewer")
 }
 }
 \keyword{datasets}

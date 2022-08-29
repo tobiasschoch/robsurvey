@@ -147,6 +147,7 @@ mse <- function(object)
         tmp <- eval(as.call(list(substitute(svyreg), reg_call$formula,
             reg_call$design, reg_call$var, !is.null(reg_call$na.rm))))
         call$object <- substitute(tmp)
+        call$k <- NULL
         call$type <- "ADU"
         ref <- coef.svystat_rob(eval(call))
     } else if (grepl("_ratio$", call[[1]])) {       # robust ratio

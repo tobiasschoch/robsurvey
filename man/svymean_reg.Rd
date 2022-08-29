@@ -50,6 +50,7 @@ svymean_reg(object, totals, N = NULL, type, k = NULL, check.names = TRUE,
     The following GREG predictors are available:
     \describe{
         \item{GREG (not robust, \code{k = NULL})}{
+            The following \emph{non-robust} GREG predictors are available:
             \itemize{
                 \item \code{type = "projective"} ignores the bias correction
                     term of the GREG predictor; see Särndal and Wright (1984).
@@ -63,7 +64,7 @@ svymean_reg(object, totals, N = NULL, type, k = NULL, check.names = TRUE,
             of the GREG is zero by design.
         }
         \item{Robust GREG}{
-            The following \emph{robust} GREG predictor are available:
+            The following \emph{robust} GREG predictors are available:
             \itemize{
                 \item \code{type = "huber"} and \code{type = "tukey"} are,
                     respectively, the robust GREG predictors with Huber

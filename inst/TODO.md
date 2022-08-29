@@ -4,15 +4,7 @@
 
 ## MILESTONE ver. 0.4
 
-### DOCUMENTATION
-
-* vignettes: GREG + ratio
-
-**Also**
-
-* Improve documentation of `weighted_line()`  and  `weighted_median_lines()`
-
-## BUG FIX
+### BUG FIX
 
 * Mallows type GM-estimator
 
@@ -47,15 +39,9 @@ lm.wfit(m$model$x, m$model$y, .qi_weights(m))$coefficients
 
 
 
-
-
-
-
 ---
 
-## UNSCHEDULED VERSION
+# MILESTONE ver. 0.5
 
-### NEW FEATURE
+Improve documentation of `weighted_line()`  and  `weighted_median_lines()`
 
-* `svyreg()`: predict method
-* robust calibration

@@ -88,7 +88,7 @@ To avoid unnecessary repetition, we discuss the details of estimation *only* for
 
 ## 1 LOS (Length-of-stay) Hospital Data
 
-The `losdata` are a simple random sample without replacement of $n = 70$ patients from a (fictive) hospital population of $N = 2479$ patients in inpatient treatment.<sup>[Note 2](#notes)</sup> First, we load the package and the data.
+The `losdata` are a simple random sample without replacement of n = 70 patients from a (fictive) hospital population of N = 2&#8239;479 patients in inpatient treatment.<sup>[Note 2](#notes)</sup> First, we load the package and the data.
 
 ```{r}
 library("robsurvey", quietly = TRUE)
@@ -304,7 +304,7 @@ From a practical point of view, the choice of constant $c$ in Dalén's estimator
 **Good to know.**
 </p>
 <p>
-It is helpful to plot $w_iy_i$ (weight times los) against $y_i$ (los). The censoring constant $c = 1500$ (see dotted horizontal line) is such that the two largest $(w_iy_i)$'s are censored to $1500$.
+It is helpful to plot $w_iy_i$ (weight times los) against $y_i$ (los). The censoring constant $c = 1500$ (see dotted horizontal line) is such that the two largest $(w_iy_i)$'s are censored to 1&#8239;500.
 
 ```{r, echo = FALSE, fig.height = 3, fig.width = 5}
 par(mar = c(4, 4, 1, 0))

@@ -1,15 +1,23 @@
 # ratio estimator of the total
 svytotal_ratio <- function(object, total, variance = "wu", keep_object = TRUE)
 {
+    if (!inherits(object, "ratio"))
+        stop(paste0("The function cannot be used for an object of class '",
+            class(object), "'\n"))
+
     .check_class(object)
     stopifnot(is.numeric(total), total >= 0)
+
+    # estimate
+    estimate <- object$estimate * total
+    names(estimate) <- object$model$yname
 
     # standard error
     variance <- match.arg(variance, c("base", "wu", "hajek"))
     stderr <- .stderr_ratio(object, total, variance)
 
     res <- structure(list(characteristic = "total",
-        estimator = object$estimator, estimate = object$estimate * total,
+        estimator = object$estimator, estimate = estimate,
         robust = object$robust, residuals = object$residuals,
         model = list(object$model, coef = object$estimate,
             total = total, variance = variance, call = object$call),
@@ -23,6 +31,10 @@ svytotal_ratio <- function(object, total, variance = "wu", keep_object = TRUE)
 svymean_ratio <- function(object, total, N = NULL, variance = "wu",
     keep_object = TRUE, N_unknown = FALSE)
 {
+    if (!inherits(object, "ratio"))
+        stop(paste0("The function cannot be used for an object of class '",
+            class(object), "'\n"))
+
     .check_class(object)
     stopifnot(is.numeric(total), total >= 0)
     if (is.null(N)) {
@@ -31,12 +43,16 @@ svymean_ratio <- function(object, total, N = NULL, variance = "wu",
         else
             stop("Argument 'N' is missing\n")
     }
+    # estimate
+    estimate <- object$estimate * total / N
+    names(estimate) <- object$model$yname
+
     # standard error
     variance <- match.arg(variance, c("base", "wu", "hajek"))
     stderr <- .stderr_ratio(object, total, variance) / N
 
     res <- structure(list(characteristic = "mean",
-        estimator = object$estimator, estimate = object$estimate * total / N,
+        estimator = object$estimator, estimate = estimate,
         robust = object$robust, residuals = object$residuals,
         model = list(object$model, coef = object$estimate,
             total = total, variance = variance, call = object$call),

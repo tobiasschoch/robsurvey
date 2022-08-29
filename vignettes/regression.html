@@ -1425,7 +1425,7 @@ It is assumed that the reader is <i>familiar</i> with the key functions of the <
 <p><em>Note.</em> The argument <code>quietly = TRUE</code> suppresses the start-up message in the call of <code>library(&quot;robsurvey&quot;)</code>.</p>
 <div id="data" class="section level3">
 <h3>1.1 Data</h3>
-<p>The <em>counties</em> dataset contains county-specific information on population, number of farms, land area, etc. for a sample of <span class="math inline">\(n = 100\)</span> counties in the U.S. in the 1990s. The sampling design is simple random sample (without replacement) from the population of <span class="math inline">\(3\,141\)</span> counties. The dataset is tabulated in <a href="#biblio">Lohr</a> (1999, Appendix C) and is based on 1994 data of the U.S. Bureau of the Census. The first 3 rows of the data are</p>
+<p>The <em>counties</em> dataset contains county-specific information on population, number of farms, land area, etc. for a sample of n = 100 counties in the U.S. in the 1990s. The sampling design is simple random sample (without replacement) from the population of 3 141 counties. The dataset is tabulated in <a href="#biblio">Lohr</a> (1999, Appendix C) and is based on 1994 data of the U.S. Bureau of the Census. The first 3 rows of the data are</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">data</span>(counties)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">head</span>(counties, <span class="dv">3</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  state          county landarea totpop unemp farmpop numfarm farmacre weights</span>
@@ -1478,7 +1478,7 @@ It is assumed that the reader is <i>familiar</i> with the key functions of the <
 <p><span class="math display">\[\begin{equation}
 \xi: \quad \mathrm{farmpop}_i = b_0 + b_1 \cdot \mathrm{numfarm}_i + \sqrt{v_i} E_i, \qquad i \in U,
 \end{equation}\]</span></p>
-<p>where <span class="math inline">\(U\)</span> is the set of labels of all <span class="math inline">\(3\,141\)</span> counties in the U.S. (population), <span class="math inline">\(b_0, b_1 \in \mathbb{R}\)</span> are unknown regression coefficients, <span class="math inline">\(v_i\)</span> are known constants (i.e., known up to a constant multiplicative factor, <span class="math inline">\(\sigma\)</span>), and <span class="math inline">\(E_i\)</span> are regression errors (random variables) with mean zero and unit variance such that <span class="math inline">\(E_i\)</span> and <span class="math inline">\(E_j\)</span> are conditionally independent given <span class="math inline">\(\mathrm{numfarm}_i\)</span>, <span class="math inline">\(i \in U\)</span>.</p>
+<p>where <span class="math inline">\(U\)</span> is the set of labels of all 3 141 counties in the U.S. (population), <span class="math inline">\(b_0, b_1 \in \mathbb{R}\)</span> are unknown regression coefficients, <span class="math inline">\(v_i\)</span> are known constants (i.e., known up to a constant multiplicative factor, <span class="math inline">\(\sigma\)</span>), and <span class="math inline">\(E_i\)</span> are regression errors (random variables) with mean zero and unit variance such that <span class="math inline">\(E_i\)</span> and <span class="math inline">\(E_j\)</span> are conditionally independent given <span class="math inline">\(\mathrm{numfarm}_i\)</span>, <span class="math inline">\(i \in U\)</span>.</p>
 <p>Another candidate model is</p>
 <p><span class="math display">\[\begin{equation}
 \xi_{log}: \quad \log(\mathrm{farmpop}_i) = b_0 + b_1 \cdot \log(\mathrm{numfarm}_i) + \sqrt{v_i} E_i, \qquad i \in U.
@@ -1486,7 +1486,7 @@ It is assumed that the reader is <i>familiar</i> with the key functions of the <
 </div>
 <div id="sampling-design" class="section level3">
 <h3>1.3 Sampling design</h3>
-<p>The counties dataset is of size <span class="math inline">\(n=100\)</span>. In what follows, we restrict attention to the subset of the 98 counties with <span class="math inline">\(\mathrm{farmpop}_i &gt; 0\)</span>. Hence, we define the sampling design <code>dn</code>.</p>
+<p>The counties dataset is of size n = 100. In what follows, we restrict attention to the subset of the 98 counties with <span class="math inline">\(\mathrm{farmpop}_i &gt; 0\)</span>. Hence, we define the sampling design <code>dn</code>.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> dn <span class="ot">&lt;-</span> <span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span><span class="dv">1</span>, <span class="at">fpc =</span> <span class="sc">~</span>fpc, <span class="at">weights =</span> <span class="sc">~</span>weights,</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>     <span class="at">data =</span> counties[counties<span class="sc">$</span>farmpop <span class="sc">&gt;</span> <span class="dv">0</span>, ])</span></code></pre></div>
 </div>
@@ -1612,7 +1612,7 @@ Alternatively, linear models can be fitted by weighted least squares with the <c
 <span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>Coefficients<span class="sc">:</span></span>
 <span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>        Estimate Std. Error t value <span class="fu">Pr</span>(<span class="sc">&gt;</span><span class="er">|</span>t<span class="sc">|</span>)    </span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>numfarm  <span class="fl">1.66859</span>    <span class="fl">0.05554</span>   <span class="fl">30.04</span>   <span class="sc">&lt;</span><span class="fl">2e-16</span> <span class="sc">**</span><span class="er">*</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>numfarm  <span class="fl">1.66859</span>    <span class="fl">0.09758</span>    <span class="fl">17.1</span>   <span class="sc">&lt;</span><span class="fl">2e-16</span> <span class="sc">**</span><span class="er">*</span></span>
 <span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="sc">---</span></span>
 <span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>Signif. codes<span class="sc">:</span>  <span class="dv">0</span> <span class="st">&#39;***&#39;</span> <span class="fl">0.001</span> <span class="st">&#39;**&#39;</span> <span class="fl">0.01</span> <span class="st">&#39;*&#39;</span> <span class="fl">0.05</span> <span class="st">&#39;.&#39;</span> <span class="fl">0.1</span> <span class="st">&#39; &#39;</span> <span class="dv">1</span></span>
 <span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a></span>
@@ -1905,12 +1905,6 @@ If the sampling fraction, <span class="math inline">\(n/N\)</span>, is small, th
 <td>sampling weights</td>
 <td><em>fpc</em></td>
 <td>finite population correction</td>
-</tr>
-<tr class="even">
-<td></td>
-<td></td>
-<td></td>
-<td></td>
 </tr>
 </tbody>
 </table>
