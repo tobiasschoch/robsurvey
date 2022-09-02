@@ -95,9 +95,6 @@ svymean_reg <- function(object, totals, N = NULL, type, k = NULL,
     # account for heteroscedasticity
     if (!is.null(object$model$var))
         qi <- qi / object$model$var
-    # multiplicative factor for Mallows type GM-estimator
-    if (object$estimator$type == 1)
-        qi <- qi * object$model$xwgt
     qi
 }
 # bi's without sampling weight (actually, ri's in Wright's QR-estimator)
