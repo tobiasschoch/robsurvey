@@ -1,11 +1,11 @@
-library(testthat)
+library("testthat")
 suppressPackageStartupMessages(library(survey))
-library(robsurvey, quietly = TRUE)
+library("robsurvey", quietly = TRUE)
 
 #===============================================================================
 # 1 MU284 data
 #===============================================================================
-data(MU284strat)
+data("MU284strat")
 dn <- svydesign(ids = ~LABEL, strata = ~Stratum, fpc = ~fpc,
     weights = ~weights, data = MU284strat)
 sm <- svymean(~RMT85, dn)
@@ -74,7 +74,7 @@ expect_equal(as.numeric(coef(est_t)), as.numeric(coef(st)),
 #===============================================================================
 # 2 workplace data
 #===============================================================================
-data(workplace)
+data("workplace")
 dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
     data = workplace)
 sm <- svymean(~payroll, dn)

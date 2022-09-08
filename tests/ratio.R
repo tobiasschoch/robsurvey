@@ -9,8 +9,8 @@ all_equal <- function(target, current, label,
     if (is.character(res))
         cat(paste0(label, ": ", res, "\n"))
 }
-suppressPackageStartupMessages(library(survey))
-library(robsurvey, quietly = TRUE)
+suppressPackageStartupMessages(library("survey"))
+library("robsurvey", quietly = TRUE)
 
 #===============================================================================
 # workplace data

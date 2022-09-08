@@ -1,8 +1,8 @@
 # NOTE: The estimators of the population mean for a model without a
 #       regression intercept are excluded from the test because they
 #       differ from the implementation based on survey::calibrate
-suppressPackageStartupMessages(library(survey))
-library(robsurvey, quietly = TRUE)
+suppressPackageStartupMessages(library("survey"))
+library("robsurvey", quietly = TRUE)
 
 # test on floating point equality
 all_equal <- function(target, current, label,

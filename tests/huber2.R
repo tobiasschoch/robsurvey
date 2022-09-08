@@ -1,6 +1,6 @@
-library(testthat)
-library(MASS)
-library(robsurvey, quietly = TRUE)
+library("testthat")
+library("MASS")
+library("robsurvey", quietly = TRUE)
 attach(workplace)
 
 # make a copy of the function MASS::hubers
