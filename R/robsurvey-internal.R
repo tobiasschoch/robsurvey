@@ -215,15 +215,16 @@
     }, error = function() {})
 
     if (!quietly){
-    packageStartupMessage("\n                  88
-		  88
-		  88
+    packageStartupMessage("\n          88
+          88
+          88
      e8d88 .d8b.  8888b.   ___ _   _ _ ____   _____ _   _
      8P'  d8' '8b 88 '8b  / __| | | | '__\\ \\ / / _ \\ | | |
      88   Y8. .8P 88  dP  \\__ \\ |_| | |   \\ V /  __/ |_| |
      88    'Y8P'  88e8P'  |___/\\__,_|_|    \\_/ \\___|\\__, |
-						     __/ |
-					version 0.4 |___/\n\ntype: package?robsurvey to learn more
+                                                     __/ |
+                                       version 0.4-1 |___/\n
+type: package?robsurvey to learn more
 use:  library(robsurvey, quietly = TRUE) to suppress the
       start-up message\n")
    }

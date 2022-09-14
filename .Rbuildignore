@@ -6,13 +6,14 @@
 ^inst/TODO\.md$
 # documentation
 ^inst/doc/comparison_functions\.R$
-^inst/doc/doc_regression_covariance\.md$
-^inst/doc/doc_greg\.md$
-^inst/doc/doc_psi_functions\.md$
-^inst/doc/doc_comparison\.md$
-^inst/doc/doc_comparison\.Rmd$
-^inst/doc/fluent\.css$
-^inst/doc/doc_robust_GREG\.md$
+^inst/doc/doc_regression_covariance\.tex$
+^inst/doc/doc_greg\.tex$
+^inst/doc/master\.bib$
+^inst/doc/fhnw_en\.bst$
+^inst/doc/doc_psi_functions\.tex$
+^inst/doc/doc_comparison\.Rnw$
+^inst/doc/doc_comparison\.tex$
+^inst/doc/Sweave\.sty$
 ^inst/doc/useR_2022_conference
 # varia
 ^inst/varia

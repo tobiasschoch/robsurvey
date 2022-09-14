@@ -1,0 +1,144 @@
+\documentclass[a4paper,oneside,11pt,DIV=12]{scrartcl}
+
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+
+\setkomafont{captionlabel}{\sffamily\bfseries\small}
+\setkomafont{caption}{\sffamily\small}
+
+\usepackage[T1]{fontenc}
+\usepackage{times}
+\renewcommand{\familydefault}{\rmdefault}
+
+\usepackage{amssymb,amsmath,amsthm,mathrsfs}
+\usepackage{bbm}
+\usepackage{bm}
+\usepackage[longnamesfirst]{natbib}
+\usepackage{booktabs}
+\usepackage{enumerate}
+
+% base font
+\usepackage[scaled]{helvet}
+\renewcommand*\familydefault{\sfdefault}
+
+% theorems
+\theoremstyle{remark}
+\newtheorem*{rem}{Remark}
+\newtheorem*{rems}{Remarks}
+
+% flush floats using \afterpage{\clearpage}
+\usepackage{afterpage}
+
+% allow page breaks of long align equation environments
+\allowdisplaybreaks
+
+
+\usepackage{setspace}
+\setlength\parindent{24pt}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=blue,
+    urlcolor=blue,
+    citecolor=blue
+}
+
+% math
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\var}{\mathrm{var}}
+\newcommand{\alert}[1]{\textbf{#1}}
+
+% code command (can deal with '$', '_', etc.)
+\makeatletter
+\newcommand\code{\bgroup\@makeother\_\@makeother\~\@makeother\$\@makeother\^\@codex}
+\def\@codex#1{{\normalfont\ttfamily\hyphenchar\font=-1 #1}\egroup}
+\makeatother
+
+% ==============================================================================
+\begin{document}
+\shortcites{anderson_bai_etal_1999}
+\shortcites{blackford_petitet_etal_2002}
+
+\title{\Large Adding Support for Other $\psi$-Functions}
+
+\author{{\normalsize Tobias Schoch} \\
+\begin{minipage}[t][][t]{\textwidth}
+	\begin{center}
+	\small{University of Applied Sciences Northwestern Switzerland FHNW} \\
+	\small{School of Business, Riggenbachstrasse 16, CH-4600 Olten} \\
+	\small{\texttt{tobias.schoch{@}fhnw.ch}}
+	\end{center}
+\end{minipage}}
+
+\date{{\small \today}}
+\maketitle
+
+\renewenvironment{abstract}{%
+\begin{center}\begin{minipage}{0.9\textwidth}
+\rule{\textwidth}{0.4pt}
+{\sffamily\bfseries\footnotesize Abstract.}\small}
+{\par\noindent\rule{\textwidth}{0.4pt}\end{minipage}\end{center}}
+
+%------------------------------------------------------------------------------
+\section{Introduction}\label{ch:introduction}
+\setstretch{1.1}
+The \code{robsurvey} package implements the Huber and Tukey (biweight)
+$\psi$-functions. The functions are implemented in the C language, see
+\code{src/psifunctions.c}. For the Huber $\psi$-function, the \emph{standard}
+function and an asymmetric $\psi$-function are implemented. The functions are
+referenced by an integer value (in the C and R source code):
+
+\begin{itemize}
+    \item \code{psi = 0}: Huber;
+    \item \code{psi = 1}: asymmetric Huber;
+    \item \code{psi = 2}: Tukey biweight.
+\end{itemize}
+
+\noindent For each type of $\psi$-function, the following three functions (in
+the C language) must be defined:
+
+\begin{itemize}
+    \item \code{psi}-function, $\psi(x)$, the actual $\psi$-function;
+    \item \code{weight}-function, $w(x),$ associated with the $\psi$-function;
+    \item \code{psi-prime}-function, the first derivative of the
+        $\psi$-function, $\psi'(x)$.
+\end{itemize}
+
+\noindent The $\psi$-, $w$-, and $\psi'$-functions have the same signature,
+which is shown here for a dummy function \code{foo()}.
+
+\begin{verbatim}
+double foo(double x, const double k)
+{
+    # the code goes here
+}
+\end{verbatim}
+
+\noindent Argument \code{x} is the function argument and argument \code{k} is
+the robustness tuning constant.
+
+\begin{rem}
+In this note, we consider only adding support for $\psi$-functions whose
+signature comply with the above dummy function.  If you want to add
+functions that do not comply, you have to modify the existing code.
+\end{rem}
+
+\noindent The method dispatch takes place in the functions (see
+\code{src/psifunctions.c}):
+
+\begin{itemize}
+    \item \code{get_wgt_function()}
+    \item \code{get_psi_function()}
+    \item \code{get_psi_prime_function()}
+\end{itemize}
+\noindent and is implemented with function pointers.
+
+\clearpage
+\bibliographystyle{fhnw_en}
+\bibliography{master}
+
+\end{document}

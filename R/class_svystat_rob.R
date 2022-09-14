@@ -44,7 +44,7 @@
 summary.svystat_rob <- function(object, digits = max(3L, getOption("digits") -
     3L), ...)
 {
-    cat(object$estimator$string, "of the sample", object$characteristic,
+    cat(object$estimator$string, "of the population", object$characteristic,
         "\n")
     cat("\n")
     est <- cbind(object$estimate, sqrt(object$variance))

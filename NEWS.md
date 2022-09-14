@@ -1,5 +1,16 @@
 **If you are viewing this file on CRAN, please check [latest news on GitHub](https://github.com/tobiasschoch/robsurvey/blob/master/NEWS.md) where the formatting is also better.**
 
+# robsurvey VERSION 0.4-1 (==NEXT VERSION==)
+
+## CHANGES
+
+* Files in `/doc` folder are now in `*.pdf` format which takes much less space compared with the `*.html` format. Thus, the warning `checking installed package size ... NOTE
+   installed size is 5.4Mb
+   sub-directories of 1Mb or more:
+    doc 4.9Mb` disappeared
+
+* The print method for objects of class `svystat_rob` now correctly prints: [Estimator] `of the population` [mean/total].
+
 # robsurvey VERSION 0.4 (2022-09-08)
 
 ## NEW FEATURES
@@ -23,7 +34,7 @@
 
 ## BUG FIX
 
-* Slot`estimator$string` in the return value of function `mer()` indicates the name of the underlying estimator correctly.
+* Slot `estimator$string` in the return value of function `mer()` indicates the name of the underlying estimator correctly.
 * Fixed annotation of observations in diagnostic plot "Sqrt of abs(Residuals) vs. Fitted values" (`which = 4` in `plot`) for class `svyreg_rob`.
 
 # robsurvey VERSION 0.3 (2022-06-04)
