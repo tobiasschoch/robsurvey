@@ -1,7 +1,11 @@
 # Tukey biweight M-estimator of the weighted mean
-weighted_mean_tukey <- function(x, w, k, type = "rhj", info = FALSE,
+weighted_mean_tukey <- function(x, w, k, type = "rwm", info = FALSE,
     na.rm = FALSE, verbose = TRUE, ...)
 {
+    type <- match.arg(type, c("rht", "rhj", "rwm"))
+    if (type == "rhj")
+        type <- "rwm"
+
     string <- paste0("Tukey M-estimator (type = ", type, ")")
     dat <- .check_data_weights(x, w, na.rm)
     if (is.null(dat))
@@ -21,20 +25,12 @@ weighted_mean_tukey <- function(x, w, k, type = "rhj", info = FALSE,
     }
     # otherwise
     if (type == "rwm") {
-        warning("The 'rwm' argument is deprecated; please use 'rhj' instead",
-            call. = FALSE)
-        type <- "rhj"
-    }
-
-    # select method
-    if (type == "rhj") {
         res <- robsvyreg(rep(1, dat$n), dat$x, dat$w, k, 2, 0, NULL, NULL,
             verbose, ...)
-    } else if (type == "rht") {
+    }
+    if (type == "rht") {
         xvar <- mean(dat$w) / dat$w
         res <- robsvyreg(xvar, dat$x, dat$w, k, 2, 0, NULL, xvar, verbose, ...)
-    } else {
-        stop(paste0("Method '", type, "' does not exist\n"), call. = FALSE)
     }
 
     # check for failure of convergence
@@ -45,7 +41,7 @@ weighted_mean_tukey <- function(x, w, k, type = "rhj", info = FALSE,
 
     if (info) {
         res$model[c("n", "p")] <- NULL
-        if (type == "rhj")
+        if (type == "rwm")
             res$model$x <- NULL
         res$characteristic <- "mean"
         res$estimator$string <- string
@@ -57,7 +53,7 @@ weighted_mean_tukey <- function(x, w, k, type = "rhj", info = FALSE,
     }
 }
 # Tukey biweight M-estimator of the weighted total
-weighted_total_tukey <- function(x, w, k, type = "rhj", info = FALSE,
+weighted_total_tukey <- function(x, w, k, type = "rwm", info = FALSE,
     na.rm = FALSE, verbose = TRUE, ...)
 {
     res <- weighted_mean_tukey(x, w, k, type, info, na.rm, verbose, ...)

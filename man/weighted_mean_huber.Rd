@@ -3,9 +3,9 @@
 \alias{weighted_total_huber}
 \title{Weighted Huber Mean and Total (bare-bone functions)}
 \usage{
-weighted_mean_huber(x, w, k, type = "rhj", asym = FALSE, info = FALSE,
+weighted_mean_huber(x, w, k, type = "rwm", asym = FALSE, info = FALSE,
     na.rm = FALSE, verbose = TRUE, ...)
-weighted_total_huber(x, w, k, type = "rhj", asym = FALSE, info = FALSE,
+weighted_total_huber(x, w, k, type = "rwm", asym = FALSE, info = FALSE,
     na.rm = FALSE, verbose = TRUE, ...)
 }
 \arguments{
@@ -13,8 +13,8 @@ weighted_total_huber(x, w, k, type = "rhj", asym = FALSE, info = FALSE,
     \item{w}{\code{[numeric vector]} weights (same length as \code{x}).}
     \item{k}{\code{[double]} robustness tuning constant
         (\eqn{0 < k \leq \infty}{0 < k <= Inf}).}
-    \item{type}{\code{[character]} type of method: \code{"rhj"} or
-        \code{"rht"}; see below (default: \code{"rhj"}).}
+    \item{type}{\code{[character]} type of method: \code{"rwm"} or
+        \code{"rht"}; see below (default: \code{"rwm"}).}
     \item{asym}{\code{[logical]} toggle for asymmetric Huber psi-function
         (default: \code{FALSE}).}
     \item{info}{\code{[logical]} indicating whether additional information
@@ -41,11 +41,15 @@ weighted_total_huber(x, w, k, type = "rhj", asym = FALSE, info = FALSE,
         \item{Type.}{Two methods/types are available for estimating the
             location \eqn{\mu}:
             \describe{
-                \item{\code{type = "rhj" (default)}:}{robust Hajek
+                \item{\code{type = "rwm" (default)}:}{robust weighted
                     \emph{M}-estimator of the population mean and total,
                     respectively. This estimator is recommended for sampling
                     designs whose inclusion probabilities are \emph{not}
-                    proportional to some measure of size.}
+                    proportional to some measure of size. [Legacy note: In an
+                    earlier version, the method \code{type = "rwm"} was called
+                    \code{"rhj"}; the type \code{"rhj"} is now silently
+                    converted to \code{"rwm"}]
+                }
                 \item{\code{type = "rht"}:}{robust Horvitz-Thompson
                     \emph{M}-estimator of the population mean and total,
                     respectively. This estimator is recommended for
@@ -108,5 +112,5 @@ weighted_total_huber(workplace$employment, workplace$weight, k = 9,
 
 # Robust weighted M-estimator of the population mean
 weighted_mean_huber(workplace$employment, workplace$weight, k = 12,
-    type = "rhj")
+    type = "rwm")
 }

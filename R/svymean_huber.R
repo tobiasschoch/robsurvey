@@ -1,5 +1,5 @@
 # Huber M-estimator of the weighted mean (depends on pkg survey)
-svymean_huber <- function(x, design, k, type = "rhj", asym = FALSE,
+svymean_huber <- function(x, design, k, type = "rwm", asym = FALSE,
     na.rm = FALSE, verbose = TRUE, ...)
 {
     if (!is.language(x))
@@ -32,7 +32,7 @@ svymean_huber <- function(x, design, k, type = "rhj", asym = FALSE,
     res
 }
 # Huber M-estimator of the weighted total (depends on pkg survey)
-svytotal_huber <- function(x, design, k, type = "rhj", asym = FALSE,
+svytotal_huber <- function(x, design, k, type = "rwm", asym = FALSE,
     na.rm = FALSE, verbose = TRUE, ...)
 {
     if (!is.language(x))

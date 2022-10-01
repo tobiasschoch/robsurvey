@@ -1,5 +1,5 @@
 # Tukey biweight M-estimator of the weighted mean (depends on pkg survey)
-svymean_tukey <- function(x, design, k, type = "rhj", na.rm = FALSE,
+svymean_tukey <- function(x, design, k, type = "rwm", na.rm = FALSE,
     verbose = TRUE, ...)
 {
     if (!is.language(x))
@@ -30,7 +30,7 @@ svymean_tukey <- function(x, design, k, type = "rhj", na.rm = FALSE,
     res
 }
 # Tukey biweight M-estimator of the weighted total (depends on pkg survey)
-svytotal_tukey <- function(x, design, k, type = "rhj", na.rm = FALSE,
+svytotal_tukey <- function(x, design, k, type = "rwm", na.rm = FALSE,
         verbose = TRUE, ...)
 {
     if (!is.language(x))

@@ -1537,7 +1537,7 @@ To avoid unnecessary repetition, we discuss the details of estimation <em>only</
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="fl">1.063949</span></span></code></pre></div>
 <p>The <code>summary()</code> method summarizes the most important facts about the estimate. The summary is particularly useful for <em>M</em>-estimators (see below) but less so for other estimators.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">summary</span>(m)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>Weighted trimmed <span class="fu">estimator</span> (<span class="dv">0</span>, <span class="fl">0.95</span>) of the sample mean </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>Weighted trimmed <span class="fu">estimator</span> (<span class="dv">0</span>, <span class="fl">0.95</span>) of the population mean </span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>     mean    SE</span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>los <span class="fl">9.324</span> <span class="fl">1.064</span></span>
@@ -1707,14 +1707,14 @@ To avoid unnecessary repetition, we discuss the details of estimation <em>only</
 <p>
 <p>Two <em>types</em> of <em>M</em>-estimators are available:</p>
 <ul>
-<li><code>type = &quot;rhj&quot;</code>: robust weighted mean (robust Hajek estimator)</li>
+<li><code>type = &quot;rwm&quot;</code>: robust weighted mean estimator</li>
 <li><code>type = &quot;rht&quot;</code>: <strong>robust Horvitz-Thompson estimator</strong> of <a href="#biblio">Hulliger</a> (1995) <span class="math inline">\(\rightarrow\)</span> <b><a style="color: #ce5b00;">separate vignette</a></b></li>
 </ul>
-The robust Horvitz-Thompson estimator (<code>type = &quot;rht&quot;</code>) is the method of choice for pps designs (i.e., designs without replacement where the sample inclusion probabilities are proportional to some measure of size). For equal-probability designs, the <em>M</em>-estimator of <code>type = &quot;rhj&quot;</code> tends to be superior.
+The robust Horvitz-Thompson estimator (<code>type = &quot;rht&quot;</code>) is the method of choice for pps designs (i.e., designs without replacement where the sample inclusion probabilities are proportional to some measure of size). For equal-probability designs, the <em>M</em>-estimator of <code>type = &quot;rwm&quot;</code> tends to be superior.
 </p>
 </div>
 <p>As losdata is a simple random sample, <em>M</em>-estimators of <code>type = &quot;rht&quot;</code> is the method of choice. Here, we compute the Huber-type robust weighted <em>M</em>-estimator of the mean with robustness tuning constant <span class="math inline">\(k=8\)</span>.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">weighted_mean_huber</span>(los, weight, <span class="at">type =</span> <span class="st">&quot;rhj&quot;</span>, <span class="at">k =</span> <span class="dv">8</span>)</span>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">weighted_mean_huber</span>(los, weight, <span class="at">type =</span> <span class="st">&quot;rwm&quot;</span>, <span class="at">k =</span> <span class="dv">8</span>)</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="fl">11.17228</span></span></code></pre></div>
 <div class="my-sidebar-blue">
 <p style="color: #1f618d;">
@@ -1751,13 +1751,13 @@ The <em>M</em>-estimators are computed by iterative methods. If the algorithm fa
 </tr>
 </table>
 <p>The Huber <em>M</em>-estimator of the mean (and its standard error) can be computed with</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> m <span class="ot">&lt;-</span> <span class="fu">svymean_huber</span>(<span class="sc">~</span>los, dn, <span class="at">type =</span> <span class="st">&quot;rhj&quot;</span>, <span class="at">k =</span> <span class="dv">8</span>)</span>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> m <span class="ot">&lt;-</span> <span class="fu">svymean_huber</span>(<span class="sc">~</span>los, dn, <span class="at">type =</span> <span class="st">&quot;rwm&quot;</span>, <span class="at">k =</span> <span class="dv">8</span>)</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> m</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>     mean    SE</span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>los <span class="fl">11.17</span> <span class="fl">1.328</span></span></code></pre></div>
 <p>The <code>summary()</code> method summarizes the most important facts about the <em>M</em>-estimate</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">summary</span>(m)</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>Huber M<span class="sc">-</span><span class="fu">estimator</span> (<span class="at">type =</span> rhj) of the sample mean </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>Huber M<span class="sc">-</span><span class="fu">estimator</span> (<span class="at">type =</span> rwm) of the population mean </span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>     mean    SE</span>
 <span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>los <span class="fl">11.17</span> <span class="fl">1.328</span></span>
@@ -1782,7 +1782,7 @@ The <em>M</em>-estimators are computed by iterative methods. If the algorithm fa
 <p>An adaptive <em>M</em>-estimator of the total (or mean) is defined by letting the data chose the tuning constant <span class="math inline">\(k\)</span>. Let <span class="math inline">\(\widehat{T}\)</span> denote the weighted total, and let <span class="math inline">\(\widehat{T}_k\)</span> be the Huber <em>M</em>-estimator of the weighted total with robustness tuning constant <span class="math inline">\(k\)</span>. Under quite general regularity conditions, the estimated mean square error (MSE) of <span class="math inline">\(\widehat{T}_k\)</span> can be approximated by (see e.g., <a href="#biblio">Gwet and Rivest</a>, 1992; <a href="#biblio">Hulliger</a>, 1995)</p>
 <p><span class="math display">\[\widehat{\mathrm{mse}}\big(\widehat{T}_{k}\big) \approx \mathrm{var}\big(\widehat{T}_{k}\big) +\big(\widehat{T} - \widehat{T}_{k}\big)^2.\]</span></p>
 <p>The minimum estimated risk (MER) estimator (<a href="#biblio">Hulliger</a>, 1995) selects <span class="math inline">\(k\)</span> such that <span class="math inline">\(\widehat{\mathrm{mse}}\big(\widehat{T}_{k}\big)\)</span> is minimal (among all candidate estimators). Now, suppose that we have been working on the <em>M</em>-estimator with <span class="math inline">\(k=8\)</span>.</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> m <span class="ot">&lt;-</span> <span class="fu">svymean_huber</span>(<span class="sc">~</span>los, dn, <span class="at">type =</span> <span class="st">&quot;rhj&quot;</span>, <span class="at">k =</span> <span class="dv">8</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> m <span class="ot">&lt;-</span> <span class="fu">svymean_huber</span>(<span class="sc">~</span>los, dn, <span class="at">type =</span> <span class="st">&quot;rwm&quot;</span>, <span class="at">k =</span> <span class="dv">8</span>)</span></code></pre></div>
 <p>Next, we compute the MER, starting from the current <em>M</em>-estimate, i.e., object <code>m</code>.</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">mer</span>(m)</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>Search interval<span class="sc">:</span> [<span class="dv">1</span>, <span class="dv">10</span>]</span>

@@ -4,8 +4,8 @@
 \title{Weighted Tukey Mean and Total -- Robust Horvitz-Thompson
 Estimator}
 \usage{
-svymean_tukey(x, design, k, type = "rhj", na.rm = FALSE, verbose = TRUE, ...)
-svytotal_tukey(x, design, k, type = "rhj", na.rm = FALSE, verbose = TRUE, ...)
+svymean_tukey(x, design, k, type = "rwm", na.rm = FALSE, verbose = TRUE, ...)
+svytotal_tukey(x, design, k, type = "rwm", na.rm = FALSE, verbose = TRUE, ...)
 }
 \arguments{
     \item{x}{a one-sided \code{[formula]}, e.g., \code{~myVariable}.}
@@ -13,7 +13,7 @@ svytotal_tukey(x, design, k, type = "rhj", na.rm = FALSE, verbose = TRUE, ...)
         \code{\link[survey]{svydesign}}.}
     \item{k}{\code{[double]} robustness tuning constant
         (\eqn{0 < k \leq \infty}{0 < k <= Inf}).}
-    \item{type}{\code{[character]} type of method: \code{"rhj"} or
+    \item{type}{\code{[character]} type of method: \code{"rwm"} or
         \code{"rht"}.}
     \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should
         be removed before the computation proceeds (default: \code{FALSE}).}
@@ -29,7 +29,7 @@ svytotal_tukey(x, design, k, type = "rhj", na.rm = FALSE, verbose = TRUE, ...)
 }
 \details{
     \describe{
-        \item{Methods/ types}{\code{type = "rht"} or \code{type = "rhj"}; see
+        \item{Methods/ types}{\code{type = "rht"} or \code{type = "rwm"}; see
             \code{\link{weighted_mean_tukey}} for more details.}
         \item{Variance estimation.}{Taylor linearization (residual variance
             estimator).}
@@ -73,7 +73,7 @@ dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
 svytotal_tukey(~employment, dn, k = 9, type = "rht")
 
 # Robust weighted M-estimator of the population mean
-m <- svymean_tukey(~employment, dn, k = 12, type = "rhj")
+m <- svymean_tukey(~employment, dn, k = 12, type = "rwm")
 
 # Summarize
 summary(m)

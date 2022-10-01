@@ -370,17 +370,17 @@ The estimators with postfix `_huber` and `_tukey` are based on, respectively, th
 <p>
 Two *types* of *M*-estimators are available:
 
- - `type = "rhj"`: robust weighted mean (robust Hajek estimator)
+ - `type = "rwm"`: robust weighted mean estimator
  - `type = "rht"`: **robust Horvitz-Thompson estimator** of [Hulliger](#biblio) (1995) $\rightarrow$ <b><a style="color: #ce5b00;">separate vignette</a></b>
 
-The robust Horvitz-Thompson estimator (`type = "rht"`) is the method of choice for pps designs (i.e., designs without replacement where the sample inclusion probabilities are proportional to some measure of size). For equal-probability designs, the *M*-estimator of `type = "rhj"` tends to be superior.
+The robust Horvitz-Thompson estimator (`type = "rht"`) is the method of choice for pps designs (i.e., designs without replacement where the sample inclusion probabilities are proportional to some measure of size). For equal-probability designs, the *M*-estimator of `type = "rwm"` tends to be superior.
 </p>
 </div>
 
 As losdata is a simple random sample, *M*-estimators of `type = "rht"` is the method of choice. Here, we compute the Huber-type robust weighted *M*-estimator of the mean with robustness tuning constant $k=8$.
 
 ```{r}
-weighted_mean_huber(los, weight, type = "rhj", k = 8)
+weighted_mean_huber(los, weight, type = "rwm", k = 8)
 ```
 
 <div class="my-sidebar-blue">
@@ -418,7 +418,7 @@ The survey methods are:
 The Huber *M*-estimator of the mean (and its standard error) can be computed with
 
 ```{r}
-m <- svymean_huber(~los, dn, type = "rhj", k = 8)
+m <- svymean_huber(~los, dn, type = "rwm", k = 8)
 m
 ```
 
@@ -447,7 +447,7 @@ $$\widehat{\mathrm{mse}}\big(\widehat{T}_{k}\big) \approx \mathrm{var}\big(\wide
 The minimum estimated risk (MER) estimator ([Hulliger](#biblio), 1995) selects $k$ such that $\widehat{\mathrm{mse}}\big(\widehat{T}_{k}\big)$ is minimal (among all candidate estimators). Now, suppose that we have been working on the *M*-estimator with $k=8$.
 
 ```{r}
-m <- svymean_huber(~los, dn, type = "rhj", k = 8)
+m <- svymean_huber(~los, dn, type = "rwm", k = 8)
 ```
 
 Next, we compute the MER, starting from the current *M*-estimate, i.e., object `m`.

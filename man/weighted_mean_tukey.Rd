@@ -3,9 +3,9 @@
 \alias{weighted_total_tukey}
 \title{Weighted Tukey Mean and Total (bare-bone functions)}
 \usage{
-weighted_mean_tukey(x, w, k, type = "rhj", info = FALSE, na.rm = FALSE,
+weighted_mean_tukey(x, w, k, type = "rwm", info = FALSE, na.rm = FALSE,
     verbose = TRUE, ...)
-weighted_total_tukey(x, w, k, type = "rhj", info = FALSE, na.rm = FALSE,
+weighted_total_tukey(x, w, k, type = "rwm", info = FALSE, na.rm = FALSE,
     verbose = TRUE, ...)
 }
 \arguments{
@@ -14,8 +14,8 @@ weighted_total_tukey(x, w, k, type = "rhj", info = FALSE, na.rm = FALSE,
         \code{x}).}
     \item{k}{\code{[double]} robustness tuning constant
         (\eqn{0 < k \leq \infty}{0 < k <= Inf}).}
-    \item{type}{\code{[character]} type of method: \code{"rhj"} or
-        \code{"rht"}; see below (default: \code{"rhj"}).}
+    \item{type}{\code{[character]} type of method: \code{"rwm"} or
+        \code{"rht"}; see below (default: \code{"rwm"}).}
     \item{info}{\code{[logical]} indicating whether additional information
         should be returned (default: \code{FALSE}).}
     \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should
@@ -40,11 +40,14 @@ weighted_total_tukey(x, w, k, type = "rhj", info = FALSE, na.rm = FALSE,
         \item{Type.}{Two methods/types are available for estimating the
             location:
             \describe{
-                \item{\code{type = "rhj" (default)}:}{robust Hajek
+                \item{\code{type = "rwm" (default)}:}{robust weighted
                     \emph{M}-estimator of the population mean and total,
                     respectively. This estimator is recommended for sampling
                     designs whose inclusion probabilities are \emph{not}
-                    proportional to some measure of size.}
+                    proportional to some measure of size. [Legacy note: In an
+                    earlier version, the method \code{type = "rwm"} was called
+                    \code{"rhj"}; the type \code{"rhj"} is now silently
+                    converted to \code{"rwm"}]}
                 \item{\code{type = "rht"}:}{robust Horvitz-Thompson
                     \emph{M}-estimator of the population mean and total,
                     respectively. This estimator is recommended for
@@ -104,5 +107,5 @@ weighted_total_tukey(workplace$employment, workplace$weight, k = 9,
 
 # Robust weighted M-estimator of the population mean
 weighted_mean_tukey(workplace$employment, workplace$weight, k = 12,
-    type = "rhj")
+    type = "rwm")
 }
