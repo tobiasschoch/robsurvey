@@ -1,17 +1,17 @@
 **If you are viewing this file on CRAN, please check [latest news on GitHub](https://github.com/tobiasschoch/robsurvey/blob/master/NEWS.md) where the formatting is also better.**
 
-# robsurvey VERSION 0.4-1 (*not* on CRAN yet)
+# robsurvey VERSION 0.5 (2022-10-07)
 
 ## CHANGES
 
-* Files in `/doc` folder are now in `*.pdf` format which takes much less space compared with the `*.html` format. Thus, the warning `checking installed package size ... NOTE
+* Files in `/doc` folder are now in `*.pdf` format which takes less space compared with the `*.html` format. Thus, the warning `checking installed package size ... NOTE
    installed size is 5.4Mb
    sub-directories of 1Mb or more:
     doc 4.9Mb` disappeared
 
 * The print method for objects of class `svystat_rob` now correctly prints: [Estimator] `of the population` [mean/total].
 
-* The default value of argument `type` in the functions `weighted_mean_huber()`, `weighted_mean_tukey()`, `svymean_huber()` and `svymean_tukey()` is now `"rwm"`. Type `"rhj"` is still available (and will be supported in the future) but is silently converted to `"rwm"`.
+* The default value of argument `type` in the functions `weighted_mean_huber()`, `weighted_mean_tukey()`, `svymean_huber()` and `svymean_tukey()` is now `"rwm"`. Type `"rhj"` is still available (and will be supported in the future) but is silently converted to `"rwm"`.
 
 # robsurvey VERSION 0.4 (2022-09-08)
 
