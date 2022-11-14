@@ -1462,6 +1462,7 @@ To avoid unnecessary repetition, we discuss the details of estimation <em>only</
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">library</span>(<span class="st">&quot;survey&quot;</span>)</span></code></pre></div>
 <p>and specify a survey or sampling design object</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> dn <span class="ot">&lt;-</span> <span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span><span class="dv">1</span>, <span class="at">fpc =</span> <span class="sc">~</span>fpc, <span class="at">weights =</span> <span class="sc">~</span>weight, <span class="at">data =</span> losdata)</span></code></pre></div>
+<pre><code>Warning: Paket &#39;survey&#39; wurde unter R Version 4.2.2 erstellt</code></pre>
 </div>
 <div id="exploring-the-data" class="section level3">
 <h3>1.2 Exploring the data</h3>
@@ -1498,15 +1499,15 @@ To avoid unnecessary repetition, we discuss the details of estimation <em>only</
 </tr>
 </table>
 <p>In place of the weighted mean, we consider the 5% one-sided trimmed weighted population mean of los. The lower end of the distribution is not trimmed (lower bound: <code>LB = 0</code>). The 5% largest observations are trimmed (upper bound: <code>UB = 0.95</code>).</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">weighted_mean_trimmed</span>(los, weight, <span class="at">LB =</span> <span class="dv">0</span>, <span class="at">UB =</span> <span class="fl">0.95</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="fl">9.323529</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">weighted_mean_trimmed</span>(los, weight, <span class="at">LB =</span> <span class="dv">0</span>, <span class="at">UB =</span> <span class="fl">0.95</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="fl">9.323529</span></span></code></pre></div>
 <p>We obtain an estimate of (roughly) 9.3 days. Note that the return value is a scalar.</p>
 <p>med (upper bound: <code>UB = 0.95</code>).</p>
 <p>If a bare-bone method is called with argument <code>info = TRUE</code>, the function returns a list, the names of which are shown below.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> m <span class="ot">&lt;-</span> <span class="fu">weighted_mean_trimmed</span>(los, weight, <span class="at">LB =</span> <span class="dv">0</span>, <span class="at">UB =</span> <span class="fl">0.95</span>, <span class="at">info =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">names</span>(m)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="st">&quot;characteristic&quot;</span> <span class="st">&quot;estimator&quot;</span>      <span class="st">&quot;estimate&quot;</span>       <span class="st">&quot;variance&quot;</span>      </span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>[<span class="dv">5</span>] <span class="st">&quot;residuals&quot;</span>      <span class="st">&quot;model&quot;</span>          <span class="st">&quot;design&quot;</span>         <span class="st">&quot;call&quot;</span>          </span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> m <span class="ot">&lt;-</span> <span class="fu">weighted_mean_trimmed</span>(los, weight, <span class="at">LB =</span> <span class="dv">0</span>, <span class="at">UB =</span> <span class="fl">0.95</span>, <span class="at">info =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">names</span>(m)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="st">&quot;characteristic&quot;</span> <span class="st">&quot;estimator&quot;</span>      <span class="st">&quot;estimate&quot;</span>       <span class="st">&quot;variance&quot;</span>      </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>[<span class="dv">5</span>] <span class="st">&quot;residuals&quot;</span>      <span class="st">&quot;model&quot;</span>          <span class="st">&quot;design&quot;</span>         <span class="st">&quot;call&quot;</span>          </span></code></pre></div>
 </div>
 <div id="survey-methods" class="section level3">
 <h3>2.2 Survey methods</h3>
@@ -1522,29 +1523,29 @@ To avoid unnecessary repetition, we discuss the details of estimation <em>only</
 </tr>
 </table>
 <p>As before, we are interested in computing the 5% one-sided trimmed weighted population mean of los. In contrast to <code>weighted_mean_trimmed()</code>, the method <code>svymean_trimmed()</code> computes the standard error of the estimate using the functionality of the <code>survey</code> package.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> m <span class="ot">&lt;-</span> <span class="fu">svymean_trimmed</span>(<span class="sc">~</span>los, dn, <span class="at">LB =</span> <span class="dv">0</span>, <span class="at">UB =</span> <span class="fl">0.95</span>)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> m</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>     mean    SE</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>los <span class="fl">9.324</span> <span class="fl">1.064</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> m <span class="ot">&lt;-</span> <span class="fu">svymean_trimmed</span>(<span class="sc">~</span>los, dn, <span class="at">LB =</span> <span class="dv">0</span>, <span class="at">UB =</span> <span class="fl">0.95</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> m</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>     mean    SE</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>los <span class="fl">9.324</span> <span class="fl">1.064</span></span></code></pre></div>
 <p>The estimated location, variance, and standard error of the estimator can be extracted from object <code>m</code> with the following commands.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">coef</span>(m)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>     los </span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fl">9.323529</span> </span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">vcov</span>(m)</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    Variance</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>los <span class="fl">1.131988</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">SE</span>(m)</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="fl">1.063949</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">coef</span>(m)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>     los </span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fl">9.323529</span> </span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">vcov</span>(m)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    Variance</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>los <span class="fl">1.131988</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">SE</span>(m)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="fl">1.063949</span></span></code></pre></div>
 <p>The <code>summary()</code> method summarizes the most important facts about the estimate. The summary is particularly useful for <em>M</em>-estimators (see below) but less so for other estimators.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">summary</span>(m)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>Weighted trimmed <span class="fu">estimator</span> (<span class="dv">0</span>, <span class="fl">0.95</span>) of the population mean </span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>     mean    SE</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>los <span class="fl">9.324</span> <span class="fl">1.064</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>Sampling design<span class="sc">:</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>Independent Sampling design</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span><span class="dv">1</span>, <span class="at">fpc =</span> <span class="sc">~</span>fpc, <span class="at">weights =</span> <span class="sc">~</span>weight, <span class="at">data =</span> losdata)</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">summary</span>(m)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>Weighted trimmed <span class="fu">estimator</span> (<span class="dv">0</span>, <span class="fl">0.95</span>) of the population mean </span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>     mean    SE</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>los <span class="fl">9.324</span> <span class="fl">1.064</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>Sampling design<span class="sc">:</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>Independent Sampling design</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span><span class="dv">1</span>, <span class="at">fpc =</span> <span class="sc">~</span>fpc, <span class="at">weights =</span> <span class="sc">~</span>weight, <span class="at">data =</span> losdata)</span></code></pre></div>
 <p>Additional utility functions are <code>residuals()</code>, <code>fitted()</code>, and <code>robweights()</code>. These functions are mainly relevant for <em>M</em>-estimators.</p>
 </div>
 </div>
@@ -1572,11 +1573,11 @@ To avoid unnecessary repetition, we discuss the details of estimation <em>only</
 </tr>
 </table>
 <p>We compute the 5% one-sided winsorized weighted population mean of los. The lower end of the distribution is not winsorized (lower bound: <code>LB = 0</code>). The 5% largest observations are winsorized (upper bound: <code>UB = 0.95</code>).</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">weighted_mean_winsorized</span>(los, weight, <span class="at">LB =</span> <span class="dv">0</span>, <span class="at">UB =</span> <span class="fl">0.95</span>)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="fl">10.40845</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">weighted_mean_winsorized</span>(los, weight, <span class="at">LB =</span> <span class="dv">0</span>, <span class="at">UB =</span> <span class="fl">0.95</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="fl">10.40845</span></span></code></pre></div>
 <p>The one-sided winsorized estimators can also be specified in absolute terms by winsorizing a fixed number <span class="math inline">\(k=1,2,\ldots\)</span> of observations. This estimator is called the one-sided <em>k-winsorized</em> mean (and total) and is computed as follows</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">weighted_mean_k_winsorized</span>(los, weight, <span class="at">k =</span> <span class="dv">1</span>)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="fl">11.40845</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">weighted_mean_k_winsorized</span>(los, weight, <span class="at">k =</span> <span class="dv">1</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="fl">11.40845</span></span></code></pre></div>
 </div>
 <div id="survey-methods-1" class="section level3">
 <h3>3.2 Survey methods</h3>
@@ -1656,9 +1657,9 @@ To avoid unnecessary repetition, we discuss the details of estimation <em>only</
 </tr>
 </table>
 <p>The estimators <code>&quot;Z2&quot;</code> and <code>&quot;Z3&quot;</code> can be specified by the argument <code>type</code>; by default, <code>type = &quot;Z2&quot;</code>. The censoring threshold <span class="math inline">\(c\)</span> is implemented as argument <code>censoring</code>.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">weighted_mean_dalen</span>(los, weight, <span class="at">censoring =</span> <span class="dv">1500</span>)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span> of <span class="dv">71</span> observations censored</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="fl">10.73129</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">weighted_mean_dalen</span>(los, weight, <span class="at">censoring =</span> <span class="dv">1500</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span> of <span class="dv">71</span> observations censored</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="fl">10.73129</span></span></code></pre></div>
 </div>
 <div id="survey-methods-2" class="section level3">
 <h3>4.2 Survey methods</h3>
@@ -1714,8 +1715,8 @@ The robust Horvitz-Thompson estimator (<code>type = &quot;rht&quot;</code>) is t
 </p>
 </div>
 <p>As losdata is a simple random sample, <em>M</em>-estimators of <code>type = &quot;rht&quot;</code> is the method of choice. Here, we compute the Huber-type robust weighted <em>M</em>-estimator of the mean with robustness tuning constant <span class="math inline">\(k=8\)</span>.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">weighted_mean_huber</span>(los, weight, <span class="at">type =</span> <span class="st">&quot;rwm&quot;</span>, <span class="at">k =</span> <span class="dv">8</span>)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="fl">11.17228</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">weighted_mean_huber</span>(los, weight, <span class="at">type =</span> <span class="st">&quot;rwm&quot;</span>, <span class="at">k =</span> <span class="dv">8</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="fl">11.17228</span></span></code></pre></div>
 <div class="my-sidebar-blue">
 <p style="color: #1f618d;">
 <strong>Good to know.</strong>
@@ -1726,8 +1727,8 @@ The <em>M</em>-estimators are computed by iterative methods. If the algorithm fa
 </p>
 </div>
 <p>The function <code>huber2()</code> is an implementation of the weighted Huber proposal 2 estimator. It is only available as bare-bone method.<sup><a href="#notes">Note 3</a></sup></p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">huber2</span>(los, weight, <span class="at">k =</span> <span class="dv">8</span>)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="fl">13.02817</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">huber2</span>(los, weight, <span class="at">k =</span> <span class="dv">8</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="fl">13.02817</span></span></code></pre></div>
 </div>
 <div id="survey-methods-3" class="section level3">
 <h3>5.2 Survey methods</h3>
@@ -1751,30 +1752,30 @@ The <em>M</em>-estimators are computed by iterative methods. If the algorithm fa
 </tr>
 </table>
 <p>The Huber <em>M</em>-estimator of the mean (and its standard error) can be computed with</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> m <span class="ot">&lt;-</span> <span class="fu">svymean_huber</span>(<span class="sc">~</span>los, dn, <span class="at">type =</span> <span class="st">&quot;rwm&quot;</span>, <span class="at">k =</span> <span class="dv">8</span>)</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> m</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>     mean    SE</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>los <span class="fl">11.17</span> <span class="fl">1.328</span></span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> m <span class="ot">&lt;-</span> <span class="fu">svymean_huber</span>(<span class="sc">~</span>los, dn, <span class="at">type =</span> <span class="st">&quot;rwm&quot;</span>, <span class="at">k =</span> <span class="dv">8</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> m</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>     mean    SE</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>los <span class="fl">11.17</span> <span class="fl">1.328</span></span></code></pre></div>
 <p>The <code>summary()</code> method summarizes the most important facts about the <em>M</em>-estimate</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">summary</span>(m)</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>Huber M<span class="sc">-</span><span class="fu">estimator</span> (<span class="at">type =</span> rwm) of the population mean </span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>     mean    SE</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>los <span class="fl">11.17</span> <span class="fl">1.328</span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>Robustness<span class="sc">:</span></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  Psi<span class="sc">-</span><span class="cf">function</span><span class="sc">:</span> with k <span class="ot">=</span> <span class="dv">8</span> </span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  mean of robustness weights<span class="sc">:</span> <span class="fl">0.9877</span> </span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>Algorithm performance<span class="sc">:</span></span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  converged <span class="cf">in</span> <span class="dv">4</span> iterations</span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>  with residual <span class="fu">scale</span> (weighted MAD)<span class="sc">:</span> <span class="fl">5.93</span></span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>Sampling design<span class="sc">:</span></span>
-<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>Independent Sampling design</span>
-<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a><span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span><span class="dv">1</span>, <span class="at">fpc =</span> <span class="sc">~</span>fpc, <span class="at">weights =</span> <span class="sc">~</span>weight, <span class="at">data =</span> losdata)</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">summary</span>(m)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>Huber M<span class="sc">-</span><span class="fu">estimator</span> (<span class="at">type =</span> rwm) of the population mean </span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>     mean    SE</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>los <span class="fl">11.17</span> <span class="fl">1.328</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>Robustness<span class="sc">:</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  Psi<span class="sc">-</span><span class="cf">function</span><span class="sc">:</span> with k <span class="ot">=</span> <span class="dv">8</span> </span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  mean of robustness weights<span class="sc">:</span> <span class="fl">0.9877</span> </span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>Algorithm performance<span class="sc">:</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  converged <span class="cf">in</span> <span class="dv">4</span> iterations</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  with residual <span class="fu">scale</span> (weighted MAD)<span class="sc">:</span> <span class="fl">5.93</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>Sampling design<span class="sc">:</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>Independent Sampling design</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a><span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span><span class="dv">1</span>, <span class="at">fpc =</span> <span class="sc">~</span>fpc, <span class="at">weights =</span> <span class="sc">~</span>weight, <span class="at">data =</span> losdata)</span></code></pre></div>
 <p>The estimated scale (weighted MAD) can be extracted with the <code>scale()</code> function. Additional utility functions are <code>coef()</code>, <code>vcov()</code>, <code>SE()</code>, <code>residuals()</code>, <code>fitted()</code>, and <code>robweights()</code>. The following figure shows a plot of the robustness weights against the residuals. We see that large residuals are downweighted.</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">plot</span>(<span class="fu">residuals</span>(m), <span class="fu">robweights</span>(m))</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">plot</span>(<span class="fu">residuals</span>(m), <span class="fu">robweights</span>(m))</span></code></pre></div>
 <p><img src="data:image/png;base64,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" width="480" style="display: block; margin: auto;" /></p>
 </div>
 <div id="adaptive-estimation" class="section level3">
@@ -1782,14 +1783,14 @@ The <em>M</em>-estimators are computed by iterative methods. If the algorithm fa
 <p>An adaptive <em>M</em>-estimator of the total (or mean) is defined by letting the data chose the tuning constant <span class="math inline">\(k\)</span>. Let <span class="math inline">\(\widehat{T}\)</span> denote the weighted total, and let <span class="math inline">\(\widehat{T}_k\)</span> be the Huber <em>M</em>-estimator of the weighted total with robustness tuning constant <span class="math inline">\(k\)</span>. Under quite general regularity conditions, the estimated mean square error (MSE) of <span class="math inline">\(\widehat{T}_k\)</span> can be approximated by (see e.g., <a href="#biblio">Gwet and Rivest</a>, 1992; <a href="#biblio">Hulliger</a>, 1995)</p>
 <p><span class="math display">\[\widehat{\mathrm{mse}}\big(\widehat{T}_{k}\big) \approx \mathrm{var}\big(\widehat{T}_{k}\big) +\big(\widehat{T} - \widehat{T}_{k}\big)^2.\]</span></p>
 <p>The minimum estimated risk (MER) estimator (<a href="#biblio">Hulliger</a>, 1995) selects <span class="math inline">\(k\)</span> such that <span class="math inline">\(\widehat{\mathrm{mse}}\big(\widehat{T}_{k}\big)\)</span> is minimal (among all candidate estimators). Now, suppose that we have been working on the <em>M</em>-estimator with <span class="math inline">\(k=8\)</span>.</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> m <span class="ot">&lt;-</span> <span class="fu">svymean_huber</span>(<span class="sc">~</span>los, dn, <span class="at">type =</span> <span class="st">&quot;rwm&quot;</span>, <span class="at">k =</span> <span class="dv">8</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> m <span class="ot">&lt;-</span> <span class="fu">svymean_huber</span>(<span class="sc">~</span>los, dn, <span class="at">type =</span> <span class="st">&quot;rwm&quot;</span>, <span class="at">k =</span> <span class="dv">8</span>)</span></code></pre></div>
 <p>Next, we compute the MER, starting from the current <em>M</em>-estimate, i.e., object <code>m</code>.</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">mer</span>(m)</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>Search interval<span class="sc">:</span> [<span class="dv">1</span>, <span class="dv">10</span>]</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>Minimum found <span class="cf">for</span> k <span class="ot">=</span>  <span class="dv">10</span> </span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>Rel. efficiency gain<span class="sc">:</span> <span class="dv">35</span>%</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>     mean    SE</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>los <span class="fl">11.46</span> <span class="fl">1.478</span></span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">mer</span>(m)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>Search interval<span class="sc">:</span> [<span class="dv">1</span>, <span class="dv">10</span>]</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>Minimum found <span class="cf">for</span> k <span class="ot">=</span>  <span class="dv">10</span> </span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>Rel. efficiency gain<span class="sc">:</span> <span class="dv">35</span>%</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>     mean    SE</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>los <span class="fl">11.46</span> <span class="fl">1.478</span></span></code></pre></div>
 <p>Hence, the MER is 35% more efficient than the classical estimator as an estimator of the population total.</p>
 </div>
 </div>
@@ -1798,26 +1799,26 @@ The <em>M</em>-estimators are computed by iterative methods. If the algorithm fa
 <div id="weighted-quantile-and-median" class="section level3">
 <h3>6.1 Weighted quantile and median</h3>
 <p>The weighted quantile (and median) can be computed by</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">weighted_quantile</span>(los, weight, <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.9</span>))</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="dv">10</span><span class="sc">% 90%</span> </span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="dv">3</span>  <span class="dv">22</span> </span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">weighted_median</span>(los, weight)</span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="dv">50</span>% </span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="dv">8</span> </span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">weighted_quantile</span>(los, weight, <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.9</span>))</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="dv">10</span><span class="sc">% 90%</span> </span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="dv">3</span>  <span class="dv">22</span> </span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">weighted_median</span>(los, weight)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="dv">50</span>% </span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="dv">8</span> </span></code></pre></div>
 <p>When all weights are equal, <code>weighted_quantile()</code> is equal to <code>base::quantile()</code> with argument <code>type = 2</code>.</p>
 </div>
 <div id="weighted-mad-median-absolute-deviation" class="section level3">
 <h3>6.2 Weighted MAD: median absolute deviation</h3>
 <p>The normalized weighted median absolute deviations about the weighted median can be computed with</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">weighted_mad</span>(los, weight)</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="fl">5.930408</span></span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">weighted_mad</span>(los, weight)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="fl">5.930408</span></span></code></pre></div>
 <p>By default, the normalization constant to make the weighted MAD an unbiased estimator of scale at the Gaussian core model is <code>constant = 1.482602</code>. This constant can be changed if necessary.</p>
 </div>
 <div id="weighted-iqr-interquartile-range" class="section level3">
 <h3>6.3 Weighted IQR: interquartile range</h3>
 <p>The normalized weighted interquartile range can be computed with</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">weighted_IQR</span>(los, weight)</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="fl">6.6717</span></span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">weighted_IQR</span>(los, weight)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>] <span class="fl">6.6717</span></span></code></pre></div>
 <p>By default, the normalization constant to make the weighted IQR an unbiased estimator of scale at the Gaussian core model is <code>constant = 0.7413</code>. This constant can be changed if necessary.</p>
 <hr />
 </div>
@@ -1842,19 +1843,19 @@ The <em>M</em>-estimators are computed by iterative methods. If the algorithm fa
 <p>DALEN, J. (1987). <em>Practical Estimators of a Population Total Which Reduce the Impact of Large Observations</em>. Research report, Statistics Sweden, Stockholm.</p>
 <p>CHEN, Q., ELLIOTT, M. R., HAZIZA, D., YANG, Y., GHOSH, M., LITTLE, R. J. A., SEDRANSK, J. AND THOMPSON, M. (2017). Approaches to Improving Survey-Weighted Estimates. <em>Statistical Science</em> <strong>32</strong>, 227–248, <a href="https://doi.org/10.1214/17-STS609">DOI: 10.1214/17-STS609</a>.</p>
 <p>GWET, J.-P. AND RIVEST, L.-P. (1992). Outlier Resistant Alternatives to the Ratio Estimator. <em>Journal of the American Statistical Association</em> <strong>87</strong>, 1174–1182, <a href="https://doi.org/10.1080/01621459.1992.10476275">DOI: 10.1080/01621459.1992. 10476275</a>.</p>
-<p>HUBER, P. J. AND RONCHETTI, E. (2009). <em>Robust Statistics</em>, New York: John Wiley and Sons, 2nd edition, <a href="https://doi.org/10.1002/9780470434697">DOI: 10.1002/9780470434697</a>.</p>
-<p>HULLIGER, B. (2006). Horvitz–Thompson Estimators, Robustified. In: <em>Encyclopedia of Statistical Sciences</em> ed. by Kotz, S. Volume 5, Hoboken (NJ): John Wiley and Sons, 2nd edition, <a href="https://doi.org/10.1002/0471667196.ess1066.pub2">DOI: 10.1002/0471667196.ess1066.pub2</a>.</p>
+<p>HUBER, P. J. AND RONCHETTI, E. (2009). <em>Robust Statistics</em>, New York: John Wiley &amp; Sons, 2nd edition, <a href="https://doi.org/10.1002/9780470434697">DOI: 10.1002/9780470434697</a>.</p>
+<p>HULLIGER, B. (2006). Horvitz–Thompson Estimators, Robustified. In: <em>Encyclopedia of Statistical Sciences</em> ed. by Kotz, S. Volume 5, Hoboken (NJ): John Wiley &amp; Sons, 2nd edition, <a href="https://doi.org/10.1002/0471667196.ess1066.pub2">DOI: 10.1002/0471667196.ess1066.pub2</a>.</p>
 <p>HULLIGER, B. (1999). Simple and robust estimators for sampling. In: <em>Proceedings of the Survey Research Methods Section</em>, American Statistical Association, 54–63, American Statistical Association.</p>
 <p>HULLIGER, B. (1995). Outlier Robust Horvitz–Thompson Estimators. <em>Survey Methodology</em> <strong>21</strong>, 79–87.</p>
-<p>LEE, H. (1995). Outliers in business surveys. In: <em>Business survey methods</em> ed. by Cox, B. G., Binder, D. A., Chinnappa, B. N., Christianson, A., Colledge, M. J. and Kott, P. S. New York: John Wiley and Sons, Chap. 26, 503–526, <a href="https://doi.org/10.1002/9781118150504.ch26">DOI: 10.1002/9781118150504.ch26</a>.</p>
+<p>LEE, H. (1995). Outliers in business surveys. In: <em>Business survey methods</em> ed. by Cox, B. G., Binder, D. A., Chinnappa, B. N., Christianson, A., Colledge, M. J. and Kott, P. S. New York: John Wiley &amp; Sons, Chap. 26, 503–526, <a href="https://doi.org/10.1002/9781118150504.ch26">DOI: 10.1002/9781118150504.ch26</a>.</p>
 <p>LUMLEY, T. (2021). survey: analysis of complex survey samples. R package version 4.0, URL <a href="https://CRAN.R-project.org/package=survey" class="uri">https://CRAN.R-project.org/package=survey</a>.</p>
-<p>LUMLEY, T. (2010). <em>Complex Surveys: A Guide to Analysis Using R: A Guide to Analysis Using R</em>, Hoboken (NJ): John Wiley and Sons.</p>
+<p>LUMLEY, T. (2010). <em>Complex Surveys: A Guide to Analysis Using R: A Guide to Analysis Using R</em>, Hoboken (NJ): John Wiley &amp; Sons.</p>
 <p>RAO, J. N. K. (1971). Some Aspects of Statistical Inference in Problems of Sampling from Finite Populations. In: <em>Foundations of Statistical Inference</em> ed. by Godambe, V. P. and Sprott, D. A. Toronto: Holt, Rinehart, and Winston, 171–202.</p>
 <p>ROYALL, R. M. AND CUMBERLAND, W. G. (1981). An Empirical Study of the Ratio Estimator and Estimators of its Variance. <em>Journal of the American Statistical Association</em> <strong>76</strong>, 66–82, <a href="https://doi.org/10.2307/2287043">DOI: 10.2307/2287043</a>.</p>
 <p>RUFFIEUX, C., PACCAUD, F. AND MARAZZI, A. (2000). Comparing rules for truncating hospital length of stay. <em>Casemix Quarterly</em> <strong>2</strong>, 3–11.</p>
 <p>SHAO, J. (1994). L-Statistics in complex survey problems. <em>The Annals of Statistics</em> <strong>22</strong>, 946–967, <a href="https://doi.org/10.1214/aos/1176325505">DOI: 10.1214/aos/1176325505</a>.</p>
-<p>SERFLING, R. J. (1980). <em>Approximation theorems of mathematical statistics</em>, New York: Wiley. <a href="https://doi.org/10.1002/9780470316481">DOI: 10.1002/9780470316481</a>.</p>
-<p>VENABLES, W. N. AND RIPLEY, B. D. (2002). <em>Modern Applied Statistics with S</em>, New York: Springer, 4th edition, <a href="https://doi.org/10.1007/978-0-387-21706-2">DOI: 10.1007/978-0-387-21706-2</a>.</p>
+<p>SERFLING, R. J. (1980). <em>Approximation theorems of mathematical statistics</em>, New York: John Wiley &amp; Sons. <a href="https://doi.org/10.1002/9780470316481">DOI: 10.1002/9780470316481</a>.</p>
+<p>VENABLES, W. N. AND RIPLEY, B. D. (2002). <em>Modern Applied Statistics with S</em>, New York: Springer-Verlag, 4th edition, <a href="https://doi.org/10.1007/978-0-387-21706-2">DOI: 10.1007/978-0-387-21706-2</a>.</p>
 </div>
 
 

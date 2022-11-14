@@ -7,7 +7,8 @@ importFrom("stats", "fitted", "qqnorm", "residuals")
 S3method(print,svystat_rob)
 S3method(print,svyreg_rob)
 
-S3method(summary,formula)
+export(svysummary)
+
 S3method(summary,svystat_rob)
 S3method(summary,svyreg_rob)
 

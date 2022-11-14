@@ -523,19 +523,19 @@ CHEN, Q., ELLIOTT, M. R., HAZIZA, D., YANG, Y., GHOSH, M., LITTLE, R. J. A., SED
 
 GWET, J.-P. AND RIVEST, L.-P. (1992). Outlier Resistant Alternatives to the Ratio Estimator. *Journal of the American Statistical Association* **87**, 1174–1182, [DOI: 10.1080/01621459.1992. 10476275](https://doi.org/10.1080/01621459.1992.10476275).
 
-HUBER, P. J. AND RONCHETTI, E. (2009). *Robust Statistics*, New York: John Wiley and Sons, 2nd edition, [DOI: 10.1002/9780470434697](https://doi.org/10.1002/9780470434697).
+HUBER, P. J. AND RONCHETTI, E. (2009). *Robust Statistics*, New York: John Wiley & Sons, 2nd edition, [DOI: 10.1002/9780470434697](https://doi.org/10.1002/9780470434697).
 
-HULLIGER, B. (2006). Horvitz–Thompson Estimators, Robustified. In: *Encyclopedia of Statistical Sciences* ed. by Kotz, S. Volume 5, Hoboken (NJ): John Wiley and Sons, 2nd edition, [DOI: 10.1002/0471667196.ess1066.pub2](https://doi.org/10.1002/0471667196.ess1066.pub2).
+HULLIGER, B. (2006). Horvitz–Thompson Estimators, Robustified. In: *Encyclopedia of Statistical Sciences* ed. by Kotz, S. Volume 5, Hoboken (NJ): John Wiley & Sons, 2nd edition, [DOI: 10.1002/0471667196.ess1066.pub2](https://doi.org/10.1002/0471667196.ess1066.pub2).
 
 HULLIGER, B. (1999). Simple and robust estimators for sampling. In: *Proceedings of the Survey Research Methods Section*, American Statistical Association, 54–63, American Statistical Association.
 
 HULLIGER, B. (1995). Outlier Robust Horvitz–Thompson Estimators. *Survey Methodology* **21**, 79–87.
 
-LEE, H. (1995). Outliers in business surveys. In: *Business survey methods* ed. by Cox, B. G., Binder, D. A., Chinnappa, B. N., Christianson, A., Colledge, M. J. and Kott, P. S. New York: John Wiley and Sons, Chap. 26, 503–526, [DOI: 10.1002/9781118150504.ch26](https://doi.org/10.1002/9781118150504.ch26).
+LEE, H. (1995). Outliers in business surveys. In: *Business survey methods* ed. by Cox, B. G., Binder, D. A., Chinnappa, B. N., Christianson, A., Colledge, M. J. and Kott, P. S. New York: John Wiley & Sons, Chap. 26, 503–526, [DOI: 10.1002/9781118150504.ch26](https://doi.org/10.1002/9781118150504.ch26).
 
 LUMLEY, T. (2021). survey: analysis of complex survey samples. R package version 4.0, URL https://CRAN.R-project.org/package=survey.
 
-LUMLEY, T. (2010). *Complex Surveys: A Guide to Analysis Using R: A Guide to Analysis Using R*, Hoboken (NJ): John Wiley and Sons.
+LUMLEY, T. (2010). *Complex Surveys: A Guide to Analysis Using R: A Guide to Analysis Using R*, Hoboken (NJ): John Wiley & Sons.
 
 RAO, J. N. K. (1971). Some Aspects of Statistical Inference in Problems of Sampling from Finite Populations. In: *Foundations of Statistical Inference* ed. by Godambe, V. P. and Sprott, D. A. Toronto: Holt, Rinehart, and Winston, 171–202.
 
@@ -545,6 +545,6 @@ RUFFIEUX, C., PACCAUD, F. AND MARAZZI, A. (2000). Comparing rules for truncating
 
 SHAO, J. (1994). L-Statistics in complex survey problems. *The Annals of Statistics* **22**, 946–967, [DOI: 10.1214/aos/1176325505](https://doi.org/10.1214/aos/1176325505).
 
-SERFLING, R. J. (1980). *Approximation theorems of mathematical statistics*, New York: Wiley. [DOI: 10.1002/9780470316481](https://doi.org/10.1002/9780470316481).
+SERFLING, R. J. (1980). *Approximation theorems of mathematical statistics*, New York: John Wiley & Sons. [DOI: 10.1002/9780470316481](https://doi.org/10.1002/9780470316481).
 
-VENABLES, W. N. AND RIPLEY, B. D. (2002). *Modern Applied Statistics with S*, New York: Springer, 4th edition, [DOI: 10.1007/978-0-387-21706-2](https://doi.org/10.1007/978-0-387-21706-2).
+VENABLES, W. N. AND RIPLEY, B. D. (2002). *Modern Applied Statistics with S*, New York: Springer-Verlag, 4th edition, [DOI: 10.1007/978-0-387-21706-2](https://doi.org/10.1007/978-0-387-21706-2).

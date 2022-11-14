@@ -1,8 +1,8 @@
 # summary method for survey.design object
-summary.formula <- function(object, design, na.rm = FALSE, ...)
+svysummary <- function(object, design, na.rm = FALSE, ...)
 {
-    mf <- stats::model.frame(object, design$variables,
-        na.action = stats::na.pass)
+    mf <- stats::model.frame(object, design$variables, na.action =
+        stats::na.pass)
     n <- nrow(mf)
     xname <- names(mf)
     y <- mf[[1]]

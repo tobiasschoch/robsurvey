@@ -1,7 +1,7 @@
 Package: robsurvey
 Type: Package
 Title: Robust Survey Statistics Estimation
-Version: 0.5
+Version: 0.5-1
 Authors@R: c(person(
         given = "Beat",
         family = "Hulliger",
@@ -39,8 +39,8 @@ Imports:
     KernSmooth
 Suggests:
     hexbin,
-    MASS,
     knitr,
+    MASS,
     rmarkdown,
     wbacon
 VignetteBuilder: knitr, rmarkdown

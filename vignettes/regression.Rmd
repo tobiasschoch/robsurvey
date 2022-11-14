@@ -47,7 +47,7 @@ knitr::opts_chunk$set(
 
 ## Outline
 
-The vignette is organized as follows. In chapter 1, we guide the reader through the preparatory steps (loading packages and data). In the chapters that follow, we discuss regression estimation (with focus on weighted least squares, *M*- and *GM*-estimators) for 3 different modes of inference.
+The vignette is organized as follows. In Chapter 1, we guide the reader through the preparatory steps (loading packages and data). In the chapters that follow, we discuss regression estimation (with focus on weighted least squares, *M*- and *GM*-estimators) for 3 different modes of inference.
 
  - Design-based inference (Chapter 2)
  - Model-based inference (Chapter 3)
@@ -216,7 +216,7 @@ We continue to assume the heteroscedastic model $\xi$, but now we compute a weig
 * `svyreg_huberM()` *M*-estimator with Huber or asymmetric Huber $\psi$-function (the latter obtains by specifying argument `asym = TRUE`);
 * `svyreg_tukeyM()` *M*-estimator with Tukey biweight (bisquare) $\psi$-function.
 
-The tuning constant of both $\psi$-functions is called `k`. The Huber *M*-estimator of regression with `k = 3` is (note that we use `na.rm = TRUE` to remove observations with missing values)
+The tuning constant of both $\psi$-functions is called `k`. The Huber *M*-estimator of regression with `k = 3` is (note that we use `na.rm = TRUE` to remove observations with missing values)
 
 ```{r}
 m <- svyreg_huberM(farmpop ~ -1 + numfarm, dn, var = ~vi, k = 1.3, na.rm = TRUE)
@@ -293,18 +293,24 @@ pairs(xmat)
 
 #### Robust Mahalanobis distances
 
-The intermediate goal is to compute the robust Mahalanobis distances of the observations in `xmat`. Observations with large distances are considered outliers and will be downweighted in the subsequent regression analysis. In order to obtain the robust Mahalanobis distances, we compute the robust multivariate location and scatter matrix of `xmat` using the (weighted) BACON algorithm in package `wbacon` ([Schoch](#biblio), 2021).
+The intermediate goal is to compute the robust Mahalanobis distances of the observations in `xmat`. Observations with large distances are considered outliers and will be downweighted in the subsequent regression analysis. In order to obtain the robust Mahalanobis distances, we compute the robust multivariate location and scatter matrix of `xmat` using the (weighted) BACON algorithm in package `wbacon` ([Schoch](#biblio), 2021), and extract the robust Mahalanobis distances `dis`. (If package `wbacon` is not available, the robust center and scatter matrix are given, such that the Mahalanobis distances can be computed.)
 
 ```{r}
-library(wbacon)
-mv <- wBACON(xmat, weights = weights(dn_exclude))
-mv
-```
-
-The estimated multivariate location and scatter or covariance matrix can be extracted from object `mv` with the functions `center()` and `vcov()`, respectively. The robust Mahalanobis distances can be extracted with
-
-```{r}
-dis <- distance(mv)
+if (requireNamespace("wbacon", quietly = TRUE)) {
+    # package wbacon is available
+    mv <- wbacon::wBACON(xmat, weights = weights(dn_exclude))
+    # distances
+    dis <- wbacon::distance(mv)
+} else {
+    # package wbacon is not available
+    center <- c(6.285968, 10.195002, 12.047715)
+    scatter <- matrix(0, 3, 3)
+    scatter[lower.tri(scatter, TRUE)] <- c(0.678646, 0.441020, 0.415634,
+        2.191174, -0.302097, 1.040932)
+    scatter <- scatter + t(scatter) - diag(3) * scatter
+    # distances
+    dis <- sqrt(mahalanobis(xmat, center, scatter))
+}
 ```
 
 The boxplot of `dis` shows a couple of observations with large Mahalanobis distance. These observations are considered as potential outliers.
@@ -376,16 +382,18 @@ Likewise, we can call `vcov(m, mode = "model")` to extract the estimated *model-
 **Good to know** (comparison with function <code>rlm</code> in package <code>MASS</code>).
 </p>
 <p>
-For the purpose of comparison, we have fitted the above model with the function <code>rlm</code> in package <code>MASS</code> ([Venables and Ripley](#biblio), 2002).
-```{r}
-library(MASS)
-summary(rlm(log(farmpop) ~ log(numfarm),
-    data = counties[counties$farmpop > 0, ],
-    k = 1.3, na.action = na.omit))
+For the purpose of comparison, we have fitted the above model with the function <code>rlm()</code> in package <code>MASS</code> ([Venables and Ripley](#biblio), 2002) with tuning constant <code>k = 1.3</code>.
+```{r, echo=FALSE}
+if (requireNamespace("MASS", quietly = TRUE)) {
+    summary(MASS::rlm(log(farmpop) ~ log(numfarm),
+        data = counties[counties$farmpop > 0, ],
+        k = 1.3, na.action = na.omit))
+} else {
+    cat("Package MASS is not available\n")
+}
 ```
 </p>
 </div>
-
 
 ## 4 Compound design- and model-based inference
 
@@ -470,13 +478,13 @@ BINDER, D. A. AND ROBERTS, G. (2009). Design- and Model-Based Inference for Mode
 
 LOHR, S. L. (1999). *Sampling: Design and Analysis*, Pacific Grove (CA): Duxbury Press.
 
-LUMLEY, T. (2010). *Complex Surveys: A Guide to Analysis Using R: A Guide to Analysis Using R*, Hoboken (NJ): John Wiley and Sons.
+LUMLEY, T. (2010). *Complex Surveys: A Guide to Analysis Using R: A Guide to Analysis Using R*, Hoboken (NJ): John Wiley & Sons.
 
 LUMLEY, T. (2021). survey: analysis of complex survey samples. R package version 4.0, URL https://CRAN.R-project.org/package=survey.
 
 RUBIN-BLEUER, S. AND SCHIOPU-KRATINA, I. (2005). On the Two-phase framework for joint model and design-based inference. *The Annals of Statistics* **33**, 2789–2810. [DOI: 10.1214/ 009053605000000651](https://doi.org/10.1214/009053605000000651)
 
-SÄRNDAL, C.-E., SWENSSON, B. AND WRETMAN, J. (1992). *Model Assisted Survey Sampling*, New York: Springer.
+SÄRNDAL, C.-E., SWENSSON, B. AND WRETMAN, J. (1992). *Model Assisted Survey Sampling*, New York: Springer-Verlag.
 
 SCHOCH, T. (2021). wbacon: Weighted BACON algorithms for multivariate outlier nomination (detection) and robust linear regression. *Journal of Open Source Software* **6**, 3238. [DOI: 10. 21105/joss.03238](https://doi.org/10.21105/joss.03238)
 
@@ -484,4 +492,4 @@ SIMPSON, D. G., RUPPERT, D. AND CARROLL, R. J. (1992). On one-step GM estimates 
 
 TILLE, T. and MATEI, A. (2021). sampling: Survey Sampling. R package version 2.9.  https://CRAN.R-project.org/package=sampling.
 
-VENABLES, W. N. AND RIPLEY, B. D. (2002). *Modern Applied Statistics with S*, New York: Springer, 4th edition. [DOI: 10.1007/978-0-387-21706-2](https://doi.org/10.1007/978-0-387-21706-2)
+VENABLES, W. N. AND RIPLEY, B. D. (2002). *Modern Applied Statistics with S*, New York: Springer-Verlag, 4th edition. [DOI: 10.1007/978-0-387-21706-2](https://doi.org/10.1007/978-0-387-21706-2)

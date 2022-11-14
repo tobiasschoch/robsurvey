@@ -258,7 +258,7 @@ An adaptive *M*-estimator of the total (or mean) is defined by letting the data 
 
 CHAMBERS, R. (1986). Outlier Robust Finite Population Estimation. *Journal of the American Statistical Association* **81**, 1063–1069, [DOI: 10.1080/01621459.1986.10478374](https://doi.org/10.1080/01621459.1986.10478374).
 
-FULLER, W. A. (2009). *Sampling Statistics*, Hoboken (NJ): John Wiley and Sons, [DOI: 10.1002/9780470523551](https://doi.org/10.1002/9780470523551).
+FULLER, W. A. (2009). *Sampling Statistics*, Hoboken (NJ): John Wiley & Sons, [DOI: 10.1002/9780470523551](https://doi.org/10.1002/9780470523551).
 
 HULLIGER, B. (1995). Outlier Robust Horvitz–Thompson Estimators. *Survey Methodology* **21**, 79–87.
 
@@ -266,7 +266,7 @@ HULLIGER, B. (1999). Simple and robust estimators for sampling, in: *Proceedings
 
 HULLIGER, B. (2006). Horvitz–Thompson Estimators, Robustified. In: *Encyclopedia of Statistical Sciences* ed. by Kotz, S. Volume 5, Hoboken (NJ): John Wiley and Sons, 2nd edition, [DOI: 10.1002/0471667196.ess1066.pub2](https://doi.org/10.1002/0471667196.ess1066.pub2).
 
-LUMLEY, T. (2010). *Complex Surveys: A Guide to Analysis Using R: A Guide to Analysis Using R*, Hoboken (NJ): John Wiley and Sons.
+LUMLEY, T. (2010). *Complex Surveys: A Guide to Analysis Using R: A Guide to Analysis Using R*, Hoboken (NJ): John Wiley & Sons.
 
 LUMLEY, T. (2021). survey: analysis of complex survey samples. R package version 4.0, URL https://CRAN.R-project.org/package=survey.
 

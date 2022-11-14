@@ -1,8 +1,8 @@
-\name{summary.formula}
-\alias{summary.formula}
+\name{svysummary}
+\alias{svysummary}
 \title{Weighted Five-Number Summary of a Variable}
 \usage{
-\method{summary}{formula}(object, design, na.rm = FALSE, ...)
+svysummary(object, design, na.rm = FALSE, ...)
 }
 \arguments{
     \item{object}{one-sided \code{[formula]} for which a summary is desired,
@@ -30,5 +30,5 @@ library(survey)
 dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
     data = workplace)
 
-summary(~payroll, dn)
+svysummary(~payroll, dn)
 }

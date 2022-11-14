@@ -55,8 +55,7 @@ The vignette covers robust generalized regression (GREG) prediction and robust r
 </p>
 <p>
 It is assumed that the reader is <i>familiar</i> with the key functions of the <code>survey</code> package, like <code>svydesign()</code>, etc. In addition, we assume that the reader has studied the vignette on robust regression.
-
-The technical details (incl. references to the literature) of the robust generalized regression and the robust ratio predictor are documented in file <code>/doc/greg.html</code>.
+The technical details (incl. references to the literature) of the robust generalized regression and the robust ratio predictor are documented in file <code>/doc/greg.pdf</code>.
 </p>
 </div>
 
@@ -255,10 +254,10 @@ See the help file of `svymean_reg()` or `svytotal_reg()` to learn more.
 
 ## References {#biblio}
 
-LUMLEY, T. (2010). *Complex Surveys: A Guide to Analysis Using R: A Guide to Analysis Using R*, Hoboken (NJ): John Wiley and Sons.
+LUMLEY, T. (2010). *Complex Surveys: A Guide to Analysis Using R: A Guide to Analysis Using R*, Hoboken (NJ): John Wiley & Sons.
 
 LUMLEY, T. (2021). survey: analysis of complex survey samples. R package version 4.0, URL https://CRAN.R-project.org/package=survey.
 
-SÄRNDAL, C.-E., SWENSSON, B. AND WRETMAN, J. (1992). *Model Assisted Survey Sampling*. New York: Springer.
+SÄRNDAL, C.-E., SWENSSON, B. AND WRETMAN, J. (1992). *Model Assisted Survey Sampling*. New York: Springer-Verlag.
 
-TILLE, Y. (2006). *Sampling Algorithms*. New York: Springer.
+TILLE, Y. (2006). *Sampling Algorithms*. New York: Springer-Verlag.
