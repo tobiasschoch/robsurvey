@@ -81,7 +81,8 @@ source("comparison_functions.R")
 \shortcites{anderson_bai_etal_1999}
 \shortcites{blackford_petitet_etal_2002}
 
-\title{\Large Adding Support for Other $\psi$-Functions}
+\title{\Large Comparison With Other Implementations of Regression $M$- and
+    $GM$-Estimators}
 
 \author{{\normalsize Tobias Schoch} \\
 \begin{minipage}[t][][t]{\textwidth}
