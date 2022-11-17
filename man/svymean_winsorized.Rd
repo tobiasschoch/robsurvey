@@ -32,6 +32,8 @@ svytotal_k_winsorized(x, design, k, na.rm = FALSE, trim_var = FALSE)
     Weighted winsorized mean and total
 }
 \details{
+    Package \pkg{survey} must be loaded in order to use the functions.
+
     \describe{
         \item{Characteristic.}{Population mean or total. Let \eqn{\mu}
             denote the estimated winsorized population mean; then, the

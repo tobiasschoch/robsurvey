@@ -90,6 +90,7 @@
     Methods and utility functions for objects of class \code{svyreg_rob}.
 }
 \details{
+    Package \pkg{survey} must be loaded in order to use the functions.
     \describe{
         \item{Variance}{
             For variance estimation (\code{summary}, \code{vcov}, and

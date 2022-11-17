@@ -30,6 +30,8 @@ svytotal_huber(x, design, k, type = "rwm", asym = FALSE, na.rm = FALSE,
     Horvitz-Thompson estimator)
 }
 \details{
+    Package \pkg{survey} must be loaded in order to use the functions.
+
     \describe{
         \item{Methods/ types}{\code{type = "rht"} or \code{type = "rwm"}; see
             \code{\link{weighted_mean_huber}} for more details.}

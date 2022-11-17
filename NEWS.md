@@ -1,12 +1,17 @@
 **If you are viewing this file on CRAN, please check [latest news on GitHub](https://github.com/tobiasschoch/robsurvey/blob/master/NEWS.md) where the formatting is also better.**
 
-# robsurvey VERSION 0.5-1 (==FIXME==)
+# robsurvey VERSION 0.5-1
 
-## CHANGES
+## CHANGE
 
-* Function `summary()` for objects of class `survey.design` has been replaced by `svysummary()` because the former it did not handle non-standard cases correctly (Thanks to the editorial office of the Journal of Statistical Software for pointing this out). 
-* Fixed defunct links in vignettes.
-* Added `requireNamespace()` as a guard for suggested packages in the vignettes.
+The `summary()` method for objects of class `formula` has been replaced by `svysummary()` because it did not handle non-standard cases correctly (Thanks to the editorial office of the Journal of Statistical Software for pointing this out). 
+
+## MISC
+
+* Fixed defunct links in vignettes and added `requireNamespace()` as a guard for suggested packages in the vignettes.
+
+* In the help files of functions that depend on the `survey` package or that extend its functionality, we added the following note: "Package `survey` must be loaded in order to use this function." to the Details section.
+
 
 # robsurvey VERSION 0.5 (2022-10-07)
 

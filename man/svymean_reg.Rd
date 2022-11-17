@@ -34,6 +34,8 @@ svymean_reg(object, totals, N = NULL, type, k = NULL, check.names = TRUE,
     and robust GREG \eqn{M}-estimator predictor
 }
 \details{
+    Package \pkg{survey} must be loaded in order to use the functions.
+
     The (robust) GREG predictor of the population total or mean is
     computed in two steps.
     \itemize{

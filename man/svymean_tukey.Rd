@@ -28,6 +28,8 @@ svytotal_tukey(x, design, k, type = "rwm", na.rm = FALSE, verbose = TRUE, ...)
     mean and total (robust Horvitz-Thompson estimator)
 }
 \details{
+    Package \pkg{survey} must be loaded in order to use the functions.
+
     \describe{
         \item{Methods/ types}{\code{type = "rht"} or \code{type = "rwm"}; see
             \code{\link{weighted_mean_tukey}} for more details.}

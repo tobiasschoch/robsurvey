@@ -34,6 +34,8 @@ svyratio_tukey(numerator, denominator, design, k, var = denominator,
     Huber and Tukey biweight (bisquare) psi-function.
 }
 \details{
+    Package \pkg{survey} must be loaded in order to use the functions.
+
     The functions \code{svyratio_huber} and \code{svyratio_tukey} are
     implemented as wrapper functions of the regression estimators
     \code{\link{svyreg_huberM}} and \code{\link{svyreg_tukeyM}}. See

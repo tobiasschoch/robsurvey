@@ -37,6 +37,8 @@ robweights(object)
     Methods and utility functions for objects of class \code{svystat_rob}.
 }
 \details{
+    Package \pkg{survey} must be loaded in order to use the functions.
+
     Utility functions:
     \itemize{
         \item \code{mse} computes the estimated risk (mean square

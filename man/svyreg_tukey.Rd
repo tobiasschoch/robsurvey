@@ -43,6 +43,8 @@ svyreg_tukey(formula, design, k, var = NULL, na.rm = FALSE, verbose = TRUE,
     compatibility reasons.
 }
 \details{
+    Package \pkg{survey} must be loaded in order to use the functions.
+
     \code{svyreg_tukeyM} and \code{svyreg_tukeyGM} compute, respectively,
     M- and GM-estimates of regression by iteratively re-weighted least
     squares (IRWLS).  The estimate of regression scale is (by default)

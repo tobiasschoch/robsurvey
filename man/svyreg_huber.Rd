@@ -44,6 +44,8 @@ svyreg_huber(formula, design, k, var = NULL, na.rm = FALSE, asym = FALSE,
     because the latter is deprecated but is kept for compatibility reasons.
 }
 \details{
+    Package \pkg{survey} must be loaded in order to use the functions.
+
     \code{svyreg_huberM} and \code{svyreg_huberGM} compute, respectively,
     \emph{M}- and \emph{GM}-estimates of regression by iteratively re-weighted
     least squares (IRWLS).  The estimate of regression scale is (by default)

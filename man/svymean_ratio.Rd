@@ -28,6 +28,8 @@ svymean_ratio(object, total, N = NULL, variance = "wu",
     total with Huber and Tukey biweight (bisquare) psi-function.
 }
 \details{
+    Package \pkg{survey} must be loaded in order to use the functions.
+
     The (robust) ratio predictor of the population total or mean is
     computed in two steps.
     \itemize{

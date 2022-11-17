@@ -21,6 +21,8 @@ svyreg(formula, design, var = NULL, na.rm = FALSE)
     Weighted least squares estimator of regression
 }
 \details{
+    Package \pkg{survey} must be loaded in order to use the functions.
+
     \code{svyreg} computes the regression coefficients by weighted least
     squares.
 

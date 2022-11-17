@@ -21,7 +21,9 @@ svytotal_trimmed(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE)
     Weighted trimmed population mean and total.
 }
 \details{
-\describe{
+    Package \pkg{survey} must be loaded in order to use the functions.
+
+    \describe{
     \item{Characteristic.}{Population mean or total. Let \eqn{\mu} denote
         the estimated trimmed population mean; then, the estimated trimmed
         total is given by \eqn{\hat{N} \mu}{Nhat \mu} with
