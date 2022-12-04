@@ -1,6 +1,12 @@
 **If you are viewing this file on CRAN, please check [latest news on GitHub](https://github.com/tobiasschoch/robsurvey/blob/master/NEWS.md) where the formatting is also better.**
 
-# robsurvey VERSION 0.5-1
+# robsurvey VERSION 0.5-2 (2022-12-04)
+
+## BUG FIX
+
+Fixed a bug in the C function `wquant0`. For the special case of samples of size 2, the weighted quantile (other than the median) was wrong if the data were sorted in descending order. (Thanks to Ryota Suzuki, who detected the bug, [Issue #1](https://github.com/tobiasschoch/robsurvey/issues/1)).
+
+# robsurvey VERSION 0.5-1 (2022-11-17)
 
 ## CHANGE
 

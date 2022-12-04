@@ -1,6 +1,6 @@
 /* weighted quantile and selection of k-th largest element
 
-   Copyright (C) 2020 Tobias Schoch (e-mail: tobias.schoch@gmail.com)
+   Copyright (C) 2020-2022 Tobias Schoch (e-mail: tobias.schoch@gmail.com)
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -116,11 +116,16 @@ void wquant0(double *array, double *weights, double sum_w, int lo, int hi,
     debug_print_data(array, weights, lo, hi, "init");
     #endif
 
-    if (hi <= lo)               // case: n = 1
+    if (hi <= lo) {              // case: n = 1
+        *result = array[lo];
         return;
+    }
 
     if (hi - lo == 1) {         // case: n = 2
         double one_minus = 1.0 - prob;
+
+        if (array[lo] > array[hi])
+            swap2(array, weights, lo, hi);
 
         if (is_equal(one_minus * weights[lo], prob * weights[hi]))
             *result = (array[lo] + array[hi]) / 2.0;
