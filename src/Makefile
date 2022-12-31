@@ -1,7 +1,7 @@
 CC         = gcc.exe
 CFLAGS     = -std=gnu99 -O3
 
-R_DIR      = C:/"Program Files"/R/R-4.2.1
+R_DIR      = C:/"Program Files"/R/R-4.2.2
 R_C_HEADER = $(R_DIR)/include
 DLL_BLAS   = $(R_DIR)/bin/x64/Rblas.dll
 DLL_LAPACK = $(R_DIR)/bin/x64/Rlapack.dll
