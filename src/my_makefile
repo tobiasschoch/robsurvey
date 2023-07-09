@@ -1,0 +1,25 @@
+CC         = gcc
+CFLAGS     = -std=gnu99 -O3 -fPIC
+R_DIR      = /usr/lib64/R
+R_C_HEADER = $(R_DIR)/include
+DLL_BLAS   = $(R_DIR)/lib/libRblas.so
+DLL_LAPACK = $(R_DIR)/lib/libRlapack.so
+DLL_R      = $(R_DIR)/lib/libR.so
+
+# Link
+OBJ = wquantile.o mallows.o zeroin.o huber2.o trimmedwinsorized.o \
+		psifunctions.o robsurvey_error.o regression.o regression_cov.o \
+		regression_scale.o
+
+robsurvey.so : $(OBJ)
+	$(CC) -shared -o $@ -L $(DLL_BLAS) $(DLL_LAPACK) $(DLL_R) $(OBJ)
+
+# Compile
+%.o : %.c
+	$(CC) -Wall -pedantic -Wstrict-prototypes -I $(R_C_HEADER) -c -o \
+	$@ $< $(CFLAGS)
+
+# Housekeeping
+.PHONY: clean
+clean:
+	rm $(OBJ) robsurvey.so
