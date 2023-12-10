@@ -1,5 +1,25 @@
 **If you are viewing this file on CRAN, please check [latest news on GitHub](https://github.com/tobiasschoch/robsurvey/blob/master/NEWS.md) where the formatting is also better.**
 
+# robsurvey VERSION 0.6 (2023-12-10)
+
+This release of the package fixes a number of issues that were brought to our attention by an anonymous reviewer.
+
+## BUG FIX
+
+Function `huber2()` erroneously returned `NA` if the initial scale estimate was less than `DBL_EPSILON` (i.e., zero in floating-point arithmetics) although not zero in real arithmetics. After removing the unnecessary  `scale < DBL_EPSILON` check, the function behaves as expected.
+
+## CHANGES
+
+* R-core has been added to the list of intellectual property owners with the roles `c("cph", ctb")` for `zeroin2.c` (see `DESCRIPTION` file).
+* Automated tests have been part of the [GitHub](https://github.com/tobiasschoch/robsurvey) repo since the first commit. However, the tests were not shipped with the source package. Now, the tests are included in the source package.
+* Function `robsvyreg()` is not exported to the namespace anymore because it is regarded as an internal function (not to be called by users).
+
+## MISC
+
+* Many of the help files have been updated and expanded.
+* Since version 0.3, the functions `svyreg_huber()` and `svyreg_tukey()` are deprecated but have been kept for compatibility reasons. The deprecated functions are now equipped with a call to `.Deprecated()` and are documented separately in `help("robsurvey-deprecated")`.
+* Some of the R and C code has been cleaned up; the `NAMESPACE` file has been consolidated; symbols of shared objects are now registered using `src/init.c` (this file has previously been called `robsurvey_init.c`) and loaded by `useDynLib()` as R objects (not character strings), whose names are pre-fixed by `"C_"` for reasons of transparency.
+
 # robsurvey VERSION 0.5-2 (2022-12-04)
 
 ## BUG FIX
@@ -87,7 +107,7 @@ The `summary()` method for objects of class `formula` has been replaced by `svys
 
 ## BUG FIX
 
-For designs with unequal probability sampling, the variance estimates of the robust estimators of mean and total are now identical with the estimates of `survey::svymean()` and `survey::svytotal()` if the tuning constant is `k = Inf` or `LB = 0` and `UB = 1`
+For designs with unequal probability sampling, the variance estimates of the robust estimators of mean and total are now identical with the estimates of `survey::svymean()` and `survey::svytotal()` if the tuning constant is `k = Inf` or `LB = 0` and `UB = 1`.
 
 ## MISC
 
