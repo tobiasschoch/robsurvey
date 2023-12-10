@@ -33,12 +33,10 @@ Ruffieux, C., Paccaud, F. and Marazzi, A. (2000). Comparing rules for
     truncating hospital length of stay. \emph{Casemix Quarterly} \bold{2}.
 }
 \examples{
-data(losdata)
+head(losdata)
 
-\dontrun{
-# survey design for losdata (pkg survey is required)
+# define the survey design
 library(survey)
 dn <- svydesign(ids = ~1, fpc = ~fpc, weights = ~weight, data = losdata)
-}
 }
 \keyword{datasets}

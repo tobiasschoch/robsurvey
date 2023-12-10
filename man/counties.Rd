@@ -33,12 +33,10 @@ Lohr, S. L. (1999). \emph{Sampling: Design and Analysis},
     Pacific Grove (CA): Duxbury Press.
 }
 \examples{
-data(counties)
+head(counties)
 
-\dontrun{
-# survey design for counties data (pkg survey is required)
+# define the survey design
 library(survey)
 dn <- svydesign(ids = ~1, fpc = ~fpc, weights = ~weights, data = counties)
-}
 }
 \keyword{datasets}

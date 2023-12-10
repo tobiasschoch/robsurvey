@@ -26,7 +26,8 @@ svytotal_dalen(x, design, censoring, type = "Z2", na.rm = FALSE,
     \code{\link{weighted_mean_dalen}} for further details.
 }
 \details{
-    Package \pkg{survey} must be loaded in order to use the functions.
+    Package \pkg{survey} must be attached to the search path in order to use
+    the functions (see \code{\link{library}} or \code{\link{require}}).
 
     \describe{
         \item{Methods/ types}{\code{type = "Z2"} or \code{type = "Z3"}; see

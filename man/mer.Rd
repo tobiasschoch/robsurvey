@@ -25,7 +25,8 @@ mer(object, verbose = TRUE, max_k = 10, init = 1, method = "Brent",
     \code{\link{mse}}, of the estimator under consideration.
 }
 \details{
-    Package \pkg{survey} must be loaded in order to use the functions.
+    Package \pkg{survey} must be attached to the search path in order to use
+    the functions (see \code{\link{library}} or \code{\link{require}}).
 
     MER-estimators are available for the methods \code{\link{svymean_huber}},
     \code{\link{svytotal_huber}}, \code{\link{svymean_tukey}} and

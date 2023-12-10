@@ -75,13 +75,11 @@ Tillé, Y. and Matei, A. (2021). \emph{sampling: Survey Sampling}.
     \code{\link{MU284pps}}
 }
 \examples{
-data(MU284strat)
+head(MU284strat)
 
-\dontrun{
-# survey design for counties data (pkg survey is required)
+# define the survey design
 library(survey)
 dn <- svydesign(ids = ~LABEL, strata = ~Stratum, fpc = ~fpc,
     weights = ~weights, data = MU284strat)
-}
 }
 \keyword{datasets}

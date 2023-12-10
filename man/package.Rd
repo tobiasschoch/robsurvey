@@ -88,6 +88,10 @@
             \code{\link{svyratio_huber}} and \code{\link{svyratio_tukey}}
 
     }
+    Note: The functions \code{\link{svyreg_huber}} and
+    \code{\link{svyreg_tukey}} are deprecated, use instead
+    \code{\link{svyreg_huberM}} and \code{\link{svyreg_tukeyM}}, respectively;
+    see also \link{robsurvey-deprecated}.
 }
 \section{Robust Generalized Regression (GREG) and Ratio Prediction of the
         Population Mean and Total}{

@@ -32,7 +32,8 @@ svytotal_k_winsorized(x, design, k, na.rm = FALSE, trim_var = FALSE)
     Weighted winsorized mean and total
 }
 \details{
-    Package \pkg{survey} must be loaded in order to use the functions.
+    Package \pkg{survey} must be attached to the search path in order to use
+    the functions (see \code{\link{library}} or \code{\link{require}}).
 
     \describe{
         \item{Characteristic.}{Population mean or total. Let \eqn{\mu}

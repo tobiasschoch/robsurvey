@@ -25,6 +25,6 @@ Maronna, R. A., Martin, R. D., Yohai, V. J. and Salibián-Barrera, M.
     \doi{10.1002/9781119214656}
 }
 \examples{
-data(flour)
+head(flour)
 }
 \keyword{datasets}

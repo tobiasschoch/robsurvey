@@ -37,7 +37,8 @@ robweights(object)
     Methods and utility functions for objects of class \code{svystat_rob}.
 }
 \details{
-    Package \pkg{survey} must be loaded in order to use the functions.
+    Package \pkg{survey} must be attached to the search path in order to use
+    the functions (see \code{\link{library}} or \code{\link{require}}).
 
     Utility functions:
     \itemize{
