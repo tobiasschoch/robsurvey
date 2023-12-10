@@ -2,8 +2,8 @@
 weighted_mean_dalen <- function(x, w, censoring, type = "Z2", info = FALSE,
     na.rm = FALSE, verbose = TRUE)
 {
-    res <- robsurvey::weighted_total_dalen(x, w, censoring, type, na.rm,
-        verbose, info = TRUE)
+    res <- weighted_total_dalen(x, w, censoring, type, na.rm, verbose,
+        info = TRUE)
     if (is.na(res$estimate))
         return(NA)
     res$characteristic <- "mean"

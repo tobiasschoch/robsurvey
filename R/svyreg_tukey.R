@@ -32,8 +32,7 @@ svyreg_tukeyM <- function(formula, design, k, var = NULL, na.rm = FALSE,
 svyreg_tukey <- function(formula, design, k, var = NULL, na.rm = FALSE,
     verbose = TRUE, ...)
 {
-    warning("Function 'svyreg_tukey' is deprecated; use instead
-        'svyreg_tukeyM'", call. = FALSE)
+    .Deprecated("svyreg_tukeyM")
     tmp <- svyreg_tukeyM(formula, design, k, var, na.rm, verbose, ...)
     tmp$call <- match.call()
     tmp

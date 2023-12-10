@@ -35,10 +35,9 @@
     design, class = NULL, ...)
 {
     structure(list(characteristic = characteristic,
-        estimator = list(string = string, ...),
-        estimate = stats::setNames(NA, yname), variance = NA,
-        residuals = NA, model = NA, design = design, call = call),
-        class = c("svystat_rob", class))
+        estimator = list(string = string, ...), estimate = setNames(NA, yname),
+        variance = NA, residuals = NA, model = NA, design = design,
+        call = call), class = c("svystat_rob", class))
 }
 # summary method for robust survey statistic object
 summary.svystat_rob <- function(object, digits = max(3L, getOption("digits") -
@@ -61,9 +60,9 @@ summary.svystat_rob <- function(object, digits = max(3L, getOption("digits") -
         cat("Algorithm performance:\n")
         if (object$optim$converged) {
             cat("  converged in", object$optim$niter, "iterations\n")
-	        cat(paste0("  with residual scale ", ifelse(object$optim$used_iqr,
-                "(weighted IQR): ", "(weighted MAD): "),
-	            format(object$scale, digits = digits), "\n\n"))
+	        cat(paste0("  with residual scale (weighted ",
+                if (object$optim$used_iqr) "IQR" else "MAD", "): ",
+                format(object$scale, digits = digits), "\n\n"))
         } else {
 	        cat("  FAILURE of convergence in", object$optim$niter,
 	            " iterations\n\n")

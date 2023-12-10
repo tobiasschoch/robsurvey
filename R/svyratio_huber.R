@@ -3,7 +3,7 @@ svyratio_huber <- function(numerator, denominator, design, k,
     var = denominator, na.rm = FALSE, asym = FALSE, verbose = TRUE, ...)
 {
     stopifnot(inherits(numerator, "formula"), inherits(denominator, "formula"))
-    res <- svyreg_huberM(stats::as.formula(paste0(numerator[[2]], "~ -1 +",
+    res <- svyreg_huberM(as.formula(paste0(numerator[[2]], "~ -1 +",
         denominator[[2]])), design, k, var, na.rm, asym, verbose, ...)
     names(res$estimate) <- paste0(numerator[[2]], "/", denominator[[2]])
     res$call <- match.call()
@@ -17,7 +17,7 @@ svyratio_tukey <- function(numerator, denominator, design, k,
     var = denominator, na.rm = FALSE, verbose = TRUE, ...)
 {
     stopifnot(inherits(numerator, "formula"), inherits(denominator, "formula"))
-    res <- svyreg_tukeyM(stats::as.formula(paste0(numerator[[2]], "~ -1 +",
+    res <- svyreg_tukeyM(as.formula(paste0(numerator[[2]], "~ -1 +",
         denominator[[2]])), design, k, var, na.rm, verbose, ...)
     names(res$estimate) <- paste0(numerator[[2]], "/", denominator[[2]])
     res$call <- match.call()

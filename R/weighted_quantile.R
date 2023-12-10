@@ -8,9 +8,9 @@ weighted_quantile <- function(x, w, probs, na.rm = FALSE)
         stop("Argument 'probs' not in [0, 1]\n", call. = FALSE)
     res <- NULL
     for (i in 1:length(probs)) {
-        tmp <- .C("wquantile", x = as.double(dat$x), w = as.double(dat$w),
+        tmp <- .C(C_wquantile, x = as.double(dat$x), w = as.double(dat$w),
 	        n = as.integer(dat$n), probs = as.double(probs[i]),
-	        q = as.double(numeric(1)), PACKAGE = "robsurvey")
+	        q = as.double(numeric(1)))
         res <- c(res, tmp$q)
     }
     names(res) <- paste0(probs * 100, "%")

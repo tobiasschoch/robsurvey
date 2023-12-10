@@ -28,8 +28,8 @@ if (mode == "help") {
 #-------------------------------------------------------------------------------
 PKG <- "robsurvey"
 if (.Platform$OS.type == "unix") {
-	PKG_SOURCE <- "/mnt/c/my/code"
-	PKG_ROOT <- "/mnt/c/my/tmp"
+	PKG_SOURCE <- "/home/tobias/Code"
+	PKG_ROOT <- "/home/tobias/tmp"
 } else {
 	PKG_SOURCE <- "C:/My/code"
 	PKG_ROOT <- "C:/My/tmp"
@@ -103,7 +103,7 @@ if (mode == "test") {
     cat(rep("-", 40), "\n")
     for (i in 1:length(test_cases)) {
         cat(test_cases[i], "\n")
-        system(paste0("Rscript.exe ", test_cases[i]))
+        system(paste0("Rscript ", test_cases[i]))
         cat(rep("-", 40), "\n\n")
     }
 }

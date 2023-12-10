@@ -125,13 +125,13 @@ svytotal_k_winsorized <- function(x, design, k, na.rm = FALSE,
     x <- as.double(x); w <- as.double(w)
     qs <- weighted_quantile(x, w, probs = c(LB, UB))
     # density estimates at 'LB' and '1 - UB'
-    bwd <- KernSmooth::dpik(x, scalest = "minim", level = 2, kernel = "normal",
+    bwd <- dpik(x, scalest = "minim", level = 2, kernel = "normal",
         canonical = FALSE, gridsize = ngrid, range.x = range(x),
         truncate = TRUE)
     at <- seq(min(x), max(x), length = ngrid)
     nx <- rowsum(c(rep(0, ngrid), w), c(1:ngrid, findInterval(x, at)))
-    dens <- KernSmooth::locpoly(rep(1, ngrid), nx * ngrid / (diff(range(x)) *
-        sum(w)), binned = TRUE, bandwidth = bwd, range.x = range(x))
+    dens <- locpoly(rep(1, ngrid), nx * ngrid / (diff(range(x)) * sum(w)),
+        binned = TRUE, bandwidth = bwd, range.x = range(x))
     f_LB <- dens$y[min(which(dens$x >= qs[1]))]
     f_UB <- dens$y[max(which(dens$x <= qs[2]))]
     # influence function

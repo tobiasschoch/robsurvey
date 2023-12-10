@@ -45,11 +45,6 @@ svytotal_tukey <- function(x, design, k, type = "rwm", na.rm = FALSE,
     design <- dat$design
     res <- weighted_total_tukey(dat$y, dat$w, k, type, TRUE, FALSE, verbose,
         ...)
-    # modify residuals for type 'rht' (only for variance estimation)
-    r <- if (type == "rht")
-        sqrt(res$model$var) * res$model$y - res$estimate
-    else
-        res$residuals
    # compute variance
     infl <- res$robust$robweights * dat$y * dat$w
     res$variance <- survey::svyrecvar(infl, design$cluster, design$strata,

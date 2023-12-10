@@ -9,8 +9,8 @@ svymean_huber <- function(x, design, k, type = "rwm", asym = FALSE,
     if (dat$failure)
         return(.new_svystat_rob("mean", dat$yname,
             paste0("Huber M-estimator (type = ", type,
-            ifelse(asym, "; asym. psi", ""), ")"), match.call(),
-            design, "mest", type = type, psi = ifelse(asym, 1, 0),
+            if (asym) "; asym. psi" else "", ")"), match.call(),
+            design, "mest", type = type, psi = if (asym) 1 else 0,
             psi_fun = "Huber", k = k))
     # otherwise
     design <- dat$design
@@ -42,19 +42,14 @@ svytotal_huber <- function(x, design, k, type = "rwm", asym = FALSE,
     if (dat$failure)
         return(.new_svystat_rob("total", dat$yname,
             paste0("Huber M-estimator (type = ", type,
-            ifelse(asym, "; asym. psi", ""), ")"), match.call(),
-            design, "mest", type = type, psi = ifelse(asym, 1, 0),
+            if (asym) "; asym. psi" else "", ")"), match.call(),
+            design, "mest", type = type, psi = if (asym) 1 else 0,
             psi_fun = "Huber", k = k))
     # otherwise
     design <- dat$design
     res <- weighted_total_huber(dat$y, dat$w, k, type, asym, TRUE, FALSE,
         verbose, ...)
-    # modify residuals for type 'rht' (only for variance estimation)
-    r <- if (type == "rht")
-        sqrt(res$model$var) * res$model$y - res$estimate
-    else
-        res$residuals
-   # compute variance
+    # compute variance
     infl <- res$robust$robweights * dat$y * dat$w
     res$variance <- survey::svyrecvar(infl, design$cluster, design$strata,
         design$fpc, postStrata = design$postStrata)

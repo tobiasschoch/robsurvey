@@ -6,9 +6,11 @@ weighted_mean_huber <- function(x, w, k, type = "rwm", asym = FALSE,
     if (type == "rhj")
         type <- "rwm"
 
-    string <- paste0("Huber M-estimator (type = ", type, ifelse(asym,
-        "; asym. psi", ""), ")")
-    psi <- ifelse(asym, 1, 0)
+    string <- paste0("Huber M-estimator (type = ", type,
+        if (asym) "; asym. psi" else "", ")")
+
+    psi <- if (asym) 1 else 0
+
     dat <- .check_data_weights(x, w, na.rm)
     # empty data
     if (is.null(dat))
@@ -17,9 +19,10 @@ weighted_mean_huber <- function(x, w, k, type = "rwm", asym = FALSE,
     if (dat$n == 1) {
         if (info)
             return(list(characteristic = "mean", estimator = list(string =
-                string, type = type, psi = psi, psi_fun = ifelse(asym,
-                "asymHuber", "Huber"), k = k), estimate = dat$x, scale = NA,
-                residuals = 0, model = list(y = dat$x, w = dat$w),
+                string, type = type, psi = psi,
+                psi_fun = if (asym) "asymHuber" else "Huber", k = k),
+                estimate = dat$x, scale = NA, residuals = 0,
+                model = list(y = dat$x, w = dat$w),
                 call = match.call()))
         else
             return(dat$x)

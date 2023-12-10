@@ -18,7 +18,7 @@
 
     # check for missing values
     if (check_NA) {
-        cc <- stats::complete.cases(x, w)
+        cc <- complete.cases(x, w)
         if (sum(cc) != n) {
             if (na.rm) {
                 x <- x[cc]
@@ -47,12 +47,11 @@
         if (length(all.vars(f)) > 1)
             stop("Formula must refer to one r.h.s. variable only\n",
                 call. = FALSE)
-        tf <- stats::terms.formula(f)
+        tf <- terms.formula(f)
         if(attr(tf, "response") != 0)
             stop("The LHS of the formula must not be defined\n", call. = FALSE)
         yname <- attr(tf, "term.labels")
-        y <- stats::model.frame(f, design$variables,
-            na.action = stats::na.pass)[, 1]
+        y <- model.frame(f, design$variables, na.action = na.pass)[, 1]
     } else {
         if (is.character(f[1]) && length(f) == 1) {
 	        if (f %in% names(design$variables)) {
@@ -74,7 +73,7 @@
     # check for missing values
     failure <- FALSE
     if (check_NA) {
-        is_not_NA <- stats::complete.cases(y, w)
+        is_not_NA <- complete.cases(y, w)
         if (sum(is_not_NA) != length(y)) {
             if (na.rm) {
                 y <- y[is_not_NA]
@@ -104,15 +103,14 @@
     }
 
     # extract the variables
-    mf <- stats::model.frame(formula, design$variables,
-        na.action = stats::na.pass)
-    mt <- stats::terms(mf)
+    mf <- model.frame(formula, design$variables, na.action = na.pass)
+    mt <- terms(mf)
     response <- attr(mt, "response")
     if (response == 0)
         stop("The LHS of formula is not defined\n", call. = FALSE)
     yname <- names(mf)[response]
-    y <- as.numeric(stats::model.response(mf))
-    x <- stats::model.matrix(mt, mf)
+    y <- as.numeric(model.response(mf))
+    x <- model.matrix(mt, mf)
     w <- as.numeric(1 / design$prob)
     n <- length(y)
 
@@ -121,7 +119,7 @@
 
     # NA treatment
     failure <- FALSE
-    is_not_NA <- stats::complete.cases(y, x, w, var, xwgt)
+    is_not_NA <- complete.cases(y, x, w, var, xwgt)
     if (sum(is_not_NA) != n) {
         if (na.rm) {
 	        x <- x[is_not_NA, ]
@@ -166,9 +164,9 @@
     if (any(is.na(x))) {
         rep(NA, n)
     } else {
-        tmp <- .C("psi_function", x = as.double(x), k = as.double(k),
+        tmp <- .C(C_psi_function, x = as.double(x), k = as.double(k),
             n = as.integer(n), psi = as.integer(type),
-            res = as.double(numeric(n)), PACKAGE = "robsurvey")
+            res = as.double(numeric(n)))
         tmp$res
     }
 }
@@ -186,11 +184,11 @@
     # https://github.com/HenrikBengtsson/R.methodsS3/ => pkgStartupMessage.R
     tryCatch({
         # The default, if not found
-        quietly <- formals(base::library)$quietly
+        quietly <- formals(library)$quietly
 
         # Identify the environment/frame of interest by making sure
         # it at least contains all the arguments of source().
-        argsToFind <- names(formals(base::library))
+        argsToFind <- names(formals(library))
 
         # Scan the call frames/environments backwards...
         srcfileList <- list()
@@ -223,7 +221,7 @@
      88   Y8. .8P 88  dP  \\__ \\ |_| | |   \\ V /  __/ |_| |
      88    'Y8P'  88e8P'  |___/\\__,_|_|    \\_/ \\___|\\__, |
                                                      __/ |
-                                       version 0.5-2 |___/\n
+                                         version 0.6 |___/\n
 type: package?robsurvey to learn more
 use:  library(robsurvey, quietly = TRUE) to suppress the
       start-up message\n")

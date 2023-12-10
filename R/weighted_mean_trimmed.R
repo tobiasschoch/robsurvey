@@ -13,9 +13,9 @@ weighted_mean_trimmed <- function(x, w, LB = 0.05, UB = 1 - LB, info = FALSE,
     if (UB > 1)
         stop("Argument 'UB' must not be > 1!", call. = FALSE)
 
-    tmp <- .C("wtrimmedmean", x = as.double(dat$x), w = as.double(dat$w),
+    tmp <- .C(C_wtrimmedmean, x = as.double(dat$x), w = as.double(dat$w),
         lb = as.double(LB), ub = as.double(UB), loc = as.double(numeric(1)),
-        n = as.integer(dat$n), success = as.integer(1), PACKAGE = "robsurvey")
+        n = as.integer(dat$n), success = as.integer(1))
 
     if (tmp$success == 0) {
         warning("Division by zero\n", call. = FALSE)

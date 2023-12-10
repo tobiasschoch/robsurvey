@@ -29,9 +29,8 @@ mer <- function(object, verbose = TRUE, max_k = 10, init = 1, method = "Brent",
     }
 
     # minimize mse
-    opt <- stats::optim(init, estimated_mse, est = est, ref = ref,
-        method = method, lower = range_k[1], upper = range_k[2],
-        control = optim_args)
+    opt <- optim(init, estimated_mse, est = est, ref = ref, method = method,
+        lower = range_k[1], upper = range_k[2], control = optim_args)
 
     if (verbose)
         cat(paste0("Search interval: [", range_k[1], ", ",

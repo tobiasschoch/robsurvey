@@ -1,16 +1,14 @@
 # summary method for survey.design object
 svysummary <- function(object, design, na.rm = FALSE, ...)
 {
-    mf <- stats::model.frame(object, design$variables, na.action =
-        stats::na.pass)
+    mf <- model.frame(object, design$variables, na.action = na.pass)
     n <- nrow(mf)
-    xname <- names(mf)
     y <- mf[[1]]
     w <- as.numeric(1 / design$prob)
 
     if (is.factor(y)) {
         dat <- data.frame(y = y, w = w)
-        cc <- stats::complete.cases(dat)
+        cc <- complete.cases(dat)
         if (sum(cc) != n) {
 	        if (na.rm)
 	            dat <- dat[cc, ]

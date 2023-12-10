@@ -11,7 +11,7 @@
 # check data for missing values
 .check_line_data <- function(x, y, w, na.rm = FALSE)
 {
-    ok <- stats::complete.cases(x, y, w)
+    ok <- complete.cases(x, y, w)
     if (sum(ok) < length(x)) {
         if (na.rm) {
 	        x <- x[ok]
@@ -31,7 +31,7 @@ weighted_line <- function(x, y = NULL, w, na.rm = FALSE, iter = 1)
         stop("Argument 'w' (weights) is missing, with no default.\n")
 
     if (inherits(x, "formula")) {
-        mf <- stats::model.frame(x)
+        mf <- model.frame(x)
         y <- mf[, 1]
         x <- mf[, -1]
     }
@@ -86,7 +86,7 @@ weighted_median_line <- function(x, y = NULL, w, type = "slopes",
             call. = FALSE)
 
     if (inherits(x, "formula")) {
-        dat <- grDevices::xy.coords(x)
+        dat <- xy.coords(x)
         x <- dat$x
         y <- dat$y
     }
@@ -132,7 +132,7 @@ weighted_median_ratio <- function(x, y = NULL, w, na.rm = FALSE)
             call. = FALSE)
 
     if (inherits(x, "formula")) {
-        dat <- grDevices::xy.coords(x)
+        dat <- xy.coords(x)
         y <- dat$y
         x <- dat$x
     }
@@ -149,7 +149,6 @@ weighted_median_ratio <- function(x, y = NULL, w, na.rm = FALSE)
 
     # fitted.varlues and residuals
     yhat <- ratio * x
-    r <- y - yhat
 
     structure(list(call = match.call(), coefficients = ratio,
         residuals = y - yhat, fitted.values = yhat), class = "medline")

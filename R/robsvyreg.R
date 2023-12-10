@@ -33,7 +33,7 @@ robsvyreg <- function(x, y, w, k, psi, type, xwgt, var = NULL,
                 call. = FALSE)
     }
 
-    tmp <- .C("rwlslm", x = as.double(x), y = as.double(y), w = as.double(w),
+    tmp <- .C(C_rwlslm, x = as.double(x), y = as.double(y), w = as.double(w),
         resid = as.double(numeric(n)), robwgt = as.double(numeric(n)),
         xwgt = as.double(xwgt), n = as.integer(n), p = as.integer(p),
         k = as.double(k), beta = as.double(beta),
@@ -41,7 +41,7 @@ robsvyreg <- function(x, y, w, k, psi, type, xwgt, var = NULL,
         maxit = as.integer(ctrl$maxit), psi = as.integer(psi),
         type = as.integer(type), init = as.integer(init_flag),
         mad_center = as.integer(ctrl$mad_center), verbose = as.integer(verbose),
-        used_iqr = as.integer(0), PACKAGE = "robsurvey")
+        used_iqr = as.integer(0))
     # Note: The residuals are (y - x*beta) / sqrt(var)
 
     converged <- (tmp$maxit != 0)
@@ -56,7 +56,7 @@ robsvyreg <- function(x, y, w, k, psi, type, xwgt, var = NULL,
         estimate = tmp$beta, scale = tmp$scale,
         robust = list(robweights = tmp$robwgt, outliers = 1 * (tmp$robwgt < 1)),
         optim = list(converged = converged,
-            niter = ifelse(tmp$maxit == 0, ctrl$maxit, tmp$maxit),
+            niter = if (tmp$maxit == 0) ctrl$maxit else tmp$maxit,
             tol = ctrl$tol, used_iqr = tmp$used_iqr),
         residuals = tmp$resid, model = model, design = NA, call = match.call())
 }

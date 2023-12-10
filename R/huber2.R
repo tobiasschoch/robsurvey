@@ -7,22 +7,26 @@ huber2 <- function(x, w, k = 1.5, na.rm = FALSE, maxit = 50, tol = 1e-4,
     if (is.null(dat))
         return(NA)
 
-    kk <- ifelse(is.finite(k), k, k_Inf)
+    kk <- if (is.finite(k))
+        k
+    else
+        k_Inf
 
-    tmp <- .C("whuber2", x = as.double(dat$x), w = as.double(dat$w),
+    tmp <- .C(C_whuber2, x = as.double(dat$x), w = as.double(dat$w),
         robwgt = as.double(numeric(dat$n)), k = as.double(kk),
         loc = as.double(numeric(1)), scale = as.double(numeric(1)),
         n = as.integer(dat$n), maxit = as.integer(maxit), tol = as.double(tol),
-        df_cor = as.integer(df_cor), success = as.integer(0),
-        PACKAGE = "robsurvey")
+        df_cor = as.integer(df_cor), success = as.integer(0))
 
     if (tmp$success == 0) {
         warning("Initial estimate of scale (IQR) is zero\n", call. = FALSE)
         return(NA)
     }
 
-    if (tmp$maxit == maxit)
+    if (tmp$maxit == maxit) {
         warning(paste0("Failure of convergence\n"), call. = FALSE)
+        tmp$loc <- NA; tmp$scale <- NA; tmp$robwgt <- rep(NA, dat$n)
+    }
 
     if (info) {
         res <- list(characteristic = "mean",

@@ -10,7 +10,7 @@ svyreg_huberM <- function(formula, design, k, var = NULL, na.rm = FALSE,
         return(structure(list(characteristic = "regression",
             estimator = list(
                 string = paste0("Survey regression M-estimator (Huber psi k = ",
-                k, ")"), psi = ifelse(asym, 1, 0), psi_fun = "Huber", k = k),
+                k, ")"), psi = if (asym) 1 else 0, psi_fun = "Huber", k = k),
             estimate = rep(NA, NCOL(dat$x)),
             scale = NA, robust = NA, optim = NA, residuals = NA,
             model = list(x = dat$x, y = dat$y, w = dat$w, var = dat$var,
@@ -19,7 +19,7 @@ svyreg_huberM <- function(formula, design, k, var = NULL, na.rm = FALSE,
             design = dat$design, terms = dat$terms, call = match.call()),
             class = "svyreg_rob"))
     # otherwise
-    res <- robsvyreg(dat$x, dat$y, dat$w, k, ifelse(asym, 1, 0), 0, dat$xwgt,
+    res <- robsvyreg(dat$x, dat$y, dat$w, k, if (asym) 1 else 0, 0, dat$xwgt,
         dat$var, verbose, ...)
     res$design <- dat$design
     res$terms <- dat$terms
@@ -32,8 +32,7 @@ svyreg_huberM <- function(formula, design, k, var = NULL, na.rm = FALSE,
 svyreg_huber <- function(formula, design, k, var = NULL, na.rm = FALSE,
     asym = FALSE, verbose = TRUE, ...)
 {
-    warning("Function 'svyreg_huber' is deprecated; use instead
-        'svyreg_huberM'", call. = FALSE)
+    .Deprecated("svyreg_huberM")
     tmp <- svyreg_huberM(formula, design, k, var, na.rm, asym, verbose, ...)
     tmp$call <- match.call()
     tmp
@@ -59,7 +58,7 @@ svyreg_huberGM <- function(formula, design, k, type = c("Mallows", "Schweppe"),
         return(structure(list(characteristic = "regression",
             estimator = list(string = paste0("Survey regression ", type,
                 " GM-estimator (Huber psi, k = ", k, ")"),
-                psi = ifelse(asym, 1, 0), psi_fun = "Huber", k = k),
+                psi = if (asym) 1 else 0, psi_fun = "Huber", k = k),
             estimate = rep(NA, NCOL(dat$x)),
             scale = NA, robust = NA, optim = NA, residuals = NA,
             model = list(x = dat$x, y = dat$y, w = dat$w, var = dat$var,
@@ -68,7 +67,7 @@ svyreg_huberGM <- function(formula, design, k, type = c("Mallows", "Schweppe"),
             design = dat$design, terms = dat$terms, call = match.call()),
             class = "svyreg_rob"))
     # otherwise
-    res <- robsvyreg(dat$x, dat$y, dat$w, k, ifelse(asym, 1, 0), type_int,
+    res <- robsvyreg(dat$x, dat$y, dat$w, k, if (asym) 1 else 0, type_int,
         dat$xwgt, dat$var, verbose, ...)
     res$design <- dat$design
     res$terms <- dat$terms

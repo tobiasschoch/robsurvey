@@ -58,7 +58,10 @@ print.svyreg_rob <- function(x, digits = max(3L, getOption("digits") - 3L), ...)
                 quote = FALSE)
         }
         cat("\nScale estimate:", format(signif(x$scale, digits)),
-            ifelse(x$optim$used_iqr, "(weighted IQR)", "(weighted MAD)"), "\n")
+            if (!is.null(x$optim$used_iqr))
+                if (x$optim$used_iqr) "(weighted IQR)" else "(weighted MAD)"
+            else
+                "", "\n")
     } else {
         cat("\nIRWLS not converged in", x$optim$niter, "iterations (with tol =",
             x$optim$tol, ")\n")
@@ -76,8 +79,8 @@ summary.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
         print(NA)
         cat("\nCoefficients:\n")
         NAs <- object$estimate
-        stats::printCoefmat(cbind(Estimate = NAs, 'Std. Error' = NAs,
-            't value' = NAs, 'Pr(>|t|)' = NAs), digits = digits)
+        printCoefmat(cbind(Estimate = NAs, 'Std. Error' = NAs, 't value' = NAs,
+            'Pr(>|t|)' = NAs), digits = digits)
         cat("\nResidual standard error:", NA, "on", NA, "degrees of freedom\n")
         return(invisible(object))
     }
@@ -108,9 +111,9 @@ summary.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
         est <- object$estimate
         se <- sqrt(diag(res$covmat))
         tval <- est / se
-        stats::printCoefmat(cbind(Estimate = est, 'Std. Error' = se,
-            't value' = tval, 'Pr(>|t|)' = 2 * stats::pt(abs(tval), N - p,
-            lower.tail = FALSE)), digits = digits)
+        printCoefmat(cbind(Estimate = est, 'Std. Error' = se, 't value' = tval,
+            'Pr(>|t|)' = 2 * pt(abs(tval), N - p, lower.tail = FALSE)),
+            digits = digits)
 
         cat("\nResidual standard error:", format(signif(res$stddev, digits)),
             "on", N - p, "degrees of freedom\n")
@@ -170,14 +173,13 @@ SE.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
     # robustness weights
     ui <- robweights(object)
 
-    tmp <- .C("cov_reg_model", resid = as.double(object$residuals),
+    tmp <- .C(C_cov_reg_model, resid = as.double(object$residuals),
         x = as.double(object$model$x), xwgt = as.double(object$model$xwgt),
         robwgt = as.double(ui), w = as.double(object$model$w), k = as.double(k),
         scale = as.double(object$scale), scale = as.double(numeric(1)),
         n = as.integer(object$model$n), p = as.integer(object$model$p),
         psi = as.integer(object$estimator$psi),
-        type = as.integer(object$estimator$type), ok = as.integer(0),
-        PACKAGE = "robsurvey")
+        type = as.integer(object$estimator$type), ok = as.integer(0))
     p <- object$model$p
     if (tmp$ok == 0) {
         warning("Covariance estimation failed", call. = FALSE)
@@ -220,13 +222,12 @@ SE.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
         object$design$strata, object$design$fpc)
 
     # covariance matrix (takes Q matrix as one of its argument)
-    tmp <- .C("cov_reg_design", x = as.double(x), w = as.double(w),
+    tmp <- .C(C_cov_reg_design, x = as.double(x), w = as.double(w),
         xwgt = as.double(xwgt), resid = as.double(r),
         scale = as.double(object$scale), k = as.double(k),
         psi = as.integer(object$estimator$psi),
         type = as.integer(object$estimator$type), n = as.integer(n),
-        p = as.integer(p), ok = as.integer(0), mat = as.double(Q),
-        PACKAGE = "robsurvey")
+        p = as.integer(p), ok = as.integer(0), mat = as.double(Q))
 
     if (tmp$ok == 0) {
         warning("Covariance estimation failed", call. = FALSE)

@@ -13,10 +13,10 @@ svyreg <- function(formula, design, var = NULL, na.rm = FALSE)
     }
     if (n < p)
         stop("Number of observations cannot be smaller than no. of variables\n")
-    tmp <- .C("wlslm", x = as.double(x), y = as.double(y),
+    tmp <- .C(C_wlslm, x = as.double(x), y = as.double(y),
         w = as.double(dat$w), resid = as.double(numeric(n)),
         n = as.integer(n), p = as.integer(p), beta = as.double(numeric(p)),
-        scale = as.double(numeric(1)), PACKAGE = "robsurvey")
+        scale = as.double(numeric(1)))
     # Note: The residuals are (y - x*beta) / sqrt(var)
     names(tmp$beta) <- colnames(dat$x)
     # return

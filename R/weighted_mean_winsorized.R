@@ -12,9 +12,9 @@ weighted_mean_winsorized <- function(x, w, LB = 0.05, UB = 1 - LB,
     if (UB > 1)
         stop("Argument 'UB' must not be > 1!", call. = FALSE)
 
-     tmp <- .C("wwinsorizedmean", x = as.double(dat$x), w = as.double(dat$w),
+     tmp <- .C(C_wwinsorizedmean, x = as.double(dat$x), w = as.double(dat$w),
         lb = as.double(LB), ub = as.double(UB), loc = as.double(numeric(1)),
-        n = as.integer(dat$n), PACKAGE = "robsurvey")
+        n = as.integer(dat$n))
 
     if (info) {
         resid <- dat$x - tmp$loc
@@ -46,9 +46,9 @@ weighted_mean_k_winsorized <- function(x, w, k, info = FALSE, na.rm = FALSE)
     if (k < 1)
         stop("k must larger than 1\n", call. = FALSE)
 
-    tmp <- .C("wkwinsorizedmean", x = as.double(dat$x), w = as.double(dat$w),
+    tmp <- .C(C_wkwinsorizedmean, x = as.double(dat$x), w = as.double(dat$w),
         k = as.integer(k), loc = as.double(numeric(1)),
-        n = as.integer(n), prob = as.double(numeric(1)), PACKAGE = "robsurvey")
+        n = as.integer(n), prob = as.double(numeric(1)))
 
     if (info) {
         res <- list(characteristic = "mean",
