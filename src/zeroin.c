@@ -87,7 +87,7 @@
  *             f(ax) and f(bx) are available anyway : */
 
 double R_zeroin2(			/* An estimate of the root */
-	double ax,				/* Left border | of the range	*/
+    double ax,				/* Left border | of the range	*/
     double bx,				/* Right border| the root is seeked*/
     double fa, double fb,		/* f(a), f(b) */
     double (*f)(double x, void *info),	/* Function under investigation	*/
