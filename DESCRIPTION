@@ -1,7 +1,7 @@
 Package: robsurvey
 Type: Package
 Title: Robust Survey Statistics Estimation
-Version: 0.5-2
+Version: 0.6
 Authors@R: c(person(
         given = "Beat",
         family = "Hulliger",
@@ -17,7 +17,12 @@ Authors@R: c(person(
         given = "Martin",
         family = "Sterchi",
         email = "martin.sterchi@fhnw.ch",
-        role = c("ctr", "com")))
+        role = c("ctr", "com")),
+    person(
+        given = "R-core",
+        email = "R-core@R-project.org",
+        role = c("ctb", "cph"),
+        comment = "for zeroin2.c"))
 Description: Robust (outlier-resistant) estimators of finite population
     characteristics like of means, totals, ratios, regression, etc. Available
     methods are M- and GM-estimators of regression, weight reduction,
