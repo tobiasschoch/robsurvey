@@ -1,12 +1,18 @@
-\name{weighted_mean_huber}
+\name{weighted-m-estimator}
 \alias{weighted_mean_huber}
 \alias{weighted_total_huber}
-\title{Weighted Huber Mean and Total (bare-bone functions)}
+\alias{weighted_mean_tukey}
+\alias{weighted_total_tukey}
+\title{Weighted Huber and Tukey Mean and Total (bare-bone functions)}
 \usage{
 weighted_mean_huber(x, w, k, type = "rwm", asym = FALSE, info = FALSE,
     na.rm = FALSE, verbose = TRUE, ...)
 weighted_total_huber(x, w, k, type = "rwm", asym = FALSE, info = FALSE,
     na.rm = FALSE, verbose = TRUE, ...)
+weighted_mean_tukey(x, w, k, type = "rwm", info = FALSE, na.rm = FALSE,
+    verbose = TRUE, ...)
+weighted_total_tukey(x, w, k, type = "rwm", info = FALSE, na.rm = FALSE,
+    verbose = TRUE, ...)
 }
 \arguments{
     \item{x}{\code{[numeric vector]} data.}
@@ -27,9 +33,11 @@ weighted_total_huber(x, w, k, type = "rwm", asym = FALSE, info = FALSE,
         \code{maxit}: maxit number of iterations, etc.).}
 }
 \description{
-    Weighted Huber \emph{M}-estimator of the mean and total (bare-bone
-    function with limited functionality; see \code{\link{svymean_huber}} and
-    \code{\link{svytotal_huber}} for more capable methods)
+    Weighted Huber and Tukey \emph{M}-estimator of the mean and total
+    (bare-bone function with limited functionality; see
+    \code{\link{svymean_huber}},  \code{\link{svymean_tukey}},
+    \code{\link{svytotal_huber}}, and \code{\link{svytotal_tukey}} for more
+    capable methods)
 }
 \details{
     \describe{
@@ -59,14 +67,17 @@ weighted_total_huber(x, w, k, type = "rwm", asym = FALSE, info = FALSE,
         \item{Variance estimation.}{See the related but more capable
             functions:
             \itemize{
-                \item \code{\link{svymean_huber}},
-                \item \code{\link{svytotal_huber}}.
+                \item \code{\link{svymean_huber}} and
+                    \code{\link{svymean_tukey}},
+                \item \code{\link{svytotal_huber}} and
+                    \code{\link{svytotal_tukey}}.
             }
         }
-        \item{Psi-function.}{By default, the \code{Huber} psi-function is
-            used in the specification of the M-estimator. An asymmetric
-            version of the Huber psi-function can be used by setting
-            \code{asym = TRUE}.}
+        \item{Psi-function.}{By default, the \code{Huber} or \code{Tukey}
+            psi-function are used in the specification of the M-estimators. For
+            the Huber estimator, an asymmetric version of the Huber
+            psi-function can be used by setting the argument
+            \code{asym = TRUE} in the function call.}
     }
 }
 \section{Failure of convergence}{
@@ -100,8 +111,6 @@ Hulliger, B. (1995). Outlier Robust Horvitz-Thompson Estimators.
 }
 \seealso{
 \link[=robsurvey-package]{Overview} (of all implemented functions)
-
-\code{\link{weighted_mean_tukey}} and \code{\link{weighted_total_tukey}}
 }
 \examples{
 data(workplace)

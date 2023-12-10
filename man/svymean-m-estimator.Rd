@@ -1,12 +1,17 @@
-\name{svymean_huber}
+\name{svymean-m-estimator}
 \alias{svymean_huber}
 \alias{svytotal_huber}
-\title{Weighted Huber Mean and Total -- Robust Horvitz-Thompson Estimator}
+\alias{svymean_tukey}
+\alias{svytotal_tukey}
+\title{Weighted Huber and Tukey Mean and Total (M-Estimator) -- Robust
+    Horvitz-Thompson Estimator}
 \usage{
 svymean_huber(x, design, k, type = "rwm", asym = FALSE, na.rm = FALSE,
     verbose = TRUE, ...)
 svytotal_huber(x, design, k, type = "rwm", asym = FALSE, na.rm = FALSE,
     verbose = TRUE, ...)
+svymean_tukey(x, design, k, type = "rwm", na.rm = FALSE, verbose = TRUE, ...)
+svytotal_tukey(x, design, k, type = "rwm", na.rm = FALSE, verbose = TRUE, ...)
 }
 \arguments{
     \item{x}{a one-sided \code{[formula]}, e.g., \code{~myVariable}.}
@@ -26,15 +31,17 @@ svytotal_huber(x, design, k, type = "rwm", asym = FALSE, na.rm = FALSE,
         maxit number of iterations, etc.; see \code{\link{svyreg_control}}).}
 }
 \description{
-    Weighted Huber \emph{M}-estimator of the population mean and total (robust
-    Horvitz-Thompson estimator)
+    Weighted Huber and Tukey \emph{M}-estimator of the population mean and
+    total (robust Horvitz-Thompson estimator)
 }
 \details{
-    Package \pkg{survey} must be loaded in order to use the functions.
+    Package \pkg{survey} must be attached to the search path in order to use
+    the functions (see \code{\link{library}} or \code{\link{require}}).
 
     \describe{
         \item{Methods/ types}{\code{type = "rht"} or \code{type = "rwm"}; see
-            \code{\link{weighted_mean_huber}} for more details.}
+            \code{\link{weighted_mean_huber}} or
+            \code{\link{weighted_mean_tukey}} for more details.}
         \item{Variance estimation.}{Taylor linearization (residual variance
             estimator).}
         \item{Utility functions}{\code{\link[=svystat_rob]{summary}},
@@ -43,8 +50,10 @@ svytotal_huber(x, design, k, type = "rwm", asym = FALSE, na.rm = FALSE,
             \code{\link[=svystat_rob]{residuals}},
             \code{\link[=svystat_rob]{fitted}},
             \code{\link[=svystat_rob]{robweights}}.}
-        \item{Bare-bone functions}{See \code{\link{weighted_mean_huber}} and
-            \code{\link{weighted_total_huber}}.}
+        \item{Bare-bone functions}{See \code{\link{weighted_mean_huber}}
+           \code{\link{weighted_mean_tukey}},
+           \code{\link{weighted_total_huber}}, and
+           \code{\link{weighted_total_tukey}}.}
     }
 }
 \section{Failure of convergence}{
@@ -62,8 +71,6 @@ Hulliger, B. (1995). Outlier Robust Horvitz-Thompson Estimators.
 }
 \seealso{
 \link[=robsurvey-package]{Overview} (of all implemented functions)
-
-\code{\link{svymean_tukey}} and \code{\link{svytotal_tukey}}
 }
 \examples{
 data(workplace)

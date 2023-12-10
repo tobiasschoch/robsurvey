@@ -1,17 +1,12 @@
-\name{svyreg_tukey}
-\alias{svyreg_tukey}
-\alias{svyreg_tukeyM}
-\alias{svyreg_tukeyGM}
-\title{Tukey Biweight Robust Survey Regression M- and GM-Estimator}
+\name{svyreg_huberM}
+\alias{svyreg_huberM}
+\alias{svyreg_huberGM}
+\title{Huber Robust Survey Regression M- and GM-Estimator}
 \usage{
-svyreg_tukeyM(formula, design, k, var = NULL, na.rm = FALSE, verbose = TRUE,
-    ...)
-svyreg_tukeyGM(formula, design, k, type = c("Mallows", "Schweppe"),
-    xwgt, var = NULL, na.rm = FALSE, verbose = TRUE, ...)
-
-# deprecated
-svyreg_tukey(formula, design, k, var = NULL, na.rm = FALSE, verbose = TRUE,
-    ...)
+svyreg_huberM(formula, design, k, var = NULL, na.rm = FALSE, asym = FALSE,
+    verbose = TRUE, ...)
+svyreg_huberGM(formula, design, k, type = c("Mallows", "Schweppe"),
+    xwgt, var = NULL, na.rm = FALSE, asym = FALSE, verbose = TRUE, ...)
 }
 \arguments{
     \item{formula}{a \code{[formula]} object (i.e., symbolic description
@@ -26,36 +21,37 @@ svyreg_tukey(formula, design, k, var = NULL, na.rm = FALSE, verbose = TRUE,
         \code{NULL}).}
     \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should
         be removed before the computation proceeds (default: \code{FALSE}).}
+    \item{asym}{\code{[logical]} toggle for asymmetric Huber psi-function
+        (default: \code{FALSE}).}
     \item{verbose}{\code{[logical]} indicating whether additional information
             is printed to the console (default: \code{TRUE}).}
     \item{\dots}{additional arguments passed to the method (e.g., \code{maxit}:
         maxit number of iterations, etc.).}
     \item{type}{\code{[character]} \code{"Mallows"} or \code{"Schweppe"}.}
-    \item{xwgt}{\code{[numerical vector]} or \code{[NULL]} of weights in the
-        design space (default: \code{NULL}); \code{xwgt} is only relevant for
-        \code{type = "Mallows"} or \code{type = "Schweppe"}.}
+    \item{xwgt}{\code{[numerical vector]} or \code{[NULL]} of weights in
+        the design space (default: \code{NULL}); \code{xwgt} is only
+        relevant for \code{type = "Mallows"} or \code{type = "Schweppe"}.}
 }
 \description{
-    \code{svyreg_tukeyM} and \code{svyreg_tukeyGM} compute, respectively,
+    \code{svyreg_huberM} and \code{svyreg_huberGM} compute, respectively,
     a survey weighted \emph{M}- and \emph{GM}-estimator of regression using
-    the biweight Tukey psi-function. Use \code{svyreg_tukeyM} not
-    \code{svyreg_tukey} because the latter is deprecated but is kept for
-    compatibility reasons.
+    the Huber psi-function.
 }
 \details{
-    Package \pkg{survey} must be loaded in order to use the functions.
+    Package \pkg{survey} must be attached to the search path in order to use
+    the functions (see \code{\link{library}} or \code{\link{require}}).
 
-    \code{svyreg_tukeyM} and \code{svyreg_tukeyGM} compute, respectively,
-    M- and GM-estimates of regression by iteratively re-weighted least
-    squares (IRWLS).  The estimate of regression scale is (by default)
+    \code{svyreg_huberM} and \code{svyreg_huberGM} compute, respectively,
+    \emph{M}- and \emph{GM}-estimates of regression by iteratively re-weighted
+    least squares (IRWLS).  The estimate of regression scale is (by default)
     computed as the (normalized) weighted median of absolute deviations
     from the weighted median (MAD; see \code{\link{weighted_mad}}) for
     each IRWLS iteration. If the weighted MAD is zero (or nearly so),
-    the scale is computed as the (normalized) weighted
-    interquartile range (IQR).
+    the scale is computed as the (normalized) weighted interquartile
+    range (IQR).
     \describe{
         \item{M-estimator}{
-            The regression M-estimator \code{svyreg_tukeyM} is robust against
+            The regression M-estimator \code{svyreg_huberM} is robust against
             residual outliers (granted that the tuning constant \code{k} is
             chosen appropriately).
         }
@@ -94,14 +90,16 @@ svyreg_tukey(formula, design, k, var = NULL, na.rm = FALSE, verbose = TRUE,
 \seealso{
 \link[=robsurvey-package]{Overview} (of all implemented functions)
 
+\link[=robsurvey-package]{Overview} (of all implemented functions)
+
 \code{\link[=svyreg_rob]{summary}}, \code{\link[=svyreg_rob]{coef}},
 \code{\link[=svyreg_rob]{residuals}}, \code{\link[=svyreg_rob]{fitted}},
 \code{\link[=svyreg_rob]{SE}} and \code{\link[=svyreg_rob]{vcov}}
 
-\code{\link[=svyreg_rob]{plot}} for regression diagnostic plot methods.
+\code{\link[=svyreg_rob]{plot}} for regression diagnostic plot methods
 
-Other robust estimating methods \code{\link{svyreg_huberM}} and
-\code{\link{svyreg_huberGM}}
+Other robust estimating methods \code{\link{svyreg_tukeyM}} and
+\code{\link{svyreg_tukeyGM}}
 }
 \examples{
 data(workplace)
@@ -111,8 +109,8 @@ library(survey)
 dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
     data = workplace)
 
-# Compute regression M-estimate with Tukey bisquare psi-function
-m <- svyreg_tukeyM(payroll ~ employment, dn, k = 8)
+# Compute regression M-estimate with Huber psi-function
+m <- svyreg_huberM(payroll ~ employment, dn, k = 8)
 
 # Regression inference
 summary(m)
