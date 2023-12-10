@@ -1,9 +1,18 @@
-importFrom("grDevices", "as.graphicsAnnot", "dev.flush", "dev.hold",
-    "dev.interactive", "devAskNewPage", "extendrange")
-importFrom("graphics", "abline", "mtext", "panel.smooth", "par", "points",
-    "strheight", "text", "title")
-importFrom("stats", "fitted", "qqnorm", "residuals")
+# load shared objects; registration is via src/init.c file; the names of the
+# registered symbols have prefix "C_" such that they are easily recognizable
+useDynLib(robsurvey, .registration = TRUE, .fixes = "C_")
 
+# import
+importFrom("grDevices", as.graphicsAnnot, dev.flush, dev.hold,
+    dev.interactive, devAskNewPage, extendrange, xy.coords)
+importFrom("graphics", abline, mtext, panel.smooth, par, points,
+    strheight, text, title, plot)
+importFrom("stats", fitted, qqnorm, residuals, printCoefmat, pt,
+    setNames, optim, complete.cases, model.frame, model.matrix,
+    model.response, na.pass, terms, terms.formula, as.formula)
+importFrom("KernSmooth", dpik, locpoly) 
+
+# export
 S3method(print,svystat_rob)
 S3method(print,svyreg_rob)
 
@@ -60,7 +69,6 @@ export(svytotal_tukey)
 export(svytotal_winsorized)
 export(svytotal_dalen)
 
-export(robsvyreg)
 export(svyreg)
 export(svyreg_control)
 
@@ -109,16 +117,3 @@ export(mer)
 export(mse)
 
 export(simpsonWgt)
-
-importFrom(graphics,plot)
-
-useDynLib(robsurvey)
-useDynLib(robsurvey,whuber2)
-useDynLib(robsurvey,rwlslm)
-useDynLib(robsurvey,wlslm)
-useDynLib(robsurvey,wquantile)
-useDynLib(robsurvey,wtrimmedmean)
-useDynLib(robsurvey,wwinsorizedmean)
-useDynLib(robsurvey,wkwinsorizedmean)
-useDynLib(robsurvey,cov_reg_model)
-useDynLib(robsurvey,cov_reg_design)
