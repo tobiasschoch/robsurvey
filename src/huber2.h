@@ -1,4 +1,5 @@
 #include <R.h>
+#include <Rmath.h>
 #include "wquantile.h"
 #include "constants.h"
 

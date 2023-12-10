@@ -90,18 +90,10 @@ void whuber2(double* restrict x, double* restrict w, double* restrict robwgt,
     double p75 = 0.75, x75 = 0.0;
     wquantile_noalloc(x, w, work_2n, n, &p25, &x25);
     wquantile_noalloc(x, w, work_2n, n, &p75, &x75);
-    scale0 = (x75 - x25) * iqr_NORM_CONSTANT;
 
-    // stop if IQR is zero
-    if (scale0 < DBL_EPSILON) {
-        *success = 0;
-        *loc = 0.0;
-        *scale = 0.0;
-        *maxit = 0;
-        for (int i = 0; i < *n; i++)
-            robwgt[i] = 0.0;
-        goto clean_up;
-    }
+    // initial scale estimate (it can be 0.0; then, the iterative updating
+    // algorithm does not converge, hence fails gently)
+    scale0 = (x75 - x25) * iqr_NORM_CONSTANT;
 
     // compute the weight total
     double wtotal = 0.0;
@@ -163,7 +155,6 @@ void whuber2(double* restrict x, double* restrict w, double* restrict robwgt,
     for (int i = 0; i < *n; i++)
         robwgt[i] = _WGT_HUBER((x[i] - *loc) / *scale, *k);
 
-clean_up:
     Free(x_wins); Free(work_2n);
 }
 
@@ -174,11 +165,9 @@ clean_up:
 static inline double kappa_huber(const double k)
 {
     if (k < 10.0) {
-        double pdf_k = exp(-_POWER2(k) / 2.0) / 2.5066282746;
-
-        // lower tail of cdf; i.e., 1 - Phi(.)
-        double cdf_k = 0.5 - 0.5 * erf(k / 1.4142135623);
-        return 1.0 - 2.0 * (k * pdf_k + (1.0 - k * k) * cdf_k);
+        double pdf_k = dnorm(k, 0.0, 1.0, 0);       // std. normal p.d.f.
+        double cdf_k = pnorm(k, 0.0, 1.0, 1, 0);    // std. normal c.d.f.
+        return 2.0 * (_POWER2(k) * (1.0 - cdf_k) + cdf_k - 0.5 - k * pdf_k);
     } else {
         return 1.0;
     }
