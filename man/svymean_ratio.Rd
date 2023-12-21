@@ -102,11 +102,22 @@ dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
 # Robust ratio M-estimator with Huber psi-function
 rat <- svyratio_huber(~payroll, ~ employment, dn, k = 5)
 
-# Robust ratio predictor
+# Summary of the ratio estimate
+summary(rat)
+
+# Diagnostic plots of the ration/regression M-estimate (e.g.,
+# standardized residuals against fitted values)
+plot(rat, which = 1L)
+
+# Plot of the robustness weights of the ratio/regression M-estimate
+# against its residuals
+plot(residuals(rat), robweights(rat))
+
+# Robust ratio predictor of the population mean
 m <- svymean_ratio(rat, total = 1001233, N = 90840)
 m
 
-# Summarize
+# Summary of the ratio estimate of the population mean
 summary(m)
 
 # Extract estimate

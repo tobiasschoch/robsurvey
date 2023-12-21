@@ -86,8 +86,11 @@ svytotal_huber(~employment, dn, k = 9, type = "rht")
 # Robust weighted M-estimator of the population mean
 m <- svymean_huber(~employment, dn, k = 12, type = "rwm")
 
-# Summarize
+# Summary statistic
 summary(m)
+
+# Plot of the robustness weights of the M-estimate against its residuals
+plot(residuals(m), robweights(m))
 
 # Extract estimate
 coef(m)

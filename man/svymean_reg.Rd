@@ -181,6 +181,17 @@ dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
 # Robust regression M-estimator with Huber psi-function
 reg <- svyreg_huberM(payroll ~ employment, dn, k = 3)
 
+# Summary of the regression M-estimate
+summary(reg)
+
+# Diagnostic plots of the regression M-estimate (e.g., standardized
+# residuals against fitted values)
+plot(reg, which = 1L)
+
+# Plot of the robustness weights of the regression M-estimate against
+# its residuals
+plot(residuals(reg), robweights(reg))
+
 # ADU (asymptotically design unbiased) estimator
 m <- svytotal_reg(reg, totals = 1001233, 90840, type = "ADU")
 m
@@ -190,7 +201,7 @@ m
 m <- svymean_reg(reg, totals = 1001233, 90840, type = "huber", k = 20)
 m
 
-# Summarize
+# Summary of the robust GREG estimate
 summary(m)
 
 # Extract estimate

@@ -82,4 +82,10 @@ SE(m)
 
 # Extract variance/ covariance matrix
 vcov(m)
+
+# Diagnostic plots (e.g., standardized residuals against fitted values)
+plot(m, which = 1L)
+
+# Plot of the robustness weights of the M-estimate against its residuals
+plot(residuals(m), robweights(m))
 }

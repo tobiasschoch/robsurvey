@@ -153,13 +153,20 @@ dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
     data = workplace)
 
 # Compute regression M-estimate with Huber psi-function
-m <- svyreg_huberM(payroll ~ employment, dn, k = 8)
+m <- svyreg_huberM(payroll ~ employment, dn, k = 14)
 
-# utility functions
+# Diagnostic plots (e.g., standardized residuals against fitted values)
+plot(m, which = 1L)
+
+# Plot of the robustness weights of the M-estimate against its residuals
+plot(residuals(m), robweights(m))
+
+# Utility functions
 summary(m)
 coef(m)
 SE(m)
 vcov(m)
 residuals(m)
 fitted(m)
+robweights(m)
 }

@@ -54,3 +54,44 @@ robweights(object)
         \item \code{fitted} extracts the fitted values
     }
 }
+\seealso{
+    \code{\link{svymean_dalen}}, \code{\link{svymean_huber}},
+    \code{\link{svymean_ratio}}, \code{\link{svymean_reg}},
+    \code{\link{svymean_tukey}}, \code{\link{svymean_trimmed}},
+    \code{\link{svymean_winsorized}}
+
+    \code{\link{svytotal_dalen}}, \code{\link{svytotal_huber}},
+    \code{\link{svytotal_ratio}}, \code{\link{svytotal_reg}},
+    \code{\link{svytotal_tukey}}, \code{\link{svytotal_trimmed}},
+    \code{\link{svytotal_winsorized}}
+}
+\examples{
+data(workplace)
+
+library(survey)
+# Survey design for simple random sampling without replacement
+dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
+    data = workplace)
+
+# Estimated one-sided k winsorized population total (i.e., k = 2 observations
+# are winsorized at the top of the distribution)
+wtot <- svytotal_k_winsorized(~employment, dn, k = 2)
+
+# Show summary statistic of the estimated total
+summary(wtot)
+
+# Estimated mean square error (MSE)
+mse(wtot)
+
+# Estimate, std. err., variance, and the residuals
+coef(wtot)
+SE(wtot)
+vcov(wtot)
+residuals(wtot)
+
+# M-estimate of the total (Huber psi-function; tuning constant k = 3)
+mtot <- svytotal_huber(~employment, dn, k = 45)
+
+# Plot of the robustness weights of the M-estimate against its residuals
+plot(residuals(mtot), robweights(mtot))
+}

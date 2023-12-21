@@ -30,8 +30,8 @@ weighted_median_line(x, y = NULL, w, type = "slopes", na.rm = FALSE)
                 }
                 \item{\code{type = "products"}:}{The slope is computed as
                     \deqn{b1 = \frac{m\big([y - m(y,w)][x - m(x,w)], w\big)}
-                    {m\big([x - m(x,w)]^2, w\big)}.}
-                    {m([y - m(y, w)][x - m(x, w)], w) / m([x - m(x, w)]^2, w).}
+                        {m\big([x - m(x,w)]^2, w\big)}.}{%
+                        m([y - m(y, w)][x - m(x, w)], w) / m([x - m(x, w)]^2, w).}
                 }
             }
         }

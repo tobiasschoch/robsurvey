@@ -72,4 +72,7 @@ coef(m)
 
 # Extract variance/ covariance matrix
 vcov(m)
+
+# Diagnostic plots (e.g., Normal Q-Q-plot)
+plot(m, which = 2L)
 }
