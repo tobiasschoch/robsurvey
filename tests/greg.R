@@ -3,27 +3,8 @@
 #       differ from the implementation based on survey::calibrate
 suppressPackageStartupMessages(library("survey"))
 library("robsurvey", quietly = TRUE)
+source("check_functions.R")
 
-# test on floating point equality
-all_equal <- function(target, current, label,
-    tolerance = sqrt(.Machine$double.eps), scale = NULL,
-    check.attributes = FALSE)
-{
-    if (missing(label))
-        stop("Argument 'label' is missing\n")
-    res <- all.equal(target, current, tolerance, scale,
-        check.attributes = check.attributes)
-    if (is.character(res))
-        cat(paste0(label, ": ", res, "\n"))
-}
-# check function for coef() and SE()
-check <- function(ref, est, dataset, characteristic)
-{
-    all_equal(as.numeric(coef(ref)), as.numeric(coef(est)),
-        paste0(dataset, ": GREG: ", characteristic, ": coef"))
-    all_equal(as.numeric(SE(ref)), as.numeric(SE(est)),
-        paste0(dataset, ": GREG: ", characteristic, ": SE"))
-}
 #===============================================================================
 # 1 MU284strat data (weights are calibrated to N)
 #===============================================================================
@@ -74,7 +55,7 @@ ref <- svymean(~RMT85, calibrate(dn, f, c("(Intercept)" = N, aux_totals),
 est <- svymean_reg(svyreg(f, dn, var = ~ P85), aux_totals, N, type = "ADU")
 check(ref, est, dataset, "mean with intercept: hetero")
 
-# GREG mean without intercept
+# GREG mean without intercept, see NOTE:
 if (FALSE) {
     ref <- svymean(~RMT85, calibrate(dn, f0, aux_totals))
     est <- svymean_reg(svyreg(f0, dn), aux_totals, N, type = "ADU")
@@ -124,14 +105,14 @@ ref <- svymean(~payroll, calibrate(dn, f, c("(Intercept)" = N, aux_totals)))
 est <- svymean_reg(svyreg(f, dn), aux_totals, N, type = "ADU")
 check(ref, est, dataset, "mean with intercept")
 
-# GREG mean without intercept
+# GREG mean without intercept; see NOTE:
 if (FALSE) {
     ref <- svymean(~payroll, calibrate(dn, f0, aux_totals))
     est <- svymean_reg(svyreg(f0, dn), aux_totals, N, type = "ADU")
     check(ref, est, dataset, "mean w/o intercept")
 }
 
-# GREG mean without intercept + heteroscedasticity (ratio estimator)
+# GREG mean without intercept + heteroscedasticity (ratio estimator); see NOTE:
 if (FALSE) {
     ref <- svymean(~payroll, calibrate(dn, f0, aux_totals,
         variance = workplace$employment))
@@ -186,14 +167,14 @@ ref <- svymean(~payroll, calibrate(dn, f, c("(Intercept)" = N, aux_totals)))
 est <- svymean_reg(svyreg(f, dn), aux_totals, N, type = "ADU")
 check(ref, est, paste0(dataset, " (not calibrated)"), "mean with intercept")
 
-# GREG mean without intercept
+# GREG mean without intercept; see NOTE:
 if (FALSE) {
     ref <- svymean(~payroll, calibrate(dn, f0, aux_totals))
     est <- svymean_reg(svyreg(f0, dn), aux_totals, N, type = "ADU")
     check(ref, est, paste0(dataset, " (not calibrated)"), "mean w/o intercept")
 }
 
-# GREG mean without intercept + heteroscedasticity (ratio estimator)
+# GREG mean without intercept + heteroscedasticity (ratio estimator); see NOTE:
 if (FALSE) {
     ref <- svymean(~payroll, calibrate(dn, f0, aux_totals,
         variance = wp$employment))
@@ -202,43 +183,3 @@ if (FALSE) {
     check(ref, est, paste0(dataset, " (not calibrated)"),
         "mean w/o intercept: hetero")
 }
-
-#===============================================================================
-# Appendix: Old reference implemention
-#===============================================================================
-# Not used because we test against the functions in the survey package
-# greg <- function(formula, design, aux, type = c("total", "mean"),
-#     gweights = TRUE)
-# {
-#     type <- match.arg(type, c("total", "mean"))
-#     mf <- stats::model.frame(formula, design$variables)
-#     w <- weights(design)
-#     x <- stats::model.matrix(stats::terms(mf), mf)
-#     m <- lm.wfit(x, as.numeric(stats::model.response(mf)), w)
-#     res <- if (gweights) {
-#         t_hat <- colSums(w * x)
-#         if (type == "mean")
-#             t_hat <- t_hat / sum(w)
-#         g <- 1 + as.numeric(t(aux - t_hat) %*% tcrossprod(backsolve(qr.R(m$qr),
-#             diag(m$rank))) %*% t(x))
-#         g * residuals(m)
-#     } else {
-#         residuals(m)
-#     }
-#     dn_update <- update(dn, res = res)
-#     est <- sum(aux * coef(m))
-#     switch(type,
-#         "total" = {
-#             est <- est + sum(w * residuals(m))
-#             se <- SE(svytotal(~res, dn_update))
-#             attr(est, "statistic") <- "total"
-#         },
-#         "mean" = {
-#             est <- est + sum(w * residuals(m)) / sum(w)
-#             se <- SE(svymean(~res, dn_update))
-#             attr(est, "statistic") <- "mean"
-#         })
-#     attr(est, "var") <- se^2
-#     class(est) <- "svystat"
-#     est
-# }

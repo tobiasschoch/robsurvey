@@ -1,6 +1,6 @@
 **If you are viewing this file on CRAN, please check [latest news on GitHub](https://github.com/tobiasschoch/robsurvey/blob/master/NEWS.md) where the formatting is also better.**
 
-# robsurvey VERSION 0.6 (2023-12-10)
+# robsurvey VERSION 0.6 (2023-12-21)
 
 This release of the package fixes a number of issues that were brought to our attention by an anonymous reviewer.
 

@@ -1,141 +1,88 @@
-library("testthat")
 suppressPackageStartupMessages(library(survey))
 library("robsurvey", quietly = TRUE)
+source("check_functions.R")
 
 #===============================================================================
 # 1 MU284 data
 #===============================================================================
-data("MU284strat")
+data("MU284strat"); data_name <- "MU284"
 dn <- svydesign(ids = ~LABEL, strata = ~Stratum, fpc = ~fpc,
     weights = ~weights, data = MU284strat)
+
+# Reference estimates (against which we check)
 sm <- svymean(~RMT85, dn)
 st <- svytotal(~RMT85, dn)
+
 #-------------------------------------------------------------------------------
 # Huber M-estimator
-est_m <- svymean_huber(~RMT85, dn, k = Inf)
-expect_equal(as.numeric(SE(est_m)), as.numeric(SE(sm)),
-    label = "MU284: mean: Huber: SE")
-expect_equal(as.numeric(coef(est_m)), as.numeric(coef(sm)),
-    label = "MU284: mean: Huber: coef")
-est_t <- svytotal_huber(~RMT85, dn, k = Inf)
-expect_equal(as.numeric(SE(est_t)), as.numeric(SE(st)),
-    label = "MU284: total: Huber: SE")
-expect_equal(as.numeric(coef(est_t)), as.numeric(coef(st)),
-    label = "MU284: total: Huber: coef")
+check(sm, svymean_huber(~RMT85, dn, k = Inf), data_name, "svymean_huber")
+check(st, svytotal_huber(~RMT85, dn, k = Inf), data_name, "svytotal_huber")
+
 #-------------------------------------------------------------------------------
 # Tukey M-estimator
-est_m <- svymean_tukey(~RMT85, dn, k = Inf)
-expect_equal(as.numeric(SE(est_m)), as.numeric(SE(sm)),
-    label = "MU284: mean: Tukey: SE")
-expect_equal(as.numeric(coef(est_m)), as.numeric(coef(sm)),
-    label = "MU284: mean: Tukey: coef")
-est_t <- svytotal_tukey(~RMT85, dn, k = Inf)
-expect_equal(as.numeric(SE(est_t)), as.numeric(SE(st)),
-    label = "MU284: total: Tukey: SE")
-expect_equal(as.numeric(coef(est_t)), as.numeric(coef(st)),
-    label = "MU284: total: Tukey: coef")
+check(sm, svymean_tukey(~RMT85, dn, k = Inf), data_name, "svymean_tukey")
+check(st, svytotal_tukey(~RMT85, dn, k = Inf), data_name, "svytotal_tukey")
+
 #-------------------------------------------------------------------------------
 # Trimming
-est_m <- svymean_trimmed(~RMT85, dn, LB = 0, UB = 1)
-expect_equal(as.numeric(SE(est_m)), as.numeric(SE(sm)),
-    label = "MU284: mean: Trimmed: SE")
-expect_equal(as.numeric(coef(est_m)), as.numeric(coef(sm)),
-    label = "MU284: mean: Trimmed: coef")
-est_t <- svytotal_trimmed(~RMT85, dn, LB = 0, UB = 1)
-expect_equal(as.numeric(SE(est_t)), as.numeric(SE(st)),
-    label = "MU284: total: Trimmed: SE")
-expect_equal(as.numeric(coef(est_t)), as.numeric(coef(st)),
-    label = "MU284: total: Trimmed: coef")
+check(sm, svymean_trimmed(~RMT85, dn, LB = 0, UB = 1), data_name,
+    "svymean_trimmed")
+check(st, svytotal_trimmed(~RMT85, dn, LB = 0, UB = 1), data_name,
+    "svytotal_trimmed")
+
 #-------------------------------------------------------------------------------
 # Winsorized
-est_m <- svymean_winsorized(~RMT85, dn, LB = 0, UB = 1)
-expect_equal(as.numeric(SE(est_m)), as.numeric(SE(sm)),
-    label = "MU284: mean: Winsorized: SE")
-expect_equal(as.numeric(coef(est_m)), as.numeric(coef(sm)),
-    label = "MU284: mean: Winsorized: coef")
-est_t <- svytotal_winsorized(~RMT85, dn, LB = 0, UB = 1)
-expect_equal(as.numeric(SE(est_t)), as.numeric(SE(st)),
-    label = "MU284: total: Winsorized: SE")
-expect_equal(as.numeric(coef(est_t)), as.numeric(coef(st)),
-    label = "MU284: total: Winsorized: coef")
+check(sm, svymean_winsorized(~RMT85, dn, LB = 0, UB = 1), data_name,
+    "svymean_winsorized")
+check(st, svytotal_winsorized(~RMT85, dn, LB = 0, UB = 1), data_name,
+    "svytotal_winsorized")
+
 #-------------------------------------------------------------------------------
 # Dalen
-est_m <- svymean_dalen(~RMT85, dn, censoring = 1e10, verbose = FALSE)
-expect_equal(as.numeric(SE(est_m)), as.numeric(SE(sm)),
-    label = "MU284: mean: Dalen: SE")
-expect_equal(as.numeric(coef(est_m)), as.numeric(coef(sm)),
-    label = "MU284: mean: Dalen: coef")
-est_t <- svytotal_dalen(~RMT85, dn, censoring = 1e10, verbose = FALSE)
-expect_equal(as.numeric(SE(est_t)), as.numeric(SE(st)),
-    label = "MU284: total: Dalen: SE")
-expect_equal(as.numeric(coef(est_t)), as.numeric(coef(st)),
-    label = "MU284: total: Dalen: coef")
+check(sm, svymean_dalen(~RMT85, dn, censoring = 1e10, verbose = FALSE),
+    data_name, "svymean_dalen")
+check(st, svytotal_dalen(~RMT85, dn, censoring = 1e10, verbose = FALSE),
+    data_name, "svytotal_dalen")
 
 #===============================================================================
 # 2 workplace data
 #===============================================================================
-data("workplace")
+data("workplace"); data_name <- "workplace"
 dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
     data = workplace)
+
+# Reference estimates (against which we check)
 sm <- svymean(~payroll, dn)
 st <- svytotal(~payroll, dn)
+
 #-------------------------------------------------------------------------------
 # Huber M-estimator
-est_m <- svymean_huber(~payroll, dn, k = Inf)
-expect_equal(as.numeric(SE(est_m)), as.numeric(SE(sm)),
-    label = "workplace: mean: Huber: SE")
-expect_equal(as.numeric(coef(est_m)), as.numeric(coef(sm)),
-    label = "workplace: mean: Huber: coef")
-est_t <- svytotal_huber(~payroll, dn, k = Inf)
-expect_equal(as.numeric(SE(est_t)), as.numeric(SE(st)),
-    label = "workplace: total: Huber: SE")
-expect_equal(as.numeric(coef(est_t)), as.numeric(coef(st)),
-    label = "workplace: total: Huber: coef")
+check(sm, svymean_huber(~payroll, dn, k = Inf), data_name, "svymean_huber")
+check(st, svytotal_huber(~payroll, dn, k = Inf), data_name, "svytotal_huber")
+
 #-------------------------------------------------------------------------------
 # Tukey M-estimator
-est_m <- svymean_tukey(~payroll, dn, k = Inf)
-expect_equal(as.numeric(SE(est_m)), as.numeric(SE(sm)),
-    label = "workplace: mean: Tukey: SE")
-expect_equal(as.numeric(coef(est_m)), as.numeric(coef(sm)),
-    label = "workplace: mean: Tukey: coef")
-est_t <- svytotal_tukey(~payroll, dn, k = Inf)
-expect_equal(as.numeric(SE(est_t)), as.numeric(SE(st)),
-    label = "workplace: total: Tukey: SE")
-expect_equal(as.numeric(coef(est_t)), as.numeric(coef(st)),
-    label = "workplace: total: Tukey: coef")
+check(sm, svymean_tukey(~payroll, dn, k = Inf), data_name, "svymean_tukey")
+check(st, svytotal_tukey(~payroll, dn, k = Inf), data_name, "svytotal_tukey")
+
 #-------------------------------------------------------------------------------
 # Trimming
-est_m <- svymean_trimmed(~payroll, dn, LB = 0, UB = 1)
-expect_equal(as.numeric(SE(est_m)), as.numeric(SE(sm)),
-    label = "workplace: mean: Trimmed: SE")
-expect_equal(as.numeric(coef(est_m)), as.numeric(coef(sm)),
-    label = "workplace: mean: Trimmed: coef")
-est_t <- svytotal_trimmed(~payroll, dn, LB = 0, UB = 1)
-expect_equal(as.numeric(SE(est_t)), as.numeric(SE(st)),
-    label = "workplace: total: Trimmed: SE")
-expect_equal(as.numeric(coef(est_t)), as.numeric(coef(st)),
-    label = "workplace: total: Trimmed: coef")
+check(sm, svymean_trimmed(~payroll, dn, LB = 0, UB = 1), data_name,
+    "svymean_trimmed")
+check(st, svytotal_trimmed(~payroll, dn, LB = 0, UB = 1), data_name,
+    "svytotal_trimmed")
+
 #-------------------------------------------------------------------------------
 # Winsorized
-est_m <- svymean_winsorized(~payroll, dn, LB = 0, UB = 1)
-expect_equal(as.numeric(SE(est_m)), as.numeric(SE(sm)),
-    label = "workplace: mean: Winsorized: SE")
-expect_equal(as.numeric(coef(est_m)), as.numeric(coef(sm)),
-    label = "workplace: mean: Winsorized: coef")
-est_t <- svytotal_winsorized(~payroll, dn, LB = 0, UB = 1)
-expect_equal(as.numeric(SE(est_t)), as.numeric(SE(st)),
-    label = "workplace: total: Winsorized: SE")
-expect_equal(as.numeric(coef(est_t)), as.numeric(coef(st)),
-    label = "workplace: total: Winsorized: coef")
+check(sm, svymean_winsorized(~payroll, dn, LB = 0, UB = 1), data_name,
+    "svymean_winsorized")
+check(st, svytotal_winsorized(~payroll, dn, LB = 0, UB = 1), data_name,
+    "svytotal_winsorized")
+
 #-------------------------------------------------------------------------------
 # Dalen
-est_m <- svymean_dalen(~payroll, dn, censoring = 1e10, verbose = FALSE)
-expect_equal(as.numeric(SE(est_m)), as.numeric(SE(sm)),
-    label = "workplace: mean: Dalen: SE")
-expect_equal(as.numeric(coef(est_m)), as.numeric(coef(sm)),
-    label = "workplace: mean: Dalen: coef")
-est_t <- svytotal_dalen(~payroll, dn, censoring = 1e10, verbose = FALSE)
-expect_equal(as.numeric(SE(est_t)), as.numeric(SE(st)),
-    label = "workplace: total: Dalen: SE")
-expect_equal(as.numeric(coef(est_t)), as.numeric(coef(st)),
-    label = "workplace: total: Dalen: coef")
+check(sm, svymean_dalen(~payroll, dn, censoring = 1e10, verbose = FALSE),
+    data_name, "svymean_dalen")
+check(st, svytotal_dalen(~payroll, dn, censoring = 1e10, verbose = FALSE),
+    data_name, "svytotal_dalen")
+
