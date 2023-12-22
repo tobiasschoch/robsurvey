@@ -144,7 +144,7 @@ The distribution of variable los is skewed to the right (see boxplot), and we se
 
 The outliers visible in the boxplot refer to a few individuals who stayed for a long time in inpatient care. Moreover, we assume that these outliers represent patients in the population that are similar in value (i.e., representative outliers).
 
-```{r, echo = FALSE, fig.height = 2, fig.align = "center"}
+```{r, echo = FALSE, fig.height = 2, fig.align = "center", dpi = 36}
 layout(matrix(1:2, ncol = 2))
 par(mar = c(4, 1, 1, 1))
 svyboxplot(los ~ 1, dn, all.outliers = TRUE, xlab = "los", horizontal = TRUE)
@@ -306,7 +306,7 @@ From a practical point of view, the choice of constant $c$ in Dalén's estimator
 <p>
 It is helpful to plot $w_iy_i$ (weight times los) against $y_i$ (los). The censoring constant $c = 1500$ (see dotted horizontal line) is such that the two largest $(w_iy_i)$'s are censored to 1&#8239;500.
 
-```{r, echo = FALSE, fig.height = 3, fig.width = 5}
+```{r, echo = FALSE, fig.height = 3, fig.width = 5, dpi = 36}
 par(mar = c(4, 4, 1, 0))
 plot(los, weight * los, xlab = "los", ylab = "weight * los")
 abline(h = 1500, lty = 3)
@@ -429,11 +429,11 @@ summary(m)
 ```
 The estimated scale (weighted MAD) can be extracted with the `scale()` function. Additional utility functions are `coef()`, `vcov()`, `SE()`, `residuals()`, `fitted()`, and `robweights()`. The following figure shows a plot of the robustness weights against the residuals. We see that large residuals are downweighted.
 
-```{r, eval = FALSE, fig.align = "center"}
+```{r, eval = FALSE, fig.align = "center", dpi = 36}
 plot(residuals(m), robweights(m))
 ```
 
-```{r, echo = FALSE, fig.height = 3, fig.width = 5, fig.align = "center"}
+```{r, echo = FALSE, fig.height = 3, fig.width = 5, fig.align = "center", dpi = 36}
 par(mar = c(4, 4, 1, 0))
 plot(residuals(m), robweights(m))
 ```

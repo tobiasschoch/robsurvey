@@ -119,7 +119,7 @@ dn
 
 To get a first impression of the distribution of `payroll`, we examine two (design-weighted) boxplots of `payroll` (on raw and logarithmic scale). The boxplots are obtained using function `survey::svyboxplot`.
 
-```{r, echo = FALSE, fig.height = 2, fig.align = "center"}
+```{r, echo = FALSE, fig.height = 2, fig.align = "center", dpi = 36}
 layout(matrix(1:2, ncol = 2))
 par(mar = c(4, 1, 1, 1))
 svyboxplot(payroll~ 1, dn, all.outliers = TRUE, xlab = "payroll", horizontal = TRUE)
@@ -137,7 +137,7 @@ The outliers visible in the boxplot refer to a few large workplaces. Moreover, w
 
 We plotted the sampling weights against the logarithm of `payroll`.
 
-```{r, echo = FALSE, fig.height=4, fig.width=5}
+```{r, echo = FALSE, fig.height = 4, fig.width = 5, dpi = 36}
 par(mar = c(5, 4, 1, 0))
 plot(weights(dn), dn$variables$payroll, ylab = "payroll (log scale)", log = "y",
     panel.first = grid(col = "grey", lty = 2))
@@ -239,11 +239,11 @@ Additional utility functions are:
 
 In the following figure, the robustness weights of object `m` are plotted against the residuals. The Huber RHT *M*-estimator downweights observations at both ends of the residuals' distribution.
 
-```{r, eval = FALSE, fig.align = "center"}
+```{r, eval = FALSE, fig.align = "center", dpi = 36}
 plot(residuals(m), robweights(m))
 ```
 
-```{r, echo = FALSE, out.width="60%", fig.align = "center"}
+```{r, echo = FALSE, out.width="60%", fig.align = "center", dpi = 36}
 par(mar = c(5, 4, 1, 0))
 plot(residuals(m), robweights(m))
 ```

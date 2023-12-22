@@ -138,7 +138,7 @@ dn <- svydesign(ids = ~1, fpc = ~fpc, weights = ~weights,
 
 The figures below show scatterplots of `farmpop` plotted against `numfarm` (in raw and log scale). The scatterplot in the left panel indicates that the variance of `farmpop` increases with larger values of `numfarm` (heteroscedasticity). The same graph but in log-log scale (see right panel) shows an outlier, which is located far from the bulk of the data.
 
-```{r, echo=FALSE, fig.show="hold", out.width="50%"}
+```{r, echo = FALSE, fig.show = "hold", out.width = "50%", dpi = 36}
 plot(farmpop ~ numfarm, dn$variables, xlab = "numfarm", ylab = "farmpop",
     cex.axis = 1.2, cex.lab = 1.4)
 plot(farmpop ~ numfarm, dn$variables, xlab = "numfarm (log)",
@@ -173,7 +173,7 @@ summary(m)
 
 The subsequent figure shows the model diagnostic plot of the standardized residuals vs. fitted values,
 
-```{r, echo=FALSE, fig.show="hold", out.width="50%", fig.align = "center"}
+```{r, echo = FALSE, fig.show = "hold", out.width = "50%", fig.align = "center", dpi = 36}
 plot(m, which = 1)
 ```
 
@@ -230,7 +230,7 @@ The output of the summary method is almost identical with the one of an `lm()` c
 
 The subsequent figure shows the graph for `plot(residuals(m), robweights(m))`. From the graph, we can see by how much the residuals have been downweighted.
 
-```{r, echo=FALSE, fig.show="hold", out.width="50%", fig.align = "center"}
+```{r, echo = FALSE, fig.show = "hold", out.width = "50%", fig.align = "center", dpi = 36}
 plot(residuals(m), robweights(m), cex.axis = 1.2, cex.lab = 1.4)
 ```
 
@@ -287,7 +287,7 @@ xmat <- model.matrix(f, dn_exclude$variables)[, -1]
 
 Below we show the pairwise scatterplots of `pairs(xmat)`. The pairwise distributions are mostly elliptically contoured and show some outliers.
 
-```{r, echo=FALSE, out.width="50%", fig.align = "center"}
+```{r, echo = FALSE, out.width = "50%", fig.align = "center", dpi = 36}
 pairs(xmat)
 ```
 
@@ -315,7 +315,7 @@ if (requireNamespace("wbacon", quietly = TRUE)) {
 
 The boxplot of `dis` shows a couple of observations with large Mahalanobis distance. These observations are considered as potential outliers.
 
-```{r, echo=FALSE, out.width="50%", fig.align = "center"}
+```{r, echo = FALSE, out.width = "50%", fig.align = "center", dpi = 36}
 boxplot(dis, horizontal = TRUE, xlab = "dis")
 ```
 
@@ -325,7 +325,7 @@ Three functions are available to downweight excessively large distances (see als
 * `huberWgt()`
 * `simpsonWgt()`, see [Simpson et al.](#biblio) (1992)
 
-```{r, echo=FALSE, fig.show="hold", out.width="33%"}
+```{r, echo = FALSE, fig.show = "hold", out.width = "33%", dpi = 36}
 x <- seq(0, 6, length = 500)
 cex_axis <- 1.5; cex_lab <- 1.5; cex_main <- 1.8
 plot(x, huberWgt(x, k = 2), type = "l", xlab = "x", ylab = "",

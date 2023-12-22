@@ -102,7 +102,7 @@ dn
 
 The variable of interest is revenues from 1985 taxation (`RMT85`), and the goal is to estimate the population revenues total (in million Swedish kronor). From register data, the population size in 1985 (variable `P85`) is a know quantity; it is 8&#8239;339 (in thousands). The subsequent graph shows a scatterplot of `RMT85` vs. `P85` (the size of the circles is proportional to the sampling weight).
 
-```{r, fig.show="hold", out.width="80%"}
+```{r, fig.show = "hold", out.width = "80%", dpi = 36}
 svyplot(RMT85 ~ P85, dn, xlab = "P85", ylab = "RMT85", inches = 0.1)
 ```
 
@@ -197,7 +197,7 @@ summary(wls)
 
 The diagnostic plots (below) indicate several issues. In particular, the fitted values are smaller than the responses (see "Response vs. Fitted values"). As a result, the fit tends to underestimate.
 
-```{r, fig.show="hold", out.width="50%"}
+```{r, fig.show = "hold", out.width = "50%", dpi = 36}
 plot(wls)
 ```
 
@@ -229,7 +229,7 @@ rob
 
 The diagnostic plots look better than for the weighted LS estimator.
 
-```{r, fig.show="hold", out.width="50%"}
+```{r, fig.show = "hold", out.width = "50%", dpi = 36}
 plot(rob)
 ```
 
