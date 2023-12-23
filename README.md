@@ -1,4 +1,4 @@
-# robsurvey<img src="inst/varia/logo.svg" align="right" width=120 height=139 alt="" />
+# robsurvey<img src="inst/varia/logo.png" align="right" width=120 height=139 alt="" />
 
 <!-- badges: start -->
 [![CRAN](https://www.r-pkg.org/badges/version/robsurvey)](https://cran.r-project.org/package=robsurvey)
@@ -19,7 +19,7 @@ A key *design pattern* of the package is that the majority of the estimating met
 - bare-bone methods
 - survey methods
 
-Bare-bone methods are stripped-down versions of the survey methods in terms of functionality and informativeness. These functions may serve users and other package developers as building blocks. In particular, bare-bone functions *cannot compute* variances. The survey methods are much more capable and depend, for variance estimation, on the [survey](https://CRAN.R-project.org/package=survey) package.
+Bare-bone methods are stripped-down versions of the survey methods in terms of functionality and informativeness. These functions may serve users and other package developers as building blocks. In particular, bare-bone functions *cannot* compute variances. The survey methods are much more capable and depend, for variance estimation, on the [survey](https://CRAN.R-project.org/package=survey) package.
 
 **Trimming**
 
@@ -116,7 +116,16 @@ Make sure that the R package `devtools` is installed. Then, the `robsurvey` pack
 devtools::install_github("tobiasschoch/robsurvey")
 ```
 
-## 4 Community guidelines
+## 4 Learn more
+
+The package includes four vignettes. Vignettes illustrate the problems and applications the package is designed to solve; see:
+
+* [Basic Robust Estimators](https://cran.r-project.org/web/packages/robsurvey/vignettes/basic.html)
+* [Robust Generalized Regression (GREG) and Ratio Estimation/ Prediction](https://cran.r-project.org/web/packages/robsurvey/vignettes/greg.html)
+* [Robust Survey Regression Estimator](https://cran.r-project.org/web/packages/robsurvey/vignettes/regression.html)
+* [Robust Horvitz-Thompson Estimator](https://cran.r-project.org/web/packages/robsurvey/vignettes/rht.html)
+
+## 5 Community guidelines
 
 #### Submitting an issue
 
@@ -124,7 +133,7 @@ If you have any suggestions for feature additions or any problems with the softw
 
 #### How to contribute
 
-If you are interested in modifying the code, you may fork the project for your own use, as detailed in the FreeBSD License we have adopted for the project. In order to contribute, please contact the developer by Tobias Schoch at gmail dot com (the names are separated by a dot) after making the desired changes.
+If you are interested in modifying the code, you may fork the project for your own use, as detailed in the GPL-2.0 License we have adopted for the project. In order to contribute, please contact the developer by Tobias Schoch at gmail dot com (the names are separated by a dot) after making the desired changes.
 
 #### Asking for help
 
