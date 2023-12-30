@@ -1,6 +1,6 @@
 **If you are viewing this file on CRAN, please check [latest news on GitHub](https://github.com/tobiasschoch/robsurvey/blob/master/NEWS.md) where the formatting is also better.**
 
-# robsurvey VERSION 0.6 (2023-12-21)
+# robsurvey VERSION 0.6 (2023-12-30)
 
 This release of the package fixes a number of issues that were brought to our attention by an anonymous reviewer.
 
@@ -19,6 +19,7 @@ Function `huber2()` erroneously returned `NA` if the initial scale estimate was 
 * Many of the help files have been updated and expanded.
 * Since version 0.3, the functions `svyreg_huber()` and `svyreg_tukey()` are deprecated but have been kept for compatibility reasons. The deprecated functions are now equipped with a call to `.Deprecated()` and are documented separately in `help("robsurvey-deprecated")`.
 * Some of the R and C code has been cleaned up; the `NAMESPACE` file has been consolidated; symbols of shared objects are now registered using `src/init.c` (this file has previously been called `robsurvey_init.c`) and loaded by `useDynLib()` as R objects (not character strings), whose names are pre-fixed by `"C_"` for reasons of transparency.
+* The stratum variable `strat` in the dataset `workplace` is now a `factor`; the same applies to the variables `REG`, `CL` and `Stratum` in the datasets `MU284strat` and `MU284pps`.
 
 # robsurvey VERSION 0.5-2 (2022-12-04)
 
