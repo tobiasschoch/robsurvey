@@ -35,8 +35,15 @@ Lohr, S. L. (1999). \emph{Sampling: Design and Analysis},
 \examples{
 head(counties)
 
-# define the survey design
 library(survey)
-dn <- svydesign(ids = ~1, fpc = ~fpc, weights = ~weights, data = counties)
+# Survey design for simple random sampling without replacement
+dn <- if (packageVersion("survey") >= "4.2") {
+        # survey design with pre-calibrated weights
+        svydesign(ids = ~1, fpc = ~fpc, weights = ~weights, data = counties,
+                  calibrate.formula = ~1)
+    } else {
+        # legacy mode
+        svydesign(ids = ~1, fpc = ~fpc, weights = ~weights, data = counties)
+    }
 }
 \keyword{datasets}

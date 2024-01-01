@@ -15,7 +15,7 @@
 \method{print}{svyreg_rob}(x, digits = max(3L, getOption("digits") - 3L), ...)
 
 \method{summary}{svyreg_rob}(object, mode = c("design", "model", "compound"),
-    digits = max(3L, getOption("digits") - 3L), ...)
+        digits = max(3L, getOption("digits") - 3L), ...)
 
 \method{coef}{svyreg_rob}(object, ...)
 
@@ -30,15 +30,15 @@
 \method{robweights}{svyreg_rob}(object)
 
 \method{plot}{svyreg_rob}(x, which = 1L:4L,
-    hex = FALSE, caption = c("Standardized residuals vs. Fitted Values",
-    "Normal Q-Q", "Response vs. Fitted values",
-    "Sqrt of abs(Residuals) vs. Fitted Values"),
-	panel = if (add.smooth) function(x, y, ...) panel.smooth(x, y,
-    iter = iter.smooth, ...) else points, sub.caption = NULL, main = "",
-	ask = prod(par("mfcol")) < length(which) && dev.interactive(), ...,
-	id.n = 3, labels.id = names(residuals(x)), cex.id = 0.75, qqline = TRUE,
-	add.smooth = getOption("add.smooth"), iter.smooth = 3,
-	label.pos = c(4, 2), cex.caption = 1, cex.oma.main = 1.25)
+     hex = FALSE, caption = c("Standardized residuals vs. Fitted Values",
+     "Normal Q-Q", "Response vs. Fitted values",
+     "Sqrt of abs(Residuals) vs. Fitted Values"),
+	 panel = if (add.smooth) function(x, y, ...) panel.smooth(x, y,
+     iter = iter.smooth, ...) else points, sub.caption = NULL, main = "",
+	 ask = prod(par("mfcol")) < length(which) && dev.interactive(), ...,
+	 id.n = 3, labels.id = names(residuals(x)), cex.id = 0.75, qqline = TRUE,
+	 add.smooth = getOption("add.smooth"), iter.smooth = 3,
+	 label.pos = c(4, 2), cex.caption = 1, cex.oma.main = 1.25)
 }
 \arguments{
     \item{x}{object of class \code{svyreg_rob}.}
@@ -145,12 +145,19 @@ Weighted least squares: \code{\link{svyreg}}; robust weighted regression
 \code{\link{svyreg_tukeyM}} and \code{\link{svyreg_tukeyGM}}
 }
 \examples{
-data(workplace)
+head(workplace)
 
 library(survey)
 # Survey design for simple random sampling without replacement
-dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
-    data = workplace)
+dn <- if (packageVersion("survey") >= "4.2") {
+        # survey design with pre-calibrated weights
+        svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
+                  data = workplace, calibrate.formula = ~-1 + strat)
+    } else {
+        # legacy mode
+        svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
+                  data = workplace)
+    }
 
 # Compute regression M-estimate with Huber psi-function
 m <- svyreg_huberM(payroll ~ employment, dn, k = 14)

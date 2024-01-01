@@ -40,7 +40,7 @@ weighted_line(x, y = NULL, w, na.rm = FALSE, iter = 1)
 \code{\link[stats]{line}}
 }
 \examples{
-data(cars)
+head(cars)
 
 # compute weighted line
 weighted_line(cars$speed, cars$dist, w = rep(1, length(cars$speed)))

@@ -28,7 +28,7 @@ weighted_total(x, w, na.rm = FALSE)
 \link[=robsurvey-package]{Overview} (of all implemented functions)
 }
 \examples{
-data(workplace)
+head(workplace)
 
 # Horvitz-Thompson estimator of the total
 weighted_total(workplace$employment, workplace$weight)

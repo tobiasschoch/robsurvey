@@ -7,9 +7,9 @@
     Horvitz-Thompson Estimator}
 \usage{
 svymean_huber(x, design, k, type = "rwm", asym = FALSE, na.rm = FALSE,
-    verbose = TRUE, ...)
+              verbose = TRUE, ...)
 svytotal_huber(x, design, k, type = "rwm", asym = FALSE, na.rm = FALSE,
-    verbose = TRUE, ...)
+               verbose = TRUE, ...)
 svymean_tukey(x, design, k, type = "rwm", na.rm = FALSE, verbose = TRUE, ...)
 svytotal_tukey(x, design, k, type = "rwm", na.rm = FALSE, verbose = TRUE, ...)
 }
@@ -73,12 +73,19 @@ Hulliger, B. (1995). Outlier Robust Horvitz-Thompson Estimators.
 \link[=robsurvey-package]{Overview} (of all implemented functions)
 }
 \examples{
-data(workplace)
+head(workplace)
 
 library(survey)
-# Survey design for simple random sampling without replacement
-dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
-    data = workplace)
+# Survey design for stratified simple random sampling without replacement
+dn <- if (packageVersion("survey") >= "4.2") {
+        # survey design with pre-calibrated weights
+        svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
+                  data = workplace, calibrate.formula = ~-1 + strat)
+    } else {
+        # legacy mode
+        svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
+                  data = workplace)
+    }
 
 # Robust Horvitz-Thompson M-estimator of the population total
 svytotal_huber(~employment, dn, k = 9, type = "rht")

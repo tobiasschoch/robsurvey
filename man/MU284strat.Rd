@@ -77,9 +77,17 @@ Tillé, Y. and Matei, A. (2021). \emph{sampling: Survey Sampling}.
 \examples{
 head(MU284strat)
 
-# define the survey design
 library(survey)
-dn <- svydesign(ids = ~LABEL, strata = ~Stratum, fpc = ~fpc,
-    weights = ~weights, data = MU284strat)
+# Survey design for stratified simple random sampling without replacement
+dn <- if (packageVersion("survey") >= "4.2") {
+        # survey design with pre-calibrated weights
+        svydesign(ids = ~LABEL, strata = ~Stratum, fpc = ~fpc,
+                  weights = ~weights, data = MU284strat,
+                  calibrate.formula = ~-1 + Stratum)
+    } else {
+        # legacy mode
+        svydesign(ids = ~LABEL, strata = ~Stratum, fpc = ~fpc,
+                  weights = ~weights, data = MU284strat)
+    }
 }
 \keyword{datasets}

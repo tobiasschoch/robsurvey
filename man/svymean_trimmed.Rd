@@ -63,12 +63,19 @@ Shao, J. (1994). L-Statistics in Complex Survey Problems.
 \code{\link{weighted_mean_trimmed}} and \code{\link{weighted_total_trimmed}}
 }
 \examples{
-data(workplace)
+head(workplace)
 
 library(survey)
-# Survey design for simple random sampling without replacement
-dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
-    data = workplace)
+# Survey design for stratified simple random sampling without replacement
+dn <- if (packageVersion("survey") >= "4.2") {
+        # survey design with pre-calibrated weights
+        svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
+                  data = workplace, calibrate.formula = ~-1 + strat)
+    } else {
+        # legacy mode
+        svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
+                  data = workplace)
+    }
 
 # Estimated trimmed population total (5\% symmetric trimming)
 svytotal_trimmed(~employment, dn, LB = 0.05, UB = 0.95)

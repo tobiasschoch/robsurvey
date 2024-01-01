@@ -4,9 +4,9 @@
 \title{Weighted Trimmed Mean and Total (bare-bone functions)}
 \usage{
 weighted_mean_trimmed(x, w, LB = 0.05, UB = 1 - LB, info = FALSE,
-    na.rm = FALSE)
+                      na.rm = FALSE)
 weighted_total_trimmed(x, w, LB = 0.05, UB = 1 - LB, info = FALSE,
-    na.rm = FALSE)
+                       na.rm = FALSE)
 }
 \arguments{
     \item{x}{\code{[numeric vector]} data.}
@@ -69,7 +69,7 @@ weighted_total_trimmed(x, w, LB = 0.05, UB = 1 - LB, info = FALSE,
 \code{\link{svymean_trimmed}} and \code{\link{svytotal_trimmed}}
 }
 \examples{
-data(workplace)
+head(workplace)
 
 # Estimated trimmed population total (5\% symmetric trimming)
 weighted_total_trimmed(workplace$employment, workplace$weight, LB = 0.05,

@@ -16,7 +16,7 @@
 \usage{
 mse(object)
 \method{summary}{svystat_rob}(object, digits = max(3L,
-    getOption("digits") - 3L), ...)
+        getOption("digits") - 3L), ...)
 \method{coef}{svystat_rob}(object, ...)
 \method{SE}{svystat_rob}(object, ...)
 \method{vcov}{svystat_rob}(object, ...)
@@ -66,12 +66,19 @@ robweights(object)
     \code{\link{svytotal_winsorized}}
 }
 \examples{
-data(workplace)
+head(workplace)
 
 library(survey)
-# Survey design for simple random sampling without replacement
-dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
-    data = workplace)
+# Survey design for stratified simple random sampling without replacement
+dn <- if (packageVersion("survey") >= "4.2") {
+        # survey design with pre-calibrated weights
+        svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
+                  data = workplace, calibrate.formula = ~-1 + strat)
+    } else {
+        # legacy mode
+        svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
+                  data = workplace)
+    }
 
 # Estimated one-sided k winsorized population total (i.e., k = 2 observations
 # are winsorized at the top of the distribution)

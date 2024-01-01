@@ -26,7 +26,7 @@ weighted_median(x, w, na.rm = FALSE)
 \code{\link{weighted_quantile}}
 }
 \examples{
-data(workplace)
+head(workplace)
 
 weighted_median(workplace$employment, workplace$weight)
 }

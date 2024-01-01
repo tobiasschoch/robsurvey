@@ -48,7 +48,7 @@ Hyndman, R.J. and Fan, Y. (1996). Sample Quantiles in Statistical Packages,
 \code{\link{weighted_median}}
 }
 \examples{
-data(workplace)
+head(workplace)
 
 # Weighted 25\% quantile (1st quartile)
 weighted_quantile(workplace$employment, workplace$weight, 0.25)

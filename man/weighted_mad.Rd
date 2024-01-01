@@ -30,7 +30,7 @@ weighted_mad(x, w, na.rm = FALSE, constant = 1.482602)
 \link[=robsurvey-package]{Overview} (of all implemented functions)
 }
 \examples{
-data(workplace)
+head(workplace)
 
 # normalized weighted MAD (default)
 weighted_mad(workplace$employment, workplace$weight)

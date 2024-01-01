@@ -5,7 +5,7 @@
 \usage{
 robsvyreg(x, y, w, k, psi, type, xwgt, var = NULL, verbose = TRUE, ...)
 svyreg_control(tol = 1e-5, maxit = 100, k_Inf = 1e6, init = NULL,
-    mad_center = TRUE, ...)
+               mad_center = TRUE, ...)
 }
 \arguments{
     \item{x}{\code{[numeric matrix]} design matrix (\code{NA} values not

@@ -3,7 +3,7 @@
 \title{Deprecated Tukey Biweight Robust Survey Regression M-Estimator}
 \usage{
 svyreg_tukey(formula, design, k, var = NULL, na.rm = FALSE, verbose = TRUE,
-    ...)
+             ...)
 }
 \arguments{
     \item{formula}{a \code{[formula]} object (i.e., symbolic description

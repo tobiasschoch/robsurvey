@@ -6,13 +6,13 @@
 \title{Weighted Huber and Tukey Mean and Total (bare-bone functions)}
 \usage{
 weighted_mean_huber(x, w, k, type = "rwm", asym = FALSE, info = FALSE,
-    na.rm = FALSE, verbose = TRUE, ...)
+                    na.rm = FALSE, verbose = TRUE, ...)
 weighted_total_huber(x, w, k, type = "rwm", asym = FALSE, info = FALSE,
-    na.rm = FALSE, verbose = TRUE, ...)
+                     na.rm = FALSE, verbose = TRUE, ...)
 weighted_mean_tukey(x, w, k, type = "rwm", info = FALSE, na.rm = FALSE,
-    verbose = TRUE, ...)
+                    verbose = TRUE, ...)
 weighted_total_tukey(x, w, k, type = "rwm", info = FALSE, na.rm = FALSE,
-    verbose = TRUE, ...)
+                     verbose = TRUE, ...)
 }
 \arguments{
     \item{x}{\code{[numeric vector]} data.}
@@ -113,7 +113,7 @@ Hulliger, B. (1995). Outlier Robust Horvitz-Thompson Estimators.
 \link[=robsurvey-package]{Overview} (of all implemented functions)
 }
 \examples{
-data(workplace)
+head(workplace)
 
 # Robust Horvitz-Thompson M-estimator of the population total
 weighted_total_huber(workplace$employment, workplace$weight, k = 9,

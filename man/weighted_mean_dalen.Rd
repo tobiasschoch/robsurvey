@@ -4,9 +4,9 @@
 \title{Dalen Estimators of the Mean and Total}
 \usage{
 weighted_mean_dalen(x, w, censoring, type = "Z2", info = FALSE,
-    na.rm = FALSE, verbose = TRUE)
-weighted_total_dalen( x, w, censoring, type = "Z2", info = FALSE,
-    na.rm = FALSE, verbose = TRUE)
+                    na.rm = FALSE, verbose = TRUE)
+weighted_total_dalen(x, w, censoring, type = "Z2", info = FALSE,
+                     na.rm = FALSE, verbose = TRUE)
 }
 \arguments{
     \item{x}{\code{[numeric vector]} data.}
@@ -78,7 +78,7 @@ Dalén, J. (1987). Practical Estimators of a Population Total Which Reduce
 \link[=robsurvey-package]{Overview} (of all implemented functions)
 }
 \examples{
-data(workplace)
+head(workplace)
 
 # Dalen's estimator of the total (with censoring threshold: 100000)
 weighted_total_dalen(workplace$employment, workplace$weight, 100000)

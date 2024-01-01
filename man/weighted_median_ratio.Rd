@@ -27,7 +27,7 @@ weighted_median_ratio(x, y = NULL, w, na.rm = FALSE)
 \examples{
 x <- c(1,2,4,5)
 y <- c(1,0,5,2)
-m <- weighted_median_ratio(y~x, w = rep(1, length(y)))
+m <- weighted_median_ratio(y ~ x, w = rep(1, length(y)))
 m
 coef(m)
 fitted(m)

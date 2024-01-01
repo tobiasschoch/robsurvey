@@ -3,7 +3,7 @@
 \title{Weighted Huber Proposal 2 Estimator}
 \usage{
 huber2(x, w, k = 1.5, na.rm = FALSE, maxit = 50, tol = 1e-04, info = FALSE,
-    k_Inf = 1e6, df_cor = TRUE)
+       k_Inf = 1e6, df_cor = TRUE)
 }
 \arguments{
     \item{x}{\code{[numeric vector]} data.}
@@ -66,7 +66,7 @@ Huber, P. J. (1964). Robust Estimation of a Location Parameter.
     \doi{10.1214/aoms/1177703732}
 }
 \examples{
-data(workplace)
+head(workplace)
 
 # Weighted "Proposal 2" estimator of the mean
 huber2(workplace$employment, workplace$weight, k = 8)

@@ -6,10 +6,10 @@
 \title{Weighted Winsorized Mean and Total (bare-bone functions)}
 \usage{
 weighted_mean_winsorized(x, w, LB = 0.05, UB = 1 - LB, info = FALSE,
-    na.rm = FALSE)
+                         na.rm = FALSE)
 weighted_mean_k_winsorized(x, w, k, info = FALSE, na.rm = FALSE)
 weighted_total_winsorized(x, w, LB = 0.05, UB = 1 - LB, info = FALSE,
-    na.rm = FALSE)
+                          na.rm = FALSE)
 weighted_total_k_winsorized(x, w, k, info = FALSE, na.rm = FALSE)
 }
 \arguments{
@@ -90,7 +90,7 @@ weighted_total_k_winsorized(x, w, k, info = FALSE, na.rm = FALSE)
 \code{\link{svytotal_winsorized}} and \code{\link{svytotal_k_winsorized}}
 }
 \examples{
-data(workplace)
+head(workplace)
 
 # Estimated winsorized population mean (5\% symmetric winsorization)
 weighted_mean_winsorized(workplace$employment, workplace$weight, LB = 0.05)

@@ -59,7 +59,7 @@ Simpson, D. G., Ruppert, D. and Carroll, R.J. (1992). On One-Step GM
 \code{\link{svyreg_tukeyM}} and \code{\link{svyreg_tukeyGM}}
 }
 \examples{
-data(flour)
+head(flour)
 
 # standardized distance from median (copper content in wholemeal flour)
 x <- flour$copper
@@ -67,9 +67,9 @@ z <- abs(x - median(x)) / mad(x)
 
 # plot of weight functions vs. distance
 plot(z, huberWgt(z, k = 3), ylim = c(0, 1), xlab = "distance",
-    ylab = "weight")
+     ylab = "weight")
 points(z, tukeyWgt(z, k = 6), pch = 2, col = 2)
 points(z, simpsonWgt(z, a = Inf, b = 3), pch = 3, col = 4)
 legend("topright", c("huberWgt(k = 3)", "tukeyWgt(k = 6)",
-    "simpsonWgt(a = Inf, b = 3)"), pch = 1:3, col = c(1, 2, 4))
+       "simpsonWgt(a = Inf, b = 3)"), pch = 1:3, col = c(1, 2, 4))
 }

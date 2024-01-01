@@ -3,7 +3,7 @@
 \title{Deprecated Huber Robust Survey Regression M-Estimator}
 \usage{
 svyreg_huber(formula, design, k, var = NULL, na.rm = FALSE, asym = FALSE,
-    verbose = TRUE, ...)
+             verbose = TRUE, ...)
 }
 \arguments{
     \item{formula}{a \code{[formula]} object (i.e., symbolic description

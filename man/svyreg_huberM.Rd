@@ -4,9 +4,10 @@
 \title{Huber Robust Survey Regression M- and GM-Estimator}
 \usage{
 svyreg_huberM(formula, design, k, var = NULL, na.rm = FALSE, asym = FALSE,
-    verbose = TRUE, ...)
+              verbose = TRUE, ...)
 svyreg_huberGM(formula, design, k, type = c("Mallows", "Schweppe"),
-    xwgt, var = NULL, na.rm = FALSE, asym = FALSE, verbose = TRUE, ...)
+               xwgt, var = NULL, na.rm = FALSE, asym = FALSE, verbose = TRUE,
+               ...)
 }
 \arguments{
     \item{formula}{a \code{[formula]} object (i.e., symbolic description
@@ -102,12 +103,19 @@ Other robust estimating methods \code{\link{svyreg_tukeyM}} and
 \code{\link{svyreg_tukeyGM}}
 }
 \examples{
-data(workplace)
+head(workplace)
 
 library(survey)
-# Survey design for simple random sampling without replacement
-dn <- svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
-    data = workplace)
+# Survey design for stratified simple random sampling without replacement
+dn <- if (packageVersion("survey") >= "4.2") {
+        # survey design with pre-calibrated weights
+        svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
+                  data = workplace, calibrate.formula = ~-1 + strat)
+    } else {
+        # legacy mode
+        svydesign(ids = ~ID, strata = ~strat, fpc = ~fpc, weights = ~weight,
+                  data = workplace)
+    }
 
 # Compute regression M-estimate with Huber psi-function
 m <- svyreg_huberM(payroll ~ employment, dn, k = 8)

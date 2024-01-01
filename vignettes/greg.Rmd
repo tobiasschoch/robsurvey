@@ -15,7 +15,9 @@ vignette: >
 knitr::opts_chunk$set(
     collapse = TRUE,
     comment = "",
-    prompt = TRUE
+    prompt = TRUE,
+    dpi = 36,
+    fig.align = "center"
 )
 ```
 
@@ -47,22 +49,30 @@ knitr::opts_chunk$set(
 
 ## Outline
 
-The vignette covers robust generalized regression (GREG) prediction and robust ratio prediction.
+The vignette covers robust generalized regression (GREG) prediction and robust
+ratio prediction.
 
 <div class="my-sidebar-orange">
 <p style="color: #ce5b00;">
 **IMPORTANT**
 </p>
 <p>
-It is assumed that the reader is <i>familiar</i> with the key functions of the <code>survey</code> package, like <code>svydesign()</code>, etc. In addition, we assume that the reader has studied the vignette on robust regression.
-The technical details (incl. references to the literature) of the robust generalized regression and the robust ratio predictor are documented in file <code>/doc/doc_greg.pdf</code>.
+It is assumed that the reader is <i>familiar</i> with the key functions of the
+<code>survey</code> package, like <code>svydesign()</code>, etc. In addition,
+we assume that the reader has studied the vignette on robust regression.
+The technical details (incl. references to the literature) of the robust
+generalized regression and the robust ratio predictor are documented in file
+<code>/doc/doc_greg.pdf</code>.
 </p>
 </div>
 
 
 ## 1 Preparations
 
-First, we load the packages and the `MU284pps` dataset. The availability of the `survey` package is **imperative**.
+First, we load the namespaces of the packages `robsurvey` and `survey` (and
+attach them to the search path). In order to use the regression methods, the
+`survey` package **must** be attached to the search path. In addition, we load
+the dataset `MU284pps`.
 
 ```{r, eval=FALSE}
 library("robsurvey", quietly = TRUE)
@@ -74,7 +84,46 @@ data("MU284pps")
 library(robsurvey, quietly = TRUE)
 suppressPackageStartupMessages(library(survey))
 ```
-The `MU284pps` dataset is random sample from the MU284 population of [Särndal et al.](#biblio) (1992, Appendix B). The population includes measurements on the 284 municipalities in Sweden in the late 1970s and early 1980s. It is available in the `sampling` package; see [Tillé and Matei](#biblio) (2021). The sample is a proportional-to-size sample (PPS) without replacement of size 50. The sample has been selected by Brewer's method; see [Tillé](#biblio) (2006, Chap. 7). The sample inclusion probabilities are proportional to the population size in 1975 (variable `P75`). The sampling weight (inclusion probabilities) are calibrated to the population size and the population total of P75.
+
+**Notes.**
+
+* The argument `quietly = TRUE` suppresses the start-up message in the call of
+  `library("robsurvey")`.
+* Since **version 4.2**, the **survey** package allows the definition of
+  pre-calibrated weights (see argument `calibrate.formula` of the function
+  `svydesign()`). This vignette uses this functionality (in some places). If
+  you have installed an earlier version of the `survey` package, this vignette
+  will automatically fall back to calling `svydesign()` without the calibration
+  specification. See vignette [Pre-calibrated
+  weights](https://cran.r-project.org/web/packages/survey/vignettes/precalibrated.pdf)
+  of the `survey` package to learn more.
+
+```{r, echo = FALSE, results = "asis"}
+survey_version <- packageVersion("survey")
+if (survey_version < "4.2") {
+cat(paste0('<div class="my-sidebar-orange">\n
+<p style="color: #ce5b00;">
+**IMPORTANT: PRE-CALIBRATED WEIGHTS ARE NOT SUPPORTED**
+</p>
+This vignette has been built with version **', survey_version,
+'** of the **survey** package. Therefore, `svydesign()` is called without
+the `calibrate.formula` argument. As a consequence, some of the variance and
+standard error estimates may differ from those with pre-calibrated weights,
+i.e., the default specification.<p>
+</p>
+</div>'))
+}
+```
+
+The `MU284pps` dataset is random sample from the MU284 population of [Särndal
+et al.](#biblio) (1992, Appendix B). The population includes measurements on
+the 284 municipalities in Sweden in the late 1970s and early 1980s. It is
+available in the `sampling` package; see [Tillé and Matei](#biblio) (2021). The
+sample is a proportional-to-size sample (PPS) without replacement of size 50.
+The sample has been selected by Brewer's method; see [Tillé](#biblio) (2006,
+Chap. 7). The sample inclusion probabilities are proportional to the population
+size in 1975 (variable `P75`). The sampling weight (inclusion probabilities)
+are calibrated to the population size and the population total of P75.
 
 The data frame `MU284pps` includes the following variables.
 
@@ -91,36 +140,56 @@ The data frame `MU284pps` includes the following variables.
 
 First, we define the sampling design
 
-```{r}
-dn <- svydesign(ids = ~LABEL, fpc = ~pi, data = MU284pps, pps = "brewer")
-```
-with the option `pps = "Brewer"` and the specification that `fpc` is equal to the first-order sample inclusion probabilities, `pi`. The design appears (on print) with the following output in the console
-
-```{r}
-dn
+```{r, eval = FALSE}
+dn <- svydesign(ids = ~LABEL, fpc = ~pi, data = MU284pps, pps = "brewer",
+                calibrate = ~1)
 ```
 
-The variable of interest is revenues from 1985 taxation (`RMT85`), and the goal is to estimate the population revenues total (in million Swedish kronor). From register data, the population size in 1985 (variable `P85`) is a know quantity; it is 8&#8239;339 (in thousands). The subsequent graph shows a scatterplot of `RMT85` vs. `P85` (the size of the circles is proportional to the sampling weight).
+```{r, echo = FALSE}
+dn <- if (packageVersion("survey") >= "4.2") {
+        svydesign(ids = ~LABEL, fpc = ~pi, data = MU284pps, pps = "brewer",
+                  calibrate = ~1)
+    } else {
+        svydesign(ids = ~LABEL, fpc = ~pi, data = MU284pps, pps = "brewer")
+    }
+```
 
-```{r, fig.show = "hold", out.width = "80%", dpi = 36}
+with the option `pps = "Brewer"` and the specification that `fpc` is equal to
+the first-order sample inclusion probabilities, `pi`.
+
+The variable of interest is revenues from 1985 taxation (`RMT85`), and the goal
+is to estimate the population revenues total (in million Swedish kronor). From
+register data, the population size in 1985 (variable `P85`) is a know quantity;
+it is 8&#8239;339 (in thousands). The subsequent graph shows a scatterplot of
+`RMT85` vs. `P85` (the size of the circles is proportional to the sampling
+weight).
+
+```{r, out.width = "80%"}
 svyplot(RMT85 ~ P85, dn, xlab = "P85", ylab = "RMT85", inches = 0.1)
 ```
 
 ## 2 Robust ratio prediction
 
-We are interested in the ratio estimator of the 1985 revenues total. Consider the following population model
+We are interested in the ratio estimator of the 1985 revenues total. Consider
+the following population model
 
 $$
 \begin{equation*}
-    \mathrm{RMT85}_i = \mathrm{P85}_i \cdot \theta + \sigma \sqrt{\mathrm{P85}_i} E_i, \qquad i \in U,
+    \mathrm{RMT85}_i = \mathrm{P85}_i \cdot \theta + \sigma
+        \sqrt{\mathrm{P85}_i} E_i, \qquad i \in U,
 \end{equation*}
 $$
 
-where the $E_i$ are independent and identically distributed random variables with zero mean and unit variance. The parameters $\theta$ and $\sigma > 0$ are unknown.
+where the $E_i$ are independent and identically distributed random variables
+with zero mean and unit variance. The parameters $\theta$ and $\sigma > 0$ are
+unknown.
 
 #### 2.1 Ratio predictor
 
-Under the model, the least squares (LS) census estimator of $\theta$ is $\theta_N = \sum_{i \in U} y_i / \sum_{i \in U} x_i$. The sample weighted LS estimator is $\widehat{\theta}_n = \sum_{i \in s}w_i y_i / \sum_{i \in s} w_i x_i$, where $w_i$ denotes the sampling weight. It is computed by
+Under the model, the least squares (LS) census estimator of $\theta$ is
+$\theta_N = \sum_{i \in U} y_i / \sum_{i \in U} x_i$. The sample weighted LS
+estimator is $\widehat{\theta}_n = \sum_{i \in s}w_i y_i / \sum_{i \in s} w_i
+x_i$, where $w_i$ denotes the sampling weight. It is computed by
 
 ```{r}
 rat <- svyratio_huber(~RMT85, ~P85, dn, k = Inf)
@@ -131,12 +200,20 @@ rat
 <p style="color: #1f618d;">
 **Good to know.**
 </p>
-We have used the fact that the Huber $M$-estimator of the ratio parameter, `svyratio_huber()`, with robustness tuning constant `k = Inf` corresponds to the (non-robust) estimator of the ratio, $\widehat{\theta}_n$, introduced above. Following the same train of though, we could have used `svyratio_tukey()` with `k = Inf` instead. The **robsurvey** package does not implement a separate function for the non-robust ratio estimator because the function `svyratio()` is included in the **survey** package.
+We have used the fact that the Huber $M$-estimator of the ratio parameter,
+`svyratio_huber()`, with robustness tuning constant `k = Inf` corresponds to
+the (non-robust) estimator of the ratio, $\widehat{\theta}_n$, introduced
+above. Following the same train of though, we could have used
+`svyratio_tukey()` with `k = Inf` instead. The **robsurvey** package does not
+implement a separate function for the non-robust ratio estimator because the
+function `svyratio()` is included in the **survey** package.
 <p>
 </p>
 </div>
 
-Next, we predict the payroll total based on the estimated regression parameter $\widehat{\theta}_n$ (i.e., object `rat`) and the known population size in 1985 (`total = 8339`).
+Next, we predict the payroll total based on the estimated regression parameter
+$\widehat{\theta}_n$ (i.e., object `rat`) and the known population size in 1985
+(`total = 8339`).
 
 ```{r}
 tot <- svytotal_ratio(rat, total = 8339)
@@ -149,11 +226,15 @@ The estimated mean square error of the ratio predictor is
 mse(tot) / 1e6
 ```
 
-which is equal to the estimated variance because the ratio predictor of the total is unbiased for the population total. The estimated total, standard error and variance covariance can be extracted by the functions `coef`, `SE()`, and `vcov()`.
+which is equal to the estimated variance because the ratio predictor of the
+total is unbiased for the population total. The estimated total, standard error
+and variance covariance can be extracted by the functions `coef`, `SE()`, and
+`vcov()`.
 
 #### 2.2 Robust ratio predictor
 
-A robust ratio predictor (with Huber $\psi$-function and robustness tuning constant $k = 20$) can be computed by
+A robust ratio predictor (with Huber $\psi$-function and robustness tuning
+constant $k = 20$) can be computed by
 
 ```{r}
 rat_rob <- svyratio_huber(~RMT85, ~P85, dn, k = 20)
@@ -161,13 +242,17 @@ tot_rob <- svytotal_ratio(rat_rob, total = 8339)
 tot_rob
 ```
 
-In terms of the estimated standard error, this predictor is considerably more efficient than the (non-robust) ratio predictor. We come to the same conclusion if we consider the approximate mean square error
+In terms of the estimated standard error, this predictor is considerably more
+efficient than the (non-robust) ratio predictor. We come to the same conclusion
+if we consider the approximate mean square error
 
 ```{r}
 mse(tot_rob) / 1e6
 ```
 
-In place of the Huber estimator, we can use the ratio *M*-estimator with Tukey biweight (bisquare) $\psi$-function; see `svyratio_tukey()`. The ratio estimator of the population of the mean is computed by `svymean_ratio()`.
+In place of the Huber estimator, we can use the ratio *M*-estimator with Tukey
+biweight (bisquare) $\psi$-function; see `svyratio_tukey()`. The ratio
+estimator of the population of the mean is computed by `svymean_ratio()`.
 
 ## 3 Robust generalized regression prediction
 
@@ -176,11 +261,15 @@ In place of the Huber estimator, we can use the ratio *M*-estimator with Tukey b
 Consider the population regression model
 $$
 \begin{equation*}
-    \mathrm{RMT85}_i = \theta_0 + \mathrm{P85}_i \cdot \theta_1 + \mathrm{SS82}_i \cdot \theta_2 + \sigma E_i, \qquad i \in U,
+    \mathrm{RMT85}_i = \theta_0 + \mathrm{P85}_i \cdot \theta_1 +
+        \mathrm{SS82}_i \cdot \theta_2 + \sigma E_i, \qquad i \in U,
 \end{equation*}
 $$
 
-where `CS82` is the number of Social-Democrat seats in municipal council. The $E_i$ are independent and identically distributed random variables with zero mean and unit variance. The parameters $\theta_0, \ldots, \theta_2$ and $\sigma > 0$ are unknown.
+where `CS82` is the number of Social-Democrat seats in municipal council. The
+$E_i$ are independent and identically distributed random variables with zero
+mean and unit variance. The parameters $\theta_0, \ldots, \theta_2$ and $\sigma
+> 0$ are unknown.
 
 The weighted LS estimate is computed by
 
@@ -189,38 +278,58 @@ wls <- svyreg(RMT85 ~ P85 + SS82, dn)
 wls
 ```
 
-The summary method shows that variable `CS82` contributes significantly to the explanation of the response variable.
+The summary method shows that variable `CS82` contributes significantly to the
+explanation of the response variable.
 
 ```{R}
 summary(wls)
 ```
 
-The diagnostic plots (below) indicate several issues. In particular, the fitted values are smaller than the responses (see "Response vs. Fitted values"). As a result, the fit tends to underestimate.
+The diagnostic plots (below) indicate several issues. In particular, the fitted
+values are smaller than the responses (see "Response vs. Fitted values"). As a
+result, the fit tends to underestimate.
 
-```{r, fig.show = "hold", out.width = "50%", dpi = 36}
+```{r, out.width = "50%", fig.align = "default"}
 plot(wls)
 ```
 
-Letting the issues aside, we want to predict the 1985 revenues total. The population totals of `P85` and `SS82` are known quantities (from registers) and are passed to the function `svytotal_reg()` via the `totals` argument. Because the model includes a regression intercept, we must also specify the population size `N`. The total is predicted using
+Letting the issues aside, we want to predict the 1985 revenues total. The
+population totals of `P85` and `SS82` are known quantities (from registers) and
+are passed to the function `svytotal_reg()` via the `totals` argument. Because
+the model includes a regression intercept, we must also specify the population
+size `N`. The total is predicted using
 
 ```{r}
-tot <- svytotal_reg(wls, totals = c(P85 = 8339, SS82 = 6301), N = 284, type = "ADU")
+tot <- svytotal_reg(wls, totals = c(P85 = 8339, SS82 = 6301), N = 284,
+                    type = "ADU")
 tot
 ```
 
-where `type = "ADU"` defines the "standard" GREG predictor, which is an asymptotically unbiased (ADU) estimator/ predictor, hence the name. By default, the argument `check.names` is set to `TRUE` in the call of `svytotal_reg()`. Thus, the names of arguments of `totals` are checked against the names of the estimated regression coefficients. If the names of `totals` are not specified, we call the function with `check.names = FALSE`. The estimated total, standard error and variance covariance can be extracted by the functions `coef`, `SE()`, and `vcov()`.
+where `type = "ADU"` defines the "standard" GREG predictor, which is an
+asymptotically unbiased (ADU) estimator/ predictor, hence the name. By default,
+the argument `check.names` is set to `TRUE` in the call of `svytotal_reg()`.
+Thus, the names of arguments of `totals` are checked against the names of the
+estimated regression coefficients. If the names of `totals` are not specified,
+we call the function with `check.names = FALSE`. The estimated total, standard
+error and variance covariance can be extracted by the functions `coef`, `SE()`,
+and `vcov()`.
 
-The (estimated) approximate mean square error (MSE; which coincides with the estimated variance of the predictor) is
+The (estimated) approximate mean square error (MSE; which coincides with the
+estimated variance of the predictor) is
 
 ```{r}
 mse(tot) / 1e6
 ```
 
-The estimated total, standard error and variance covariance can be extracted by the functions `coef`, `SE()`, and `vcov()`.
+The estimated total, standard error and variance covariance can be extracted by
+the functions `coef`, `SE()`, and `vcov()`.
 
 #### 3.2 Robust GREG
 
-Consider the regression model from the last paragraph. Now, we compute a robust GREG predictor of the 1985 revenues total. The regression *M*-estimator with Tukey biweight (bisquare) $\psi$-function and the robustness tuning constant $k=15$ is
+Consider the regression model from the last paragraph. Now, we compute a robust
+GREG predictor of the 1985 revenues total. The regression *M*-estimator with
+Tukey biweight (bisquare) $\psi$-function and the robustness tuning constant
+$k=15$ is
 
 ```{r}
 rob <- svyreg_tukeyM(RMT85 ~ P85 + SS82, dn, k = 15)
@@ -229,18 +338,23 @@ rob
 
 The diagnostic plots look better than for the weighted LS estimator.
 
-```{r, fig.show = "hold", out.width = "50%", dpi = 36}
+```{r, out.width = "50%", fig.align = "default"}
 plot(rob)
 ```
 
 The robust GREG predictor of the 1985 revenues total is
 
 ```{r}
-tot <- svytotal_reg(rob, totals = c(P85 = 8339, SS82 = 6301), N = 284, type = "huber", k = 50)
+tot <- svytotal_reg(rob, totals = c(P85 = 8339, SS82 = 6301), N = 284,
+                    type = "huber", k = 50)
 tot
 ```
 
-where the prediction is based on the Huber $\psi$-function with tuning constant $k = 50$. The tuning constant for robust prediction should in general be larger than the one used for regression estimation. Observe that we have "mixed" the $\psi$-functions: Regression estimation based on the Tukey biweight $\psi$-function and prediction with the Huber $\psi$-function.
+where the prediction is based on the Huber $\psi$-function with tuning constant
+$k = 50$. The tuning constant for robust prediction should in general be larger
+than the one used for regression estimation. Observe that we have "mixed" the
+$\psi$-functions: Regression estimation based on the Tukey biweight
+$\psi$-function and prediction with the Huber $\psi$-function.
 
 The (estimated) approximate MSE of the robust GREG predictor is
 
@@ -248,16 +362,21 @@ The (estimated) approximate MSE of the robust GREG predictor is
 mse(tot) / 1e6
 ```
 
-which is considerably smaller than the MSE of the "standard" GREG. The estimated total, standard error and variance covariance can be extracted by the functions `coef`, `SE()`, and `vcov()`.
+which is considerably smaller than the MSE of the "standard" GREG. The
+estimated total, standard error and variance covariance can be extracted by the
+functions `coef`, `SE()`, and `vcov()`.
 
 See the help file of `svymean_reg()` or `svytotal_reg()` to learn more.
 
 ## References {#biblio}
 
-LUMLEY, T. (2010). *Complex Surveys: A Guide to Analysis Using R: A Guide to Analysis Using R*, Hoboken (NJ): John Wiley & Sons.
+LUMLEY, T. (2010). *Complex Surveys: A Guide to Analysis Using R: A Guide to
+Analysis Using R*, Hoboken (NJ): John Wiley & Sons.
 
-LUMLEY, T. (2021). survey: analysis of complex survey samples. R package version 4.0, URL https://CRAN.R-project.org/package=survey.
+LUMLEY, T. (2021). survey: analysis of complex survey samples. R package
+version 4.0, URL https://CRAN.R-project.org/package=survey.
 
-SÄRNDAL, C.-E., SWENSSON, B. AND WRETMAN, J. (1992). *Model Assisted Survey Sampling*. New York: Springer-Verlag.
+SÄRNDAL, C.-E., SWENSSON, B. AND WRETMAN, J. (1992). *Model Assisted Survey
+Sampling*. New York: Springer-Verlag.
 
 TILLE, Y. (2006). *Sampling Algorithms*. New York: Springer-Verlag.

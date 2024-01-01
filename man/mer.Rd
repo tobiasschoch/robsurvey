@@ -43,9 +43,18 @@ Hulliger, B. (1995). Outlier Robust Horvitz-Thompson Estimators.
 \link[=robsurvey-package]{Overview} (of all implemented functions)
 }
 \examples{
+head(losdata)
+
 library(survey)
-data(losdata)
-dn <- svydesign(ids = ~1, fpc = ~fpc, weights = ~weight, data = losdata)
+# Survey design for simple random sampling without replacement
+dn <- if (packageVersion("survey") >= "4.2") {
+        # survey design with pre-calibrated weights
+        svydesign(ids = ~1, fpc = ~fpc, weights = ~weight, data = losdata,
+                  calibrate.formula = ~1)
+    } else {
+        # legacy mode
+        svydesign(ids = ~1, fpc = ~fpc, weights = ~weight, data = losdata)
+    }
 
 # M-estimator of the total with tuning constant k = 8
 m <- svymean_huber(~los, dn, type = "rhj", k = 8)

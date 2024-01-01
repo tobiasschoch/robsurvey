@@ -29,7 +29,7 @@ weighted_IQR(x, w, na.rm = FALSE, constant = 0.7413)
 \link[=robsurvey-package]{Overview} (of all implemented functions)
 }
 \examples{
-data(workplace)
+head(workplace)
 
 # normalized weighted IQR (default)
 weighted_IQR(workplace$employment, workplace$weight)

@@ -40,9 +40,10 @@ Depends:
     R (>= 3.5.0)
 Imports:
     grDevices,
+    KernSmooth,
     stats,
     survey (>= 3.35-1),
-    KernSmooth
+    utils
 Suggests:
     hexbin,
     knitr,
