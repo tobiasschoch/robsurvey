@@ -95,7 +95,7 @@ suppressPackageStartupMessages(library(survey))
   you have installed an earlier version of the `survey` package, this vignette
   will automatically fall back to calling `svydesign()` without the calibration
   specification. See vignette [Pre-calibrated
-  weights](https://cran.r-project.org/web/packages/survey/vignettes/precalibrated.pdf)
+  weights](https://CRAN.R-project.org/package=survey/vignettes/precalibrated.pdf)
   of the `survey` package to learn more.
 
 ```{r, echo = FALSE, results = "asis"}
