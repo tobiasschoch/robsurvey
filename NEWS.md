@@ -1,6 +1,6 @@
 **If you are viewing this file on CRAN, please check [latest news on GitHub](https://github.com/tobiasschoch/robsurvey/blob/master/NEWS.md) where the formatting is also better.**
 
-# robsurvey VERSION 0.6 (2024-01-13)
+# robsurvey VERSION 0.6 (2024-01-14)
 
 This release of the package fixes a number of issues that were brought to our attention by an anonymous reviewer. It also fixes some other problems.
 
@@ -13,7 +13,7 @@ Function `huber2()` erroneously returned `NA` if the initial scale estimate was 
 * `R-core` has been added to the list of intellectual property owners with the roles `c("cph", ctb")` for `zeroin2.c` (see `DESCRIPTION` file).
 * Automated tests have been part of the [GitHub](https://github.com/tobiasschoch/robsurvey) repo since the first commit. However, the tests have not been shipped with the source package. Now, the tests are included in the source package.
 * Function `robsvyreg()` is not exported to the namespace anymore because it is regarded as an internal function (not to be called by users).
-* Since **version 4.2** of the **survey** package (released in May 2023), the `survey` package allows the definition of pre-calibrated weights (see argument `calibrate.formula` of the function `survey::svydesign()`; see also vignette [Pre-calibrated weights](https://cran.r-project.org/web/packages/survey/vignettes/precalibrated.pdf) of the `survey` package). From now on, we will use this functionality by default in the examples, vignettes and documentation. Our code automatically reverts/falls back to calling `svydesign()` without pre-calibrated weights (**legacy mode**) on R installations with an **earlier** version of the `survey` package. As a consequence, some of the variance and standard error estimates in legacy mode may differ from those with pre-calibrated weights.
+* Since **version 4.2** of the **survey** package (released in May 2023), the `survey` package allows the definition of pre-calibrated weights (see argument `calibrate.formula` of the function `survey::svydesign()`; see also vignette [Pre-calibrated weights](https://CRAN.R-project.org/package=survey/vignettes/precalibrated.pdf) of the `survey` package). From now on, we will use this functionality by default in the examples, vignettes and documentation. Our code automatically reverts/falls back to calling `svydesign()` without pre-calibrated weights (**legacy mode**) on R installations with an **earlier** version of the `survey` package. As a consequence, some of the variance and standard error estimates in legacy mode may differ from those with pre-calibrated weights.
 
 ## MISC
 
