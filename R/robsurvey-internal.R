@@ -213,9 +213,10 @@
     }, error = function() {})
 
     if (!quietly){
-    packageStartupMessage("\n          88
-          88
-          88
+    packageStartupMessage("\n
+                  88
+                  88
+                  88
      e8d88 .d8b.  8888b.   ___ _   _ _ ____   _____ _   _
      8P'  d8' '8b 88 '8b  / __| | | | '__\\ \\ / / _ \\ | | |
      88   Y8. .8P 88  dP  \\__ \\ |_| | |   \\ V /  __/ |_| |
