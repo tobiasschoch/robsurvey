@@ -32,7 +32,6 @@ static inline void swap2(double*, double*, int, int)
     __attribute__((always_inline));
 static inline int med3(double*, int, int, int)
     __attribute__((always_inline));
-static inline int min(int, int) __attribute__((always_inline));
 static inline int choose_pivot(double*, int, int)
     __attribute__((always_inline));
 static inline int is_equal(double, double) __attribute__((always_inline));
@@ -299,14 +298,6 @@ static inline void swap2(double *array, double *weights, int i, int j)
     double tmp = array[i]; array[i] = array[j]; array[j] = tmp;
     // swap weights
     tmp = weights[i]; weights[i] = weights[j]; weights[j] = tmp;
-}
-
-/******************************************************************************\
-|* minimum of two integer values                                              *|
-\******************************************************************************/
-static inline int min(int a, int b)
-{
-    return a < b ? a : b;
 }
 
 /******************************************************************************\
