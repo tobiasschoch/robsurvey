@@ -15,6 +15,7 @@
 ^inst/doc/doc_comparison\.tex$
 ^inst/doc/Sweave\.sty$
 ^inst/doc/useR_2022_conference
+^inst/doc/ices_7_conference
 # varia
 ^inst/varia
 # src folder
