@@ -12,9 +12,13 @@
 \alias{print.svystat_rob}
 \alias{scale.svystat_rob}
 \alias{mse}
+\alias{mse.svystat_rob}
+\alias{mse.svystat}
 \title{Utility Functions for Objects of Class svystat_rob}
 \usage{
-mse(object)
+mse(object, ...)
+\method{mse}{svystat_rob}(object, ...)
+\method{mse}{svystat}(object, ...)
 \method{summary}{svystat_rob}(object, digits = max(3L,
         getOption("digits") - 3L), ...)
 \method{coef}{svystat_rob}(object, ...)

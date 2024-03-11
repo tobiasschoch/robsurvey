@@ -137,7 +137,15 @@ scale.svystat_rob <- function(x, ...)
     x$scale
 }
 # compute estimated mse, more precisely, estimated risk
-mse <- function(object)
+mse <- function(object, ...)
+{
+    UseMethod("mse", object)
+}
+mse.svystat <- function(object, ...)
+{
+    unname(as.numeric(attr(object, "var")))
+}
+mse.svystat_rob <- function(object, ...)
 {
     call <- object$call
     # reference estimator
