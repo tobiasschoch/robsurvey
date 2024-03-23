@@ -175,6 +175,11 @@
 {
     .psi_function(x, k, psi) / x
 }
+# is domain estimator (the survey pkg identifies this by weight = 0)
+is_domain_estimator <- function(w)
+{
+    any(w < .Machine$double.eps)
+}
 # onAttach function
 .onAttach <- function(libname, pkgname)
 {

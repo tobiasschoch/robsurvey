@@ -2,7 +2,7 @@
 \alias{svyreg}
 \title{Survey Regression Estimator -- Weighted Least Squares}
 \usage{
-svyreg(formula, design, var = NULL, na.rm = FALSE)
+svyreg(formula, design, var = NULL, na.rm = FALSE, ...)
 }
 \arguments{
     \item{formula}{a \code{[formula]} object (i.e., symbolic description
@@ -16,6 +16,7 @@ svyreg(formula, design, var = NULL, na.rm = FALSE)
     \item{na.rm}{\code{[logical]} indicating whether \code{NA} values
         should be removed before the computation proceeds
         (default: \code{FALSE}).}
+    \item{\dots}{additional arguments (currently not used).}
 }
 \description{
     Weighted least squares estimator of regression

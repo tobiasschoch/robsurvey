@@ -1,5 +1,6 @@
 # ratio estimator of the total
-svytotal_ratio <- function(object, total, variance = "wu", keep_object = TRUE)
+svytotal_ratio <- function(object, total, variance = "wu", keep_object = TRUE,
+                           ...)
 {
     if (!inherits(object, "ratio"))
         stop(paste0("The function cannot be used for an object of class '",
@@ -19,7 +20,7 @@ svytotal_ratio <- function(object, total, variance = "wu", keep_object = TRUE)
     res <- structure(list(characteristic = "total",
         estimator = object$estimator, estimate = estimate,
         robust = object$robust, residuals = object$residuals,
-        model = list(object$model, coef = object$estimate,
+        model = list(object$model, coef = object$estimate, domain = FALSE,
             total = total, variance = variance, call = object$call),
         design = object$design, call = match.call(),
         variance = stderr^2), class = "svystat_rob")
@@ -29,7 +30,7 @@ svytotal_ratio <- function(object, total, variance = "wu", keep_object = TRUE)
 }
 # ratio estimator of the mean
 svymean_ratio <- function(object, total, N = NULL, variance = "wu",
-    keep_object = TRUE, N_unknown = FALSE)
+                          keep_object = TRUE, N_unknown = FALSE, ...)
 {
     if (!inherits(object, "ratio"))
         stop(paste0("The function cannot be used for an object of class '",
@@ -54,7 +55,7 @@ svymean_ratio <- function(object, total, N = NULL, variance = "wu",
     res <- structure(list(characteristic = "mean",
         estimator = object$estimator, estimate = estimate,
         robust = object$robust, residuals = object$residuals,
-        model = list(object$model, coef = object$estimate,
+        model = list(object$model, coef = object$estimate, domain = FALSE,
             total = total, variance = variance, call = object$call),
         design = object$design, call = match.call(),
         variance = stderr^2), class = "svystat_rob")

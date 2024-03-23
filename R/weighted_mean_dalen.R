@@ -22,14 +22,21 @@ weighted_total_dalen <- function(x, w, censoring, type = "Z2", info = FALSE,
     dat <- .check_data_weights(x, w, na.rm)
     if (is.null(dat))
         return(NA)
+
+    # memorize cases where w[i] = 0 (outside domain of interest)
+    in_domain <- dat$w > .Machine$double.eps
+    n <- sum(in_domain)
+    if (n == 0)
+        return(NA)
+
     xw <- dat$x * dat$w
     at <- xw > censoring
-    if (sum(at) > 0) {
+    if (sum(at[in_domain]) > 0) {
         if (type == "Z2") {             # Z2 estimator
             xw[at] <- censoring
             if (verbose)
-                cat(paste0(sum(at), " of ", length(dat$x),
-                    " observations censored\n"))
+                cat(paste0(sum(at[in_domain]), " of ", n,
+                           " observations censored\n"))
         } else if (type == "Z3") {      # Z3 estimator
             xw[at] <- censoring + (dat$x[at] - censoring / dat$w[at])
         } else {
@@ -47,7 +54,8 @@ weighted_total_dalen <- function(x, w, censoring, type = "Z2", info = FALSE,
 	        estimate = estimate, variance = NA,
 	        robust = list(xw = xw),
 	        residuals = NA,
-	        model = list(y = dat$x, w = dat$w),
+	        model = list(y = dat$x, w = dat$w,
+                         domain = length(dat$x) > n),
 	        design = NA, call = match.call())
         return(res)
     } else {

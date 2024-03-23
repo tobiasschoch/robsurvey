@@ -29,7 +29,8 @@ weighted_mean_trimmed <- function(x, w, LB = 0.05, UB = 1 - LB, info = FALSE,
                 LB, ", ", UB, ")"), LB = LB, UB = UB),
 	        estimate = tmp$loc, variance = NA,
 	        residuals = resid,
-	        model = list(y = dat$x, w = dat$w),
+	        model = list(y = dat$x, w = dat$w,
+                         domain = is_domain_estimator(w)),
 	        design = NA, call = match.call())
         return(res)
     } else {

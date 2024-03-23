@@ -1,6 +1,6 @@
 # Dalen the weighted mean (depends on pkg survey)
 svymean_dalen <- function(x, design, censoring, type = "Z2", na.rm = FALSE,
-    verbose = TRUE)
+                          verbose = TRUE, ...)
 {
     if (!is.language(x))
         stop("Argument 'x' must be a formula object\n", call. = FALSE)
@@ -26,7 +26,7 @@ svymean_dalen <- function(x, design, censoring, type = "Z2", na.rm = FALSE,
 }
 # Dalen the weighted total (depends on pkg survey)
 svytotal_dalen <- function(x, design, censoring, type = "Z2", na.rm = FALSE,
-    verbose = TRUE)
+                           verbose = TRUE, ...)
 {
     if (!is.language(x))
         stop("Argument 'x' must be a formula object\n", call. = FALSE)

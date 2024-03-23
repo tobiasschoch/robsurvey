@@ -1,5 +1,6 @@
 # weighted trimmed mean (depends on pkg survey)
-svymean_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE)
+svymean_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE,
+                            ...)
 {
     if (!is.language(x))
         stop("Argument 'x' must be a formula object\n", call. = FALSE)
@@ -25,7 +26,8 @@ svymean_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE)
     res
 }
 # weighted trimmed total (depends on pkg survey)
-svytotal_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE)
+svytotal_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE,
+                             ...)
 {
     if (!is.language(x))
         stop("Argument 'x' must be a formula object\n", call. = FALSE)

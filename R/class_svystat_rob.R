@@ -25,6 +25,7 @@
 #     + xwgt: [numeric] weights in the model's design space (GM-estimator)
 #     + n [int] number of observations
 #     + p [int] number of independent variables
+#     + domain [logical] for domain estimation (i.e., some w[i] = 0)
 #     + [others]
 #  + design: [survey.design object without 'variables']
 #  + variance: [numeric]
@@ -55,7 +56,7 @@ summary.svystat_rob <- function(object, digits = max(3L, getOption("digits") -
         cat("  Psi-function:", object$robust$psifunction, "with k =",
 	        object$estimator$k, "\n")
         cat("  mean of robustness weights:",
-	        round(mean(object$robust$robweights), digits), "\n")
+	        round(mean(robweights.svystat_rob(object)), digits), "\n")
         cat("\n")
         cat("Algorithm performance:\n")
         if (object$optim$converged) {
@@ -92,12 +93,20 @@ vcov.svystat_rob <- function(object, ...)
 # extract residuals from robust survey statistic object
 residuals.svystat_rob <- function(object, ...)
 {
-    object$residuals
+    res <- object$residuals
+    if (object$model$domain)
+        res[.is_in_domain(object)]
+    else
+        res
 }
 # extract fitted values from robust survey statistic object
 fitted.svystat_rob <- function(object, ...)
 {
-    object$model$y - object$residuals
+    yhat <- object$model$y - object$residuals
+    if (object$model$domain)
+        yhat[.is_in_domain(object)]
+    else
+        yhat
 }
 # extract robustness weights from robust survey statistic object, generic
 robweights <- function(object)
@@ -107,11 +116,13 @@ robweights <- function(object)
 # extract robustness weights from robust survey statistic object
 robweights.svystat_rob <- function(object)
 {
-    tmp <- object$robust$robweights
-    if (is.null(tmp))
+    robwgt <- object$robust$robweights
+    if (is.null(robwgt))
         stop("Robustness weights are not available\n")
+    else if (object$model$domain)
+        robwgt[.is_in_domain(object)]
     else
-        tmp
+        robwgt
 }
 # print method for robust survey statistic object
 print.svystat_rob <- function(x, digits = max(3L, getOption("digits") - 3L),
@@ -130,7 +141,6 @@ print.svystat_rob <- function(x, digits = max(3L, getOption("digits") - 3L),
         cat("(you may use the 'summary' method to learn more)\n")
     }
 }
-
 # extract estimate of scale
 scale.svystat_rob <- function(x, ...)
 {
@@ -173,4 +183,9 @@ mse.svystat_rob <- function(object, ...)
     }
     # mse
     as.numeric(object$variance + (object$estimate - ref)^2)
+}
+# is in domain (in the survey pkg identified with w[i] > 0)
+.is_in_domain <- function(object)
+{
+    object$model$w > .Machine$double.eps
 }

@@ -4,9 +4,9 @@
 \title{Robust Ratio Predictor of the Mean and Total}
 %FIXME: N and total
 \usage{
-svytotal_ratio(object, total, variance = "wu", keep_object = TRUE)
+svytotal_ratio(object, total, variance = "wu", keep_object = TRUE, ...)
 svymean_ratio(object, total, N = NULL, variance = "wu",
-              keep_object = TRUE, N_unknown = FALSE)
+              keep_object = TRUE, N_unknown = FALSE, ...)
 }
 \arguments{
     \item{object}{an object of class \code{[ratio]}, e.g., result of
@@ -22,6 +22,7 @@ svymean_ratio(object, total, N = NULL, variance = "wu",
     \item{N_unknown}{\code{[logical]} if \code{TRUE}, it is assumed that
         the population size is unknown; thus, it is estimated
         (default: \code{FALSE}).}
+    \item{\dots}{additional arguments (currently not used).}
 }
 \description{
     Robust ratio predictor (\emph{M}-estimator) of the population mean and

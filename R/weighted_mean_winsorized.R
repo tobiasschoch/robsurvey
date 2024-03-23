@@ -23,7 +23,8 @@ weighted_mean_winsorized <- function(x, w, LB = 0.05, UB = 1 - LB,
                 LB, ", ", UB, ")"), LB = LB, UB = UB),
 	        estimate = tmp$loc, variance = NA,
 	        residuals = resid,
-	        model = list(y = dat$x, w = dat$w),
+	        model = list(y = dat$x, w = dat$w,
+                         domain = is_domain_estimator(w)),
 	        design = NA, call = match.call())
         return(res)
     } else {
@@ -40,13 +41,20 @@ weighted_mean_k_winsorized <- function(x, w, k, info = FALSE, na.rm = FALSE)
         k <- as.integer(k)
         cat(paste0("Argument 'k' is casted to integer: k = ", k,"\n"))
     }
-    n <- dat$n
-    if (k >= n)
-        stop("k must be smaller than n\n", call. = FALSE)
     if (k < 1)
         stop("k must larger than 1\n", call. = FALSE)
 
-    tmp <- .C(C_wkwinsorizedmean, x = as.double(dat$x), w = as.double(dat$w),
+    # drop cases where w[i] = 0 (outside domain of interest)
+    w_is_positive <- dat$w > .Machine$double.eps
+    n <- sum(w_is_positive)
+    if (n == 0)
+        return(NA)
+    if (k >= n)
+        stop("k must be smaller than n\n", call. = FALSE)
+
+    w_pos <- dat$w[w_is_positive]
+    x_pos <- dat$x[w_is_positive]
+    tmp <- .C(C_wkwinsorizedmean, x = as.double(x_pos), w = as.double(w_pos),
         k = as.integer(k), loc = as.double(numeric(1)),
         n = as.integer(n), prob = as.double(numeric(1)))
 
@@ -58,7 +66,7 @@ weighted_mean_k_winsorized <- function(x, w, k, info = FALSE, na.rm = FALSE)
 	        estimate = tmp$loc,
 	        variance = NA,
 	        residuals = dat$x - tmp$loc,
-	        model = list(y = x, w = w),
+	        model = list(y = dat$x, w = dat$w, domain = length(dat$x) > n),
 	        design = NA, call = match.call())
         return(res)
     } else {

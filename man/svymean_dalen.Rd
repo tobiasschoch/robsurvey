@@ -4,9 +4,9 @@
 \title{Dalen's Estimators of the Population Mean and Total}
 \usage{
 svymean_dalen(x, design, censoring, type = "Z2", na.rm = FALSE,
-              verbose = TRUE)
+              verbose = TRUE, ...)
 svytotal_dalen(x, design, censoring, type = "Z2", na.rm = FALSE,
-               verbose = TRUE)
+               verbose = TRUE, ...)
 }
 \arguments{
     \item{x}{a one-sided \code{[formula]}, e.g., \code{~myVariable}.}
@@ -20,6 +20,7 @@ svytotal_dalen(x, design, censoring, type = "Z2", na.rm = FALSE,
         be removed before the computation proceeds (default: \code{FALSE}).}
     \item{verbose}{\code{[logical]} indicating whether additional information
             is printed to the console (default: \code{TRUE}).}
+    \item{\dots}{additional arguments (currently not used).}
 }
 \description{
     Dalen's estimators Z2 and Z3 of the population mean and total; see

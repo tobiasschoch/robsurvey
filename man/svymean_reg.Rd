@@ -4,9 +4,9 @@
 \title{Robust Generalized Regression Predictor (GREG) of the Mean and Total}
 \usage{
 svytotal_reg(object, totals, N = NULL, type, k = NULL, check.names = TRUE,
-             keep_object = TRUE)
+             keep_object = TRUE, ...)
 svymean_reg(object, totals, N = NULL, type, k = NULL, check.names = TRUE,
-            keep_object = TRUE, N_unknown = FALSE)
+            keep_object = TRUE, N_unknown = FALSE, ...)
 }
 \arguments{
     \item{object}{an object of class \code{[svyreg_rob]}, e.g., result of
@@ -28,6 +28,7 @@ svymean_reg(object, totals, N = NULL, type, k = NULL, check.names = TRUE,
     \item{N_unknown}{\code{[logical]} if \code{TRUE}, it is assumed that
         the population size is unknown; thus, it is estimated
         (default: \code{FALSE}).}
+    \item{\dots}{additional arguments (currently not used).}
 }
 \description{
     Generalized regression estimator (GREG) predictor of the mean and total,

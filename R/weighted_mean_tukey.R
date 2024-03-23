@@ -19,7 +19,8 @@ weighted_mean_tukey <- function(x, w, k, type = "rwm", info = FALSE,
             return(list(characteristic = "mean", estimator = list(string =
                 string, type = type, psi = 2, psi_fun = "Tukey", k = k),
                 estimate = dat$x, scale = NA, residuals = 0, model =
-                list(y = dat$x, w = dat$w), call = match.call()))
+                list(y = dat$x, w = dat$w, domain = is_domain_estimator(w)),
+                call = match.call()))
         else
             return(dat$x)
     }
@@ -41,6 +42,7 @@ weighted_mean_tukey <- function(x, w, k, type = "rwm", info = FALSE,
 
     if (info) {
         res$model[c("n", "p")] <- NULL
+        res$model$domain <- is_domain_estimator(w)
         if (type == "rwm")
             res$model$x <- NULL
         res$characteristic <- "mean"

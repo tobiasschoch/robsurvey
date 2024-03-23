@@ -22,7 +22,8 @@ weighted_mean_huber <- function(x, w, k, type = "rwm", asym = FALSE,
                 string, type = type, psi = psi,
                 psi_fun = if (asym) "asymHuber" else "Huber", k = k),
                 estimate = dat$x, scale = NA, residuals = 0,
-                model = list(y = dat$x, w = dat$w),
+                model = list(y = dat$x, w = dat$w,
+                             domain = is_domain_estimator(w)),
                 call = match.call()))
         else
             return(dat$x)
@@ -45,6 +46,7 @@ weighted_mean_huber <- function(x, w, k, type = "rwm", asym = FALSE,
     # return
     if (info) {
         res$model[c("n", "p")] <- NULL
+        res$model$domain <- is_domain_estimator(w)
         if (type == "rwm")
             res$model$x <- NULL
         res$characteristic <- "mean"

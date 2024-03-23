@@ -23,12 +23,12 @@ svyreg_tukeyGM(formula, design, k, type = c("Mallows", "Schweppe"),
         be removed before the computation proceeds (default: \code{FALSE}).}
     \item{verbose}{\code{[logical]} indicating whether additional information
             is printed to the console (default: \code{TRUE}).}
-    \item{\dots}{additional arguments passed to the method (e.g., \code{maxit}:
-        maxit number of iterations, etc.).}
     \item{type}{\code{[character]} \code{"Mallows"} or \code{"Schweppe"}.}
     \item{xwgt}{\code{[numerical vector]} or \code{[NULL]} of weights in the
         design space (default: \code{NULL}); \code{xwgt} is only relevant for
         \code{type = "Mallows"} or \code{type = "Schweppe"}.}
+    \item{\dots}{additional arguments passed to the method (e.g., \code{maxit}:
+        maxit number of iterations, etc.).}
 }
 \description{
     \code{svyreg_tukeyM} and \code{svyreg_tukeyGM} compute, respectively,

@@ -232,9 +232,9 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
     }
     *maxit = (converged) ? iterations : 0;
 
-    // final robustness weights
+    // final robustness weights (for domain estimation, w = 0)
     for (int i = 0; i < *n; i++)
-        robwgt[i] /= w[i];
+        robwgt[i] = (w[i] < DBL_EPSILON) ? 0.0 : robwgt[i] / w[i];
 
 clean_up:
     Free(beta1); Free(work_x); Free(work_y); Free(work_2n); Free(work_lapack);

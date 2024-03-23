@@ -6,11 +6,11 @@
 \title{Weighted Winsorized Mean and Total}
 \usage{
 svymean_winsorized(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE,
-                   trim_var = FALSE)
-svymean_k_winsorized(x, design, k, na.rm = FALSE, trim_var = FALSE)
+                   trim_var = FALSE, ...)
+svymean_k_winsorized(x, design, k, na.rm = FALSE, trim_var = FALSE, ...)
 svytotal_winsorized(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE,
-                    trim_var = FALSE)
-svytotal_k_winsorized(x, design, k, na.rm = FALSE, trim_var = FALSE)
+                    trim_var = FALSE, ...)
+svytotal_k_winsorized(x, design, k, na.rm = FALSE, trim_var = FALSE, ...)
 }
 \arguments{
     \item{x}{a one-sided \code{[formula]}, e.g., \code{~myVariable}.}
@@ -27,6 +27,7 @@ svytotal_k_winsorized(x, design, k, na.rm = FALSE, trim_var = FALSE)
         total (default: \code{FALSE}).}
     \item{k}{\code{[integer]} number of observations to be winsorized at the
         top of the distribution.}
+    \item{\dots}{additional arguments (currently not used).}
 }
 \description{
     Weighted winsorized mean and total

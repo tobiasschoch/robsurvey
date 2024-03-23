@@ -1,6 +1,6 @@
 # weighted winsorized mean (depends on pkg survey)
 svymean_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
-    na.rm = FALSE, trim_var = FALSE)
+                               na.rm = FALSE, trim_var = FALSE, ...)
 {
     if (!is.language(x))
         stop("Argument 'x' must be a formula object\n", call. = FALSE)
@@ -11,7 +11,6 @@ svymean_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
             paste0("Weighted winsorized estimator (", LB, ", ", UB, ")"),
             match.call(), design, "wins", LB = LB, UB = UB))
     # otherwise
-    design <- dat$design
     res <- weighted_mean_winsorized(dat$y, dat$w, LB, UB, TRUE, FALSE)
     # influence function
     infl <- if (trim_var)
@@ -20,6 +19,7 @@ svymean_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
         .infl_winsorized(dat$y, dat$w, LB, UB, res$estimate)
     # variance
     infl <- infl * dat$w / sum(dat$w)
+    design <- dat$design
     res$variance <- survey::svyrecvar(infl, design$cluster, design$strata,
         design$fpc, postStrata = design$postStrata)
     names(res$estimate) <- dat$yname
@@ -30,7 +30,7 @@ svymean_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
 }
 # weighted one-sided k winsorized mean (depends on pkg survey)
 svymean_k_winsorized <- function(x, design, k, na.rm = FALSE,
-    trim_var = FALSE)
+                                 trim_var = FALSE, ...)
 {
     if (!is.language(x))
         stop("Argument 'x' must be a formula object\n", call. = FALSE)
@@ -41,16 +41,15 @@ svymean_k_winsorized <- function(x, design, k, na.rm = FALSE,
             paste0("Weighted winsorized estimator (", "k = ", k),
             match.call(), design, "wins", k = k))
     # otherwise
-    design <- dat$design
     res <- weighted_mean_k_winsorized(dat$y, dat$w, k, TRUE, FALSE)
-    w <- res$model$w; x <- res$model$y
     # influence function
     infl <- if (trim_var)
         .infl_trimmed(dat$y, dat$w, 0, res$estimator$UB, res$estimate)
     else
         .infl_winsorized(dat$y, dat$w, 0, res$estimator$UB, res$estimate)
     # variance
-    infl <- infl * w / sum(w)
+    infl <- infl * dat$w / sum(dat$w)
+    design <- dat$design
     res$variance <- survey::svyrecvar(infl, design$cluster, design$strata,
         design$fpc, postStrata = design$postStrata)
     names(res$estimate) <- dat$yname
@@ -61,7 +60,7 @@ svymean_k_winsorized <- function(x, design, k, na.rm = FALSE,
 }
 # weighted winsorized total (depends on pkg survey)
 svytotal_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
-    na.rm = FALSE, trim_var = FALSE)
+                                na.rm = FALSE, trim_var = FALSE, ...)
 {
     if (!is.language(x))
         stop("Argument 'x' must be a formula object\n", call. = FALSE)
@@ -72,7 +71,6 @@ svytotal_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
             paste0("Weighted winsorized estimator (", LB, ", ", UB, ")"),
             match.call(), design, "wins", LB = LB, UB = UB))
     # otherwise
-    design <- dat$design
     res <- weighted_total_winsorized(dat$y, dat$w, LB, UB, TRUE, FALSE)
     # influence function
     infl <- if (trim_var)
@@ -81,6 +79,7 @@ svytotal_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
         .infl_winsorized(dat$y, dat$w, LB, UB, 0)
     # variance
     infl <- infl * dat$w
+    design <- dat$design
     res$variance <- survey::svyrecvar(infl, design$cluster, design$strata,
         design$fpc, postStrata = design$postStrata)
     names(res$estimate) <- dat$yname
@@ -91,7 +90,7 @@ svytotal_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
 }
 # weighted one-sided k winsorized total (depends on pkg survey)
 svytotal_k_winsorized <- function(x, design, k, na.rm = FALSE,
-    trim_var = FALSE)
+                                  trim_var = FALSE, ...)
 {
     if (!is.language(x))
         stop("Argument 'x' must be a formula object\n", call. = FALSE)
@@ -102,7 +101,6 @@ svytotal_k_winsorized <- function(x, design, k, na.rm = FALSE,
             paste0("Weighted winsorized estimator (", "k = ", k),
             match.call(), design, "wins", k = k))
     # otherwise
-    design <- dat$design
     res <- weighted_total_k_winsorized(dat$y, dat$w, k, TRUE, FALSE)
     # influence function
     infl <- if (trim_var)
@@ -111,6 +109,7 @@ svytotal_k_winsorized <- function(x, design, k, na.rm = FALSE,
         .infl_winsorized(dat$y, dat$w, 0, res$estimator$UB, 0)
     # variance
     infl <- infl * dat$w
+    design <- dat$design
     res$variance <- survey::svyrecvar(infl, design$cluster, design$strata,
         design$fpc, postStrata = design$postStrata)
     names(res$estimate) <- dat$yname

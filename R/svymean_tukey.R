@@ -1,6 +1,6 @@
 # Tukey biweight M-estimator of the weighted mean (depends on pkg survey)
 svymean_tukey <- function(x, design, k, type = "rwm", na.rm = FALSE,
-    verbose = TRUE, ...)
+                          verbose = TRUE, ...)
 {
     if (!is.language(x))
         stop("Argument 'x' must be a formula object\n", call. = FALSE)
@@ -31,7 +31,7 @@ svymean_tukey <- function(x, design, k, type = "rwm", na.rm = FALSE,
 }
 # Tukey biweight M-estimator of the weighted total (depends on pkg survey)
 svytotal_tukey <- function(x, design, k, type = "rwm", na.rm = FALSE,
-        verbose = TRUE, ...)
+                           verbose = TRUE, ...)
 {
     if (!is.language(x))
         stop("Argument 'x' must be a formula object\n", call. = FALSE)

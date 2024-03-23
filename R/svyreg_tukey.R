@@ -1,6 +1,6 @@
 # robust Tukey biweight M-estimator of regression (depends on pkg survey)
 svyreg_tukeyM <- function(formula, design, k, var = NULL, na.rm = FALSE,
-    verbose = TRUE, ...)
+                          verbose = TRUE, ...)
 {
     dat <- .check_regression(formula, design, var, NULL, na.rm)
     # add a 'reduced' survey.design2 object
@@ -30,7 +30,7 @@ svyreg_tukeyM <- function(formula, design, k, var = NULL, na.rm = FALSE,
 }
 # deprecated function kept for compatibility reasons
 svyreg_tukey <- function(formula, design, k, var = NULL, na.rm = FALSE,
-    verbose = TRUE, ...)
+                         verbose = TRUE, ...)
 {
     .Deprecated("svyreg_tukeyM")
     tmp <- svyreg_tukeyM(formula, design, k, var, na.rm, verbose, ...)
@@ -39,7 +39,8 @@ svyreg_tukey <- function(formula, design, k, var = NULL, na.rm = FALSE,
 }
 # robust Tukey biweight GM-estimator of regression (depends on pkg survey)
 svyreg_tukeyGM <- function(formula, design, k, type = c("Mallows", "Schweppe"),
-    xwgt, var = NULL, na.rm = FALSE, verbose = TRUE, ...)
+                           xwgt, var = NULL, na.rm = FALSE, verbose = TRUE,
+                           ...)
 {
     type <- match.arg(type)
     type_int <- switch(type, "Mallows" = 1L, "Schweppe" = 2L)

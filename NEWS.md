@@ -1,5 +1,12 @@
 **If you are viewing this file on CRAN, please check [latest news on GitHub](https://github.com/tobiasschoch/robsurvey/blob/master/NEWS.md) where the formatting is also better.**
 
+# robsurvey NEXT VERSION (not published yet)
+
+## NEW FEATURES
+
+* The survey methods with prefix `svymean_` or `svytotal_` can now be used with the function `survey::svyby()`.
+* Method `mse()` is now also available for objects of class `svystat` (which is defined in pkg `survey`).
+
 # robsurvey VERSION 0.6 (2024-01-14)
 
 This release of the package fixes a number of issues that were brought to our attention by an anonymous reviewer. It also fixes some other problems.
@@ -32,7 +39,7 @@ Fixed a bug in the C function `wquant0`. For the special case of samples of size
 
 ## CHANGE
 
-The `summary()` method for objects of class `formula` has been replaced by `svysummary()` because it did not handle non-standard cases correctly (Thanks to the editorial office of the Journal of Statistical Software for pointing this out). 
+The `summary()` method for objects of class `formula` has been replaced by `svysummary()` because it did not handle non-standard cases correctly (Thanks to the editorial office of the Journal of Statistical Software for pointing this out).
 
 ## MISC
 
@@ -44,7 +51,6 @@ The `summary()` method for objects of class `formula` has been replaced by `svys
 ## CHANGES
 
 * Files in `/doc` folder are now in `*.pdf` format which takes less space compared with the `*.html` format. Thus, the warning `checking installed package size... NOTE installed size is 5.4Mb sub-directories of 1Mb or more: doc 4.9Mb` disappeared
-  
 * The print method for objects of class `svystat_rob` now correctly prints: [Estimator] `of the population` [mean/total].
 * The default value of argument `type` in the functions `weighted_mean_huber()`, `weighted_mean_tukey()`, `svymean_huber()` and `svymean_tukey()` is now `"rwm"`. Type `"rhj"` is still available (and will be supported in the future) but is silently converted to `"rwm"`.
 

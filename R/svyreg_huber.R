@@ -1,6 +1,6 @@
 # robust Huber M-estimator of regression (depends on pkg survey)
 svyreg_huberM <- function(formula, design, k, var = NULL, na.rm = FALSE,
-    asym = FALSE, verbose = TRUE, ...)
+                          asym = FALSE, verbose = TRUE, ...)
 {
     dat <- .check_regression(formula, design, var, NULL, na.rm)
     # add a 'reduced' survey.design2 object
@@ -30,7 +30,7 @@ svyreg_huberM <- function(formula, design, k, var = NULL, na.rm = FALSE,
 }
 # deprecated function kept for compatibility reasons
 svyreg_huber <- function(formula, design, k, var = NULL, na.rm = FALSE,
-    asym = FALSE, verbose = TRUE, ...)
+                         asym = FALSE, verbose = TRUE, ...)
 {
     .Deprecated("svyreg_huberM")
     tmp <- svyreg_huberM(formula, design, k, var, na.rm, asym, verbose, ...)
@@ -39,7 +39,8 @@ svyreg_huber <- function(formula, design, k, var = NULL, na.rm = FALSE,
 }
 # robust Huber GM-estimator of regression (depends on pkg survey)
 svyreg_huberGM <- function(formula, design, k, type = c("Mallows", "Schweppe"),
-    xwgt, var = NULL, na.rm = FALSE, asym = FALSE, verbose = TRUE, ...)
+                           xwgt, var = NULL, na.rm = FALSE, asym = FALSE,
+                           verbose = TRUE, ...)
 {
     type <- match.arg(type)
     type_int <- switch(type, "Mallows" = 1L, "Schweppe" = 2L)

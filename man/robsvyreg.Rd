@@ -25,8 +25,6 @@ svyreg_control(tol = 1e-5, maxit = 100, k_Inf = 1e6, init = NULL,
         (default: \code{NULL}).}
     \item{verbose}{\code{[logical]} indicating whether additional information
         is printed to the console (default: \code{TRUE}).}
-    \item{\dots}{additional arguments passed to the method
-        (see \code{svyreg_control}).}
     \item{tol}{\code{[double]} numerical tolerance criterion to stop the
         iterations (default: \code{1e-05}).}
     \item{maxit}{\code{[integer]} maximum number of iterations to use
@@ -41,6 +39,8 @@ svyreg_control(tol = 1e-5, maxit = 100, k_Inf = 1e6, init = NULL,
     \item{mad_center}{\code{[logical]} if \code{TRUE}, the weighted MAD is
         centered about the (weighted) median, otherwise the weighted MAD is
         centered about zero (default: \code{TRUE}).}
+    \item{\dots}{additional arguments passed to the method
+        (see \code{svyreg_control}).}
 }
 \description{
     \strong{Internal} function to call the robust survey regression

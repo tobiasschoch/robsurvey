@@ -1,6 +1,6 @@
 # GREG predictor of the total
 svytotal_reg <- function(object, totals, N = NULL, type, k = NULL,
-    check.names = TRUE, keep_object = TRUE)
+                         check.names = TRUE, keep_object = TRUE, ...)
 {
     if (!inherits(object, "svyreg_rob"))
         stop(paste0("The function cannot be used for an object of class '",
@@ -24,6 +24,7 @@ svytotal_reg <- function(object, totals, N = NULL, type, k = NULL,
     # return
     model$coef <- object$estimate
     model$call <- object$call
+    model$domain <- FALSE
     res <- structure(list(characteristic = "total",
         estimator = .method_name(type, k), estimate = est,
         robust = list(robweights = .bi_weights(object, type, k)),
@@ -36,7 +37,8 @@ svytotal_reg <- function(object, totals, N = NULL, type, k = NULL,
 }
 # GREG predictor of the mean
 svymean_reg <- function(object, totals, N = NULL, type, k = NULL,
-    check.names = TRUE, keep_object = TRUE, N_unknown = FALSE)
+                        check.names = TRUE, keep_object = TRUE,
+                        N_unknown = FALSE, ...)
 {
     if (!inherits(object, "svyreg_rob"))
         stop(paste0("The function cannot be used for an object of class '",
@@ -64,6 +66,7 @@ svymean_reg <- function(object, totals, N = NULL, type, k = NULL,
     # return
     model$coef <- object$estimate
     model$call <- object$call
+    model$domain <- FALSE
     res <- structure(list(characteristic = "mean",
         estimator = .method_name(type, k), estimate = est,
         robust = list(robweights = .bi_weights(object, type, k)),

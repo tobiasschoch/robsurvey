@@ -1,5 +1,5 @@
 # Regression estimator of the mean (depends on pkg survey)
-svyreg <- function(formula, design, var = NULL, na.rm = FALSE)
+svyreg <- function(formula, design, var = NULL, na.rm = FALSE, ...)
 {
     dat <- .check_regression(formula, design, var, NULL, na.rm)
     n <- length(dat$y); p <- NCOL(dat$x)

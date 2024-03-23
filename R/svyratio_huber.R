@@ -1,6 +1,7 @@
 # robust ratio estimator
 svyratio_huber <- function(numerator, denominator, design, k,
-    var = denominator, na.rm = FALSE, asym = FALSE, verbose = TRUE, ...)
+                           var = denominator, na.rm = FALSE, asym = FALSE,
+                           verbose = TRUE, ...)
 {
     stopifnot(inherits(numerator, "formula"), inherits(denominator, "formula"))
     res <- svyreg_huberM(as.formula(paste0(numerator[[2]], "~ -1 +",
