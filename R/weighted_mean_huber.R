@@ -7,7 +7,7 @@ weighted_mean_huber <- function(x, w, k, type = "rwm", asym = FALSE,
         type <- "rwm"
 
     string <- paste0("Huber M-estimator (type = ", type,
-        if (asym) "; asym. psi" else "", ")")
+                     if (asym) "; asym. psi" else "", ")")
 
     psi <- if (asym) 1 else 0
 
@@ -22,8 +22,7 @@ weighted_mean_huber <- function(x, w, k, type = "rwm", asym = FALSE,
                 string, type = type, psi = psi,
                 psi_fun = if (asym) "asymHuber" else "Huber", k = k),
                 estimate = dat$x, scale = NA, residuals = 0,
-                model = list(y = dat$x, w = dat$w,
-                             domain = is_domain_estimator(w)),
+                model = list(y = dat$x, w = dat$w),
                 call = match.call()))
         else
             return(dat$x)
@@ -31,12 +30,12 @@ weighted_mean_huber <- function(x, w, k, type = "rwm", asym = FALSE,
     # otherwise
     if (type == "rwm") {
         res <- robsvyreg(rep(1, dat$n), dat$x, dat$w, k, psi, 0, NULL, NULL,
-            verbose, ...)
+                         verbose, ...)
     }
     if (type == "rht") {
         xvar <- mean(dat$w) / dat$w
         res <- robsvyreg(xvar, dat$x, dat$w, k, psi, 0, NULL, xvar, verbose,
-            ...)
+                         ...)
     }
     # check for failure of convergence
     if (!res$optim$converged) {
@@ -46,16 +45,15 @@ weighted_mean_huber <- function(x, w, k, type = "rwm", asym = FALSE,
     # return
     if (info) {
         res$model[c("n", "p")] <- NULL
-        res$model$domain <- is_domain_estimator(w)
         if (type == "rwm")
             res$model$x <- NULL
         res$characteristic <- "mean"
         res$estimator$string <- string
         res$estimator$type <- type
         res$call <- match.call()
-        return(res)
+        res
     } else {
-        return(res$estimate)
+        res$estimate
     }
 }
 # Huber M-estimator of the weighted total
@@ -70,5 +68,5 @@ weighted_total_huber <- function(x, w, k, type = "rwm", asym = FALSE,
         res$estimate <- res$estimate * sum(w)
         res$call <- match.call()
     }
-    return(res)
+    res
 }

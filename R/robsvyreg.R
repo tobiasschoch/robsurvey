@@ -27,10 +27,10 @@ robsvyreg <- function(x, y, w, k, psi, type, xwgt, var = NULL,
         beta <- ctrl$init
         if (length(as.vector(beta)) != p || !is.numeric(beta))
             stop("Argument 'init' must be a numerical p-vector\n",
-                call. = FALSE)
+                 call. = FALSE)
         if (sqrt(sum(beta^2)) < sqrt(.Machine$double.eps))
             stop("Euclidean norm of 'init' is zero (or nearly so)\n",
-                call. = FALSE)
+                 call. = FALSE)
     }
 
     tmp <- .C(C_rwlslm, x = as.double(x), y = as.double(y), w = as.double(w),
@@ -48,6 +48,7 @@ robsvyreg <- function(x, y, w, k, psi, type, xwgt, var = NULL,
 
     psi_fun <- switch(psi + 1, "Huber", "asymHuber", "Tukey")
     names(tmp$beta) <- colnames(x)
+    # return
     list(characteristic = "regression",
         estimator = list(string = paste0("Survey regression ",
             switch(type + 1, "", "Mallows G", "Schweppe G"),
@@ -70,10 +71,10 @@ svyreg_control <- function(tol = 1e-5, maxit = 100, k_Inf = 1e6, init = NULL,
         stop("Argument 'maxit' must be a positive integer\n", call. = FALSE)
     if (!is.logical(mad_center))
         stop("Argument 'mad_center' must be of type 'logical'\n",
-            call. = FALSE)
+             call. = FALSE)
     if (!is.numeric(k_Inf))
-        stop("Argument 'k_Inf' must be of type 'numeric'\n",
-            call. = FALSE)
+        stop("Argument 'k_Inf' must be of type 'numeric'\n", call. = FALSE)
+    # return
     list(tol = unname(tol), maxit = unname(as.integer(maxit)),
         k_Inf = unname(k_Inf), init = unname(init),
         mad_center = unname(mad_center))

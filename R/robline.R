@@ -6,7 +6,7 @@
     cumw <- n * cumsum(w) / sum(w)
     low <- min(which(cumw >= (n - 1) * prob))
     high <- max(which(cumw <= (n - 1) * prob))
-    return((x[low + 1] + x[high + 1]) /2)
+    (x[low + 1] + x[high + 1]) / 2
 }
 # check data for missing values
 .check_line_data <- function(x, y, w, na.rm = FALSE)
@@ -19,7 +19,7 @@
             w <- w[ok]
         } else {
 	        stop("There are missing values in 'x', 'y' or 'w'.\n",
-                call. = FALSE)
+                 call. = FALSE)
         }
     }
     list(x = x, y = y, w = w)
@@ -37,7 +37,7 @@ weighted_line <- function(x, y = NULL, w, na.rm = FALSE, iter = 1)
     }
     if (NCOL(x) > 1)
         stop("Argument 'x' contains more than 1 explanatory variables.\n",
-            call. = FALSE)
+             call. = FALSE)
 
     # check for missing values
     tmp <- .check_line_data(x, y, w, na.rm)
@@ -58,13 +58,13 @@ weighted_line <- function(x, y = NULL, w, na.rm = FALSE, iter = 1)
 
     # Medians for x
     wmedx <- c(weighted_median(x[groups == 1], w[groups == 1], na.rm),
-	    weighted_median(x[groups == 3], w[groups == 3], na.rm))
+               weighted_median(x[groups == 3], w[groups == 3], na.rm))
 
     # polishing (affects only the slope)
     slope <- 0; r <- y; j <- 0
     while (j <= iter - 1) {
         wmedr <- c(weighted_median(r[groups == 1], w[groups == 1], na.rm),
-	        weighted_median(r[groups == 3], w[groups == 3], na.rm))
+                   weighted_median(r[groups == 3], w[groups == 3], na.rm))
         slope <- slope + (wmedr[2] - wmedr[1]) / (wmedx[2] - wmedx[1])
         r <- y - slope * x
         j <- j + 1
@@ -74,16 +74,18 @@ weighted_line <- function(x, y = NULL, w, na.rm = FALSE, iter = 1)
     intercept <- weighted_median(r, w, na.rm)
     yhat <- intercept + slope * x
 
+    # return
     structure(list(call = match.call(), coefficients = c(intercept, slope),
-        residuals = y - yhat, fitted.values = yhat), class = "tukeyline")
+                   residuals = y - yhat, fitted.values = yhat),
+              class = "tukeyline")
 }
 # Weighted median line estimator
 weighted_median_line <- function(x, y = NULL, w, type = "slopes",
-    na.rm = FALSE)
+                                 na.rm = FALSE)
 {
     if (missing(w))
         stop("Argument 'w' (weights) is missing, with no default.\n",
-            call. = FALSE)
+             call. = FALSE)
 
     if (inherits(x, "formula")) {
         dat <- xy.coords(x)
@@ -92,7 +94,7 @@ weighted_median_line <- function(x, y = NULL, w, type = "slopes",
     }
     if (NCOL(x) > 1)
         stop("Argument 'x' contains more than 1 explanatory variables.\n",
-            call. = FALSE)
+             call. = FALSE)
 
     # check for missing values
     tmp <- .check_line_data(x, y, w, na.rm)
@@ -121,15 +123,17 @@ weighted_median_line <- function(x, y = NULL, w, type = "slopes",
     intercept <- weighted_median(r, w, na.rm)
     yhat <- intercept + slope * x
 
+    # return
     structure(list(call = sys.call(), coefficients = c(intercept, slope),
-        residuals = y - yhat, fitted.values = yhat), class = "medline")
+                   residuals = y - yhat, fitted.values = yhat),
+              class = "medline")
 }
 # Weighted median ratio estimator
 weighted_median_ratio <- function(x, y = NULL, w, na.rm = FALSE)
 {
     if (missing(w))
         stop("Argument 'w' (weights) is missing, with no default.\n",
-            call. = FALSE)
+             call. = FALSE)
 
     if (inherits(x, "formula")) {
         dat <- xy.coords(x)
@@ -138,7 +142,7 @@ weighted_median_ratio <- function(x, y = NULL, w, na.rm = FALSE)
     }
     if (NCOL(x) > 1)
         stop("Argument 'x' contains more than 1 explanatory variables.\n",
-            call. = FALSE)
+             call. = FALSE)
 
     # check for missing values
     tmp <- .check_line_data(x, y, w, na.rm)
@@ -150,8 +154,10 @@ weighted_median_ratio <- function(x, y = NULL, w, na.rm = FALSE)
     # fitted.varlues and residuals
     yhat <- ratio * x
 
+    # return
     structure(list(call = match.call(), coefficients = ratio,
-        residuals = y - yhat, fitted.values = yhat), class = "medline")
+                   residuals = y - yhat, fitted.values = yhat),
+              class = "medline")
 }
 # some S3 functions for objects of class 'medline'
 print.medline <- function(x, ...)

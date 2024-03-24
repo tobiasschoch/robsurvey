@@ -9,19 +9,33 @@ svymean_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE,
     if (dat$failure)
         return(.new_svystat_rob("mean", dat$yname,
             paste0("Weighted trimmed estimator (", LB, ", ", UB, ")"),
-            match.call(), design, "trim", LB = LB, UB = UB))
-    # otherwise
-    design <- dat$design
-    res <- weighted_mean_trimmed(dat$y, dat$w, LB, UB, TRUE, FALSE)
+            dat$domain, dat$design, match.call(), "trim", LB = LB, UB = UB))
+
+    # population- vs. domain-level estimate
+    res <- if (dat$domain)
+        weighted_mean_trimmed(dat$y[dat$in_domain], dat$w[dat$in_domain], LB,
+                              UB, TRUE, FALSE)
+    else
+        weighted_mean_trimmed(dat$y, dat$w, LB, UB, TRUE, FALSE)
+
     # influence function
-    infl <- .infl_trimmed(dat$y, dat$w, LB, UB, res$estimate)
+    infl <- .infl_trimmed(res$model$y, res$model$w, LB, UB, res$estimate) *
+                res$model$w / sum(res$model$w)
+    if (dat$domain) {
+        tmp <- numeric(dat$n)
+        tmp[dat$in_domain] <- infl
+        infl <- tmp
+    }
+
     # variance
-    infl <- infl * dat$w / sum(dat$w)
-    res$variance <- survey::svyrecvar(infl, design$cluster, design$strata,
-        design$fpc, postStrata = design$postStrata)
+    design <- dat$design
+    res$variance <- svyrecvar(infl, design$cluster, design$strata, design$fpc,
+                              postStrata = design$postStrata)
+    # return
     names(res$estimate) <- dat$yname
+    res$estimator$domain <- dat$domain
+    res$design <- dat$design
     res$call <- match.call()
-    res$design <- design
     class(res) <- "svystat_rob"
     res
 }
@@ -36,17 +50,32 @@ svytotal_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE,
     if (dat$failure)
         return(.new_svystat_rob("total", dat$yname,
             paste0("Weighted trimmed estimator (", LB, ", ", UB, ")"),
-            match.call(), design, "trim", LB = LB, UB = UB))
-    # otherwise
+            dat$domain, dat$design, match.call(), "trim", LB = LB, UB = UB))
+
+    # population- vs. domain-level estimate
+    res <- if (dat$domain)
+        weighted_total_trimmed(dat$y[dat$in_domain], dat$w[dat$in_domain], LB,
+                               UB, TRUE, FALSE)
+    else
+        weighted_total_trimmed(dat$y, dat$w, LB, UB, TRUE, FALSE)
+
+    # influence function
+    infl <- .infl_trimmed(res$model$y, res$model$w, LB, UB, 0) * res$model$w
+    if (dat$domain) {
+        tmp <- numeric(dat$n)
+        tmp[dat$in_domain] <- infl
+        infl <- tmp
+    }
+
+    # variance
     design <- dat$design
-    res <- weighted_total_trimmed(dat$y, dat$w, LB, UB, TRUE, FALSE)
-    # influence function and variance
-    infl <- .infl_trimmed(dat$y, dat$w, LB, UB, 0) * dat$w
-    res$variance <- survey::svyrecvar(infl, design$cluster, design$strata,
-        design$fpc, postStrata = design$postStrata)
+    res$variance <- svyrecvar(infl, design$cluster, design$strata, design$fpc,
+                              postStrata = design$postStrata)
+    # return
     names(res$estimate) <- dat$yname
+    res$estimator$domain <- dat$domain
+    res$design <- dat$design
     res$call <- match.call()
-    res$design <- design
     class(res) <- "svystat_rob"
     res
 }

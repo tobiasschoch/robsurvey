@@ -20,7 +20,7 @@ svyreg_huberM <- function(formula, design, k, var = NULL, na.rm = FALSE,
             class = "svyreg_rob"))
     # otherwise
     res <- robsvyreg(dat$x, dat$y, dat$w, k, if (asym) 1 else 0, 0, dat$xwgt,
-        dat$var, verbose, ...)
+                     dat$var, verbose, ...)
     res$design <- dat$design
     res$terms <- dat$terms
     res$call <- match.call()
@@ -49,7 +49,7 @@ svyreg_huberGM <- function(formula, design, k, type = c("Mallows", "Schweppe"),
     if (NCOL(xwgt) > 1) {
         xwgt <- as.numeric(xwgt[, 1])
         warning("Only first column of argument 'xwgt' is used\n",
-            class. = FALSE)
+                class. = FALSE)
     }
     dat <- .check_regression(formula, design, var, xwgt, na.rm)
     # add a 'reduced' survey.design2 object
@@ -69,7 +69,7 @@ svyreg_huberGM <- function(formula, design, k, type = c("Mallows", "Schweppe"),
             class = "svyreg_rob"))
     # otherwise
     res <- robsvyreg(dat$x, dat$y, dat$w, k, if (asym) 1 else 0, type_int,
-        dat$xwgt, dat$var, verbose, ...)
+                     dat$xwgt, dat$var, verbose, ...)
     res$design <- dat$design
     res$terms <- dat$terms
     res$call <- match.call()

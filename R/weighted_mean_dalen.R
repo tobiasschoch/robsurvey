@@ -6,13 +6,14 @@ weighted_mean_dalen <- function(x, w, censoring, type = "Z2", info = FALSE,
         info = TRUE)
     if (is.na(res$estimate))
         return(NA)
+
     res$characteristic <- "mean"
     res$estimate <- res$estimate / sum(res$model$w)
     res$call <- match.call()
     if (info)
-        return(res)
+        res
     else
-        return(res$estimate)
+        res$estimate
 }
 # Dalén's weight reduction estimating method of the weighted total
 weighted_total_dalen <- function(x, w, censoring, type = "Z2", info = FALSE,
@@ -23,19 +24,14 @@ weighted_total_dalen <- function(x, w, censoring, type = "Z2", info = FALSE,
     if (is.null(dat))
         return(NA)
 
-    # memorize cases where w[i] = 0 (outside domain of interest)
-    in_domain <- dat$w > .Machine$double.eps
-    n <- sum(in_domain)
-    if (n == 0)
-        return(NA)
-
     xw <- dat$x * dat$w
     at <- xw > censoring
-    if (sum(at[in_domain]) > 0) {
+    n_censored <- sum(at)
+    if (n_censored > 0) {
         if (type == "Z2") {             # Z2 estimator
             xw[at] <- censoring
             if (verbose)
-                cat(paste0(sum(at[in_domain]), " of ", n,
+                cat(paste0(n_censored, " of ", length(dat$w),
                            " observations censored\n"))
         } else if (type == "Z3") {      # Z3 estimator
             xw[at] <- censoring + (dat$x[at] - censoring / dat$w[at])
@@ -54,11 +50,10 @@ weighted_total_dalen <- function(x, w, censoring, type = "Z2", info = FALSE,
 	        estimate = estimate, variance = NA,
 	        robust = list(xw = xw),
 	        residuals = NA,
-	        model = list(y = dat$x, w = dat$w,
-                         domain = length(dat$x) > n),
+	        model = list(y = dat$x, w = dat$w),
 	        design = NA, call = match.call())
-        return(res)
+        res
     } else {
-        return(estimate)
+        estimate
     }
 }

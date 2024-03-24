@@ -1,12 +1,12 @@
 # Minimum estimated risk estimator for location M-estimates
 mer <- function(object, verbose = TRUE, max_k = 10, init = 1, method = "Brent",
-    optim_args = list())
+                optim_args = list())
 {
     if (!inherits(object, "mer_capable"))
         stop("MER-estimator cannot be compute for this class of estimators\n",
-            call. = FALSE)
+             call. = FALSE)
     stopifnot(is.numeric(max_k), max_k > 1, is.numeric(init), init >= 0,
-        init < max_k)
+              init < max_k)
 
     # search interval
     range_k <- c(init, max_k)
@@ -30,11 +30,11 @@ mer <- function(object, verbose = TRUE, max_k = 10, init = 1, method = "Brent",
 
     # minimize mse
     opt <- optim(init, estimated_mse, est = est, ref = ref, method = method,
-        lower = range_k[1], upper = range_k[2], control = optim_args)
+                 lower = range_k[1], upper = range_k[2], control = optim_args)
 
     if (verbose)
         cat(paste0("Search interval: [", range_k[1], ", ",
-            round(range_k[2], 1), "]\n"))
+                   round(range_k[2], 1), "]\n"))
 
     if (opt$par < 1) {
         cat("No minimum found\n")
@@ -47,7 +47,7 @@ mer <- function(object, verbose = TRUE, max_k = 10, init = 1, method = "Brent",
         if (verbose) {
             cat("Minimum found for k = ", round(opt$par, 4), "\n")
             cat(paste0("Rel. efficiency gain: ", -100 * round(opt$val - 1, 2),
-                "%\n"))
+                       "%\n"))
         }
         # compute mer
         est$k <- round(opt$par, 4)

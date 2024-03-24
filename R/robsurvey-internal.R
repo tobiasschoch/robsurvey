@@ -6,12 +6,12 @@
 
     if (is.factor(x) || is.factor(w) || is.data.frame(x))
         stop("Arguments data and weights must be numeric vectors\n",
-            call. = FALSE)
+             call. = FALSE)
 
     n <- length(x)
     if (n != length(w))
         stop("Data vector and weights are not of the same dimension\n",
-	        call. = FALSE)
+             call. = FALSE)
     # empty data
     if (n == 0)
         return(NULL)
@@ -35,7 +35,7 @@
     # check if data vector and weights are finite
     if (sum(is.finite(c(x, w))) != 2 * n) {
         warning("Some observations are not finite\n", call. = FALSE,
-	        immediate. = TRUE)
+                immediate. = TRUE)
         return(NULL)
     }
     list(x = x, w = w, n = n)
@@ -46,7 +46,7 @@
     if (inherits(f, "formula")) {
         if (length(all.vars(f)) > 1)
             stop("Formula must refer to one r.h.s. variable only\n",
-                call. = FALSE)
+                 call. = FALSE)
         tf <- terms.formula(f)
         if(attr(tf, "response") != 0)
             stop("The LHS of the formula must not be defined\n", call. = FALSE)
@@ -62,7 +62,7 @@
             }
         } else {
 	        stop("Type of argument '", f, "' is not supported\n",
-                call. = FALSE)
+                 call. = FALSE)
         }
     }
     w <- as.numeric(1 / design$prob)
@@ -85,11 +85,22 @@
             }
         }
     }
-    list(failure = failure, yname = yname, y = y, w = w, design = design)
+    # domain indicator (if w[i] == 0, the unit is NOT in the domain)
+    in_domain <- w > .Machine$double.eps
+    if (all(in_domain)) {
+        domain <- FALSE
+        in_domain <- NULL
+    } else {
+        domain <- TRUE
+    }
+
+    # return
+    list(failure = failure, yname = yname, y = y, w = w, n = length(w),
+         design = design, domain = domain, in_domain = in_domain)
 }
 # check and extract data from survey.design object (for regression)
 .check_regression <- function(formula, design, var = NULL, xwgt = NULL,
-    na.rm = FALSE)
+                              na.rm = FALSE)
 {
     if (!inherits(formula, "formula"))
         stop("Argument '", formula, "' must be a formula\n", call. = FALSE)
@@ -146,6 +157,7 @@
             failure <- TRUE
         }
     }
+    # return
     list(failure = failure, x = x, y = y, var = var, w = w, terms = mt,
         design = design, xwgt = xwgt, yname = yname)
 }
@@ -161,6 +173,7 @@
         "Huber" = 0,
         "Huberasym" = 1,
         "Tukey" = 2)
+    # return
     if (any(is.na(x))) {
         rep(NA, n)
     } else {
@@ -202,7 +215,7 @@ is_domain_estimator <- function(w)
 
             # Does the environment look like a library() environment?
             exist <- sapply(argsToFind, FUN = exists, envir = env,
-                inherits = FALSE)
+                            inherits = FALSE)
 
             if (!all(exist))
                 next

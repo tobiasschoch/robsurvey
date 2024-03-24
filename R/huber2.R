@@ -1,6 +1,6 @@
 # Weighted Huber proposal 2 estimator of location and scale
 huber2 <- function(x, w, k = 1.5, na.rm = FALSE, maxit = 50, tol = 1e-4,
-    info = FALSE, k_Inf = 1e6, df_cor = TRUE)
+                   info = FALSE, k_Inf = 1e6, df_cor = TRUE)
 {
     stopifnot(k_Inf > 0, is.numeric(k))
     dat <- .check_data_weights(x, w, na.rm)
@@ -28,6 +28,7 @@ huber2 <- function(x, w, k = 1.5, na.rm = FALSE, maxit = 50, tol = 1e-4,
         tmp$loc <- NA; tmp$scale <- NA; tmp$robwgt <- rep(NA, dat$n)
     }
 
+    # return
     if (info) {
         res <- list(characteristic = "mean",
 	        estimator = paste0("Weighted Huber proposal 2 estimator (k=", k,
@@ -39,8 +40,8 @@ huber2 <- function(x, w, k = 1.5, na.rm = FALSE, maxit = 50, tol = 1e-4,
             residuals = dat$x - tmp$loc,
             model = list(y = dat$x, w = dat$w), design = NA,
             call = match.call())
-        return(res)
+        res
     } else {
-        return(tmp$loc)
+        tmp$loc
     }
 }

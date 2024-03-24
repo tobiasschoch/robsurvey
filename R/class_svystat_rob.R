@@ -6,6 +6,7 @@
 #     + psi: [int]
 #     + psi_fun: [char]
 #     + k: [numeric]
+#     + domain: [logical]
 #  + estimate: [numeric] vector of estimated regression coefficients
 #  + scale: [numeric] scale estimate
 #  + robust [list]
@@ -25,24 +26,25 @@
 #     + xwgt: [numeric] weights in the model's design space (GM-estimator)
 #     + n [int] number of observations
 #     + p [int] number of independent variables
-#     + domain [logical] for domain estimation (i.e., some w[i] = 0)
 #     + [others]
 #  + design: [survey.design object without 'variables']
 #  + variance: [numeric]
 #  + call: [call object]
 #
 # constructor for empty object of class svystat_rob
-.new_svystat_rob <- function(characteristic, yname, string, call,
-    design, class = NULL, ...)
+.new_svystat_rob <- function(characteristic, yname, string, domain,
+                             design, call, class = NULL, ...)
 {
     structure(list(characteristic = characteristic,
-        estimator = list(string = string, ...), estimate = setNames(NA, yname),
-        variance = NA, residuals = NA, model = NA, design = design,
-        call = call), class = c("svystat_rob", class))
+        estimator = list(string = string, domain = domain, ...),
+        estimate = setNames(NA, yname), variance = NA, residuals = NA,
+        model = NA, design = design, call = call),
+        class = c("svystat_rob", class))
 }
 # summary method for robust survey statistic object
-summary.svystat_rob <- function(object, digits = max(3L, getOption("digits") -
-    3L), ...)
+summary.svystat_rob <- function(object,
+                                digits = max(3L, getOption("digits") - 3L),
+                                ...)
 {
     cat(object$estimator$string, "of the population", object$characteristic,
         "\n")
@@ -54,7 +56,7 @@ summary.svystat_rob <- function(object, digits = max(3L, getOption("digits") -
     if (!is.null(object$optim)) {
         cat("Robustness:\n")
         cat("  Psi-function:", object$robust$psifunction, "with k =",
-	        object$estimator$k, "\n")
+            object$estimator$k, "\n")
         cat("  mean of robustness weights:",
 	        round(mean(robweights.svystat_rob(object)), digits), "\n")
         cat("\n")
@@ -62,11 +64,11 @@ summary.svystat_rob <- function(object, digits = max(3L, getOption("digits") -
         if (object$optim$converged) {
             cat("  converged in", object$optim$niter, "iterations\n")
 	        cat(paste0("  with residual scale (weighted ",
-                if (object$optim$used_iqr) "IQR" else "MAD", "): ",
-                format(object$scale, digits = digits), "\n\n"))
+                       if (object$optim$used_iqr) "IQR" else "MAD", "): ",
+                       format(object$scale, digits = digits), "\n\n"))
         } else {
 	        cat("  FAILURE of convergence in", object$optim$niter,
-	            " iterations\n\n")
+                " iterations\n\n")
         }
     }
     cat("Sampling design:\n")
@@ -93,20 +95,12 @@ vcov.svystat_rob <- function(object, ...)
 # extract residuals from robust survey statistic object
 residuals.svystat_rob <- function(object, ...)
 {
-    res <- object$residuals
-    if (object$model$domain)
-        res[.is_in_domain(object)]
-    else
-        res
+    object$residuals
 }
 # extract fitted values from robust survey statistic object
 fitted.svystat_rob <- function(object, ...)
 {
-    yhat <- object$model$y - object$residuals
-    if (object$model$domain)
-        yhat[.is_in_domain(object)]
-    else
-        yhat
+    object$model$y - object$residuals
 }
 # extract robustness weights from robust survey statistic object, generic
 robweights <- function(object)
@@ -119,14 +113,12 @@ robweights.svystat_rob <- function(object)
     robwgt <- object$robust$robweights
     if (is.null(robwgt))
         stop("Robustness weights are not available\n")
-    else if (object$model$domain)
-        robwgt[.is_in_domain(object)]
-    else
+    else 
         robwgt
 }
 # print method for robust survey statistic object
 print.svystat_rob <- function(x, digits = max(3L, getOption("digits") - 3L),
-    ...)
+                              ...)
 {
     conv <- TRUE
     if (!is.null(x$optim))
@@ -177,15 +169,10 @@ mse.svystat_rob <- function(object, ...)
         ref <- coef.svystat_rob(eval(call))
     } else {                                        # otherwise
         ref <- weighted_total(object$model$y, object$model$w,
-            na.rm = !is.null(call$na.rm))
+                              na.rm = !is.null(call$na.rm))
         if (object$characteristic == "mean")
             ref <- ref / sum(object$model$w)
     }
     # mse
     as.numeric(object$variance + (object$estimate - ref)^2)
-}
-# is in domain (in the survey pkg identified with w[i] > 0)
-.is_in_domain <- function(object)
-{
-    object$model$w > .Machine$double.eps
 }

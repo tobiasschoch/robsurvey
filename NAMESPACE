@@ -10,8 +10,9 @@ importFrom("graphics", abline, mtext, panel.smooth, par, points,
 importFrom("stats", fitted, qqnorm, residuals, printCoefmat, pt,
     setNames, optim, complete.cases, model.frame, model.matrix,
     model.response, na.pass, terms, terms.formula, as.formula)
-importFrom("KernSmooth", dpik, locpoly) 
+importFrom("KernSmooth", dpik, locpoly)
 importFrom("utils", packageVersion)
+importFrom("survey", svyrecvar)
 
 # export
 S3method(print,svystat_rob)

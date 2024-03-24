@@ -38,7 +38,7 @@ print.svyreg_rob <- function(x, digits = max(3L, getOption("digits") - 3L), ...)
             "\n", sep = "")
         cat("\nCoefficients:\n")
         print.default(format(x$estimate, digits = digits), print.gap = 2L,
-            quote = FALSE)
+                      quote = FALSE)
         cat("\nScale estimate:", NA, "\n")
         return(invisible(x))
     }
@@ -55,7 +55,7 @@ print.svyreg_rob <- function(x, digits = max(3L, getOption("digits") - 3L), ...)
         if (length(x$estimate)) {
             cat("Coefficients:\n")
             print.default(format(x$estimate, digits = digits), print.gap = 2L,
-                quote = FALSE)
+                          quote = FALSE)
         }
         cat("\nScale estimate:", format(signif(x$scale, digits)),
             if (!is.null(x$optim$used_iqr))
@@ -66,11 +66,12 @@ print.svyreg_rob <- function(x, digits = max(3L, getOption("digits") - 3L), ...)
         cat("\nIRWLS not converged in", x$optim$niter, "iterations (with tol =",
             x$optim$tol, ")\n")
     }
+    # return
     invisible(x)
 }
 # summary method for robust regression object
 summary.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
-    digits = max(3L, getOption("digits") - 3L), ...)
+                               digits = max(3L, getOption("digits") - 3L), ...)
 {
     if (any(is.na(object$estimate))) {
         cat("\nCall:\n")
@@ -80,7 +81,7 @@ summary.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
         cat("\nCoefficients:\n")
         NAs <- object$estimate
         printCoefmat(cbind(Estimate = NAs, 'Std. Error' = NAs, 't value' = NAs,
-            'Pr(>|t|)' = NAs), digits = digits)
+                           'Pr(>|t|)' = NAs), digits = digits)
         cat("\nResidual standard error:", NA, "on", NA, "degrees of freedom\n")
         return(invisible(object))
     }
@@ -130,7 +131,7 @@ summary.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
 }
 # extract variance from robust regression object
 vcov.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
-    ...)
+                            ...)
 {
     converged <- object$optim$converged
     if (is.null(converged) || converged) {
@@ -140,7 +141,7 @@ vcov.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
             "compound" = .cov_reg_compound(object)$cov)
     } else {
         warning(" covariance is not avaliable because",
-            "\n regression algorithm did not converge\n", call. = FALSE)
+                "\n regression algorithm did not converge\n", call. = FALSE)
         mat <- matrix(NA, object$model$p, object$model$p)
     }
     ns <- colnames(object$model$x)
@@ -152,7 +153,7 @@ vcov.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
 
 # extract standard error from robust regression object
 SE.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
-    ...)
+                          ...)
 {
     sqrt(diag(vcov.svyreg_rob(object, mode, ...)))
 }
@@ -187,6 +188,7 @@ SE.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
     } else {
         cov_mat <- matrix(tmp$x[1:(p * p)], ncol = p)
     }
+    # return
     list(ok = tmp$ok, cov = cov_mat, scale = tmp$scale)
 }
 
@@ -201,9 +203,8 @@ SE.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
     x <- object$model$x
     n <- NROW(x); p <- NCOL(x)
     # account for heteroscedasticity
-    if (!is.null(object$model$var)) {
+    if (!is.null(object$model$var))
         x <- x / sqrt(object$model$var)
-    }
 
     # weights in the model's design space
     xwgt <- object$model$xwgt
@@ -218,8 +219,8 @@ SE.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
 
     # Q matrix
     r <- object$residuals
-    Q <- survey::svyrecvar(w * xwgt * x * ui * r, object$design$cluster,
-        object$design$strata, object$design$fpc)
+    Q <- svyrecvar(w * xwgt * x * ui * r, object$design$cluster,
+                   object$design$strata, object$design$fpc)
 
     # covariance matrix (takes Q matrix as one of its argument)
     tmp <- .C(C_cov_reg_design, x = as.double(x), w = as.double(w),
@@ -235,6 +236,7 @@ SE.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
     } else {
         cov_mat <- matrix(tmp$mat, ncol = p, nrow = p)
     }
+    # return
     list(ok = 1, cov = cov_mat, scale = object$scale)
 }
 
@@ -249,6 +251,7 @@ SE.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
         cov_mat <- matrix(NA, object$model$p, object$model$p)
     else
         cov_mat <- gamma_d$cov + f * gamma_m$cov
+    # return
     list(ok = 1, cov = cov_mat, scale = object$scale)
 }
 
@@ -278,15 +281,16 @@ robweights.svyreg_rob <- function(object)
         tmp
 }
 # plot method for robust regression object
-plot.svyreg_rob <- function(x, which = 1L:4L,
-    hex = FALSE, caption = c("Standardized residuals vs. Fitted Values",
-    "Normal Q-Q", "Response vs. Fitted values",
-    "Sqrt of abs(Residuals) vs. Fitted Values"),
+plot.svyreg_rob <- function(x, which = 1L:4L, hex = FALSE,
+    caption = c("Standardized residuals vs. Fitted Values",
+        "Normal Q-Q", "Response vs. Fitted values",
+        "Sqrt of abs(Residuals) vs. Fitted Values"),
 	panel = if (add.smooth) function(x, y, ...) panel.smooth(x, y,
-    iter = iter.smooth, ...) else points, sub.caption = NULL, main = "",
-	ask = prod(par("mfcol")) < length(which) && dev.interactive(), ...,
-	id.n = 3, labels.id = names(residuals(x)), cex.id = 0.75, qqline = TRUE,
-	add.smooth = getOption("add.smooth"), iter.smooth = 3,
+        iter = iter.smooth, ...) else points,
+    sub.caption = NULL, main = "", ask = prod(par("mfcol")) < length(which) &&
+        dev.interactive(),
+    ..., id.n = 3, labels.id = names(residuals(x)), cex.id = 0.75,
+    qqline = TRUE, add.smooth = getOption("add.smooth"), iter.smooth = 3,
 	label.pos = c(4, 2), cex.caption = 1, cex.oma.main = 1.25)
 {
     if (!is.numeric(which) || any(which < 1) || any(which > 4))
@@ -324,6 +328,7 @@ plot.svyreg_rob <- function(x, which = 1L:4L,
                 label.pos[1 + as.numeric(x > mean(range(x)))]
             else
 				3
+
             text(x, y, labels.id[ind], cex = cex.id, xpd = TRUE,
                 pos = labpos, offset = 0.25)
         }
@@ -364,13 +369,13 @@ plot.svyreg_rob <- function(x, which = 1L:4L,
             requireNamespace("hexbin")
             hb <- hexbin::hexbin(yh, rs, ybnds = ylim)
             hvp <- hexbin::plot(hb, xlab = "Fitted values",
-                ylab = "Standardized residuals", main = main)
+                                ylab = "Standardized residuals", main = main)
             hexbin::hexVP.abline(hvp$plot, h = 0, lty = 3, col = "gray")
             hexbin::hexVP.loess(hb, hvp = hvp$plot, span = 2 / 3, ...)
         } else {
             plot(yh, rs, xlab = "Fitted values",
-                ylab = "Standardized residuals", main = main, ylim = ylim,
-                type = "n", ...)
+                 ylab = "Standardized residuals", main = main, ylim = ylim,
+                 type = "n", ...)
             panel(yh, rs, ...)
             if (one.fig)
                 title(sub = sub.caption, ...)
@@ -390,7 +395,7 @@ plot.svyreg_rob <- function(x, which = 1L:4L,
         ylim[2L] <- ylim[2L] + diff(ylim) * 0.075
         dev.hold()
         qq <- qqnorm(rs, main = main, ylab = "Standardized residuals",
-            ylim = ylim, ...)
+                     ylim = ylim, ...)
         if (qqline)
             qqline(rs, lty = 3, col = "gray50")
         if (one.fig)
@@ -410,12 +415,12 @@ plot.svyreg_rob <- function(x, which = 1L:4L,
             requireNamespace("hexbin")
             hb <- hexbin::hexbin(yh, y, ybnds = ylim)
             hvp <- hexbin::plot(hb, xlab = "Fitted values", ylab = "Response",
-                main = main)
+                                main = main)
             hexbin::hexVP.abline(hvp$plot, h = 0, lty = 3, col = "gray")
             hexbin::hexVP.loess(hb, hvp = hvp$plot, span = 2 / 3, ...)
         } else {
             plot(yh, y, xlab = "Fitted values", ylab = "Response",
-                main = main, ylim = ylim, type = "n", ...)
+                 main = main, ylim = ylim, type = "n", ...)
             panel(yh, y, ...)
             if (one.fig)
                 title(sub = sub.caption, ...)
@@ -441,12 +446,12 @@ plot.svyreg_rob <- function(x, which = 1L:4L,
             requireNamespace("hexbin")
             hb <- hexbin::hexbin(yhn0, sqrtabsr, ybnds = ylim)
             hvp <- plot(hb, xlab = "Fitted values",
-                ylab = "Sqrt of abs(Residuals)", main = main)
+                        ylab = "Sqrt of abs(Residuals)", main = main)
             hexbin::hexVP.loess(hb, hvp = hvp$plot, span = 2 / 3, ...)
         } else {
             plot(yhn0, sqrtabsr, xlab = "Fitted values",
-                ylab = "Sqrt of abs(Residuals)", main = main, ylim = ylim,
-                type = "n", ...)
+                 ylab = "Sqrt of abs(Residuals)", main = main, ylim = ylim,
+                 type = "n", ...)
             panel(yhn0, sqrtabsr, ...)
             if (one.fig)
                 title(sub = sub.caption, ...)

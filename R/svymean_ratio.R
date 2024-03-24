@@ -20,12 +20,13 @@ svytotal_ratio <- function(object, total, variance = "wu", keep_object = TRUE,
     res <- structure(list(characteristic = "total",
         estimator = object$estimator, estimate = estimate,
         robust = object$robust, residuals = object$residuals,
-        model = list(object$model, coef = object$estimate, domain = FALSE,
+        model = list(object$model, coef = object$estimate,
             total = total, variance = variance, call = object$call),
         design = object$design, call = match.call(),
         variance = stderr^2), class = "svystat_rob")
     if (keep_object)
         res$object <- object
+    # return
     res
 }
 # ratio estimator of the mean
@@ -34,7 +35,7 @@ svymean_ratio <- function(object, total, N = NULL, variance = "wu",
 {
     if (!inherits(object, "ratio"))
         stop(paste0("The function cannot be used for an object of class '",
-            class(object), "'\n"))
+                    class(object), "'\n"))
 
     .check_class(object)
     stopifnot(is.numeric(total), total >= 0)
@@ -55,12 +56,13 @@ svymean_ratio <- function(object, total, N = NULL, variance = "wu",
     res <- structure(list(characteristic = "mean",
         estimator = object$estimator, estimate = estimate,
         robust = object$robust, residuals = object$residuals,
-        model = list(object$model, coef = object$estimate, domain = FALSE,
+        model = list(object$model, coef = object$estimate,
             total = total, variance = variance, call = object$call),
         design = object$design, call = match.call(),
         variance = stderr^2), class = "svystat_rob")
     if (keep_object)
         res$object <- object
+    # return
     res
 }
 # standard error; estimators of Wu (1982, Biometrika): v0, v1, and v2
@@ -80,6 +82,6 @@ svymean_ratio <- function(object, total, N = NULL, variance = "wu",
                  call. = FALSE)
         else
             stop(paste0("The function cannot be used for an object of class '",
-                class(object), "'\n"), call. = FALSE)
+                        class(object), "'\n"), call. = FALSE)
     }
 }
