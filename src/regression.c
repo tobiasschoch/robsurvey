@@ -1,6 +1,6 @@
 /* Functions to compute weighted (generalized) regression M-estimators
 
-   Copyright (C) 2020-21 Tobias Schoch (e-mail: tobias.schoch@gmail.com)
+   Copyright (C) 2020-24 Tobias Schoch (e-mail: tobias.schoch@gmail.com)
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -64,7 +64,16 @@ void wlslm(double *x, double *y, double *w, double *resid, int *n, int *p,
 
     // initialize and populate structure with work arrays
     double* restrict work_x = (double*) Calloc(*n * *p, double);
+    if (work_x == NULL) {
+        PRINT_OUT("Error: Cannot allocate memory\n");
+        return;
+    }
     double* restrict work_y = (double*) Calloc(*n, double);
+    if (work_y == NULL) {
+        PRINT_OUT("Error: Cannot allocate memory\n");
+        Free(work_x);
+        return;
+    }
     workarray wwork;
     workarray *work = &wwork;
     work->work_x = work_x;
@@ -74,6 +83,11 @@ void wlslm(double *x, double *y, double *w, double *resid, int *n, int *p,
     work->lwork = -1;
     robsurvey_error_type status = rfitwls(dat, work, w, beta0, resid);
     double* restrict work_lapack = (double*) Calloc(work->lwork, double);
+    if (work_lapack == NULL) {
+        PRINT_OUT("Error: Cannot allocate memory\n");
+        Free(work_x); Free(work_y);
+        return;
+    }
     work->work_lapack = work_lapack;
 
     // compute least squares fit
@@ -125,6 +139,10 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
     *used_iqr = 0;
     robsurvey_error_type status;
     double* restrict beta1 = (double*) Calloc(*p, double);
+    if (beta1 == NULL) {
+        PRINT_OUT("Error: Cannot allocate memory\n");
+        return;
+    }
 
     // initialize and populate structure with regression-specific data
     regdata data;
@@ -137,8 +155,23 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
 
     // initialize and populate structure with work arrays
     double* restrict work_x = (double*) Calloc(*n * *p, double);
+    if (work_x == NULL) {
+        PRINT_OUT("Error: Cannot allocate memory\n");
+        Free(beta1);
+        return;
+    }
     double* restrict work_y = (double*) Calloc(*n, double);
+    if (work_y == NULL) {
+        PRINT_OUT("Error: Cannot allocate memory\n");
+        Free(beta1); Free(work_x);
+        return;
+    }
     double* restrict work_2n = (double*) Calloc(2 * *n, double);
+    if (work_2n == NULL) {
+        PRINT_OUT("Error: Cannot allocate memory\n");
+        Free(beta1); Free(work_x); Free(work_y);
+        return;
+    }
     workarray wwork;
     workarray *work = &wwork;
     work->work_x = work_x;
@@ -149,6 +182,11 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
     work->lwork = -1;
     status = rfitwls(dat, work, w, beta0, resid);
     double* restrict work_lapack = (double*) Calloc(work->lwork, double);
+    if (work_lapack == NULL) {
+        PRINT_OUT("Error: Cannot allocate memory\n");
+        Free(beta1); Free(work_x); Free(work_y); Free(work_2n);
+        return;
+    }
     work->work_lapack = work_lapack;
 
     // STEP 1: estimator type-specific preparations

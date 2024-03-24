@@ -1,7 +1,7 @@
 /* Functions to compute the covariance matrix of weighted (generalized)
    regression M-estimators
 
-   Copyright (C) 2020-21 Tobias Schoch (e-mail: tobias.schoch@gmail.com)
+   Copyright (C) 2020-24 Tobias Schoch (e-mail: tobias.schoch@gmail.com)
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -74,7 +74,17 @@ void cov_reg_model(double *resid, double *x, double *xwgt, double *robwgt,
 
     // initialize and populate structure with work arrays
     double* restrict work_x = (double*) Calloc(*n * *p, double);
+    if (work_x == NULL) {
+        PRINT_OUT("Error: Cannot allocate memory\n");
+        return;
+    }
     double* restrict work_y = (double*) Calloc(*n, double);
+    if (work_y == NULL) {
+        PRINT_OUT("Error: Cannot allocate memory\n");
+        Free(work_x);
+        return;
+    }
+
     workarray wwork;
     workarray *work = &wwork;
     work->work_x = work_x;
@@ -85,7 +95,13 @@ void cov_reg_model(double *resid, double *x, double *xwgt, double *robwgt,
     F77_CALL(dgeqrf)(n, p, x, n, work_x, work_y, &lwork, &info);
     lwork = (int) work_y[0];
     work->lwork = lwork;
+
     double* restrict work_lapack = (double*) Calloc(lwork, double);
+    if (work_lapack == NULL) {
+        PRINT_OUT("Error: Cannot allocate memory\n");
+        Free(work_x); Free(work_y);
+        return;
+    }
     work->work_lapack = work_lapack;
 
     // psi and psi-prime functions
@@ -446,8 +462,22 @@ void cov_reg_design(double *x, double *w, double *xwgt, double *resid,
     *ok = 1;
     // allocate memory
     double* M = (double*) Calloc(*p * *p, double);
+    if (M == NULL) {
+        PRINT_OUT("Error: Cannot allocate memory\n");
+        return;
+    }
     double* work_pp = (double*) Calloc(*p * *p, double);
+    if (work_pp == NULL) {
+        PRINT_OUT("Error: Cannot allocate memory\n");
+        Free(M);
+        return;
+    }
     double* work_np = (double*) Calloc(*n * *p, double);
+    if (work_np == NULL) {
+        PRINT_OUT("Error: Cannot allocate memory\n");
+        Free(M); Free(work_pp);
+        return;
+    }
 
     // GM-estimators
     if (*type == 1) {                   // Mallows GM-estimator

@@ -1,6 +1,6 @@
 /* weighted quantile and selection of k-th largest element
 
-   Copyright (C) 2020-2022 Tobias Schoch (e-mail: tobias.schoch@gmail.com)
+   Copyright (C) 2020-2024 Tobias Schoch (e-mail: tobias.schoch@gmail.com)
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -22,9 +22,10 @@
    Note:       The extension of the method to weighted problems is ours.
 */
 
-# define _n_quickselect 40  // switch from insertion sort to quickselect
-# define _n_nither 50       // pivotal element determined by ninther
-# define DEBUG_MODE 0       // debug mode (0 = off; 1 = activated)
+#define _n_quickselect 40  // switch from insertion sort to quickselect
+#define _n_nither 50       // pivotal element determined by ninther
+#define DEBUG_MODE 0       // debug mode (0 = off; 1 = activated)
+#define PRINT_OUT(...) Rprintf(__VA_ARGS__)
 
 #include "wquantile.h"
 
@@ -62,6 +63,10 @@ void wquantile(double *array, double *weights, int *n, double *prob,
 {
     double *work;
     work = (double*) Calloc(2 * *n, double);
+    if (work == NULL) {
+        PRINT_OUT("Error: Cannot allocate memory\n");
+        return;
+    }
     wquantile_noalloc(array, weights, work, n, prob, result);
     Free(work);
 }
@@ -414,3 +419,4 @@ void debug_print_state(int i, int j)
     printf("final:\ti = %d\tj = %d\n", i, j);
 }
 #endif
+#undef PRINT_OUT
