@@ -12,6 +12,8 @@ typedef enum robsurvey_error_enum {
     ROBSURVEY_ERROR_QR_DGEQRF,              // QR factorization: dgeqrf failed
     ROBSURVEY_ERROR_QR_DTRTRI,              // QR factorization: dtrtri failed
     ROBSURVEY_ERROR_QR_DORGQR,              // QR factorization: dorgqr failed
+    ROBSURVEY_ERROR_CHOLESKY_DPOTRF,        // Cholesky factor.: dpotrf failed
+    ROBSURVEY_ERROR_CHOLESKY_DPOTRI,        // Cholesky factor.: dpotri failed
     ROBSURVEY_ERROR_COUNT,                  // [not an actual error type]
 } robsurvey_error_type;
 

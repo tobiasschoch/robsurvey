@@ -28,7 +28,9 @@ const char* const ROBSURVEY_ERROR_STRINGS[] = {
     "Mallows normalization constant: Algorithm did not converge",
     "QR factorization: dgeqrf failed",
     "QR factorization: dtrtri failed",
-    "QR factorization: dorgqr failed"
+    "QR factorization: dorgqr failed",
+    "Cholesky factorization: dpotrf failed",
+    "Cholesky factorization: dpotri failed",
 };
 
 // obtain a human readable error message

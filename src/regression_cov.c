@@ -512,7 +512,8 @@ void cov_reg_design(double *x, double *w, double *xwgt, double *resid,
     // U is upper triangular
     F77_CALL(dpotrf)("U", p, M, p, &info FCONE);
     if (info != 0) {
-        PRINT_OUT("Error in dpotrf (M matrix)\n");
+        PRINT_OUT("Error: %s\n",
+                robsurvey_error(ROBSURVEY_ERROR_CHOLESKY_DPOTRF));
         *ok = 0;
         goto clean_up;
     }
@@ -521,7 +522,8 @@ void cov_reg_design(double *x, double *w, double *xwgt, double *resid,
     // Cholesky factor of M)
     F77_CALL(dpotri)("U", p, M, p, &info FCONE);
     if (info != 0) {
-        PRINT_OUT("Error in dpotri (M matrix)\n");
+        PRINT_OUT("Error: %s\n",
+                robsurvey_error(ROBSURVEY_ERROR_CHOLESKY_DPOTRI));
         *ok = 0;
         goto clean_up;
     }
