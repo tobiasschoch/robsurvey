@@ -9,7 +9,7 @@ DLL_R      = $(R_DIR)/lib/libR.so
 # Link
 OBJ = wquantile.o mallows.o zeroin.o huber2.o trimmedwinsorized.o \
 		psifunctions.o robsurvey_error.o regression.o regression_cov.o \
-		regression_scale.o
+		regression_scale.o sampling.o
 
 robsurvey.so : $(OBJ)
 	$(CC) -shared -o $@ -L $(DLL_BLAS) $(DLL_LAPACK) $(DLL_R) $(OBJ)

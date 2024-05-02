@@ -6,6 +6,7 @@
 
 * The survey methods with prefix `svymean_` or `svytotal_` can now be used with the function `survey::svyby()`.
 * Method `mse()` is now also available for objects of class `svystat` (which is defined in pkg `survey`).
+* Functions to draw pps samples (without replacement) by Brewer's method.
 
 # robsurvey VERSION 0.6 (2024-01-14)
 

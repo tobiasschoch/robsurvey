@@ -122,3 +122,7 @@ S3method(mse,svystat_rob)
 S3method(mse,svystat)
 
 export(simpsonWgt)
+
+export(pps_probabilities)
+export(pps_draw)
+S3method(print,prob_pps)

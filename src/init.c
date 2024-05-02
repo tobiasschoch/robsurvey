@@ -5,6 +5,7 @@
 #include "trimmedwinsorized.h"
 #include "huber2.h"
 #include "psifunctions.h"
+#include "sampling.h"
 
 // create arrays describing each C routine
 static const R_CMethodDef cMethods[]  = {
@@ -18,6 +19,8 @@ static const R_CMethodDef cMethods[]  = {
     {"cov_reg_model", (DL_FUNC) &cov_reg_model, 13},
     {"cov_reg_design", (DL_FUNC) &cov_reg_design, 12},
     {"psi_function", (DL_FUNC) &psi_function, 5},
+    {"pps_prob", (DL_FUNC) &pps_prob, 4},
+    {"pps_brewer", (DL_FUNC) &pps_brewer, 4},
     {NULL, NULL, 0}
 };
 
