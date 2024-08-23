@@ -63,15 +63,15 @@ void wlslm(double *x, double *y, double *w, double *resid, int *n, int *p,
     dat->w = w;
 
     // initialize and populate structure with work arrays
-    double* restrict work_x = (double*) Calloc(*n * *p, double);
+    double* restrict work_x = (double*) R_Calloc(*n * *p, double);
     if (work_x == NULL) {
         PRINT_OUT("Error: Cannot allocate memory\n");
         return;
     }
-    double* restrict work_y = (double*) Calloc(*n, double);
+    double* restrict work_y = (double*) R_Calloc(*n, double);
     if (work_y == NULL) {
         PRINT_OUT("Error: Cannot allocate memory\n");
-        Free(work_x);
+        R_Free(work_x);
         return;
     }
     workarray wwork;
@@ -82,10 +82,10 @@ void wlslm(double *x, double *y, double *w, double *resid, int *n, int *p,
     // determine work array for 'dgels' (and allocate 'work_lapack')
     work->lwork = -1;
     robsurvey_error_type status = rfitwls(dat, work, w, beta0, resid);
-    double* restrict work_lapack = (double*) Calloc(work->lwork, double);
+    double* restrict work_lapack = (double*) R_Calloc(work->lwork, double);
     if (work_lapack == NULL) {
         PRINT_OUT("Error: Cannot allocate memory\n");
-        Free(work_x); Free(work_y);
+        R_Free(work_x); R_Free(work_y);
         return;
     }
     work->work_lapack = work_lapack;
@@ -105,7 +105,7 @@ void wlslm(double *x, double *y, double *w, double *resid, int *n, int *p,
     *scale /= sum_w - (double)*p;
     *scale = sqrt(*scale);
 
-    Free(work_x); Free(work_y); Free(work_lapack);
+    R_Free(work_x); R_Free(work_y); R_Free(work_lapack);
 }
 /******************************************************************************\
 |* rwlslm: regression M- and GM-estimator and estimate of scale (w MAD)       *|
@@ -138,7 +138,7 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
     // STEP 0: general preparations
     *used_iqr = 0;
     robsurvey_error_type status;
-    double* restrict beta1 = (double*) Calloc(*p, double);
+    double* restrict beta1 = (double*) R_Calloc(*p, double);
     if (beta1 == NULL) {
         PRINT_OUT("Error: Cannot allocate memory\n");
         return;
@@ -154,22 +154,22 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
     dat->w = w;
 
     // initialize and populate structure with work arrays
-    double* restrict work_x = (double*) Calloc(*n * *p, double);
+    double* restrict work_x = (double*) R_Calloc(*n * *p, double);
     if (work_x == NULL) {
         PRINT_OUT("Error: Cannot allocate memory\n");
-        Free(beta1);
+        R_Free(beta1);
         return;
     }
-    double* restrict work_y = (double*) Calloc(*n, double);
+    double* restrict work_y = (double*) R_Calloc(*n, double);
     if (work_y == NULL) {
         PRINT_OUT("Error: Cannot allocate memory\n");
-        Free(beta1); Free(work_x);
+        R_Free(beta1); R_Free(work_x);
         return;
     }
-    double* restrict work_2n = (double*) Calloc(2 * *n, double);
+    double* restrict work_2n = (double*) R_Calloc(2 * *n, double);
     if (work_2n == NULL) {
         PRINT_OUT("Error: Cannot allocate memory\n");
-        Free(beta1); Free(work_x); Free(work_y);
+        R_Free(beta1); R_Free(work_x); R_Free(work_y);
         return;
     }
     workarray wwork;
@@ -181,10 +181,10 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
     // determine work array for 'dgels' (and allocate 'work_lapack')
     work->lwork = -1;
     status = rfitwls(dat, work, w, beta0, resid);
-    double* restrict work_lapack = (double*) Calloc(work->lwork, double);
+    double* restrict work_lapack = (double*) R_Calloc(work->lwork, double);
     if (work_lapack == NULL) {
         PRINT_OUT("Error: Cannot allocate memory\n");
-        Free(beta1); Free(work_x); Free(work_y); Free(work_2n);
+        R_Free(beta1); R_Free(work_x); R_Free(work_y); R_Free(work_2n);
         return;
     }
     work->work_lapack = work_lapack;
@@ -275,7 +275,8 @@ void rwlslm(double *x, double *y, double *w, double *resid, double *robwgt,
         robwgt[i] = (w[i] < DBL_EPSILON) ? 0.0 : robwgt[i] / w[i];
 
 clean_up:
-    Free(beta1); Free(work_x); Free(work_y); Free(work_2n); Free(work_lapack);
+    R_Free(beta1); R_Free(work_x); R_Free(work_y); R_Free(work_2n);
+    R_Free(work_lapack);
 }
 
 /******************************************************************************\

@@ -73,15 +73,15 @@ void cov_reg_model(double *resid, double *x, double *xwgt, double *robwgt,
     dat->xwgt = xwgt;
 
     // initialize and populate structure with work arrays
-    double* restrict work_x = (double*) Calloc(*n * *p, double);
+    double* restrict work_x = (double*) R_Calloc(*n * *p, double);
     if (work_x == NULL) {
         PRINT_OUT("Error: Cannot allocate memory\n");
         return;
     }
-    double* restrict work_y = (double*) Calloc(*n, double);
+    double* restrict work_y = (double*) R_Calloc(*n, double);
     if (work_y == NULL) {
         PRINT_OUT("Error: Cannot allocate memory\n");
-        Free(work_x);
+        R_Free(work_x);
         return;
     }
 
@@ -96,10 +96,10 @@ void cov_reg_model(double *resid, double *x, double *xwgt, double *robwgt,
     lwork = (int) work_y[0];
     work->lwork = lwork;
 
-    double* restrict work_lapack = (double*) Calloc(lwork, double);
+    double* restrict work_lapack = (double*) R_Calloc(lwork, double);
     if (work_lapack == NULL) {
         PRINT_OUT("Error: Cannot allocate memory\n");
-        Free(work_x); Free(work_y);
+        R_Free(work_x); R_Free(work_y);
         return;
     }
     work->work_lapack = work_lapack;
@@ -144,7 +144,7 @@ void cov_reg_model(double *resid, double *x, double *xwgt, double *robwgt,
     Memcpy(x, work_x, *p * *p);
 
 clean_up:
-    Free(work_lapack); Free(work_x); Free(work_y);
+    R_Free(work_lapack); R_Free(work_x); R_Free(work_y);
 }
 
 /******************************************************************************\
@@ -461,21 +461,21 @@ void cov_reg_design(double *x, double *w, double *xwgt, double *resid,
     double d_one = 1.0, d_zero = 0.0;
     *ok = 1;
     // allocate memory
-    double* M = (double*) Calloc(*p * *p, double);
+    double* M = (double*) R_Calloc(*p * *p, double);
     if (M == NULL) {
         PRINT_OUT("Error: Cannot allocate memory\n");
         return;
     }
-    double* work_pp = (double*) Calloc(*p * *p, double);
+    double* work_pp = (double*) R_Calloc(*p * *p, double);
     if (work_pp == NULL) {
         PRINT_OUT("Error: Cannot allocate memory\n");
-        Free(M);
+        R_Free(M);
         return;
     }
-    double* work_np = (double*) Calloc(*n * *p, double);
+    double* work_np = (double*) R_Calloc(*n * *p, double);
     if (work_np == NULL) {
         PRINT_OUT("Error: Cannot allocate memory\n");
-        Free(M); Free(work_pp);
+        R_Free(M); R_Free(work_pp);
         return;
     }
 
@@ -540,7 +540,7 @@ void cov_reg_design(double *x, double *w, double *xwgt, double *resid,
     // covariance matrix
 
 clean_up:
-    Free(work_pp); Free(work_np); Free(M);
+    R_Free(work_pp); R_Free(work_np); R_Free(M);
 }
 #undef _POWER2
 #undef PRINT_OUT

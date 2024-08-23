@@ -79,7 +79,7 @@ void whuber2(double* restrict x, double* restrict w, double* restrict robwgt,
 
     // initialize location (weighted median)
     double p50 = 0.5;
-    double* restrict work_2n = (double*) Calloc(2 * *n, double);
+    double* restrict work_2n = (double*) R_Calloc(2 * *n, double);
     if (work_2n == NULL) {
         PRINT_OUT("Error: Cannot allocate memory\n");
         return;
@@ -87,10 +87,10 @@ void whuber2(double* restrict x, double* restrict w, double* restrict robwgt,
     wquantile_noalloc(x, w, work_2n, n, &p50, &loc0);
 
     // initialize variable for winsorized x-variable
-    double* restrict x_wins = (double*) Calloc(*n, double);
+    double* restrict x_wins = (double*) R_Calloc(*n, double);
     if (x_wins == NULL) {
         PRINT_OUT("Error: Cannot allocate memory\n");
-        Free(work_2n);
+        R_Free(work_2n);
         return;
     }
 
@@ -166,7 +166,7 @@ void whuber2(double* restrict x, double* restrict w, double* restrict robwgt,
     for (int i = 0; i < *n; i++)
         robwgt[i] = _WGT_HUBER((x[i] - *loc) / *scale, *k);
 
-    Free(x_wins); Free(work_2n);
+    R_Free(x_wins); R_Free(work_2n);
 }
 
 /******************************************************************************\

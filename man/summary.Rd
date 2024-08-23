@@ -8,7 +8,7 @@ svysummary(object, design, na.rm = FALSE, ...)
     \item{object}{one-sided \code{[formula]} for which a summary is desired,
         e.g., \code{~payroll}.}
     \item{design}{an object of class \code{survey.design}; see
-        \code{\link{svydesign}}.}
+        \code{\link[survey]{svydesign}}.}
     \item{na.rm}{\code{[logical]} indicating whether \code{NA} values should
         be removed before the computation proceeds (default: \code{FALSE}).}
     \item{\dots}{additional arguments.}

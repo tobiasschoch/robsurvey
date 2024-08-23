@@ -34,7 +34,7 @@ void pps_prob(double *size, int *N, int *n, double *pik)
 {
     double n_double = (double)*n;
 
-    double* is_regular = (double*) Calloc(*N, double);
+    double* is_regular = (double*) R_Calloc(*N, double);
     set_value(is_regular, 1.0, *N);
 
     // total of size measure
@@ -72,7 +72,7 @@ void pps_prob(double *size, int *N, int *n, double *pik)
     } while (exc_count_new != exc_count);
 
     // housekeeping
-    Free(is_regular);
+    R_Free(is_regular);
 }
 
 /******************************************************************************\
@@ -89,7 +89,7 @@ void pps_brewer(double *pik, int *N, int *n, int *sample)
     double n_drawn = (double)*n;
 
     // allocate memory for the N-vector of probabilities
-    double* restrict p = (double*) Calloc(*N, double);
+    double* restrict p = (double*) R_Calloc(*N, double);
     if (p == NULL) {
         Rprintf("Error: Cannot allocate memory\n");
         return;
@@ -144,7 +144,7 @@ void pps_brewer(double *pik, int *N, int *n, int *sample)
 
     // housekeeping
     PutRNGstate();
-    Free(p);
+    R_Free(p);
 }
 
 /******************************************************************************\

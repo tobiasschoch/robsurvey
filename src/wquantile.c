@@ -62,13 +62,13 @@ void wquantile(double *array, double *weights, int *n, double *prob,
     double *result)
 {
     double *work;
-    work = (double*) Calloc(2 * *n, double);
+    work = (double*) R_Calloc(2 * *n, double);
     if (work == NULL) {
         PRINT_OUT("Error: Cannot allocate memory\n");
         return;
     }
     wquantile_noalloc(array, weights, work, n, prob, result);
-    Free(work);
+    R_Free(work);
 }
 
 /******************************************************************************\
