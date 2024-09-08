@@ -1,8 +1,6 @@
 # robsurvey<img src="inst/varia/logo.png" align="right" width=120 height=139 alt="" />
 
-<!-- badges: start -->
-[![CRAN](https://www.r-pkg.org/badges/version/robsurvey)](https://cran.r-project.org/package=robsurvey)
-<!-- badges: end -->
+[![CRAN](https://www.r-pkg.org/badges/version/robsurvey)](https://cran.r-project.org/package=robsurvey) [![downloads](https://cranlogs.r-pkg.org/badges/robsurvey)](https://cran.r-project.org/package=robsurvey) [![downloads](https://cranlogs.r-pkg.org/badges/grand-total/robsurvey)](https://cran.r-project.org/package=robsurvey)
 
 ## Summary
 
