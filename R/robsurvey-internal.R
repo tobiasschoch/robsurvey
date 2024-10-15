@@ -43,6 +43,10 @@
 # check and extract data from survey.design object
 .check_formula <- function(f, design, na.rm = FALSE, check_NA = TRUE)
 {
+    if (!inherits(design, "survey.design2"))
+        stop("Only designs of class 'survey.design2' are supported\n",
+             call. = FALSE)
+
     if (inherits(f, "formula")) {
         if (length(all.vars(f)) > 1)
             stop("Formula must refer to one r.h.s. variable only\n",
@@ -102,6 +106,10 @@
 .check_regression <- function(formula, design, var = NULL, xwgt = NULL,
                               na.rm = FALSE)
 {
+    if (!inherits(design, "survey.design2"))
+        stop("Only designs of class 'survey.design2' are supported\n",
+             call. = FALSE)
+
     if (!inherits(formula, "formula"))
         stop("Argument '", formula, "' must be a formula\n", call. = FALSE)
 
