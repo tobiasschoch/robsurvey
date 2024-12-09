@@ -29,6 +29,8 @@ pps_draw(x, method = "brewer", sort = TRUE)
     probabilities for a given sample size \code{n}; see e.g., Särndal et
     al., 1992 (p. 90). The probabilities (and additional attributes) are
     returned as a vector, more precisely as an object of class \code{prob_pps}.
+    To get the probabilities, use the function \code{as.numeric()} on the
+    object.
 
     For an object of class \code{prob_pps} (inclusion probabilities and
     additional attributes), function \code{pps_draw} draws a pps sample
@@ -37,7 +39,7 @@ pps_draw(x, method = "brewer", sort = TRUE)
 }
 \value{
     Function \code{pps_probabilities} returns the probabilities (an object
-    of class (\code{prob_pps}).
+    of class \code{prob_pps}).
 
     Function \code{pps_draw} returns a pps sample of indexes from the
     population elements.
@@ -62,8 +64,10 @@ head(workplace)
 # replacement) of size n = 10, where the variable employment is the measure of
 # size. The first-order sample inclusion probabilities are calculated as
 # follows
-
 p <- pps_probabilities(workplace$employment, n = 10)
+
+# Extract the probabilities
+as.numeric(p)
 
 # Now, we draw a pps sample using Brewer's method.
 pps_draw(p, method = "brewer")
