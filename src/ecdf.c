@@ -43,7 +43,7 @@ double cd_sum(double*, double*, int, int);
 \******************************************************************************/
 void ecdf_cd(double* restrict res_sample, double* restrict linpred_nonsample,
     double* restrict sd_nonsample, double* restrict at, int *at_length, int *n,
-    int *N_minus_n, double *result)
+    int *N_minus_n, double* restrict result)
 {
     // allocate memory
     double* restrict res_nonsample = (double*) R_Calloc(*N_minus_n, double);
@@ -57,28 +57,35 @@ void ecdf_cd(double* restrict res_sample, double* restrict linpred_nonsample,
         return;
     }
 
+    // populate index array
+    for (int i = 0; i < *N_minus_n; i++)
+        index_nonsample[i] = i;
+
     // standardized residuals in the non-sampled part
     for (int i = 0; i < *N_minus_n; i++)
         res_nonsample[i] = (at[0] - linpred_nonsample[i]) / sd_nonsample[i];
 
     // sort residuals
     R_rsort(res_sample, *n);
-    rsort_with_index(res_nonsample, index_nonsample, *N_minus_n);
+
     // sort sd_nonsample along the index of res_nonsample
+    R_qsort_I(res_nonsample, index_nonsample, 1, *N_minus_n);
     Memcpy(linpred_nonsample, sd_nonsample, *N_minus_n);
     for (int i = 0; i < *N_minus_n; i++)
         sd_nonsample[i] = linpred_nonsample[index_nonsample[i]];
 
-    int evals = 0;
+    int evals = 0, count = 0;
     while (evals < *at_length) {
-        // re-compute std. residuals in the non-sampled part (not need to sort)
-        if (evals > 0)
+        // re-compute std. residuals in the non-sampled part (no need to sort)
+        if (evals > 0) {
             for (int i = 0; i < *N_minus_n; i++)
-                res_nonsample[i] = (res_nonsample[i] * sd_nonsample[i] +
-                    at[evals] - at[evals -1]) / sd_nonsample[i];
+
+        res_nonsample[i] = (res_nonsample[i] * sd_nonsample[i] +
+            at[evals] - at[evals - 1]) / sd_nonsample[i];
+        }
 
         // estimate for the sample
-        int count = 0;
+        count = 0;
         for (int i = 0; i < *n; i++)
             if (res_sample[i] <= at[evals])
                 count++;
@@ -88,7 +95,7 @@ void ecdf_cd(double* restrict res_sample, double* restrict linpred_nonsample,
         // estimate over the non-sampled part
         result[evals] += cd_sum(res_sample, res_nonsample, *n, *N_minus_n);
 
-        result[evals] /= (*n + *N_minus_n);
+        result[evals] /= (double)(*n + *N_minus_n);
         evals++;
     }
 
