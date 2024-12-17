@@ -22,6 +22,7 @@
 #     + y: [numeric] response variable
 #     + w: [numeric] sampling weights
 #     + var: [numeric] heteroscedasticity variances
+#     + var_terms: [terms object]
 #     + xwgt: [numeric] weights in the model's design space (GM-estimator)
 #     + n [int] number of observations
 #     + p [int] number of independent variables

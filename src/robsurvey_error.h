@@ -15,6 +15,7 @@ typedef enum robsurvey_error_enum {
     ROBSURVEY_ERROR_CHOLESKY_DPOTRF,        // Cholesky factor.: dpotrf failed
     ROBSURVEY_ERROR_CHOLESKY_DPOTRI,        // Cholesky factor.: dpotri failed
     ROBSURVEY_ERROR_COUNT,                  // [not an actual error type]
+    ROBSURVEY_ERROR_MEMORY,                 // Cannot allocate memory
 } robsurvey_error_type;
 
 // declaration

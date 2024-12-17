@@ -31,6 +31,7 @@ const char* const ROBSURVEY_ERROR_STRINGS[] = {
     "QR factorization: dorgqr failed",
     "Cholesky factorization: dpotrf failed",
     "Cholesky factorization: dpotri failed",
+    "Cannot allocate memory",
 };
 
 // obtain a human readable error message

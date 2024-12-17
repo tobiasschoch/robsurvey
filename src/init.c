@@ -6,6 +6,7 @@
 #include "huber2.h"
 #include "psifunctions.h"
 #include "sampling.h"
+#include "ecdf.h"
 
 // create arrays describing each C routine
 static const R_CMethodDef cMethods[]  = {
@@ -21,6 +22,7 @@ static const R_CMethodDef cMethods[]  = {
     {"psi_function", (DL_FUNC) &psi_function, 5},
     {"pps_prob", (DL_FUNC) &pps_prob, 4},
     {"pps_brewer", (DL_FUNC) &pps_brewer, 4},
+    {"ecdf_cd", (DL_FUNC) &ecdf_cd, 8},
     {NULL, NULL, 0}
 };
 

@@ -14,8 +14,8 @@ svyreg_huberM <- function(formula, design, k, var = NULL, na.rm = FALSE,
             estimate = rep(NA, NCOL(dat$x)),
             scale = NA, robust = NA, optim = NA, residuals = NA,
             model = list(x = dat$x, y = dat$y, w = dat$w, var = dat$var,
-                xwgt = rep(1, length(dat$y)), n = length(dat$y),
-                p = NCOL(dat$x), yname = dat$yname),
+                        var_terms = dat$var_terms, xwgt = rep(1, length(dat$y)),
+                        n = length(dat$y), p = NCOL(dat$x), yname = dat$yname),
             design = dat$design, terms = dat$terms, call = match.call()),
             class = "svyreg_rob"))
     # otherwise
@@ -63,8 +63,8 @@ svyreg_huberGM <- function(formula, design, k, type = c("Mallows", "Schweppe"),
             estimate = rep(NA, NCOL(dat$x)),
             scale = NA, robust = NA, optim = NA, residuals = NA,
             model = list(x = dat$x, y = dat$y, w = dat$w, var = dat$var,
-                xwgt = rep(1, length(dat$y)), n = length(dat$y),
-                p = NCOL(dat$x), yname = dat$yname),
+                var_terms = dat$var_terms, xwgt = rep(1, length(dat$y)),
+                n = length(dat$y), p = NCOL(dat$x), yname = dat$yname),
             design = dat$design, terms = dat$terms, call = match.call()),
             class = "svyreg_rob"))
     # otherwise

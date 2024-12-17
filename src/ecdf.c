@@ -46,14 +46,15 @@ void ecdf_cd(double* restrict res_sample, double* restrict linpred_nonsample,
     int *N_minus_n, double* restrict result)
 {
     // allocate memory
+
     double* restrict res_nonsample = (double*) R_Calloc(*N_minus_n, double);
     if (res_nonsample == NULL) {
-        PRINT_OUT("Error: Cannot allocate memory\n");
+        PRINT_OUT("Error: %s\n", robsurvey_error(ROBSURVEY_ERROR_MEMORY));
         return;
     }
     int* restrict index_nonsample = (int*) R_Calloc(*N_minus_n, int);
     if (index_nonsample == NULL) {
-        PRINT_OUT("Error: Cannot allocate memory\n");
+        PRINT_OUT("Error: %s\n", robsurvey_error(ROBSURVEY_ERROR_MEMORY));
         return;
     }
 
@@ -80,8 +81,8 @@ void ecdf_cd(double* restrict res_sample, double* restrict linpred_nonsample,
         if (evals > 0) {
             for (int i = 0; i < *N_minus_n; i++)
 
-        res_nonsample[i] = (res_nonsample[i] * sd_nonsample[i] +
-            at[evals] - at[evals - 1]) / sd_nonsample[i];
+            res_nonsample[i] = (res_nonsample[i] * sd_nonsample[i] +
+                at[evals] - at[evals - 1]) / sd_nonsample[i];
         }
 
         // estimate for the sample
