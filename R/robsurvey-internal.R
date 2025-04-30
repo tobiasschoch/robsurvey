@@ -41,7 +41,7 @@
     list(x = x, w = w, n = n)
 }
 # check and extract data from survey.design object
-.check_formula <- function(f, design, na.rm = FALSE, check_NA = TRUE)
+.check_formula <- function(f, design, na.rm = FALSE, drop_design = TRUE)
 {
     if (!inherits(design, "survey.design2"))
         stop("Only designs of class 'survey.design2' are supported\n",
@@ -69,41 +69,54 @@
                  call. = FALSE)
         }
     }
-    w <- as.numeric(1 / design$prob)
-    # special return for empty data
-    if (length(y) == 0)
-        return(list(failure = TRUE))
 
-    # check for missing values
-    failure <- FALSE
-    if (check_NA) {
-        is_not_NA <- complete.cases(y, w)
-        if (sum(is_not_NA) != length(y)) {
-            if (na.rm) {
-                y <- y[is_not_NA]
-                w <- w[is_not_NA]
-                # drop missing values from survey.design object
-                design <- subset(design, is_not_NA)
-            } else {
-                failure <- TRUE
-            }
-        }
-    }
-    # domain indicator (if w[i] == 0, the unit is NOT in the domain)
-    in_domain <- w > .Machine$double.eps
-    if (all(in_domain)) {
-        domain <- FALSE
-        in_domain <- NULL
-    } else {
+    # sample size and sampling weights
+    n <- length(y)
+    w <- as.numeric(weights(design))
+
+    # empty data
+    if (n == 0)
+        return(list(failure = TRUE, yname = yname, design = design,
+                    domain = FALSE))
+
+    # has missing values, but did not use na.rm = TRUE; thus, flag as failure
+    is_complete <- complete.cases(y)
+    if ((sum(is_complete) != n) & !na.rm)
+        return(list(failure = TRUE, yname = yname, design = design,
+                    domain = FALSE))
+
+    # domain estimation and NA treatment
+    w <- as.numeric(weights(design))
+
+    is_in_domain <- w > .Machine$double.eps
+    has_positive_weights <- is_in_domain & is_complete
+    n_complete_cases <- sum(has_positive_weights)
+
+    if (n_complete_cases != n) {
+        # flag the task as a domain-estimation task
         domain <- TRUE
+
+        y <- y[has_positive_weights]
+        w <- w[has_positive_weights]
+        n <- n_complete_cases
+
+        # drop obs. where w[i] = 0 from the design object
+        design <- subset(design, has_positive_weights)
+    } else {
+        domain <- FALSE
+        has_positive_weights <- NULL
     }
+
+    # drop variables in design object
+    if (drop_design)
+        design$variables <- NULL
 
     # return
-    list(failure = failure, yname = yname, y = y, w = w, n = length(w),
-         design = design, domain = domain, in_domain = in_domain)
+    list(failure = FALSE, yname = yname, y = y, w = w, n = n, design = design,
+         domain = domain, in_domain = has_positive_weights)
 }
 # check and extract data from survey.design object (for regression)
-.check_regression <- function(formula, design, var = NULL, xwgt = NULL,
+.check_regression <- function(formula, design, var_formula = NULL, xwgt = NULL,
                               na.rm = FALSE)
 {
     if (!inherits(design, "survey.design2"))
@@ -115,10 +128,26 @@
 
     # heteroscedasticity (only one variable); without NA handling; we will
     # deal with this together with x, y, etc.
-    if (!is.null(var)) {
-        var <- .check_formula(var, design, FALSE, FALSE)$y
+    if (!is.null(var_formula)) {
+        if (inherits(var_formula, "formula")) {
+            if (length(all.vars(var_formula)) > 1)
+                stop("Formula must refer to one r.h.s. variable only\n",
+                     call. = FALSE)
+            tf <- terms.formula(var_formula)
+            if(attr(tf, "response") != 0)
+                stop("The LHS of the formula must not be defined\n",
+                     call. = FALSE)
+            yname <- attr(tf, "term.labels")
+            var <- model.frame(var_formula, design$variables, na.action =
+                               na.pass)[, 1]
+        } else {
+           stop("Type of argument '", var_formula, "' is not supported\n",
+                call. = FALSE)
+        }
         if (any(var <  .Machine$double.eps))
             stop("Some variances are zero or close to zero\n", call. = FALSE)
+    } else {
+        var <- NULL
     }
 
     # extract the variables
@@ -130,7 +159,7 @@
     yname <- names(mf)[response]
     y <- as.numeric(model.response(mf))
     x <- model.matrix(mt, mf)
-    w <- as.numeric(1 / design$prob)
+    w <- as.numeric(weights(design))
     n <- length(y)
 
     if (is.null(xwgt))
@@ -167,7 +196,7 @@
     }
     # return
     list(failure = failure, x = x, y = y, var = var, w = w, terms = mt,
-        design = design, xwgt = xwgt, yname = yname)
+         design = design, xwgt = xwgt, yname = yname)
 }
 # psi functions
 .psi_function <- function(x, k, psi = c("Huber", "Huberasym", "Tukey"))
@@ -195,11 +224,6 @@
 .psi_wgt_function <- function(x, k, psi = c("Huber", "Huberasym", "Tukey"))
 {
     .psi_function(x, k, psi) / x
-}
-# is domain estimator (the survey pkg identifies this by weight = 0)
-is_domain_estimator <- function(w)
-{
-    any(w < .Machine$double.eps)
 }
 # onAttach function
 .onAttach <- function(libname, pkgname)
@@ -248,7 +272,7 @@ is_domain_estimator <- function(w)
      88   Y8. .8P 88  dP  \\__ \\ |_| | |   \\ V /  __/ |_| |
      88    'Y8P'  88e8P'  |___/\\__,_|_|    \\_/ \\___|\\__, |
                                                      __/ |
-                                         version 0.7 |___/\n
+                                       version 0.7-1 |___/\n
 type: package?robsurvey to learn more
 use:  library(robsurvey, quietly = TRUE) to suppress the
       start-up message\n")

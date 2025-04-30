@@ -2,8 +2,6 @@
 svymean_tukey <- function(x, design, k, type = "rwm", na.rm = FALSE,
                           verbose = TRUE, ...)
 {
-    if (!is.language(x))
-        stop("Argument 'x' must be a formula object\n", call. = FALSE)
     dat <- .check_formula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
@@ -13,11 +11,8 @@ svymean_tukey <- function(x, design, k, type = "rwm", na.rm = FALSE,
             psi_fun = "Tukey", k = k))
 
     # population- vs. domain-level estimate
-    res <- if (dat$domain)
-        weighted_mean_tukey(dat$y[dat$in_domain], dat$w[dat$in_domain], k,
-                            type, TRUE, FALSE, verbose, ...)
-    else
-        weighted_mean_tukey(dat$y, dat$w, k, type, TRUE, FALSE, verbose, ...)
+    res <- weighted_mean_tukey(dat$y, dat$w, k, type, TRUE, FALSE, verbose,
+                               ...)
 
     # modify residuals for type 'rht' (only for variance estimation)
     r <- if (type == "rht")
@@ -27,7 +22,7 @@ svymean_tukey <- function(x, design, k, type = "rwm", na.rm = FALSE,
 
     # influence function
     infl <- if (dat$domain) {
-        tmp <- numeric(dat$n)
+        tmp <- numeric(length(dat$in_domain))
         tmp[dat$in_domain] <- res$robust$robweights * r * res$model$w /
             sum(res$model$w)
         tmp
@@ -51,8 +46,6 @@ svymean_tukey <- function(x, design, k, type = "rwm", na.rm = FALSE,
 svytotal_tukey <- function(x, design, k, type = "rwm", na.rm = FALSE,
                            verbose = TRUE, ...)
 {
-    if (!is.language(x))
-        stop("Argument 'x' must be a formula object\n", call. = FALSE)
     dat <- .check_formula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
@@ -62,15 +55,12 @@ svytotal_tukey <- function(x, design, k, type = "rwm", na.rm = FALSE,
             psi_fun = "Tukey", k = k))
 
     # population- vs. domain-level estimate
-    res <- if (dat$domain)
-        weighted_total_tukey(dat$y[dat$in_domain], dat$w[dat$in_domain], k,
-                             type, TRUE, FALSE, verbose, ...)
-    else
-        weighted_total_tukey(dat$y, dat$w, k, type, TRUE, FALSE, verbose, ...)
+    res <- weighted_total_tukey(dat$y, dat$w, k, type, TRUE, FALSE, verbose,
+                                ...)
 
     # influence function
     infl <- if (dat$domain) {
-        tmp <- numeric(dat$n)
+        tmp <- numeric(length(dat$in_domain))
         tmp[dat$in_domain] <- res$robust$robweights * res$model$w * res$model$y
         tmp
     } else {

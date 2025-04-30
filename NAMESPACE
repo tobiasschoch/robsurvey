@@ -7,9 +7,9 @@ importFrom("grDevices", as.graphicsAnnot, dev.flush, dev.hold,
     dev.interactive, devAskNewPage, extendrange, xy.coords)
 importFrom("graphics", abline, mtext, panel.smooth, par, points,
     strheight, text, title, plot)
-importFrom("stats", fitted, qqnorm, residuals, printCoefmat, pt,
-    setNames, optim, complete.cases, model.frame, model.matrix,
-    model.response, na.pass, terms, terms.formula, as.formula)
+importFrom("stats", fitted, qqnorm, residuals, printCoefmat, pt, qt,
+    setNames, optim, complete.cases, model.frame, model.matrix, coef,
+    model.response, na.pass, terms, terms.formula, as.formula, weights)
 importFrom("KernSmooth", dpik, locpoly)
 importFrom("utils", packageVersion)
 importFrom("survey", svyrecvar)
@@ -45,6 +45,8 @@ export(SE.svyreg_rob)
 S3method(plot,svyreg_rob)
 
 S3method(scale,svystat_rob)
+
+S3method(confint,svystat_rob)
 
 export(huber2)
 

@@ -3,7 +3,7 @@ mer <- function(object, verbose = TRUE, max_k = 10, init = 1, method = "Brent",
                 optim_args = list())
 {
     if (!inherits(object, "mer_capable"))
-        stop("MER-estimator cannot be compute for this class of estimators\n",
+        stop("MER-estimator cannot be computed for this class of estimators\n",
              call. = FALSE)
     stopifnot(is.numeric(max_k), max_k > 1, is.numeric(init), init >= 0,
               init < max_k)

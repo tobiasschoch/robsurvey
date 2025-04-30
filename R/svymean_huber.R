@@ -2,10 +2,7 @@
 svymean_huber <- function(x, design, k, type = "rwm", asym = FALSE,
                           na.rm = FALSE, verbose = TRUE, ...)
 {
-    if (!is.language(x))
-        stop("Argument 'x' must be a formula object\n", call. = FALSE)
     dat <- .check_formula(x, design, na.rm)
-
     # in the presence of NA's
     if (dat$failure)
         return(.new_svystat_rob("mean", dat$yname,
@@ -15,12 +12,8 @@ svymean_huber <- function(x, design, k, type = "rwm", asym = FALSE,
             psi = if (asym) 1 else 0, psi_fun = "Huber", k = k))
 
     # population- vs. domain-level estimate
-    res <- if (dat$domain)
-        weighted_mean_huber(dat$y[dat$in_domain], dat$w[dat$in_domain], k,
-                            type, asym, TRUE, FALSE, verbose, ...)
-    else
-        weighted_mean_huber(dat$y, dat$w, k, type, asym, TRUE, FALSE, verbose,
-                            ...)
+    res <- weighted_mean_huber(dat$y, dat$w, k, type, asym, TRUE, FALSE,
+                               verbose, ...)
 
     # modify residuals for type 'rht' (only for variance estimation)
     r <- if (type == "rht")
@@ -30,7 +23,7 @@ svymean_huber <- function(x, design, k, type = "rwm", asym = FALSE,
 
     # influence function
     infl <- if (dat$domain) {
-        tmp <- numeric(dat$n)
+        tmp <- numeric(length(dat$in_domain))
         tmp[dat$in_domain] <- res$robust$robweights * r * res$model$w /
             sum(res$model$w)
         tmp
@@ -54,8 +47,6 @@ svymean_huber <- function(x, design, k, type = "rwm", asym = FALSE,
 svytotal_huber <- function(x, design, k, type = "rwm", asym = FALSE,
                            na.rm = FALSE, verbose = TRUE, ...)
 {
-    if (!is.language(x))
-        stop("Argument 'x' must be a formula object\n", call. = FALSE)
     dat <- .check_formula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
@@ -66,15 +57,11 @@ svytotal_huber <- function(x, design, k, type = "rwm", asym = FALSE,
             psi = if (asym) 1 else 0, psi_fun = "Huber", k = k))
 
     # population- vs. domain-level estimate
-    res <- if (dat$domain)
-        weighted_total_huber(dat$y[dat$in_domain], dat$w[dat$in_domain], k,
-                            type, asym, TRUE, FALSE, verbose, ...)
-    else
-        weighted_total_huber(dat$y, dat$w, k, type, asym, TRUE, FALSE, verbose,
-                            ...)
+    res <- weighted_total_huber(dat$y, dat$w, k, type, asym, TRUE, FALSE,
+                                verbose, ...)
     # influence function
     infl <- if (dat$domain) {
-        tmp <- numeric(dat$n)
+        tmp <- numeric(length(dat$in_domain))
         tmp[dat$in_domain] <- res$robust$robweights * res$model$w *
             res$model$y
         tmp

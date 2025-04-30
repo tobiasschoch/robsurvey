@@ -2,8 +2,6 @@
 svymean_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
                                na.rm = FALSE, trim_var = FALSE, ...)
 {
-    if (!is.language(x))
-        stop("Argument 'x' must be a formula object\n", call. = FALSE)
     dat <- .check_formula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
@@ -12,11 +10,7 @@ svymean_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
             dat$domain, dat$design, match.call(), "wins", LB = LB, UB = UB))
 
     # population- vs. domain-level estimate
-    res <- if (dat$domain)
-        weighted_mean_winsorized(dat$y[dat$in_domain], dat$w[dat$in_domain],
-                                 LB, UB, TRUE, FALSE)
-    else
-        weighted_mean_winsorized(dat$y, dat$w, LB, UB, TRUE, FALSE)
+    res <- weighted_mean_winsorized(dat$y, dat$w, LB, UB, TRUE, FALSE)
 
     # influence function
     infl <- if (trim_var)
@@ -26,7 +20,7 @@ svymean_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
 
     infl <- infl * res$model$w / sum(res$model$w)
     if (dat$domain) {
-        tmp <- numeric(dat$n)
+        tmp <- numeric(length(dat$in_domain))
         tmp[dat$in_domain] <- infl
         infl <- tmp
     }
@@ -47,8 +41,6 @@ svymean_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
 svymean_k_winsorized <- function(x, design, k, na.rm = FALSE,
                                  trim_var = FALSE, ...)
 {
-    if (!is.language(x))
-        stop("Argument 'x' must be a formula object\n", call. = FALSE)
     dat <- .check_formula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
@@ -57,11 +49,7 @@ svymean_k_winsorized <- function(x, design, k, na.rm = FALSE,
             dat$domain, dat$design, match.call(), "wins", k = k))
 
     # population- vs. domain-level estimate
-    res <- if (dat$domain)
-        weighted_mean_k_winsorized(dat$y[dat$in_domain], dat$w[dat$in_domain],
-                                   k, TRUE, FALSE)
-    else
-        weighted_mean_k_winsorized(dat$y, dat$w, k, TRUE, FALSE)
+    res <- weighted_mean_k_winsorized(dat$y, dat$w, k, TRUE, FALSE)
 
     # influence function
     infl <- if (trim_var)
@@ -73,7 +61,7 @@ svymean_k_winsorized <- function(x, design, k, na.rm = FALSE,
 
     infl <- infl * res$model$w / sum(res$model$w)
     if (dat$domain) {
-        tmp <- numeric(dat$n)
+        tmp <- numeric(length(dat$in_domain))
         tmp[dat$in_domain] <- infl
         infl <- tmp
     }
@@ -94,8 +82,6 @@ svymean_k_winsorized <- function(x, design, k, na.rm = FALSE,
 svytotal_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
                                 na.rm = FALSE, trim_var = FALSE, ...)
 {
-    if (!is.language(x))
-        stop("Argument 'x' must be a formula object\n", call. = FALSE)
     dat <- .check_formula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
@@ -104,11 +90,7 @@ svytotal_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
             dat$domain, dat$design, match.call(), "wins", LB = LB, UB = UB))
 
     # population- vs. domain-level estimate
-    res <- if (dat$domain)
-        weighted_total_winsorized(dat$y[dat$in_domain], dat$w[dat$in_domain],
-                                  LB, UB, TRUE, FALSE)
-    else
-        weighted_total_winsorized(dat$y, dat$w, LB, UB, TRUE, FALSE)
+    res <- weighted_total_winsorized(dat$y, dat$w, LB, UB, TRUE, FALSE)
 
     # influence function
     infl <- if (trim_var)
@@ -118,7 +100,7 @@ svytotal_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
 
     infl <- infl * res$model$w
     if (dat$domain) {
-        tmp <- numeric(dat$n)
+        tmp <- numeric(length(dat$in_domain))
         tmp[dat$in_domain] <- infl
         infl <- tmp
     }
@@ -139,8 +121,6 @@ svytotal_winsorized <- function(x, design, LB = 0.05, UB = 1 - LB,
 svytotal_k_winsorized <- function(x, design, k, na.rm = FALSE,
                                   trim_var = FALSE, ...)
 {
-    if (!is.language(x))
-        stop("Argument 'x' must be a formula object\n", call. = FALSE)
     dat <- .check_formula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
@@ -149,11 +129,7 @@ svytotal_k_winsorized <- function(x, design, k, na.rm = FALSE,
             dat$domain, dat$design, match.call(), "wins", k = k))
 
     # population- vs. domain-level estimate
-    res <- if (dat$domain)
-        weighted_total_k_winsorized(dat$y[dat$in_domain], dat$w[dat$in_domain],
-                                    k, TRUE, FALSE)
-    else
-        weighted_total_k_winsorized(dat$y, dat$w, k, TRUE, FALSE)
+    res <- weighted_total_k_winsorized(dat$y, dat$w, k, TRUE, FALSE)
 
     # influence function
     infl <- if (trim_var)
@@ -163,7 +139,7 @@ svytotal_k_winsorized <- function(x, design, k, na.rm = FALSE,
 
     infl <- infl * res$model$w
     if (dat$domain) {
-        tmp <- numeric(dat$n)
+        tmp <- numeric(length(dat$in_domain))
         tmp[dat$in_domain] <- infl
         infl <- tmp
     }

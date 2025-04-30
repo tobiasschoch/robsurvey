@@ -3,14 +3,18 @@
 # utility function
 all_equal <- function(target, current, label,
     tolerance = sqrt(.Machine$double.eps), scale = NULL,
-    check.attributes = FALSE)
+    check.attributes = FALSE, flag_as_error = TRUE)
 {
     if (missing(label))
         stop("Argument 'label' is missing\n")
     res <- all.equal(target, current, tolerance, scale,
         check.attributes = check.attributes)
-    if (is.character(res))
-        cat(paste0(label, ": ", res, "\n"))
+    if (is.character(res)) {
+        if (flag_as_error)
+            stop(paste0(label, ": ", res, "\n"), call. = FALSE)
+        else
+            cat(paste0(label, ": ", res, "\n"))
+    }
 }
 
 # check functions for coef() and SE()

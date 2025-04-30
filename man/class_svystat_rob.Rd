@@ -14,6 +14,7 @@
 \alias{mse}
 \alias{mse.svystat_rob}
 \alias{mse.svystat}
+\alias{confint.svystat_rob}
 \title{Utility Functions for Objects of Class svystat_rob}
 \usage{
 mse(object, ...)
@@ -30,12 +31,20 @@ mse(object, ...)
 robweights(object)
 \method{robweights}{svystat_rob}(object)
 \method{print}{svystat_rob}(x, digits = max(3L, getOption("digits") - 3L), ...)
+\method{confint}{svystat_rob}(object, parm, level = 0.95, df = Inf, ...)
 }
 \arguments{
-    \item{object}{object of class \code{svystat_rob}.}
+    \item{df}{\code{[integer]} degrees of freedom for t-distribution in
+        confidence interval, use ‘degf(design)’ for number of PSUs minus number
+        of strata}
     \item{digits}{\code{[integer]} minimal number of significant digits.}
-    \item{\dots}{additional arguments passed to the method.}
+     \item{level}{\code{[numeric]} the confidence level required.}
+    \item{object}{object of class \code{svystat_rob}.}
+    \item{parm}{a specification of which parameters are to be given confidence
+        intervals, either a vector of numbers or a vector of names. If missing,
+        all parameters are considered.}
     \item{x}{object of class \code{svystat_rob}.}
+    \item{\dots}{additional arguments passed to the method.}
 }
 \description{
     Methods and utility functions for objects of class \code{svystat_rob}.

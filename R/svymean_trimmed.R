@@ -2,8 +2,6 @@
 svymean_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE,
                             ...)
 {
-    if (!is.language(x))
-        stop("Argument 'x' must be a formula object\n", call. = FALSE)
     dat <- .check_formula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
@@ -11,18 +9,13 @@ svymean_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE,
             paste0("Weighted trimmed estimator (", LB, ", ", UB, ")"),
             dat$domain, dat$design, match.call(), "trim", LB = LB, UB = UB))
 
-    # population- vs. domain-level estimate
-    res <- if (dat$domain)
-        weighted_mean_trimmed(dat$y[dat$in_domain], dat$w[dat$in_domain], LB,
-                              UB, TRUE, FALSE)
-    else
-        weighted_mean_trimmed(dat$y, dat$w, LB, UB, TRUE, FALSE)
+    res <- weighted_mean_trimmed(dat$y, dat$w, LB, UB, TRUE, FALSE)
 
     # influence function
     infl <- .infl_trimmed(res$model$y, res$model$w, LB, UB, res$estimate) *
                 res$model$w / sum(res$model$w)
     if (dat$domain) {
-        tmp <- numeric(dat$n)
+        tmp <- numeric(length(dat$in_domain))
         tmp[dat$in_domain] <- infl
         infl <- tmp
     }
@@ -43,8 +36,6 @@ svymean_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE,
 svytotal_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE,
                              ...)
 {
-    if (!is.language(x))
-        stop("Argument 'x' must be a formula object\n", call. = FALSE)
     dat <- .check_formula(x, design, na.rm)
     # in the presence of NA's
     if (dat$failure)
@@ -52,17 +43,12 @@ svytotal_trimmed <- function(x, design, LB = 0.05, UB = 1 - LB, na.rm = FALSE,
             paste0("Weighted trimmed estimator (", LB, ", ", UB, ")"),
             dat$domain, dat$design, match.call(), "trim", LB = LB, UB = UB))
 
-    # population- vs. domain-level estimate
-    res <- if (dat$domain)
-        weighted_total_trimmed(dat$y[dat$in_domain], dat$w[dat$in_domain], LB,
-                               UB, TRUE, FALSE)
-    else
-        weighted_total_trimmed(dat$y, dat$w, LB, UB, TRUE, FALSE)
+    res <- weighted_total_trimmed(dat$y, dat$w, LB, UB, TRUE, FALSE)
 
     # influence function
     infl <- .infl_trimmed(res$model$y, res$model$w, LB, UB, 0) * res$model$w
     if (dat$domain) {
-        tmp <- numeric(dat$n)
+        tmp <- numeric(length(dat$in_domain))
         tmp[dat$in_domain] <- infl
         infl <- tmp
     }
