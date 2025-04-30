@@ -74,37 +74,34 @@
     n <- length(y)
     w <- as.numeric(weights(design))
 
-    # empty data
+    # empty data (degenerate case)
     if (n == 0)
         return(list(failure = TRUE, yname = yname, design = design,
                     domain = FALSE))
 
-    # has missing values, but did not use na.rm = TRUE; thus, flag as failure
+    # missing values
     is_complete <- complete.cases(y)
-    if ((sum(is_complete) != n) & !na.rm)
-        return(list(failure = TRUE, yname = yname, design = design,
-                    domain = FALSE))
-
-    # domain estimation and NA treatment
-    w <- as.numeric(weights(design))
-
-    is_in_domain <- w > .Machine$double.eps
-    has_positive_weights <- is_in_domain & is_complete
-    n_complete_cases <- sum(has_positive_weights)
-
-    if (n_complete_cases != n) {
-        # flag the task as a domain-estimation task
-        domain <- TRUE
-
-        y <- y[has_positive_weights]
-        w <- w[has_positive_weights]
-        n <- n_complete_cases
-
-        # drop obs. where w[i] = 0 from the design object
-        design <- subset(design, has_positive_weights)
-    } else {
-        domain <- FALSE
-        has_positive_weights <- NULL
+    # separate handling of missing values and domains for calibrated and non-
+    # calibrated designs
+    if (is.null(design$postStrata)) {               # non-calibrated design
+        calibrated <- FALSE
+        n_is_complete <- sum(is_complete)
+        if (n_is_complete != n) {
+            if (!na.rm)
+                return(list(failure = TRUE, yname = yname, design = design,
+                            domain = FALSE))
+            y <- y[is_complete]
+            w <- w[is_complete]
+            n <- n_is_complete
+            design <- design[is_complete, ]
+        }
+    } else {                                        # calibrated design
+        calibrated <- TRUE
+        is_complete <- is_complete & is.finite(design$prob)
+        y <- y[is_complete]
+        w <- w[is_complete]
+        n <- sum(is_complete)
+        design <- design[is_complete, ]
     }
 
     # drop variables in design object
@@ -113,7 +110,7 @@
 
     # return
     list(failure = FALSE, yname = yname, y = y, w = w, n = n, design = design,
-         domain = domain, in_domain = has_positive_weights)
+         calibrated = calibrated, in_domain = is_complete)
 }
 # check and extract data from survey.design object (for regression)
 .check_regression <- function(formula, design, var_formula = NULL, xwgt = NULL,

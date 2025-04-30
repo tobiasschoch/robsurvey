@@ -6,7 +6,6 @@
 #     + psi: [int]
 #     + psi_fun: [char]
 #     + k: [numeric]
-#     + domain: [logical]
 #  + estimate: [numeric] vector of estimated regression coefficients
 #  + scale: [numeric] scale estimate
 #  + robust [list]
@@ -32,11 +31,11 @@
 #  + call: [call object]
 #
 # constructor for empty object of class svystat_rob
-.new_svystat_rob <- function(characteristic, yname, string, domain,
-                             design, call, class = NULL, ...)
+.new_svystat_rob <- function(characteristic, yname, string, design, call,
+                             class = NULL, ...)
 {
     structure(list(characteristic = characteristic,
-        estimator = list(string = string, domain = domain, ...),
+        estimator = list(string = string, ...),
         estimate = setNames(NA, yname), variance = NA, residuals = NA,
         model = NA, design = design, call = call),
         class = c("svystat_rob", class))

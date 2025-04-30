@@ -7,11 +7,11 @@ svymean_huber <- function(x, design, k, type = "rwm", asym = FALSE,
     if (dat$failure)
         return(.new_svystat_rob("mean", dat$yname,
             paste0("Huber M-estimator (type = ", type,
-            if (asym) "; asym. psi" else "", ")"), dat$domain,
+            if (asym) "; asym. psi" else "", ")"),
             dat$design, match.call(), "mest", type = type,
             psi = if (asym) 1 else 0, psi_fun = "Huber", k = k))
 
-    # population- vs. domain-level estimate
+    # population- vs. domain-level estimate (matters for calibrated designs)
     res <- weighted_mean_huber(dat$y, dat$w, k, type, asym, TRUE, FALSE,
                                verbose, ...)
 
@@ -22,7 +22,7 @@ svymean_huber <- function(x, design, k, type = "rwm", asym = FALSE,
         res$residuals
 
     # influence function
-    infl <- if (dat$domain) {
+    infl <- if (dat$calibrated) {
         tmp <- numeric(length(dat$in_domain))
         tmp[dat$in_domain] <- res$robust$robweights * r * res$model$w /
             sum(res$model$w)
@@ -37,7 +37,6 @@ svymean_huber <- function(x, design, k, type = "rwm", asym = FALSE,
                               postStrata = design$postStrata)
     # return
     names(res$estimate) <- dat$yname
-    res$estimator$domain <- dat$domain
     res$design <- dat$design
     res$call <- match.call()
     class(res) <- c("svystat_rob", "mer_capable")
@@ -52,15 +51,15 @@ svytotal_huber <- function(x, design, k, type = "rwm", asym = FALSE,
     if (dat$failure)
         return(.new_svystat_rob("total", dat$yname,
             paste0("Huber M-estimator (type = ", type,
-            if (asym) "; asym. psi" else "", ")"), dat$domain,
+            if (asym) "; asym. psi" else "", ")"),
             dat$design, match.call(), "mest", type = type,
             psi = if (asym) 1 else 0, psi_fun = "Huber", k = k))
 
-    # population- vs. domain-level estimate
+    # population- vs. domain-level estimate (matters for calibrated designs)
     res <- weighted_total_huber(dat$y, dat$w, k, type, asym, TRUE, FALSE,
                                 verbose, ...)
     # influence function
-    infl <- if (dat$domain) {
+    infl <- if (dat$calibrated) {
         tmp <- numeric(length(dat$in_domain))
         tmp[dat$in_domain] <- res$robust$robweights * res$model$w *
             res$model$y
@@ -75,7 +74,6 @@ svytotal_huber <- function(x, design, k, type = "rwm", asym = FALSE,
                               postStrata = design$postStrata)
     # return
     names(res$estimate) <- dat$yname
-    res$estimator$domain <- dat$domain
     res$design <- dat$design
     res$call <- match.call()
     class(res) <- c("svystat_rob", "mer_capable")

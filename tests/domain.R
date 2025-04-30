@@ -68,8 +68,9 @@ check(svymean(~x, dn_miss_d60, na.rm = TRUE),
       svymean_trimmed(~x, dn_miss_d60, LB = 0, UB = 1, na.rm = TRUE),
       "missing values: d60", "mean")
 
-check(svyby(~x, ~strat, dn_miss_d60, svymean),
-      svyby(~x, ~strat, dn_miss_d60, svymean_trimmed, LB = 0, UB = 1),
+check(svyby(~x, ~strat, dn_miss_d60, svymean, na.rm = TRUE),
+      svyby(~x, ~strat, dn_miss_d60, svymean_trimmed, LB = 0, UB = 1,
+            na.rm = TRUE),
       "missing values: d60", "mean")
 
 dn_cal_miss_d60 <- set_missing(dn_cal, "d60")           # calibrated

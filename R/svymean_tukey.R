@@ -6,11 +6,11 @@ svymean_tukey <- function(x, design, k, type = "rwm", na.rm = FALSE,
     # in the presence of NA's
     if (dat$failure)
         return(.new_svystat_rob("mean", dat$yname,
-            paste0("Tukey M-estimator (type = ", type, ")"), dat$domain,
-            dat$design, match.call(), "mest", type = type, psi = 2,
-            psi_fun = "Tukey", k = k))
+            paste0("Tukey M-estimator (type = ", type, ")"), dat$design,
+            match.call(), "mest", type = type, psi = 2, psi_fun = "Tukey",
+            k = k))
 
-    # population- vs. domain-level estimate
+    # population- vs. domain-level estimate (matters for calibrated designs)
     res <- weighted_mean_tukey(dat$y, dat$w, k, type, TRUE, FALSE, verbose,
                                ...)
 
@@ -21,7 +21,7 @@ svymean_tukey <- function(x, design, k, type = "rwm", na.rm = FALSE,
         res$residuals
 
     # influence function
-    infl <- if (dat$domain) {
+    infl <- if (dat$calibrated) {
         tmp <- numeric(length(dat$in_domain))
         tmp[dat$in_domain] <- res$robust$robweights * r * res$model$w /
             sum(res$model$w)
@@ -36,7 +36,6 @@ svymean_tukey <- function(x, design, k, type = "rwm", na.rm = FALSE,
                               postStrata = design$postStrata)
     # return
     names(res$estimate) <- dat$yname
-    res$estimator$domain <- dat$domain
     res$design <- dat$design
     res$call <- match.call()
     class(res) <- c("svystat_rob", "mer_capable")
@@ -50,16 +49,16 @@ svytotal_tukey <- function(x, design, k, type = "rwm", na.rm = FALSE,
     # in the presence of NA's
     if (dat$failure)
         return(.new_svystat_rob("total", dat$yname,
-            paste0("Tukey M-estimator (type = ", type, ")"), dat$domain,
-            dat$design, match.call(), "mest", type = type, psi = 2,
-            psi_fun = "Tukey", k = k))
+            paste0("Tukey M-estimator (type = ", type, ")"), dat$design,
+            match.call(), "mest", type = type, psi = 2, psi_fun = "Tukey",
+            k = k))
 
-    # population- vs. domain-level estimate
+    # population- vs. domain-level estimate (matters for calibrated designs)
     res <- weighted_total_tukey(dat$y, dat$w, k, type, TRUE, FALSE, verbose,
                                 ...)
 
     # influence function
-    infl <- if (dat$domain) {
+    infl <- if (dat$calibrated) {
         tmp <- numeric(length(dat$in_domain))
         tmp[dat$in_domain] <- res$robust$robweights * res$model$w * res$model$y
         tmp
@@ -73,7 +72,6 @@ svytotal_tukey <- function(x, design, k, type = "rwm", na.rm = FALSE,
                               postStrata = design$postStrata)
     # return
     names(res$estimate) <- dat$yname
-    res$estimator$domain <- dat$domain
     res$design <- dat$design
     res$call <- match.call()
     class(res) <- c("svystat_rob", "mer_capable")
