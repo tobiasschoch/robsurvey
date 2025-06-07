@@ -91,6 +91,8 @@ export(weighted_IQR)
 export(weighted_line)
 export(weighted_mad)
 
+export(within_tolerance)
+
 export(weighted_mean)
 export(weighted_mean_dalen)
 export(weighted_mean_huber)

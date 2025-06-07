@@ -2,6 +2,12 @@
 
 # robsurvey VERSION 0.7-1 (NEXT VERSION)
 
+## NEW FEATURES
+
+Added function `within_tolerance()` which returns the value`TRUE` if an observation is within tolerance limits. Observations that fall outside are declared (potential) outliers.
+
+Added a `confint()` method for objects of class `svystat_rob`.
+
 ## CHANGES
 
 The (internal) handling of subdomains has been changed; this should go unnoticed by the user.
