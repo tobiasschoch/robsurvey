@@ -125,7 +125,7 @@ summary.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
         }
         invisible(res)
     } else {
-        warning(" covariance is not avaliable because",
+        warning(" covariance is not available because",
             "\n regression algorithm did not converge\n", call. = FALSE)
     }
 }
@@ -140,7 +140,7 @@ vcov.svyreg_rob <- function(object, mode = c("design", "model", "compound"),
             "design" = .cov_reg_design(object)$cov,
             "compound" = .cov_reg_compound(object)$cov)
     } else {
-        warning(" covariance is not avaliable because",
+        warning(" covariance is not available because",
                 "\n regression algorithm did not converge\n", call. = FALSE)
         mat <- matrix(NA, object$model$p, object$model$p)
     }

@@ -1,10 +1,10 @@
 **If you are viewing this file on CRAN, please check [latest news on GitHub](https://github.com/tobiasschoch/robsurvey/blob/master/NEWS.md) where the formatting is also better.**
 
-# robsurvey VERSION 0.7-1 (NEXT VERSION)
+# robsurvey VERSION 0.7-1 (2026-01-28)
 
 ## NEW FEATURES
 
-Added function `within_tolerance()` which returns the value`TRUE` if an observation is within tolerance limits. Observations that fall outside are declared (potential) outliers.
+Added function `within_tolerance()` which returns the value `TRUE` if an observation is within tolerance limits. Observations that fall outside are declared (potential) outliers.
 
 Added a `confint()` method for objects of class `svystat_rob`.
 

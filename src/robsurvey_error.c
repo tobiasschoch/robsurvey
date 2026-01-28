@@ -1,6 +1,6 @@
 /* Error handling function and array with error messages
 
-   Copyright (C) 2020-24 Tobias Schoch (e-mail: tobias.schoch@gmail.com)
+   Copyright (C) 2020-2026 Tobias Schoch (e-mail: tobias.schoch@gmail.com)
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public

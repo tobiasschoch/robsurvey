@@ -1,7 +1,7 @@
 /* Functions to compute the covariance matrix of weighted (generalized)
    regression M-estimators
 
-   Copyright (C) 2020-24 Tobias Schoch (e-mail: tobias.schoch@gmail.com)
+   Copyright (C) 2020-2026 Tobias Schoch (e-mail: tobias.schoch@gmail.com)
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -43,7 +43,7 @@ robsurvey_error_type cov_schweppe_gm_est(regdata*, workarray*,
 robsurvey_error_type inverse_qr(workarray*, double* restrict, int*, int*, int);
 
 /******************************************************************************\
-|* model-based covariance matrix of the esimated regression coefficients      *|
+|* model-based covariance matrix of the estimated regression coefficients     *|
 |*                                                                            *|
 |* resid   residuals, array[n]                                                *|
 |* x       design matrix, array[n * p]; on return: the p * p cov              *|

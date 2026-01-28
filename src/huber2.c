@@ -1,7 +1,7 @@
 /* Weighted Huber proposal 2 estimator of location and scale, initialized
    by, respectively, the weighted median and the weighted interquartile range
 
-   Copyright (C) 2020-24 Tobias Schoch (e-mail: tobias.schoch@gmail.com)
+   Copyright (C) 2020-2026 Tobias Schoch (e-mail: tobias.schoch@gmail.com)
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
