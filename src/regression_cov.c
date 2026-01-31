@@ -187,14 +187,10 @@ robsurvey_error_type cov_m_est(regdata *dat, workarray *work,
         return status;
 
     double* restrict work_x = work->work_x;     // scale2 * R^{-1} * R^{-T}
-
-    //FIXME 2025-01-31 A workaround to avoid calling dtrmm on the same array.
-    //Should solve the issue on r-release-macos-arm64 and openBLAS (many
-    //platforms)
     Memcpy(x, work_x, p * p);
-
     F77_CALL(dtrmm)("R", "U", "T", "N", &p, &p, scale2, x, &p, work_x,
         &p FCONE FCONE FCONE FCONE);
+    // alternative: use dsyrk
 
     return ROBSURVEY_ERROR_OK;
 }
