@@ -1,7 +1,7 @@
 Package: robsurvey
 Type: Package
 Title: Robust Survey Statistics Estimation
-Version: 0.7-2
+Version: 0.7-3
 Authors@R: c(person(
         given = "Beat",
         family = "Hulliger",
