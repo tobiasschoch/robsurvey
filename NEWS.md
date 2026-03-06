@@ -1,8 +1,8 @@
 **If you are viewing this file on CRAN, please check [latest news on GitHub](https://github.com/tobiasschoch/robsurvey/blob/master/NEWS.md) where the formatting is also better.**
 
-# robsurvey VERSION 0.7-2 (2026-01-31)
+# robsurvey VERSION 0.7-3 (2026-02-04)
 
-This release fixes an issue (by a workaround) with `dtrmm` (BLAS) that appeared on the platform r-release-macos-arm64 and with openBLAS (many platforms).
+This release fixes an issue with `dtrmm` (BLAS).
 
 # robsurvey VERSION 0.7-1 (2026-01-28)
 
